@@ -128,17 +128,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ResourceCompile Include="LabProject07-9-8.rc" />
+    <ResourceCompile Include="CyberZ_Client.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="LabProject07-9-8.ico" />
+    <Image Include="CyberZ_Client.ico" />
     <Image Include="small.ico" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DDSTextureLoader12.cpp" />
     <ClCompile Include="GameFramework.cpp" />
-    <ClCompile Include="LabProject07-9-8.cpp" />
+    <ClCompile Include="CyberZ_Client.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -153,10 +153,11 @@
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DDSTextureLoader12.h" />
     <ClInclude Include="GameFramework.h" />
-    <ClInclude Include="LabProject07-9-8.h" />
+    <ClInclude Include="CyberZ_Client.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="stdafx.h" />
