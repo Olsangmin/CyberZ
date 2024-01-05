@@ -29,7 +29,7 @@ CGameFramework::CGameFramework()
 	m_nWndClientHeight = FRAME_BUFFER_HEIGHT;
 
 	m_pScene = NULL;
-	m_pPlayer = NULL;
+	m_ppPlayer = NULL;
 
 	_tcscpy_s(m_pszFrameRate, _T("CyberZ ("));
 }
@@ -320,7 +320,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				case VK_F1:
 				case VK_F2:
 				case VK_F3:
-					m_pCamera = m_pPlayer[FIRST_PLAYER]->ChangeCamera((DWORD)(wParam - VK_F1 + 1), m_GameTimer.GetTimeElapsed());
+					m_pCamera = m_ppPlayer[FIRST_PLAYER]->ChangeCamera((DWORD)(wParam - VK_F1 + 1), m_GameTimer.GetTimeElapsed());
 					break;
 				case VK_F9:
 					ChangeSwapChainState();
@@ -399,7 +399,7 @@ void CGameFramework::OnDestroy()
 void CGameFramework::BuildObjects()
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
-	m_pPlayer = new CPlayer * [m_nPlayer];
+	m_ppPlayer = new CPlayer * [m_nPlayer];
 
 	m_pScene = new CScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
@@ -412,11 +412,11 @@ void CGameFramework::BuildObjects()
 	CAirplanePlayer *pPlayer = new CAirplanePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), NULL);
 	pPlayer->SetPosition(XMFLOAT3(425.0f, 240.0f, 640.0f));
 #endif
-	m_pPlayer[FIRST_PLAYER] = pPlayer;
-	m_pPlayer[SECOND_PLAYER] = pPlayer1;
+	m_ppPlayer[FIRST_PLAYER] = pPlayer;
+	m_ppPlayer[SECOND_PLAYER] = pPlayer1;
 
-	m_pScene->m_pPlayer = m_pPlayer;
-	m_pCamera = m_pPlayer[FIRST_PLAYER]->GetCamera();
+	m_pScene->m_ppPlayer = m_ppPlayer;
+	m_pCamera = m_ppPlayer[FIRST_PLAYER]->GetCamera();
 
 	m_pd3dCommandList->Close();
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
@@ -425,9 +425,9 @@ void CGameFramework::BuildObjects()
 	WaitForGpuComplete();
 
 	if (m_pScene) m_pScene->ReleaseUploadBuffers();
-	if (m_pPlayer) {
+	if (m_ppPlayer) {
 		for (int i = 0;i < m_nPlayer;++i)
-			m_pPlayer[i]->ReleaseUploadBuffers();
+			m_ppPlayer[i]->ReleaseUploadBuffers();
 	}
 
 	m_GameTimer.Reset();
@@ -435,9 +435,9 @@ void CGameFramework::BuildObjects()
 
 void CGameFramework::ReleaseObjects()
 {
-	if (m_pPlayer) {
+	if (m_ppPlayer) {
 		for (int i = 0;i < m_nPlayer;++i)
-			m_pPlayer[i]->Release();
+			m_ppPlayer[i]->Release();
 	}
 
 	if (m_pScene) m_pScene->ReleaseObjects();
@@ -482,16 +482,16 @@ void CGameFramework::ProcessInput()
 			if (cxDelta || cyDelta)
 			{
 				if (pKeysBuffer[VK_RBUTTON] & 0xF0)
-					m_pPlayer[FIRST_PLAYER]->Rotate(cyDelta, 0.0f, -cxDelta);
+					m_ppPlayer[FIRST_PLAYER]->Rotate(cyDelta, 0.0f, -cxDelta);
 				else
-					m_pPlayer[FIRST_PLAYER]->Rotate(cyDelta, cxDelta, 0.0f);
+					m_ppPlayer[FIRST_PLAYER]->Rotate(cyDelta, cxDelta, 0.0f);
 			}
-			if (dwDirection) m_pPlayer[FIRST_PLAYER]->Move(dwDirection, 12.25f, true);
-			if (dwDirection1) m_pPlayer[SECOND_PLAYER]->Move(dwDirection1, 12.25f, true);
+			if (dwDirection) m_ppPlayer[FIRST_PLAYER]->Move(dwDirection, 12.25f, true);
+			if (dwDirection1) m_ppPlayer[SECOND_PLAYER]->Move(dwDirection1, 12.25f, true);
 		}
 	}
 	for(int i=0;i<m_nPlayer;++i)
-		m_pPlayer[i]->Update(m_GameTimer.GetTimeElapsed());
+		m_ppPlayer[i]->Update(m_GameTimer.GetTimeElapsed());
 }
 
 void CGameFramework::AnimateObjects()
@@ -500,7 +500,7 @@ void CGameFramework::AnimateObjects()
 
 	if (m_pScene) m_pScene->AnimateObjects(fTimeElapsed);
 	for(int i=0;i<m_nPlayer;++i)
-		m_pPlayer[i]->Animate(fTimeElapsed);
+		m_ppPlayer[i]->Animate(fTimeElapsed);
 }	
 
 void CGameFramework::WaitForGpuComplete()
@@ -568,9 +568,9 @@ void CGameFramework::FrameAdvance()
 #ifdef _WITH_PLAYER_TOP
 	m_pd3dCommandList->ClearDepthStencilView(d3dDsvCPUDescriptorHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
-	if (m_pPlayer) {
+	if (m_ppPlayer) {
 		for(int i=0;i<m_nPlayer;++i)
-		m_pPlayer[i]->Render(m_pd3dCommandList, m_pCamera);
+		m_ppPlayer[i]->Render(m_pd3dCommandList, m_pCamera);
 	}
 
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
@@ -604,7 +604,7 @@ void CGameFramework::FrameAdvance()
 
 	m_GameTimer.GetFrameRate(m_pszFrameRate + 12, 37);
 	size_t nLength = _tcslen(m_pszFrameRate);
-	XMFLOAT3 xmf3Position = m_pPlayer[FIRST_PLAYER]->GetPosition();
+	XMFLOAT3 xmf3Position = m_ppPlayer[FIRST_PLAYER]->GetPosition();
 	_stprintf_s(m_pszFrameRate + nLength, 70 - nLength, _T("(%4f, %4f, %4f)"), xmf3Position.x, xmf3Position.y, xmf3Position.z);
 	::SetWindowText(m_hWnd, m_pszFrameRate);
 }
