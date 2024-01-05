@@ -509,7 +509,7 @@ void CGameFramework::MoveToNextFrame()
 	}
 }
 
-//#define _WITH_PLAYER_TOP
+//#define _WITH_PLAYER_TOP	//화면에서 플레이어를 가장 마지막에 그림
 
 void CGameFramework::FrameAdvance()
 {    
