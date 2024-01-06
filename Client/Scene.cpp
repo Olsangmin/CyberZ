@@ -100,6 +100,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	m_nHierarchicalGameObjects = 1;
 	m_ppHierarchicalGameObjects = new CGameObject*[m_nHierarchicalGameObjects];
 
+
 	CLoadedModelInfo *pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot.bin", NULL);
 	m_ppHierarchicalGameObjects[0] = new CRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 1);
 	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
