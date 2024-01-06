@@ -41,6 +41,7 @@ public:
 		socket = 0;
 		prev_remain = 0;
 		state = ST_FREE;
+		memset(name, 0, sizeof(name));
 	}
 	~Session() {}
 
@@ -49,6 +50,10 @@ public:
 
 	int Get_prev_remain() const { return prev_remain; }
 	void Set_prev_remain(int n) { prev_remain = n; }
+	void SetSocket(const SOCKET s) { socket = s; }
+	const SOCKET& GetSocket() { return socket; }
+
+	void send_login_info_packet();
 
 private:
 	OVER_EXP recv_over;
