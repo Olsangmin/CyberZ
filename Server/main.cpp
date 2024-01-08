@@ -1,11 +1,10 @@
 #include "Protocol.h"
-#include "Network.h"
+#include "Server.h"
 
 int main()
 {
+	Server& server = Server::GetInstance();
 	
-	Network& server = Network::GetInstance();
-	
-	server.run();
+	server.Network();
 
 }

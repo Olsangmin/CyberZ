@@ -7,12 +7,15 @@ public:
 	Object() : id(-1){}
 
 	void SetId(int _id) { id = _id; }
-	float GetF() { return f; }
-	void SetF(float i) { f = i; }
+	int GetId() const { return id; }
+	
+	Position GetPos() const {return pos;}
+	void SetPos(Position p) { pos.x = p.x; pos.y = p.y; }
+	
 protected:
 	int		id;
-	int		x, y;
-	float	f; // float3 pos·Î ¹Ù²ã¾ßµÊ.
+	Position		pos;
+	
 public:
 	std::mutex o_lock;
 };

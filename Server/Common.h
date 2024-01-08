@@ -11,6 +11,10 @@
 #pragma comment(lib, "WS2_32.lib")
 #pragma comment(lib, "MSWSock.lib")
 
+struct Position
+{
+	short x, y;
+};
 
 static void ErrorDisplay(const char* msg)
 {

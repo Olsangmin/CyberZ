@@ -1,6 +1,6 @@
 #pragma once
 #include "Session.h"
-class Network
+class Server
 {
 public:
 	SOCKET s_socket;
@@ -10,17 +10,17 @@ public:
 	std::array<Session, MAX_USER> clients;
 	std::vector<std::thread> worker_threads;
 public:
-	static Network& GetInstance();
-	Network();
-	~Network() 
+	static Server& GetInstance();
+	Server();
+	~Server()
 	{
 		closesocket(s_socket);
 		WSACleanup();
 	}
-	void run();
-	void worker_thread();
-	void process_packet(int c_id, char* packet);
-	void disconnect(int c_id);
-	int get_new_client_id();
+	void Network();
+	void Worker_thread();
+	void Process_packet(int c_id, char* packet);
+	void Disconnect(int c_id);
+	int Get_new_client_id();
 };
 

@@ -1,18 +1,18 @@
-#include "Network.h"
+#include "Server.h"
 
-Network& Network::GetInstance()
+Server& Server::GetInstance()
 {
-	static Network instance;
+	static Server instance;
 	return instance;
 }
 
-Network::Network()
+Server::Server()
 {
-	s_socket = 0; h_iocp = 0;
+	s_socket = 0; c_socket = 0; h_iocp = 0;
 	for (int i = 0; i < MAX_USER; ++i) clients[i].SetId(0);
 }
 
-void Network::run()
+void Server::Network()
 {
 	WSADATA wsadata;
 	if (WSAStartup(MAKEWORD(2, 2), &wsadata) != 0)
@@ -38,12 +38,12 @@ void Network::run()
 	
 	int num_threads = std::thread::hardware_concurrency();
 	for (int i = 0; i < num_threads; ++i)
-		worker_threads.emplace_back(&Network::worker_thread, this);
+		worker_threads.emplace_back(&Server::Worker_thread, this);
 	for (auto& th : worker_threads)
 		th.join();
 }
 
-void Network::worker_thread()
+void Server::Worker_thread()
 {
 	while (true) {
 		DWORD num_bytes{};
@@ -55,21 +55,20 @@ void Network::worker_thread()
 			if (ex_over->comp_type == OP_ACCEPT) std::cout << "Accept Error";
 			else {
 				std::cout << "GQCS Error on client[" << key << "]\n";
-				disconnect(static_cast<int>(key));
+				Disconnect(static_cast<int>(key));
 				if (ex_over->comp_type == OP_SEND) delete ex_over;
 				continue;
 			}
 		}
 		if ((num_bytes == 0) && ((ex_over->comp_type == OP_RECV) || (ex_over->comp_type == OP_SEND))) {
-			disconnect(static_cast<int>(key));
+			Disconnect(static_cast<int>(key));
 			if (ex_over->comp_type == OP_SEND) delete ex_over;
 			continue;
 		}
 
 		switch (ex_over->comp_type) {
 		case OP_ACCEPT: {
-			std::cout << "ACCEPT" << std::endl;
-			int c_id = get_new_client_id();
+			int c_id = Get_new_client_id();
 			if (c_id == -1)
 				std::cout << "Max User exceeded.\n";
 			else {
@@ -90,13 +89,12 @@ void Network::worker_thread()
 		}
 					  break;
 		case OP_RECV: {
-			std::cout << "RECV" << std::endl;
 			int remain_data = num_bytes + clients[key].Get_prev_remain();
 			char* p = ex_over->send_buf;
 			while (remain_data > 0) {
 				int packet_size = static_cast<int>(p[0]);
 				if (packet_size <= remain_data) {
-					process_packet(static_cast<int>(key), p);
+					Process_packet(static_cast<int>(key), p);
 					p = p + packet_size;
 					remain_data -= packet_size;
 				}
@@ -120,7 +118,7 @@ void Network::worker_thread()
 	}
 }
 
-void Network::process_packet(int c_id, char* packet)
+void Server::Process_packet(int c_id, char* packet)
 {
 	switch (packet[1])
 	{
@@ -141,10 +139,15 @@ void Network::process_packet(int c_id, char* packet)
 			std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
 			clients[c_id].state = ST_FREE;
 		}
-		disconnect(c_id);
+		Disconnect(c_id);
 		std::cout << "Client[" << c_id << "] LogOut.\n" << std::endl;
 	}
 				  break;
+	case CS_MOVE: {
+		CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
+		
+	}
+				break;
 	case CS_TEST: {
 		CS_TEST_PACKET* p = reinterpret_cast<CS_TEST_PACKET*>(packet);
 		std::cout << p->x << " ¼ö½Å" << std::endl;
@@ -158,14 +161,14 @@ void Network::process_packet(int c_id, char* packet)
 	}
 }
 
-void Network::disconnect(int c_id)
+void Server::Disconnect(int c_id)
 {
 	closesocket(clients[c_id].GetSocket());
 	std::lock_guard<std::mutex> ll(clients[c_id].o_lock);
 	clients[c_id].state = ST_FREE;
 }
 
-int Network::get_new_client_id()
+int Server::Get_new_client_id()
 {
 	for (int i = 0; i < MAX_USER; ++i) {
 		std::lock_guard <std::mutex> ll{ clients[i].o_lock };
