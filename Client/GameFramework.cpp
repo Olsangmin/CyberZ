@@ -572,8 +572,8 @@ void CGameFramework::FrameAdvance()
 #ifdef _WITH_PLAYER_TOP
 	m_pd3dCommandList->ClearDepthStencilView(d3dDsvCPUDescriptorHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
-	if (m_pPlayer) {
-		for(int i=0;i<m_nPlayer;++i) m_pPlayer[i]->Render(m_pd3dCommandList, m_pCamera);
+	if (m_ppPlayer) {
+		for(int i=0;i<m_nPlayer;++i) m_ppPlayer[i]->Render(m_pd3dCommandList, m_pCamera);
 	}
 
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
