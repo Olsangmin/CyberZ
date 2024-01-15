@@ -405,8 +405,12 @@ void CGameFramework::BuildObjects()
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
 #ifdef _WITH_TERRAIN_PLAYER
-	CTerrainPlayer *pPlayer = new CTerrainPlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->m_pTerrain);
-	CTerrainPlayer *pPlayer1 = new CTerrainPlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->m_pTerrain);
+	CLoadedModelInfo* pPlayerModel_1 = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
+	CTerrainPlayer *pPlayer = new CTerrainPlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->m_pTerrain, pPlayerModel_1);
+
+	CLoadedModelInfo* pPlayerModel_2 = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
+	CTerrainPlayer *pPlayer1 = new CTerrainPlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->m_pTerrain, pPlayerModel_2);
+	
 	//CTerrainPlayer *pPlayer = new CTerrainPlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->m_pTerrain);
 #else
 	CAirplanePlayer *pPlayer = new CAirplanePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), NULL);
@@ -568,9 +572,8 @@ void CGameFramework::FrameAdvance()
 #ifdef _WITH_PLAYER_TOP
 	m_pd3dCommandList->ClearDepthStencilView(d3dDsvCPUDescriptorHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
-	if (m_ppPlayer) {
-		for(int i=0;i<m_nPlayer;++i)
-		m_ppPlayer[i]->Render(m_pd3dCommandList, m_pCamera);
+	if (m_pPlayer) {
+		for(int i=0;i<m_nPlayer;++i) m_pPlayer[i]->Render(m_pd3dCommandList, m_pCamera);
 	}
 
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;

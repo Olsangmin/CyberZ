@@ -349,14 +349,15 @@ void CSoundCallbackHandler::HandleCallback(void *pCallbackData, float fTrackPosi
 #endif
 }
 
-CTerrainPlayer::CTerrainPlayer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, void *pContext)
+CTerrainPlayer::CTerrainPlayer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, void *pContext, CLoadedModelInfo* pModel)
 {
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
-	CLoadedModelInfo *pAngrybotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Angrybot.bin", NULL);
-	SetChild(pAngrybotModel->m_pModelRootObject, true);
+	CLoadedModelInfo* pPlayerModel = pModel;
+	if(!pPlayerModel) pPlayerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Player_1.bin", NULL);
+	SetChild(pPlayerModel->m_pModelRootObject, true);
 
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 2, pAngrybotModel);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 2, pPlayerModel);
 	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 1);
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
@@ -380,10 +381,10 @@ CTerrainPlayer::CTerrainPlayer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandLi
 	SetCameraUpdatedContext(pContext);
 
 	CHeightMapTerrain *pTerrain = (CHeightMapTerrain *)pContext;
-	SetPosition(XMFLOAT3(310.0f, pTerrain->GetHeight(310.0f, 590.0f), 590.0f));
+	SetPosition(XMFLOAT3(0.0f, pTerrain->GetHeight(310.0f, 590.0f), 0.0f));
 	SetScale(XMFLOAT3(10.0f, 10.0f, 10.0f));
 
-	if (pAngrybotModel) delete pAngrybotModel;
+	if (pPlayerModel) delete pPlayerModel;
 }
 
 CTerrainPlayer::~CTerrainPlayer()
