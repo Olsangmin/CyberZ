@@ -33,7 +33,6 @@ struct CS_MOVE_PACKET {
 	unsigned char size;
 	char	type;
 	char	direction;
-	unsigned int move_time;
 };
 
 struct CS_TEST_PACKET {

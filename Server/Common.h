@@ -1,4 +1,6 @@
 #pragma once
+#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "dxgi.lib")
 
 #include <iostream>
 #include <WS2tcpip.h>
@@ -7,9 +9,14 @@
 #include <vector>
 #include <mutex>
 #include <array>
+#include <chrono>
 
 #pragma comment(lib, "WS2_32.lib")
 #pragma comment(lib, "MSWSock.lib")
+
+#include <d3d12.h>
+
+
 
 struct Position
 {

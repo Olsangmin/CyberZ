@@ -21,5 +21,15 @@ void Session::send_login_info_packet()
 	p.size = sizeof(p);
 	p.type = SC_LOGIN_INFO;
 	p.id = id;
+	std::cout << "Client[" << id << "] <- " << p.type << "패킷 전송 " << std::endl;
 	do_send(&p);
+}
+
+void Session::send_move_packet(int c_id)
+{
+	SC_MOVE_OBJECT_PACKET p;
+	p.size = sizeof(p);
+	p.type = SC_MOVE_OBJECT;
+	p.id = c_id;
+	std::cout << "Cliend[" << id << "] <- " << p.type << "패킷 전송" << std::endl;
 }

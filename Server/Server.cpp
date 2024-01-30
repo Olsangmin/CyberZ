@@ -9,7 +9,7 @@ Server& Server::GetInstance()
 Server::Server()
 {
 	s_socket = 0; c_socket = 0; h_iocp = 0;
-	for (int i = 0; i < MAX_USER; ++i) clients[i].SetId(0);
+	for (int i = 0; i < MAX_USER; ++i) clients[i].SetId(-1);
 }
 
 void Server::Network()
@@ -17,7 +17,7 @@ void Server::Network()
 	WSADATA wsadata;
 	if (WSAStartup(MAKEWORD(2, 2), &wsadata) != 0)
 		exit(-1);
-	s_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+	s_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 	if (INVALID_SOCKET == s_socket)
 		ErrorDisplay("socket()");
 	SOCKADDR_IN server_addr;
@@ -31,12 +31,14 @@ void Server::Network()
 
 	h_iocp = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
 	CreateIoCompletionPort(reinterpret_cast<HANDLE>(s_socket), h_iocp, 9999, 0);
-	c_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+	c_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 	ac_over.comp_type = OP_ACCEPT;
 	AcceptEx(s_socket, c_socket, ac_over.send_buf, 0, addr_size + 16, addr_size + 16, 0, &ac_over.over);
 
+	std::cout << "Server Start" << std::endl;
 	
-	int num_threads = std::thread::hardware_concurrency();
+	// int num_threads = std::thread::hardware_concurrency();
+	int num_threads = 1;
 	for (int i = 0; i < num_threads; ++i)
 		worker_threads.emplace_back(&Server::Worker_thread, this);
 	for (auto& th : worker_threads)
@@ -68,6 +70,7 @@ void Server::Worker_thread()
 
 		switch (ex_over->comp_type) {
 		case OP_ACCEPT: {
+			
 			int c_id = Get_new_client_id();
 			if (c_id == -1)
 				std::cout << "Max User exceeded.\n";
@@ -81,22 +84,24 @@ void Server::Worker_thread()
 				clients[c_id].Set_prev_remain(0);
 				CreateIoCompletionPort(reinterpret_cast<HANDLE>(c_socket), h_iocp, c_id, 0);
 				clients[c_id].do_recv();
-				c_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+				c_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 			}
 			ZeroMemory(&ac_over.over, sizeof(ac_over.over));
 			int addr_size = sizeof(SOCKADDR_IN);
 			AcceptEx(s_socket, c_socket, ac_over.send_buf, 0, addr_size + 16, addr_size + 16, 0, &ac_over.over);
+			break;
 		}
-					  break;
+					  
 		case OP_RECV: {
 			int remain_data = num_bytes + clients[key].Get_prev_remain();
 			char* p = ex_over->send_buf;
 			while (remain_data > 0) {
 				int packet_size = static_cast<int>(p[0]);
+				//int packet_size = p[0];
 				if (packet_size <= remain_data) {
 					Process_packet(static_cast<int>(key), p);
 					p = p + packet_size;
-					remain_data -= packet_size;
+					remain_data = remain_data - packet_size;
 				}
 				else break;
 			}
@@ -105,8 +110,7 @@ void Server::Worker_thread()
 				memcpy(ex_over->send_buf, p, remain_data);
 			clients[key].do_recv();
 		}
-					break;
-
+			break;
 		case OP_SEND:
 			delete ex_over;
 			break;
@@ -145,7 +149,23 @@ void Server::Process_packet(int c_id, char* packet)
 				  break;
 	case CS_MOVE: {
 		CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
-		
+		if (clients[c_id].state != ST_INGAME) return;
+		std::cout << "Client[" << c_id << "] Move. -> " << (int)p->direction << "\n" << std::endl;
+		switch (p->direction)
+		{
+		case 1:
+		case 2:
+		case 4:
+		case 8:
+			std::cout << "Client[" << c_id << "] Move.\n" << std::endl;
+		default:
+			break;
+		}
+
+		for (auto& cl : clients) {
+			if (cl.state != ST_INGAME) continue;
+			cl.send_move_packet(c_id);
+		}
 	}
 				break;
 	case CS_TEST: {
@@ -155,7 +175,7 @@ void Server::Process_packet(int c_id, char* packet)
 				break;
 
 	default: {
-		std::cout << "정의되지 않은 패킷 \n" << std::endl;
+		std::cout << "정의되지 않은 패킷 -" << packet[1] << "\n" << std::endl;
 		break;
 	}
 	}
