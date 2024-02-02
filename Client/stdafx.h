@@ -41,6 +41,15 @@ using namespace std;
 #include <dxgidebug.h>
 #endif
 
+// =================================================
+#include "Protocol.h"
+#include "Common.h"
+#include "Network.h"
+
+#define USE_NETWORK // 주석하면 서버없이 가능@@@@@@@@@
+
+// =================================================
+
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 

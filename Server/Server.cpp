@@ -151,14 +151,22 @@ void Server::Process_packet(int c_id, char* packet)
 		CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
 		if (clients[c_id].state != ST_INGAME) return;
 		std::cout << "Client[" << c_id << "] Move. -> " << (int)p->direction << "\n" << std::endl;
-		switch (p->direction)
-		{
-		case 1:
+		switch (p->direction) {
+		case 1: 
+			std::cout << "앞으로 이동" << std::endl; 
+			break;
 		case 2:
+			std::cout << "뒤로 이동" << std::endl; 
+			break;
 		case 4:
+			std::cout << "좌로 이동" << std::endl; 
+			break;
 		case 8:
-			std::cout << "Client[" << c_id << "] Move.\n" << std::endl;
+			std::cout << "우로 이동" << std::endl; 
+			break;
+
 		default:
+			std::cout << "이동 오류" << std::endl; 
 			break;
 		}
 
@@ -175,7 +183,7 @@ void Server::Process_packet(int c_id, char* packet)
 				break;
 
 	default: {
-		std::cout << "정의되지 않은 패킷 -" << packet[1] << "\n" << std::endl;
+		std::cout << "정의되지 않은 패킷 - " << packet[1] << "\n" << std::endl;
 		break;
 	}
 	}

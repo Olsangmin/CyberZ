@@ -476,6 +476,17 @@ void CGameFramework::ProcessInput()
 		if (pKeysBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
 		if (pKeysBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
 
+#ifdef USE_NETWORK
+		if (dwDirection != 0) {
+			CS_MOVE_PACKET p;
+			p.size = sizeof(p);
+			p.type = CS_MOVE;
+			p.direction = dwDirection;
+			network.send_packet(&p);
+		}
+#endif // USE_NETWORK
+
+
 		if (pKeysBuffer['W'] & 0xF0) dwDirection1 |= DIR_FORWARD;
 		if (pKeysBuffer['S'] & 0xF0) dwDirection1 |= DIR_BACKWARD;
 		if (pKeysBuffer['A'] & 0xF0) dwDirection1 |= DIR_LEFT;

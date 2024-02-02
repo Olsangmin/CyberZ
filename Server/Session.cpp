@@ -31,5 +31,5 @@ void Session::send_move_packet(int c_id)
 	p.size = sizeof(p);
 	p.type = SC_MOVE_OBJECT;
 	p.id = c_id;
-	std::cout << "Cliend[" << id << "] <- " << p.type << "패킷 전송" << std::endl;
+	// std::cout << "Cliend[" << id << "] <- " << p.type << "패킷 전송" << std::endl;
 }
