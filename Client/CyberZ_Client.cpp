@@ -5,6 +5,7 @@
 #include "CyberZ_Client.h"
 #include "GameFramework.h"
 
+
 #define MAX_LOADSTRING 100
 
 HINSTANCE						ghAppInstance;
@@ -25,6 +26,10 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 
 	MSG msg;
 	HACCEL hAccelTable;
+
+#ifdef USE_NETWORK
+	gGameFramework.network.Start();
+#endif 
 
 	::LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	::LoadString(hInstance, IDC_LABPROJECT0798, szWindowClass, MAX_LOADSTRING);
@@ -47,6 +52,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 		}
 		else
 		{
+#ifdef USE_NETWORK
+	gGameFramework.network.Recv_Packet();
+#endif 
 			gGameFramework.FrameAdvance();
 		}
 	}

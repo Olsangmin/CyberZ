@@ -295,6 +295,7 @@ public:
     CAnimationTrack 				*m_pAnimationTracks = NULL;
 
 	CAnimationSets					*m_pAnimationSets = NULL;
+	CAnimationSets					*m_pAnimationSets0 = NULL;
 
 	int 							m_nSkinnedMeshes = 0;
 	CSkinnedMesh					**m_ppSkinnedMeshes = NULL; //[SkinnedMeshes], Skinned Mesh Cache

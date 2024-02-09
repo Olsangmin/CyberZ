@@ -41,6 +41,11 @@ public:
 	void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 	LRESULT CALLBACK OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
+#ifdef USE_NETWORK
+	Network& network = Network::GetInstance();
+#endif
+
+
 private:
 	HINSTANCE					m_hInstance;
 	HWND						m_hWnd; 
@@ -87,5 +92,7 @@ private:
 	POINT						m_ptOldCursorPos;
 
 	_TCHAR						m_pszFrameRate[70];
+
+
 };
 

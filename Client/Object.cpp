@@ -639,11 +639,23 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject* pRootGam
 			if (m_pAnimationTracks[k].m_bEnable)
 			{
 				CAnimationSet* pAnimationSet = m_pAnimationSets->m_pAnimationSets[m_pAnimationTracks[k].m_nAnimationSet];
+				//CAnimationSet* pAnimationSet0 = m_pAnimationSets->m_pAnimationSets[m_pAnimationTracks[0].m_nAnimationSet];
+
 				float fPosition = m_pAnimationTracks[k].UpdatePosition(m_pAnimationTracks[k].m_fPosition, fTimeElapsed, pAnimationSet->m_fLength);
+				//float fPosition0 = m_pAnimationTracks[0].UpdatePosition(m_pAnimationTracks[0].m_fPosition, fTimeElapsed, pAnimationSet0->m_fLength);
+
 				for (int j = 0; j < m_pAnimationSets->m_nBoneFrames; j++)
 				{
 					XMFLOAT4X4 xmf4x4Transform = m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent;
+
 					XMFLOAT4X4 xmf4x4TrackTransform = pAnimationSet->GetSRT(j, fPosition);
+					//XMFLOAT4X4 xmf4x4TrackTransform0 = pAnimationSet0->GetSRT(j, fPosition);
+
+					XMMATRIX xmmTrackTransform = XMLoadFloat4x4(&xmf4x4TrackTransform);
+
+				
+					//xmf4x4TrackTransform = XMQuaternionSlerp(xmmTrackTransform, ) xmf4x4TrackTransform, xmf4x4TrackTransform0;]
+
 					xmf4x4Transform = Matrix4x4::Add(xmf4x4Transform, Matrix4x4::Scale(xmf4x4TrackTransform, m_pAnimationTracks[k].m_fWeight));
 					m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent = xmf4x4Transform;
 				}
