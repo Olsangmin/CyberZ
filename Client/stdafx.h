@@ -46,7 +46,7 @@ using namespace std;
 #include "Common.h"
 #include "Network.h"
 
-#define USE_NETWORK // 주석하면 서버없이 가능@@@@@@@@@
+//#define USE_NETWORK // 주석하면 서버없이 가능@@@@@@@@@
 
 // =================================================
 
