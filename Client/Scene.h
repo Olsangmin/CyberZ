@@ -63,12 +63,12 @@ public:
 
 	void ReleaseUploadBuffers();
 
-	CPlayer								**m_ppPlayer = NULL;
+	CPlayer**							m_ppPlayer = NULL;
 
 protected:
-	ID3D12RootSignature					*m_pd3dGraphicsRootSignature = NULL;
+	ID3D12RootSignature*				m_pd3dGraphicsRootSignature = NULL;
 
-	static ID3D12DescriptorHeap			*m_pd3dCbvSrvDescriptorHeap;
+	static ID3D12DescriptorHeap*		m_pd3dCbvSrvDescriptorHeap;
 
 	static D3D12_CPU_DESCRIPTOR_HANDLE	m_d3dCbvCPUDescriptorStartHandle;
 	static D3D12_GPU_DESCRIPTOR_HANDLE	m_d3dCbvGPUDescriptorStartHandle;
@@ -99,24 +99,24 @@ public:
 	float								m_fElapsedTime = 0.0f;
 
 	int									m_nGameObjects = 0;
-	CGameObject							**m_ppGameObjects = NULL;
+	CGameObject**						m_ppGameObjects = NULL;
 
 	int									m_nHierarchicalGameObjects = 0;
-	CGameObject							**m_ppHierarchicalGameObjects = NULL;
+	CGameObject**						m_ppHierarchicalGameObjects = NULL;
 
 	XMFLOAT3							m_xmf3RotatePosition = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	int									m_nShaders = 0;
-	CShader								**m_ppShaders = NULL;
+	CShader**							m_ppShaders = NULL;
 
-	CSkyBox								*m_pSkyBox = NULL;
-	CHeightMapTerrain					*m_pTerrain = NULL;
+	CSkyBox*							m_pSkyBox = NULL;
+	CHeightMapTerrain*					m_pTerrain = NULL;
 
-	LIGHT								*m_pLights = NULL;
+	LIGHT*								m_pLights = NULL;
 	int									m_nLights = 0;
 
 	XMFLOAT4							m_xmf4GlobalAmbient;
 
-	ID3D12Resource						*m_pd3dcbLights = NULL;
-	LIGHTS								*m_pcbMappedLights = NULL;
+	ID3D12Resource*						m_pd3dcbLights = NULL;
+	LIGHTS*								m_pcbMappedLights = NULL;
 };

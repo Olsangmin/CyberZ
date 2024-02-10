@@ -53,9 +53,9 @@ private:
 	int							m_nWndClientWidth;
 	int							m_nWndClientHeight;
         
-	IDXGIFactory4				*m_pdxgiFactory = NULL;
-	IDXGISwapChain3				*m_pdxgiSwapChain = NULL;
-	ID3D12Device				*m_pd3dDevice = NULL;
+	IDXGIFactory4*				m_pdxgiFactory = NULL;
+	IDXGISwapChain3*			m_pdxgiSwapChain = NULL;
+	ID3D12Device*				m_pd3dDevice = NULL;
 
 	bool						m_bMsaa4xEnable = false;
 	UINT						m_nMsaa4xQualityLevels = 0;
@@ -63,31 +63,35 @@ private:
 	static const UINT			m_nSwapChainBuffers = 2;
 	UINT						m_nSwapChainBufferIndex;
 
-	ID3D12Resource				*m_ppd3dSwapChainBackBuffers[m_nSwapChainBuffers];
-	ID3D12DescriptorHeap		*m_pd3dRtvDescriptorHeap = NULL;
+	ID3D12Resource*				m_ppd3dSwapChainBackBuffers[m_nSwapChainBuffers];
+	ID3D12DescriptorHeap*		m_pd3dRtvDescriptorHeap = NULL;
 
-	ID3D12Resource				*m_pd3dDepthStencilBuffer = NULL;
-	ID3D12DescriptorHeap		*m_pd3dDsvDescriptorHeap = NULL;
+	ID3D12Resource*				m_pd3dDepthStencilBuffer = NULL;
+	ID3D12DescriptorHeap*		m_pd3dDsvDescriptorHeap = NULL;
 
-	ID3D12CommandAllocator		*m_pd3dCommandAllocator = NULL;
-	ID3D12CommandQueue			*m_pd3dCommandQueue = NULL;
-	ID3D12GraphicsCommandList	*m_pd3dCommandList = NULL;
+	ID3D12CommandAllocator*		m_pd3dCommandAllocator = NULL;
+	ID3D12CommandQueue*			m_pd3dCommandQueue = NULL;
+	ID3D12GraphicsCommandList*	m_pd3dCommandList = NULL;
 
-	ID3D12Fence					*m_pd3dFence = NULL;
+	ID3D12Fence*				m_pd3dFence = NULL;
 	UINT64						m_nFenceValues[m_nSwapChainBuffers];
 	HANDLE						m_hFenceEvent;
 
 #if defined(_DEBUG)
-	ID3D12Debug					*m_pd3dDebugController;
+	ID3D12Debug*				m_pd3dDebugController;
 #endif
 
 	CGameTimer					m_GameTimer;
 
-	CScene						*m_pScene = NULL;
-	CPlayer						**m_ppPlayer = NULL;
-	int							m_nPlayer{2};
+	CScene*						m_pScene = NULL;
 
-	CCamera						*m_pCamera = NULL;
+	CPlayer**					m_ppPlayer = NULL;
+	CPlayer*					m_pMyPlayer = NULL;
+	int							m_nPlayer;
+
+	CLoadedModelInfo**			m_ppModelInfoPlayer = NULL;
+
+	CCamera*					m_pCamera = NULL;
 
 	POINT						m_ptOldCursorPos;
 
