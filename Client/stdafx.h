@@ -107,6 +107,9 @@ inline void Swap(float *pfS, float *pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT
 // Player 최대치
 #define MAX_PLAYER						3
 
+// 현재 Player	(0, 1, 2)
+#define MY_PLAYER						0
+
 // Plyer의 순서
 #define FIRST_PLAYER					0
 #define SECOND_PLAYER					1

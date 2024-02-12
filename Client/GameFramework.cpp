@@ -424,8 +424,7 @@ void CGameFramework::BuildObjects()
 		m_ppPlayer[i] = pPlayer;
 
 	}
-
-	m_pMyPlayer = m_ppPlayer[FIRST_PLAYER];
+	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
 
 	m_pScene->m_ppPlayer = m_ppPlayer;
 	m_pCamera = m_pMyPlayer->GetCamera();
@@ -500,17 +499,28 @@ void CGameFramework::ProcessInput()
 		if (pKeysBuffer['A'] & 0xF0) dwDirection1 |= DIR_LEFT;
 		if (pKeysBuffer['D'] & 0xF0) dwDirection1 |= DIR_RIGHT;
 
+		// Player unable
+		// m_ppPlayer[원하는 캐릭터]->m_bUnable = true 면은 ADD_OBJ(실제로 생성이 아닌 렌더&움직임 가능 상태)
+		if (pKeysBuffer['1'] & 0xF0) m_ppPlayer[FIRST_PLAYER]->m_bUnable = true;
+		if (pKeysBuffer['2'] & 0xF0) m_ppPlayer[SECOND_PLAYER]->m_bUnable = true;
+		if (pKeysBuffer['3'] & 0xF0) m_ppPlayer[THIRD_PLAYER]->m_bUnable = true;
+
+		// Player disable
+		if (pKeysBuffer['4'] & 0xF0) m_ppPlayer[FIRST_PLAYER]->m_bUnable = false;
+		if (pKeysBuffer['5'] & 0xF0) m_ppPlayer[SECOND_PLAYER]->m_bUnable =false;
+		if (pKeysBuffer['6'] & 0xF0) m_ppPlayer[THIRD_PLAYER]->m_bUnable = false;
+
 		if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f) || (dwDirection1 != 0))
 		{
-			if (cxDelta || cyDelta)
+			if ((cxDelta || cyDelta)&& m_pMyPlayer->m_bUnable)
 			{
 				if (pKeysBuffer[VK_RBUTTON] & 0xF0)
 					m_pMyPlayer->Rotate(cyDelta, 0.0f, -cxDelta);
 				else
 					m_pMyPlayer->Rotate(cyDelta, cxDelta, 0.0f);
 			}
-			if (dwDirection1) m_pMyPlayer->Move(dwDirection1, 4.25f, true);
-			if (dwDirection) m_ppPlayer[SECOND_PLAYER]->Move(dwDirection, 4.25f, true);
+			if (dwDirection1&& m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, 4.25f, true);
+			if (dwDirection&& m_ppPlayer[SECOND_PLAYER]->m_bUnable) m_ppPlayer[SECOND_PLAYER]->Move(dwDirection, 4.25f, true);
 		}
 	}
 	for(int i=0;i<m_nPlayer;++i)
@@ -593,7 +603,7 @@ void CGameFramework::FrameAdvance()
 #endif
 	if (m_ppPlayer) {
 		for (int i = 0;i < m_nPlayer;++i) {
-			m_ppPlayer[i]->Render(m_pd3dCommandList, m_pCamera);
+			if(m_ppPlayer[i]->m_bUnable)m_ppPlayer[i]->Render(m_pd3dCommandList, m_pCamera);
 		}
 	}
 
