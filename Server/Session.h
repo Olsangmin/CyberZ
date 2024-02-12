@@ -54,7 +54,7 @@ public:
 	const SOCKET& GetSocket() { return socket; }
 
 	void send_login_info_packet();
-	void send_move_packet(int c_id);
+	void send_move_packet(int c_id, Position pos, float yaw);
 
 private:
 	OVER_EXP recv_over;

@@ -32,7 +32,8 @@ struct CS_LOGOUT_PACKET {
 struct CS_MOVE_PACKET {
 	unsigned char size;
 	char	type;
-	char	direction;
+	float	x, y, z;
+	float	yaw;
 };
 
 struct CS_TEST_PACKET {
@@ -48,11 +49,21 @@ struct SC_LOGIN_INFO_PACKET {
 };
 
 struct SC_MOVE_OBJECT_PACKET {
-	unsigned short size;
+	unsigned char size;
 	char	type;
 	int		id;
 	float	x, y, z;
-	unsigned int move_time;
+	float	yaw;
+	// unsigned int move_time;
+};
+
+struct SC_ADD_OBJECT_PACKET {
+	unsigned char size;
+	char	type;
+	int id;
+	float x, y, z;
+	float yaw;
+	char name[NAME_SIZE];
 };
 
 

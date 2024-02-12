@@ -25,11 +25,14 @@ void Session::send_login_info_packet()
 	do_send(&p);
 }
 
-void Session::send_move_packet(int c_id)
+void Session::send_move_packet(int c_id, Position pos, float yaw)
 {
 	SC_MOVE_OBJECT_PACKET p;
 	p.size = sizeof(p);
 	p.type = SC_MOVE_OBJECT;
 	p.id = c_id;
-	// std::cout << "Cliend[" << id << "] <- " << p.type << "패킷 전송" << std::endl;
+	p.x = pos.x; p.y = pos.y; p.z = pos.z;
+	p.yaw = yaw;
+	std::cout << "Cliend[" << id << "] <- " << "이동 패킷 전송" << std::endl;
+	do_send(&p);
 }

@@ -503,3 +503,16 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 	}
 }
 
+void CScene::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	CMaterial::m_pBoundingBoxShader->Render(pd3dCommandList, pCamera);
+
+	for (int i = 0; i < m_nHierarchicalGameObjects; i++)
+	{
+		if (m_ppHierarchicalGameObjects[i]) m_ppHierarchicalGameObjects[i]->RenderBoundingBox(pd3dCommandList, pCamera);
+	}
+
+	// 임의로 2로 하드 코딩함 m_nPlayer받아오는 걸로 바꿔야 함
+	for (int i = 0; i < 2; i++)	m_pPlayer[i]->RenderBoundingBox(pd3dCommandList, pCamera);
+
+}
