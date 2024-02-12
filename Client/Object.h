@@ -145,6 +145,8 @@ public:
 public:
 	static CShader					*m_pStandardShader;
 	static CShader					*m_pSkinnedAnimationShader;
+	static CShader					*m_pBoundingBoxShader;
+
 
 	static void CMaterial::PrepareShaders(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
 
@@ -364,6 +366,14 @@ public:
 	CGameObject 					*m_pSibling = NULL;
 
 	CAnimationController*			m_pSkinnedAnimationController = NULL;
+
+
+	BoundingOrientedBox				m_xmBoundingBox = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	CBoundingBoxMesh				*m_pBoundingBoxMesh = NULL;
+	
+	void SetBoundingBoxMesh(CBoundingBoxMesh* pMesh);
+	void UpdateBoundingBox();
+	void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
 	void SetMesh(CMesh *pMesh);
 	void SetShader(CShader *pShader);

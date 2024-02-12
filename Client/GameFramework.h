@@ -91,8 +91,9 @@ private:
 
 	POINT						m_ptOldCursorPos;
 
-	_TCHAR						m_pszFrameRate[70];
+	bool						m_bRenderBoundingBox = false;
 
+	_TCHAR						m_pszFrameRate[70];
 
 };
 

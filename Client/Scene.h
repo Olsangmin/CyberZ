@@ -63,6 +63,8 @@ public:
 
 	void ReleaseUploadBuffers();
 
+	void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+
 	CPlayer								**m_pPlayer = NULL;
 
 protected:
