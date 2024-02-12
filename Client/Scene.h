@@ -61,6 +61,8 @@ public:
     void AnimateObjects(float fTimeElapsed);
     void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
 
+	void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+
 	void ReleaseUploadBuffers();
 
 	CPlayer**							m_ppPlayer = NULL;

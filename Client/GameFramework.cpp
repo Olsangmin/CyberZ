@@ -511,8 +511,8 @@ void CGameFramework::ProcessInput()
 				else
 					m_pMyPlayer->Rotate(cyDelta, cxDelta, 0.0f);
 			}
-			if (dwDirection) m_pPlayer[FIRST_PLAYER]->Move(dwDirection, 12.25f, true);
-			if (dwDirection1) m_pPlayer[SECOND_PLAYER]->Move(dwDirection1, 12.25f, true);
+			if (dwDirection) m_ppPlayer[FIRST_PLAYER]->Move(dwDirection, 12.25f, true);
+			if (dwDirection1) m_ppPlayer[SECOND_PLAYER]->Move(dwDirection1, 12.25f, true);
 
 #ifdef USE_NETWORK
 			int my_id = network.my_id;
