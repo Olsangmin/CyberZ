@@ -325,6 +325,9 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				case VK_F9:
 					ChangeSwapChainState();
 					break;
+				case 'B':
+					m_bRenderBoundingBox = !m_bRenderBoundingBox;
+
 				default:
 					break;
 			}
@@ -405,10 +408,10 @@ void CGameFramework::BuildObjects()
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
 #ifdef _WITH_TERRAIN_PLAYER
-	CLoadedModelInfo* pPlayerModel_1 = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
+	CLoadedModelInfo* pPlayerModel_1 = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
 	CTerrainPlayer *pPlayer = new CTerrainPlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->m_pTerrain, pPlayerModel_1);
 
-	CLoadedModelInfo* pPlayerModel_2 = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Robot.bin", NULL);
+	CLoadedModelInfo* pPlayerModel_2 = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
 	CTerrainPlayer *pPlayer1 = new CTerrainPlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->m_pTerrain, pPlayerModel_2);
 	
 	//CTerrainPlayer *pPlayer = new CTerrainPlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->m_pTerrain);
@@ -514,8 +517,7 @@ void CGameFramework::AnimateObjects()
 	float fTimeElapsed = m_GameTimer.GetTimeElapsed();
 
 	if (m_pScene) m_pScene->AnimateObjects(fTimeElapsed);
-	for(int i=0;i<m_nPlayer;++i)
-		m_pPlayer[i]->Animate(fTimeElapsed);
+	for(int i=0;i<m_nPlayer;++i) m_pPlayer[i]->Animate(fTimeElapsed);
 }	
 
 void CGameFramework::WaitForGpuComplete()
@@ -587,6 +589,9 @@ void CGameFramework::FrameAdvance()
 		for(int i=0;i<m_nPlayer;++i)
 		m_pPlayer[i]->Render(m_pd3dCommandList, m_pCamera);
 	}
+
+	if (m_bRenderBoundingBox) m_pScene->RenderBoundingBox(m_pd3dCommandList, m_pCamera);
+
 
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
