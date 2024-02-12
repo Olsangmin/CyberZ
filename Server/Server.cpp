@@ -150,8 +150,11 @@ void Server::Process_packet(int c_id, char* packet)
 	case CS_MOVE: {
 		CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
 		if (clients[c_id].state != ST_INGAME) return;
-		std::cout << "Client[" << c_id << "] Move. -> " << (int)p->direction << "\n" << std::endl;
-		switch (p->direction) {
+		// std::cout << "Client[" << c_id << "] Move. -> ";
+		//<< (int)p->direction << "\n" << std::endl;
+		Position pre_pos = clients[c_id].GetPos();
+		float pre_yaw = clients[c_id].GetYaw();
+		/*switch (p->direction) {
 		case 1: 
 			std::cout << "앞으로 이동" << std::endl; 
 			break;
@@ -168,12 +171,25 @@ void Server::Process_packet(int c_id, char* packet)
 		default:
 			std::cout << "이동 오류" << std::endl; 
 			break;
+		}*/
+		if (p->x < 0.f || p->x > 2048.f || p->z < 0.f || p->z > 2048.f) {
+			clients[c_id].send_move_packet(c_id, pre_pos, pre_yaw);
+			std::cout << "Client[" << c_id << "] 끝자락 " << std::endl;
+			return;
+		}
+		else {
+			Position ClearPos{ p->x, p->y, p->z };
+			float ClearYaw = p->yaw;
+			for (auto& cl : clients) {
+				if (cl.state != ST_INGAME) continue;
+				cl.send_move_packet(c_id, ClearPos, ClearYaw);
+			}
+			std::cout << "Client[" << c_id << "] Move. -> ";
+			std::cout << "(" << ClearPos.x << ", " << ClearPos.y << ", " << ClearPos.z << ")" << std::endl;
 		}
 
-		for (auto& cl : clients) {
-			if (cl.state != ST_INGAME) continue;
-			cl.send_move_packet(c_id);
-		}
+
+		
 	}
 				break;
 	case CS_TEST: {

@@ -2,7 +2,22 @@
 #include "stdafx.h"
 #include "Common.h"
 #include "Protocol.h"
+#include <array>
 constexpr int BUF_SIZE = 4096;
+constexpr int INGAME_USER = 3;
+constexpr int MAX_NPC = 10;
+
+
+enum Obj_STATE{ FREE, INGAME};
+class ObjectInfo {
+public:
+	ObjectInfo() : id(-1), pos{}, yaw{}, state(FREE) {}
+public:
+	int id;
+	Position pos;
+	float yaw;
+	Obj_STATE state;
+};
 
 class Network
 {
@@ -27,15 +42,20 @@ public:
 			SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
 			my_id = packet->id;
 			cout << "My ID is " << my_id << " !" << endl;
+			
+
 		} break;
 		case SC_MOVE_OBJECT:
 		{
 			SC_MOVE_OBJECT_PACKET* packet = reinterpret_cast<SC_MOVE_OBJECT_PACKET*>(p);
 			cout << "[" << packet->id << "] Move (" << packet->x << ", " << packet->y << 
 				", "<< packet->z << ")\n";
-
-		}
-		break;
+			
+			Position position{ packet->x, packet->y, packet->z };
+			game_users[packet->id].pos = position;
+			game_users[packet->id].yaw = packet->yaw;
+			
+		} break;
 		default:
 			printf("Unknown PACKET type [%d]\n", p[1]);
 		}
@@ -65,10 +85,14 @@ public:
 		}
 
 	}
+
+
 public:
 	SOCKET socket{};
 	string serverIP{ "127.0.0.1" };
 	int my_id = -1;
-	
+	array<ObjectInfo, INGAME_USER> game_users;
 };
+
+
 

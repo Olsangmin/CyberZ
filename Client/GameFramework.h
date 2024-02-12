@@ -41,9 +41,13 @@ public:
 	void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 	LRESULT CALLBACK OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
+	
 #ifdef USE_NETWORK
-	Network& network = Network::GetInstance();
+	// Network& network = Network::GetInstance();
+	Network network;
+	
 #endif
+
 
 
 private:

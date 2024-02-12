@@ -476,24 +476,17 @@ void CGameFramework::ProcessInput()
 		if (pKeysBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
 		if (pKeysBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
 
-#ifdef USE_NETWORK
-		if (dwDirection != 0) {
-			CS_MOVE_PACKET p;
-			p.size = sizeof(p);
-			p.type = CS_MOVE;
-			p.direction = dwDirection;
-			network.send_packet(&p);
-		}
-#endif // USE_NETWORK
-
-
 		if (pKeysBuffer['W'] & 0xF0) dwDirection1 |= DIR_FORWARD;
 		if (pKeysBuffer['S'] & 0xF0) dwDirection1 |= DIR_BACKWARD;
 		if (pKeysBuffer['A'] & 0xF0) dwDirection1 |= DIR_LEFT;
 		if (pKeysBuffer['D'] & 0xF0) dwDirection1 |= DIR_RIGHT;
 
+
+
+
 		if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f) || (dwDirection1 != 0))
 		{
+
 			if (cxDelta || cyDelta)
 			{
 				if (pKeysBuffer[VK_RBUTTON] & 0xF0)
@@ -503,8 +496,30 @@ void CGameFramework::ProcessInput()
 			}
 			if (dwDirection) m_pPlayer[FIRST_PLAYER]->Move(dwDirection, 12.25f, true);
 			if (dwDirection1) m_pPlayer[SECOND_PLAYER]->Move(dwDirection1, 12.25f, true);
+
+#ifdef USE_NETWORK
+			int my_id = network.my_id;
+			/*Position pos = { m_pPlayer[FIRST_PLAYER]->GetPosition().x, m_pPlayer[FIRST_PLAYER]->GetPosition().y, m_pPlayer[FIRST_PLAYER]->GetPosition().z };
+			float yaw = m_pPlayer[FIRST_PLAYER]->GetYaw();*/
+			network.game_users[my_id].pos = { m_pPlayer[FIRST_PLAYER]->GetPosition().x, m_pPlayer[FIRST_PLAYER]->GetPosition().y, m_pPlayer[FIRST_PLAYER]->GetPosition().z };
+			network.game_users[my_id].yaw = m_pPlayer[FIRST_PLAYER]->GetYaw();
+			CS_MOVE_PACKET p;
+			p.size = sizeof(p);
+			p.type = CS_MOVE;
+			p.x = network.game_users[my_id].pos.x;
+			p.y = network.game_users[my_id].pos.y;
+			p.z = network.game_users[my_id].pos.z;
+			p.yaw = network.game_users[my_id].yaw;
+			network.send_packet(&p);
+#else
+			
+#endif // USE_NETWORK
+
 		}
 	}
+
+	
+
 	for(int i=0;i<m_nPlayer;++i)
 		m_pPlayer[i]->Update(m_GameTimer.GetTimeElapsed());
 }

@@ -4,7 +4,7 @@
 class Object
 {
 public:
-	Object() : id(-1){}
+	Object();
 
 	void SetId(int _id) { id = _id; }
 	int GetId() const { return id; }
@@ -12,9 +12,13 @@ public:
 	Position GetPos() const {return pos;}
 	void SetPos(Position p) { pos.x = p.x; pos.y = p.y; }
 	
+	float GetYaw() const { return yaw; }
+	void SetYaw(float _yaw) { yaw = _yaw; }
+
 protected:
-	int		id;
+	int			id;
 	Position		pos;
+	float		yaw;
 	
 public:
 	std::mutex o_lock;
