@@ -689,9 +689,9 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject* pRootGam
 				XMFLOAT4X4 xmf4x4Transform = m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent;
 				XMFLOAT4X4 xmf4x4LTrackTransform = pUAnimationSet->GetSRT(j, fUPosition);
 				XMFLOAT4X4 xmf4x4UTrackTransform = pLAnimationSet->GetSRT(j, fLPosition);
-				XMFLOAT4X4 xmf4x4BTrackTransform = Matrix4x4::Interpolate(xmf4x4LTrackTransform, xmf4x4UTrackTransform, 0.5f);
+				XMFLOAT4X4 xmf4x4BTrackTransform = Matrix4x4::Interpolate(xmf4x4LTrackTransform, xmf4x4UTrackTransform, 0.1f);
 
-				xmf4x4Transform = Matrix4x4::Add(xmf4x4Transform, Matrix4x4::Scale(xmf4x4BTrackTransform, m_pAnimationTracks[m_nLowerBodyAnimation].m_fWeight));
+				xmf4x4Transform = Matrix4x4::Add(xmf4x4Transform, Matrix4x4::Scale(xmf4x4BTrackTransform, 1.0f/*m_pAnimationTracks[m_nLowerBodyAnimation].m_fWeight*/));
 				//m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent = xmf4x4Transform;
 
 				//XMFLOAT4X4 xmf4x4Transform = m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent;
@@ -701,10 +701,10 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject* pRootGam
 
 
 			}
-			m_pAnimationTracks[m_nLowerBodyAnimation].HandleCallback();
+			//m_pAnimationTracks[1].HandleCallback();
 
-			/*m_pAnimationTracks[m_nUpperBodyAnimation].m_nType = ANIMATION_TYPE_ONCE;
-			m_pAnimationTracks[m_nUpperBodyAnimation].HandleCallback();*/
+			m_pAnimationTracks[m_nLowerBodyAnimation].m_nType = ANIMATION_TYPE_ONCE;
+			//m_pAnimationTracks[m_nUpperBodyAnimation].HandleCallback();
 		}
 
 		pRootGameObject->UpdateTransform(NULL);

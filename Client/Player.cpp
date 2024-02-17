@@ -491,6 +491,7 @@ void CTerrainPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVeloci
 
 		//m_pSkinnedAnimationController->SetAnimationBlending(true);
 		//m_pSkinnedAnimationController->SetTrackAnimationSet(0, 1);
+		//m_pSkinnedAnimationController->SetAnimationBlending(false);
 		
 
 
