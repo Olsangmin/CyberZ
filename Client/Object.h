@@ -296,6 +296,9 @@ public:
     int 							m_nAnimationTracks = 0;
     CAnimationTrack 				*m_pAnimationTracks = NULL;
 
+	int								m_nLowerBodyAnimation = 0;
+	int								m_nUpperBodyAnimation = 0;
+
 	CAnimationSets					*m_pAnimationSets = NULL;
 	CAnimationSets					*m_pAnimationSets0 = NULL;
 
@@ -321,6 +324,12 @@ public:
 
 	void AdvanceTime(float fElapsedTime, CGameObject *pRootGameObject);
 
+	void SetTrackBlending(int nUpperBodyAnimation, int nLowerBodyAnimation);
+
+	void SetAnimationBlending(bool bAnimationBlending) { m_bAnimationBlending = bAnimationBlending; }
+	bool GetAnimationBlending() { return m_bAnimationBlending; }
+
+
 public:
 	bool							m_bRootMotion = false;
 	CGameObject*					m_pModelRootObject = NULL;
@@ -332,6 +341,9 @@ public:
 
 	virtual void OnRootMotion(CGameObject* pRootGameObject) { }
 	virtual void OnAnimationIK(CGameObject* pRootGameObject) { }
+
+private:
+	bool							m_bAnimationBlending = false;
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
