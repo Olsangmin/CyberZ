@@ -488,8 +488,13 @@ void CTerrainPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVeloci
 	{
 		//if(m_pSkinnedAnimationController->m_nAnimationTracks == m_pSkinnedAnimationController->SetTrackPosition())
 		m_pSkinnedAnimationController->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController->SetTrackEnable(1, true);
 
+		//m_pSkinnedAnimationController->SetAnimationBlending(true);
+		//m_pSkinnedAnimationController->SetTrackAnimationSet(0, 1);
+		
+
+
+		m_pSkinnedAnimationController->SetTrackEnable(1, true);
 	}
 
 	CPlayer::Move(dwDirection, fDistance, bUpdateVelocity);
@@ -504,9 +509,13 @@ void CTerrainPlayer::Update(float fTimeElapsed)
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
 		if (::IsZero(fLength))
 		{
+			m_pSkinnedAnimationController->SetAnimationBlending(false);
 			m_pSkinnedAnimationController->SetTrackEnable(0, true);
+			//m_pSkinnedAnimationController->SetAnimationBlending(true);
+			//m_pSkinnedAnimationController->SetTrackAnimationSet(1, 0);
+			//m_pSkinnedAnimationController->SetAnimationBlending(false);
+
 			m_pSkinnedAnimationController->SetTrackEnable(1, false);
-			m_pSkinnedAnimationController->SetTrackPosition(1, 0.2f);
 		}
 	}
 }

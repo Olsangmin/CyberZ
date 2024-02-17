@@ -638,35 +638,73 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject* pRootGam
 	
 	if (m_pAnimationTracks)
 	{
-		for (int j = 0; j < m_pAnimationSets->m_nBoneFrames; j++) m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent = Matrix4x4::Zero();
+		int temp{};
 
-		for (int k = 0; k < m_nAnimationTracks; k++)
-		{
-			if (m_pAnimationTracks[k].m_bEnable)
+		for (int j = 0; j < m_pAnimationSets->m_nBoneFrames; j++) {
+			m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent = Matrix4x4::Zero();
+			temp = j;
+		}
+
+		if (!m_bAnimationBlending) {
+			for (int k = 0; k < m_nAnimationTracks; k++)
 			{
-				CAnimationSet* pAnimationSet = m_pAnimationSets->m_pAnimationSets[m_pAnimationTracks[k].m_nAnimationSet];
-				//CAnimationSet* pAnimationSet0 = m_pAnimationSets->m_pAnimationSets[m_pAnimationTracks[0].m_nAnimationSet];
-
-				float fPosition = m_pAnimationTracks[k].UpdatePosition(m_pAnimationTracks[k].m_fPosition, fTimeElapsed, pAnimationSet->m_fLength);
-				//float fPosition0 = m_pAnimationTracks[0].UpdatePosition(m_pAnimationTracks[0].m_fPosition, fTimeElapsed, pAnimationSet0->m_fLength);
-
-				for (int j = 0; j < m_pAnimationSets->m_nBoneFrames; j++)
+				if (m_pAnimationTracks[k].m_bEnable)
 				{
-					XMFLOAT4X4 xmf4x4Transform = m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent;
+					CAnimationSet* pAnimationSet = m_pAnimationSets->m_pAnimationSets[m_pAnimationTracks[k].m_nAnimationSet];
+					//CAnimationSet* pAnimationSet0 = m_pAnimationSets->m_pAnimationSets[m_pAnimationTracks[0].m_nAnimationSet];
 
-					XMFLOAT4X4 xmf4x4TrackTransform = pAnimationSet->GetSRT(j, fPosition);
-					//XMFLOAT4X4 xmf4x4TrackTransform0 = pAnimationSet0->GetSRT(j, fPosition);
+					float fPosition = m_pAnimationTracks[k].UpdatePosition(m_pAnimationTracks[k].m_fPosition, fTimeElapsed, pAnimationSet->m_fLength);
+					//float fPosition0 = m_pAnimationTracks[0].UpdatePosition(m_pAnimationTracks[0].m_fPosition, fTimeElapsed, pAnimationSet0->m_fLength);
 
-					XMMATRIX xmmTrackTransform = XMLoadFloat4x4(&xmf4x4TrackTransform);
+					for (int j = 0; j < m_pAnimationSets->m_nBoneFrames; j++)
+					{
+						XMFLOAT4X4 xmf4x4Transform = m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent;
 
-				
-					//xmf4x4TrackTransform = XMQuaternionSlerp(xmmTrackTransform, ) xmf4x4TrackTransform, xmf4x4TrackTransform0;]
+						XMFLOAT4X4 xmf4x4TrackTransform = pAnimationSet->GetSRT(j, fPosition);
+						//XMFLOAT4X4 xmf4x4TrackTransform0 = pAnimationSet0->GetSRT(j, fPosition);
 
-					xmf4x4Transform = Matrix4x4::Add(xmf4x4Transform, Matrix4x4::Scale(xmf4x4TrackTransform, m_pAnimationTracks[k].m_fWeight));
-					m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent = xmf4x4Transform;
+						XMMATRIX xmmTrackTransform = XMLoadFloat4x4(&xmf4x4TrackTransform);
+
+
+						//xmf4x4TrackTransform = XMQuaternionSlerp(xmmTrackTransform, ) xmf4x4TrackTransform, xmf4x4TrackTransform0;]
+
+						xmf4x4Transform = Matrix4x4::Add(xmf4x4Transform, Matrix4x4::Scale(xmf4x4TrackTransform, m_pAnimationTracks[k].m_fWeight));
+						m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent = xmf4x4Transform;
+					}
+					m_pAnimationTracks[k].HandleCallback();
 				}
-				m_pAnimationTracks[k].HandleCallback();
 			}
+		}
+		else
+		{
+			CAnimationSet* pUAnimationSet = m_pAnimationSets->m_pAnimationSets[m_pAnimationTracks[m_nLowerBodyAnimation].m_nAnimationSet];
+			float fUPosition = m_pAnimationTracks[m_nLowerBodyAnimation].UpdatePosition(m_pAnimationTracks[m_nLowerBodyAnimation].m_fPosition, fTimeElapsed, pUAnimationSet->m_fLength);
+			
+			CAnimationSet* pLAnimationSet = m_pAnimationSets->m_pAnimationSets[m_pAnimationTracks[m_nUpperBodyAnimation].m_nAnimationSet];
+			float fLPosition = m_pAnimationTracks[m_nUpperBodyAnimation].UpdatePosition(m_pAnimationTracks[m_nUpperBodyAnimation].m_fPosition, fTimeElapsed, pLAnimationSet->m_fLength);
+
+			for (int j = 0; j < m_pAnimationSets->m_nBoneFrames; j++)
+			{
+				
+				XMFLOAT4X4 xmf4x4Transform = m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent;
+				XMFLOAT4X4 xmf4x4LTrackTransform = pUAnimationSet->GetSRT(j, fUPosition);
+				XMFLOAT4X4 xmf4x4UTrackTransform = pLAnimationSet->GetSRT(j, fLPosition);
+				XMFLOAT4X4 xmf4x4BTrackTransform = Matrix4x4::Interpolate(xmf4x4LTrackTransform, xmf4x4UTrackTransform, 0.5f);
+
+				xmf4x4Transform = Matrix4x4::Add(xmf4x4Transform, Matrix4x4::Scale(xmf4x4BTrackTransform, m_pAnimationTracks[m_nLowerBodyAnimation].m_fWeight));
+				//m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent = xmf4x4Transform;
+
+				//XMFLOAT4X4 xmf4x4Transform = m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent;
+				//xmf4x4Transform = Matrix4x4::Add(xmf4x4Transform, Matrix4x4::Scale(xmf4x4TrackTransform, m_pAnimationTracks[m_nUpperBodyAnimation].m_fWeight));
+				m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent = xmf4x4Transform;
+
+
+
+			}
+			m_pAnimationTracks[m_nLowerBodyAnimation].HandleCallback();
+
+			/*m_pAnimationTracks[m_nUpperBodyAnimation].m_nType = ANIMATION_TYPE_ONCE;
+			m_pAnimationTracks[m_nUpperBodyAnimation].HandleCallback();*/
 		}
 
 		pRootGameObject->UpdateTransform(NULL);
@@ -675,6 +713,15 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject* pRootGam
 		OnAnimationIK(pRootGameObject);
 	}
 }
+
+void CAnimationController::SetTrackBlending(int nUpperBodyAnimation, int nLowerBodyAnimation)
+{
+	m_nUpperBodyAnimation = nUpperBodyAnimation;
+	m_nLowerBodyAnimation = nLowerBodyAnimation;
+	SetTrackEnable(m_nUpperBodyAnimation, true);
+	SetTrackEnable(m_nLowerBodyAnimation, true);
+}
+
 //*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
