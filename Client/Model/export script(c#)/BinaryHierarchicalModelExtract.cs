@@ -442,7 +442,7 @@ public class BinaryHierarchicalModelExtract : MonoBehaviour
     {
         WriteObjectName("<Mesh>:", mesh.vertexCount, mesh);
 
-        WriteBoundingBox("<Bounds>:", mesh.bounds);
+        //WriteBoundingBox("<Bounds>:", mesh.bounds);
 
         WriteVectors("<Positions>:", mesh.vertices);
         WriteColors("<Colors>:", mesh.colors);

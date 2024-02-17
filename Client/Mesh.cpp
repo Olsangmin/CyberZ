@@ -677,11 +677,11 @@ void CSkinnedMesh::LoadSkinInfoFromFile(ID3D12Device *pd3dDevice, ID3D12Graphics
 	for ( ; ; )
 	{
 		::ReadStringFromFile(pInFile, pstrToken);
-		if (!strcmp(pstrToken, "<BonesPerVertex>:"))
-		{
-			m_nBonesPerVertex = ::ReadIntegerFromFile(pInFile);
-		}
-		else if (!strcmp(pstrToken, "<Bounds>:"))
+		//if (!strcmp(pstrToken, "<BonesPerVertex>:"))
+		//{
+		//	m_nBonesPerVertex = ::ReadIntegerFromFile(pInFile);
+		//}
+		if (!strcmp(pstrToken, "<Bounds>:"))
 		{
 			nReads = (UINT)::fread(&m_xmBoundingBox.Center, sizeof(XMFLOAT3), 1, pInFile);
 			nReads = (UINT)::fread(&m_xmBoundingBox.Extents, sizeof(XMFLOAT3), 1, pInFile);

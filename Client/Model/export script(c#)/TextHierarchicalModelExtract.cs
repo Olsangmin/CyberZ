@@ -358,7 +358,7 @@ public class TextHierarchicalModelExtract : MonoBehaviour
     {
         WriteObjectName(nLevel, "<Mesh>: " + mesh.vertexCount, mesh);
 
-        WriteLineString(nLevel+1, "<Bounds>: " + mesh.bounds.center.x + " " + mesh.bounds.center.y + " " + mesh.bounds.center.z + " " + mesh.bounds.extents.x + " " + mesh.bounds.extents.y + " " + mesh.bounds.extents.z);
+        //WriteLineString(nLevel+1, "<Bounds>: " + mesh.bounds.center.x + " " + mesh.bounds.center.y + " " + mesh.bounds.center.z + " " + mesh.bounds.extents.x + " " + mesh.bounds.extents.y + " " + mesh.bounds.extents.z);
 
         WriteVectors(nLevel+1, "<Positions>:", mesh.vertices);
         WriteColors(nLevel+1, "<Colors>:", mesh.colors);
