@@ -3,9 +3,6 @@
 #define FRAME_BUFFER_WIDTH		640
 #define FRAME_BUFFER_HEIGHT		480
 
-#define MAIN_SCENE			0x01
-#define PLAY_SCENE			0x02
-
 #include "Timer.h"
 #include "Player.h"
 #include "Scene.h"
@@ -30,7 +27,7 @@ public:
 
 	void ChangeSwapChainState();
 
-    void BuildObjects(DWORD nScene);
+    void BuildObjects();
     void ReleaseObjects();
 
     void ProcessInput();

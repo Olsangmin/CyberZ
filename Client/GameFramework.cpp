@@ -51,7 +51,7 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 
 	CoInitialize(NULL);
 
-	BuildObjects(MAIN_SCENE);
+	BuildObjects();
 
 	return(true);
 }
@@ -328,14 +328,6 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				case 'B':
 					m_bRenderBoundingBox = !m_bRenderBoundingBox;
 
-				case 'P':
-					ReleaseObjects();
-					BuildObjects(MAIN_SCENE);
-					break;
-				case 'M':
-					ReleaseObjects();
-					BuildObjects(PLAY_SCENE);
-					break;
 				default:
 					break;
 			}
@@ -405,62 +397,40 @@ void CGameFramework::OnDestroy()
 #endif
 }
 
+#define _WITH_TERRAIN_PLAYER
 
-void CGameFramework::BuildObjects(DWORD nScene)
+void CGameFramework::BuildObjects()
 {
+	m_nPlayer = MAX_PLAYER;
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
+	m_ppPlayer = new CPlayer * [m_nPlayer];
 
-	switch (nScene)
-	{
-		case MAIN_SCENE:
-		{
-			m_pScene = new CFirstStageScene();
-			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+	m_pScene = new CScene();
+	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
-			m_nPlayer = 1;
-			m_ppPlayer = new CPlayer * [m_nPlayer];
+#ifdef _WITH_TERRAIN_PLAYER
+	m_ppModelInfoPlayer = new CLoadedModelInfo* [m_nPlayer];
 
-			m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
+	// ÀúÀåµÈ ¸ðµ¨ ¹Ù²Ü ¼ö ÀÖÀ½
+	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
+	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
+	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
 
-			// ÀúÀåµÈ ¸ðµ¨ ¹Ù²Ü ¼ö ÀÖÀ½
-			m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
-			for (int i = 0; i < m_nPlayer; ++i) {
-				CTerrainPlayer* pPlayer = new CTerrainPlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->m_pTerrain, m_ppModelInfoPlayer[i]);
-				m_ppPlayer[i] = pPlayer;
-			}
-			m_pMyPlayer = m_ppPlayer[MY_PLAYER];
+#else
+	CAirplanePlayer *pPlayer = new CAirplanePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), NULL);
+	pPlayer->SetPosition(XMFLOAT3(425.0f, 240.0f, 640.0f));
 
-			m_pScene->m_ppPlayer = m_ppPlayer;
-			m_pCamera = m_pMyPlayer->GetCamera();
+#endif
+	for (int i = 0;i < m_nPlayer;++i) {
+		CTerrainPlayer* pPlayer = new CTerrainPlayer(
+			m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->m_pTerrain, m_ppModelInfoPlayer[i]);
+		m_ppPlayer[i] = pPlayer;
 
-			break;
-		}
-		case PLAY_SCENE:
-		{
-			m_pScene = new CFirstStageScene();
-			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
-
-			m_nPlayer = MAX_PLAYER;
-			m_ppPlayer = new CPlayer * [m_nPlayer];
-
-			m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
-
-			// ÀúÀåµÈ ¸ðµ¨ ¹Ù²Ü ¼ö ÀÖÀ½
-			m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
-			m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
-			m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
-			for (int i = 0; i < m_nPlayer; ++i) {
-				CTerrainPlayer* pPlayer = new CTerrainPlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->m_pTerrain, m_ppModelInfoPlayer[i]);
-				m_ppPlayer[i] = pPlayer;
-			}
-			m_pMyPlayer = m_ppPlayer[MY_PLAYER];
-
-			m_pScene->m_ppPlayer = m_ppPlayer;
-			m_pCamera = m_pMyPlayer->GetCamera();
-
-			break;
-		}
 	}
+	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
+
+	m_pScene->m_ppPlayer = m_ppPlayer;
+	m_pCamera = m_pMyPlayer->GetCamera();
 
 	m_pd3dCommandList->Close();
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
@@ -564,6 +534,8 @@ void CGameFramework::ProcessInput()
 			if (dwDirection&& m_ppPlayer[SECOND_PLAYER]->m_bUnable) m_ppPlayer[SECOND_PLAYER]->Move(dwDirection, 4.25f, true);
 		}
 	}
+
+	
 
 	for(int i=0;i<m_nPlayer;++i)
 		m_ppPlayer[i]->Update(m_GameTimer.GetTimeElapsed());
