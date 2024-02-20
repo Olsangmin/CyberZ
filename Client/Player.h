@@ -84,7 +84,7 @@ public:
 	virtual void OnPrepareRender();
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
 
-	bool m_bUnable = false;
+	bool m_bUnable = true;
 };
 
 class CAirplanePlayer : public CPlayer
