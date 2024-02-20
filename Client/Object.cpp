@@ -1252,11 +1252,12 @@ CGameObject *CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, I
 			pSkinnedMesh->LoadSkinInfoFromFile(pd3dDevice, pd3dCommandList, pInFile);
 			pSkinnedMesh->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
+			CBoundingBoxMesh* pBoundingBoxMesh = new CBoundingBoxMesh(pd3dDevice, pd3dCommandList);
+			pGameObject->SetBoundingBoxMesh(pBoundingBoxMesh);
+
 			::ReadStringFromFile(pInFile, pstrToken); //<Mesh>:
 			if (!strcmp(pstrToken, "<Mesh>:")) {
 				pSkinnedMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile);
-				CBoundingBoxMesh* pBoundingBoxMesh = new CBoundingBoxMesh(pd3dDevice, pd3dCommandList);
-				pGameObject->SetBoundingBoxMesh(pBoundingBoxMesh);
 			}
 
 			pGameObject->SetMesh(pSkinnedMesh);

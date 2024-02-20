@@ -51,7 +51,7 @@ public:
 	virtual void ReleaseShaderVariables();
 
 	void BuildDefaultLightsAndMaterials();
-	void BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
 	void ReleaseObjects();
 
 	ID3D12RootSignature *CreateGraphicsRootSignature(ID3D12Device *pd3dDevice);
@@ -61,11 +61,12 @@ public:
     void AnimateObjects(float fTimeElapsed);
     void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
 
-	void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+	virtual void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 
 	void ReleaseUploadBuffers();
 
 	CPlayer**							m_ppPlayer = NULL;
+	int									m_nPlayer = 0;
 
 protected:
 	ID3D12RootSignature*				m_pd3dGraphicsRootSignature = NULL;
@@ -100,9 +101,6 @@ public:
 
 	float								m_fElapsedTime = 0.0f;
 
-	int									m_nGameObjects = 0;
-	CGameObject**						m_ppGameObjects = NULL;
-
 	int									m_nHierarchicalGameObjects = 0;
 	CGameObject**						m_ppHierarchicalGameObjects = NULL;
 
@@ -121,4 +119,14 @@ public:
 
 	ID3D12Resource*						m_pd3dcbLights = NULL;
 	LIGHTS*								m_pcbMappedLights = NULL;
+};
+
+
+class CFirstStageScene : public CScene
+{
+public:
+	CFirstStageScene() { }
+	~CFirstStageScene() { }
+
+	void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 };

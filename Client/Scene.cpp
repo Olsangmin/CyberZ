@@ -91,36 +91,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 	BuildDefaultLightsAndMaterials();
 
-	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
-	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
-	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
-	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Terrain/testTerrain.raw"), 257, 257, xmf3Scale, xmf4Color);
-
-	m_nHierarchicalGameObjects = 1;
-	m_ppHierarchicalGameObjects = new CGameObject*[m_nHierarchicalGameObjects];
-
-
-	CLoadedModelInfo *pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot.bin", NULL);
-	m_ppHierarchicalGameObjects[0] = new CRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 1);
-	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppHierarchicalGameObjects[0]->SetPosition(280.0f, m_pTerrain->GetHeight(280.0f, 640.0f), 620.0f);
-	m_ppHierarchicalGameObjects[0]->SetScale(10.f, 10.f, 10.f);
-	if (pRobotModel) delete pRobotModel;
-
-
-	m_nShaders = 0;
-/*
-	m_ppShaders = new CShader*[m_nShaders];
-
-	CEthanObjectsShader *pEthanObjectsShader = new CEthanObjectsShader();
-	pEthanObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pEthanModel, m_pTerrain);
-
-	m_ppShaders[0] = pEthanObjectsShader;
-	if (pEthanModel) delete pEthanModel;
-*/
-
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
 void CScene::ReleaseObjects()
@@ -514,5 +485,43 @@ void CScene::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 
 	// 임의로 2로 하드 코딩함 m_nPlayer받아오는 걸로 바꿔야 함
 	for (int i = 0; i < 3; i++)	m_ppPlayer[i]->RenderBoundingBox(pd3dCommandList, pCamera);
+
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+//
+void CFirstStageScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	CScene::BuildObjects(pd3dDevice, pd3dCommandList);
+
+	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+
+	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
+	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
+	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Terrain/testTerrain.raw"), 257, 257, xmf3Scale, xmf4Color);
+
+	m_nHierarchicalGameObjects = 1;
+	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
+
+
+	CLoadedModelInfo* pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot.bin", NULL);
+	m_ppHierarchicalGameObjects[0] = new CRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 1);
+	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppHierarchicalGameObjects[0]->SetPosition(280.0f, m_pTerrain->GetHeight(280.0f, 640.0f), 620.0f);
+	m_ppHierarchicalGameObjects[0]->SetScale(10.f, 10.f, 10.f);
+	if (pRobotModel) delete pRobotModel;
+
+
+	m_nShaders = 0;
+	/*
+		m_ppShaders = new CShader*[m_nShaders];
+
+		CEthanObjectsShader *pEthanObjectsShader = new CEthanObjectsShader();
+		pEthanObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pEthanModel, m_pTerrain);
+
+		m_ppShaders[0] = pEthanObjectsShader;
+		if (pEthanModel) delete pEthanModel;
+	*/
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 }
