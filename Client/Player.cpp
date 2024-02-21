@@ -361,7 +361,18 @@ CTerrainPlayer::CTerrainPlayer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandLi
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 2, pPlayerModel);
 	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 1);
+	//m_pSkinnedAnimationController->SetTrackAnimationSet(2, 2);
+	//m_pSkinnedAnimationController->SetTrackAnimationSet(3, 3);
+	//m_pSkinnedAnimationController->SetTrackAnimationSet(4, 4);
+	//m_pSkinnedAnimationController->SetTrackAnimationSet(5, 5);
+
+
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
+	//m_pSkinnedAnimationController->SetTrackEnable(5, false);
+	//m_pSkinnedAnimationController->SetTrackEnable(2, false);
+	//m_pSkinnedAnimationController->SetTrackEnable(3, false);
+	//m_pSkinnedAnimationController->SetTrackEnable(4, false);
+	//m_pSkinnedAnimationController->SetTrackEnable(0, true);
 
 	m_pSkinnedAnimationController->SetCallbackKeys(1, 2);
 #ifdef _WITH_SOUND_RESOURCE
@@ -487,7 +498,7 @@ void CTerrainPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVeloci
 	if (dwDirection)
 	{
 		//if(m_pSkinnedAnimationController->m_nAnimationTracks == m_pSkinnedAnimationController->SetTrackPosition())
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+		//m_pSkinnedAnimationController->SetTrackEnable(0, false);
 
 		//m_pSkinnedAnimationController->SetAnimationBlending(true);
 		//m_pSkinnedAnimationController->SetTrackAnimationSet(0, 1);
@@ -495,7 +506,7 @@ void CTerrainPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVeloci
 		
 
 
-		m_pSkinnedAnimationController->SetTrackEnable(1, true);
+		//m_pSkinnedAnimationController->SetTrackEnable(1, true);
 	}
 
 	CPlayer::Move(dwDirection, fDistance, bUpdateVelocity);
@@ -510,13 +521,12 @@ void CTerrainPlayer::Update(float fTimeElapsed)
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
 		if (::IsZero(fLength))
 		{
-			m_pSkinnedAnimationController->SetAnimationBlending(false);
-			m_pSkinnedAnimationController->SetTrackEnable(0, true);
-			//m_pSkinnedAnimationController->SetAnimationBlending(true);
-			//m_pSkinnedAnimationController->SetTrackAnimationSet(1, 0);
-			//m_pSkinnedAnimationController->SetAnimationBlending(false);
-
+			//m_pSkinnedAnimationController->SetTrackEnable(5, false);
+			//m_pSkinnedAnimationController->SetTrackEnable(2, false);
+			//m_pSkinnedAnimationController->SetTrackEnable(4, false);
+			//m_pSkinnedAnimationController->SetTrackEnable(3, false);
 			m_pSkinnedAnimationController->SetTrackEnable(1, false);
+			m_pSkinnedAnimationController->SetTrackEnable(0, true);
 		}
 	}
 }
