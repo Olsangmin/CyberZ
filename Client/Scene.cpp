@@ -123,7 +123,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	//---------------------------------------------------------------------
-	// Bulid Player
+	// Player
 
 	m_nPlayer = MAX_PLAYER;
 
@@ -139,10 +139,8 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	for (int i = 0; i < m_nPlayer; ++i) {
 		CTerrainPlayer* pPlayer = new CTerrainPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
 		m_ppPlayer[i] = pPlayer;
-
 	}
 	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
-
 
 }
 
@@ -154,12 +152,6 @@ void CScene::ReleaseObjects()
 	if (m_ppPlayer) {
 		for (int i = 0; i < m_nPlayer; ++i)
 			m_ppPlayer[i]->Release();
-	}
-
-	if (m_ppGameObjects)
-	{
-		for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Release();
-		delete[] m_ppGameObjects;
 	}
 
 	if (m_ppShaders)
@@ -410,7 +402,6 @@ void CScene::ReleaseUploadBuffers()
 	if (m_ppPlayer) {for (int i = 0; i < m_nPlayer; ++i) m_ppPlayer[i]->ReleaseUploadBuffers();}
 
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->ReleaseUploadBuffers();
-	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->ReleaseUploadBuffers();
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) m_ppHierarchicalGameObjects[i]->ReleaseUploadBuffers();
 
 
@@ -499,20 +490,31 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
 
+
 	DWORD dwDirection = 0;
 	DWORD dwDirection1 = 0;
 
-	if (pKeysBuffer[VK_UP] & 0xF0) dwDirection |= DIR_FORWARD;
-	if (pKeysBuffer[VK_DOWN] & 0xF0) dwDirection |= DIR_BACKWARD;
-	if (pKeysBuffer[VK_LEFT] & 0xF0) dwDirection |= DIR_LEFT;
-	if (pKeysBuffer[VK_RIGHT] & 0xF0) dwDirection |= DIR_RIGHT;
-	if (pKeysBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
-	if (pKeysBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
 
-	if (pKeysBuffer['W'] & 0xF0) dwDirection1 |= DIR_FORWARD;
-	if (pKeysBuffer['S'] & 0xF0) dwDirection1 |= DIR_BACKWARD;
-	if (pKeysBuffer['A'] & 0xF0) dwDirection1 |= DIR_LEFT;
-	if (pKeysBuffer['D'] & 0xF0) dwDirection1 |= DIR_RIGHT;
+	// 이동이나 충돌처리 제한 관련해서 서버랑 확인 및 수정 필요할 듯 함 
+	// 플레이어 1
+	if (m_pMyPlayer->m_bMove)
+	{
+		if (pKeysBuffer['W'] & 0xF0) dwDirection1 |= DIR_FORWARD;
+		if (pKeysBuffer['S'] & 0xF0) dwDirection1 |= DIR_BACKWARD;
+		if (pKeysBuffer['A'] & 0xF0) dwDirection1 |= DIR_LEFT;
+		if (pKeysBuffer['D'] & 0xF0) dwDirection1 |= DIR_RIGHT;
+	}
+
+	//플레이어 2
+	if (m_ppPlayer[SECOND_PLAYER]->m_bMove)
+	{
+		if (pKeysBuffer[VK_UP] & 0xF0) dwDirection |= DIR_FORWARD;
+		if (pKeysBuffer[VK_DOWN] & 0xF0) dwDirection |= DIR_BACKWARD;
+		if (pKeysBuffer[VK_LEFT] & 0xF0) dwDirection |= DIR_LEFT;
+		if (pKeysBuffer[VK_RIGHT] & 0xF0) dwDirection |= DIR_RIGHT;
+		if (pKeysBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
+		if (pKeysBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
+	}
 
 	
 	// Player unable
@@ -553,7 +555,6 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 #else
 
 #endif // USE_NETWORK
-
 			if (dwDirection1&& m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, 4.25f, true);
 			if (dwDirection&& m_ppPlayer[SECOND_PLAYER]->m_bUnable) m_ppPlayer[SECOND_PLAYER]->Move(dwDirection, 4.25f, true);
 		}
@@ -566,9 +567,12 @@ void CScene::AnimateObjects(float fTimeElapsed)
 {
 	m_fElapsedTime = fTimeElapsed;
 
-	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(fTimeElapsed);
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(fTimeElapsed);
-	for (int i = 0; i < m_nPlayer; ++i) if(m_ppPlayer[i])	m_ppPlayer[i]->Animate(fTimeElapsed);
+	for (int i = 0; i < m_nPlayer; i++) if(m_ppPlayer[i])	m_ppPlayer[i]->Animate(fTimeElapsed);
+	for (int i = 0; i < m_nHierarchicalGameObjects; i++) if(m_ppHierarchicalGameObjects[i])	m_ppHierarchicalGameObjects[i]->Animate(m_fElapsedTime);
+
+	for (int i = 0; i < m_nPlayer; i++) if (CheckObjByObjCollition( m_ppPlayer[i], m_ppHierarchicalGameObjects[0])) m_ppPlayer[i]->m_bMove = false;
+	
 	if (m_pLights)
 	{
 		m_pLights[1].m_xmf3Position = m_ppPlayer[FIRST_PLAYER]->GetPosition();
@@ -592,14 +596,12 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
 
-	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->Render(pd3dCommandList, pCamera);
 
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++)
 	{
 		if (m_ppHierarchicalGameObjects[i])
 		{
-			m_ppHierarchicalGameObjects[i]->Animate(m_fElapsedTime);
 			if (!m_ppHierarchicalGameObjects[i]->m_pSkinnedAnimationController) m_ppHierarchicalGameObjects[i]->UpdateTransform(NULL);
 			m_ppHierarchicalGameObjects[i]->Render(pd3dCommandList, pCamera);
 		}
@@ -621,7 +623,12 @@ void CScene::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 		if (m_ppHierarchicalGameObjects[i]) m_ppHierarchicalGameObjects[i]->RenderBoundingBox(pd3dCommandList, pCamera);
 	}
 
-	// 임의로 2로 하드 코딩함 m_nPlayer받아오는 걸로 바꿔야 함
-	for (int i = 0; i < 3; i++)	m_ppPlayer[i]->RenderBoundingBox(pd3dCommandList, pCamera);
-
+	for (int i = 0; i < m_nPlayer; i++)	m_ppPlayer[i]->RenderBoundingBox(pd3dCommandList, pCamera);
 }
+
+bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget)
+{
+	if (pTarget->m_xmBoundingBox.Intersects(pBase->m_xmBoundingBox)) return(true);
+	else return false;
+}
+

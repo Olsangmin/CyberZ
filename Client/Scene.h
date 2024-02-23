@@ -62,6 +62,7 @@ public:
     void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
 
 	void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+	bool CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget);
 
 	void ReleaseUploadBuffers();
 
@@ -104,9 +105,6 @@ public:
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUSrvDescriptorNextHandle() { return(m_d3dSrvGPUDescriptorNextHandle); }
 
 	float								m_fElapsedTime = 0.0f;
-
-	int									m_nGameObjects = 0;
-	CGameObject**						m_ppGameObjects = NULL;
 
 	int									m_nHierarchicalGameObjects = 0;
 	CGameObject**						m_ppHierarchicalGameObjects = NULL;
