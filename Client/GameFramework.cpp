@@ -29,8 +29,7 @@ CGameFramework::CGameFramework()
 	m_nWndClientHeight = FRAME_BUFFER_HEIGHT;
 
 	m_pScene = NULL;
-	m_ppPlayer = NULL;
-
+	
 	_tcscpy_s(m_pszFrameRate, _T("CyberZ ("));
 }
 
@@ -320,7 +319,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				case VK_F1:
 				case VK_F2:
 				case VK_F3:
-					m_pCamera = m_ppPlayer[FIRST_PLAYER]->ChangeCamera((DWORD)(wParam - VK_F1 + 1), m_GameTimer.GetTimeElapsed());
+					m_pCamera = m_pScene->m_ppPlayer[FIRST_PLAYER]->ChangeCamera((DWORD)(wParam - VK_F1 + 1), m_GameTimer.GetTimeElapsed());
 					break;
 				case VK_F9:
 					ChangeSwapChainState();
@@ -401,36 +400,12 @@ void CGameFramework::OnDestroy()
 
 void CGameFramework::BuildObjects()
 {
-	m_nPlayer = MAX_PLAYER;
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
-	m_ppPlayer = new CPlayer * [m_nPlayer];
 
 	m_pScene = new CScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
-#ifdef _WITH_TERRAIN_PLAYER
-	m_ppModelInfoPlayer = new CLoadedModelInfo* [m_nPlayer];
-
-	// ÀúÀåµÈ ¸ðµ¨ ¹Ù²Ü ¼ö ÀÖÀ½
-	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
-	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
-	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
-
-#else
-	CAirplanePlayer *pPlayer = new CAirplanePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), NULL);
-	pPlayer->SetPosition(XMFLOAT3(425.0f, 240.0f, 640.0f));
-
-#endif
-	for (int i = 0;i < m_nPlayer;++i) {
-		CTerrainPlayer* pPlayer = new CTerrainPlayer(
-			m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), m_pScene->m_pTerrain, m_ppModelInfoPlayer[i]);
-		m_ppPlayer[i] = pPlayer;
-
-	}
-	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
-
-	m_pScene->m_ppPlayer = m_ppPlayer;
-	m_pCamera = m_pMyPlayer->GetCamera();
+	m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 
 	m_pd3dCommandList->Close();
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
@@ -439,20 +414,13 @@ void CGameFramework::BuildObjects()
 	WaitForGpuComplete();
 
 	if (m_pScene) m_pScene->ReleaseUploadBuffers();
-	/*if (m_ppPlayer) {
-		for (int i = 0;i < m_nPlayer;++i)
-			m_ppPlayer[i]->ReleaseUploadBuffers();
-	}*/
-
+	
 	m_GameTimer.Reset();
 }
 
+
 void CGameFramework::ReleaseObjects()
 {
-	if (m_ppPlayer) {
-		for (int i = 0;i < m_nPlayer;++i)
-			m_ppPlayer[i]->Release();
-	}
 
 	if (m_pScene) m_pScene->ReleaseObjects();
 	if (m_pScene) delete m_pScene;
@@ -546,8 +514,7 @@ void CGameFramework::AnimateObjects()
 	float fTimeElapsed = m_GameTimer.GetTimeElapsed();
 
 	if (m_pScene) m_pScene->AnimateObjects(fTimeElapsed);
-	for(int i=0;i<m_nPlayer;++i)
-		m_ppPlayer[i]->Animate(fTimeElapsed);
+
 }	
 
 void CGameFramework::WaitForGpuComplete()
@@ -615,11 +582,7 @@ void CGameFramework::FrameAdvance()
 #ifdef _WITH_PLAYER_TOP
 	m_pd3dCommandList->ClearDepthStencilView(d3dDsvCPUDescriptorHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
-	if (m_ppPlayer) {
-		for (int i = 0;i < m_nPlayer;++i) {
-			if(m_ppPlayer[i]->m_bUnable)m_ppPlayer[i]->Render(m_pd3dCommandList, m_pCamera);
-		}
-	}
+
 
 	if (m_bRenderBoundingBox) m_pScene->RenderBoundingBox(m_pd3dCommandList, m_pCamera);
 
@@ -655,7 +618,7 @@ void CGameFramework::FrameAdvance()
 
 	m_GameTimer.GetFrameRate(m_pszFrameRate + 12, 37);
 	size_t nLength = _tcslen(m_pszFrameRate);
-	XMFLOAT3 xmf3Position = m_ppPlayer[FIRST_PLAYER]->GetPosition();
+	XMFLOAT3 xmf3Position = m_pScene->m_ppPlayer[FIRST_PLAYER]->GetPosition();
 	_stprintf_s(m_pszFrameRate + nLength, 70 - nLength, _T("(%4f, %4f, %4f)"), xmf3Position.x, xmf3Position.y, xmf3Position.z);
 	::SetWindowText(m_hWnd, m_pszFrameRate);
 }

@@ -833,6 +833,8 @@ void CGameObject::UpdateBoundingBox()
 		m_xmBoundingBox = m_pMesh->m_xmBoundingBox;
 		m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
 		XMStoreFloat4(&m_xmBoundingBox.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmBoundingBox.Orientation)));
+		MoveBBToParent(this);
+		return;
 	}
 	if (m_pSibling)m_pSibling->UpdateBoundingBox();
 	if (m_pChild)m_pChild->UpdateBoundingBox();
@@ -848,6 +850,15 @@ void CGameObject::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, 
 	}
 	if (m_pSibling) m_pSibling->RenderBoundingBox(pd3dCommandList, pCamera);
 	if (m_pChild) m_pChild->RenderBoundingBox(pd3dCommandList, pCamera);
+}
+
+void CGameObject::MoveBBToParent(CGameObject* pTargetLv)
+{
+	if (pTargetLv->m_pParent) {
+		pTargetLv->m_pParent->m_xmBoundingBox = pTargetLv->m_xmBoundingBox;
+		MoveBBToParent(pTargetLv->m_pParent);
+	}
+	else return;
 }
 
 void CGameObject::SetMesh(CMesh *pMesh)

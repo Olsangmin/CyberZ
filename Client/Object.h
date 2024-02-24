@@ -389,6 +389,8 @@ public:
 	void SetBoundingBoxMesh(CBoundingBoxMesh* pMesh);
 	void UpdateBoundingBox();
 	void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	void MoveBBToParent(CGameObject* pTargetLv);
+
 
 	void SetMesh(CMesh *pMesh);
 	void SetShader(CShader *pShader);

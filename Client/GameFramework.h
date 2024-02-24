@@ -89,12 +89,6 @@ private:
 
 	CScene*						m_pScene = NULL;
 
-	CPlayer**					m_ppPlayer = NULL;				// 모든 플레이어 정보
-	CPlayer*					m_pMyPlayer = NULL;				// 현재 플레이어 정보
-	int							m_nPlayer;						// 플레이어 갯수
-
-	CLoadedModelInfo**			m_ppModelInfoPlayer = NULL;		// Model Data
-
 	CCamera*					m_pCamera = NULL;
 
 	POINT						m_ptOldCursorPos;
