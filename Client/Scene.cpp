@@ -490,23 +490,10 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
 
-
 	DWORD dwDirection = 0;
 	DWORD dwDirection1 = 0;
-
-
-	// 이동이나 충돌처리 제한 관련해서 서버랑 확인 및 수정 필요할 듯 함 
-	// 플레이어 1
+	
 	if (m_pMyPlayer->m_bMove)
-	{
-		if (pKeysBuffer['W'] & 0xF0) dwDirection1 |= DIR_FORWARD;
-		if (pKeysBuffer['S'] & 0xF0) dwDirection1 |= DIR_BACKWARD;
-		if (pKeysBuffer['A'] & 0xF0) dwDirection1 |= DIR_LEFT;
-		if (pKeysBuffer['D'] & 0xF0) dwDirection1 |= DIR_RIGHT;
-	}
-
-	//플레이어 2
-	if (m_ppPlayer[SECOND_PLAYER]->m_bMove)
 	{
 		if (pKeysBuffer[VK_UP] & 0xF0) dwDirection |= DIR_FORWARD;
 		if (pKeysBuffer[VK_DOWN] & 0xF0) dwDirection |= DIR_BACKWARD;
@@ -516,7 +503,14 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 		if (pKeysBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
 	}
 
-	
+	if (m_ppPlayer[SECOND_PLAYER]->m_bMove)
+	{
+		if (pKeysBuffer['W'] & 0xF0) dwDirection1 |= DIR_FORWARD;
+		if (pKeysBuffer['S'] & 0xF0) dwDirection1 |= DIR_BACKWARD;
+		if (pKeysBuffer['A'] & 0xF0) dwDirection1 |= DIR_LEFT;
+		if (pKeysBuffer['D'] & 0xF0) dwDirection1 |= DIR_RIGHT;
+	}
+
 	// Player unable
 	// m_ppPlayer[원하는 캐릭터]->m_bUnable = true 면은 ADD_OBJ(실제로 생성이 아닌 렌더&움직임 가능 상태)
 	if (pKeysBuffer['1'] & 0xF0) m_ppPlayer[FIRST_PLAYER]->m_bUnable = true;
@@ -525,12 +519,13 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 
 	// Player disable
 	if (pKeysBuffer['4'] & 0xF0) m_ppPlayer[FIRST_PLAYER]->m_bUnable = false;
-	if (pKeysBuffer['5'] & 0xF0) m_ppPlayer[SECOND_PLAYER]->m_bUnable =false;
+	if (pKeysBuffer['5'] & 0xF0) m_ppPlayer[SECOND_PLAYER]->m_bUnable = false;
 	if (pKeysBuffer['6'] & 0xF0) m_ppPlayer[THIRD_PLAYER]->m_bUnable = false;
+
 
 	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f) || (dwDirection1 != 0))
 	{
-		if ((cxDelta || cyDelta)&& m_pMyPlayer->m_bUnable)
+		if ((cxDelta || cyDelta) && m_pMyPlayer->m_bUnable)
 		{
 			if (pKeysBuffer[VK_RBUTTON] & 0xF0)
 				m_pMyPlayer->Rotate(cyDelta, 0.0f, -cxDelta);
@@ -539,25 +534,27 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 		}
 
 #ifdef USE_NETWORK
-			int my_id = network.my_id;
-			//Position pos = { m_pPlayer[FIRST_PLAYER]->GetPosition().x, m_pPlayer[FIRST_PLAYER]->GetPosition().y, m_pPlayer[FIRST_PLAYER]->GetPosition().z };
-			//float yaw = m_pPlayer[FIRST_PLAYER]->GetYaw();
-			network.game_users[my_id].pos = { m_pPlayer[FIRST_PLAYER]->GetPosition().x, m_pPlayer[FIRST_PLAYER]->GetPosition().y, m_pPlayer[FIRST_PLAYER]->GetPosition().z };
-			network.game_users[my_id].yaw = m_pPlayer[FIRST_PLAYER]->GetYaw();
-			CS_MOVE_PACKET p;
-			p.size = sizeof(p);
-			p.type = CS_MOVE;
-			p.x = network.game_users[my_id].pos.x;
-			p.y = network.game_users[my_id].pos.y;
-			p.z = network.game_users[my_id].pos.z;
-			p.yaw = network.game_users[my_id].yaw;
-			network.send_packet(&p);
+		int my_id = network.my_id;
+		/*Position pos = { m_pPlayer[FIRST_PLAYER]->GetPosition().x, m_pPlayer[FIRST_PLAYER]->GetPosition().y, m_pPlayer[FIRST_PLAYER]->GetPosition().z };
+		float yaw = m_pPlayer[FIRST_PLAYER]->GetYaw();*/
+		network.game_users[my_id].pos = { m_pPlayer[FIRST_PLAYER]->GetPosition().x, m_pPlayer[FIRST_PLAYER]->GetPosition().y, m_pPlayer[FIRST_PLAYER]->GetPosition().z };
+		network.game_users[my_id].yaw = m_pPlayer[FIRST_PLAYER]->GetYaw();
+		CS_MOVE_PACKET p;
+		p.size = sizeof(p);
+		p.type = CS_MOVE;
+		p.x = network.game_users[my_id].pos.x;
+		p.y = network.game_users[my_id].pos.y;
+		p.z = network.game_users[my_id].pos.z;
+		p.yaw = network.game_users[my_id].yaw;
+		network.send_packet(&p);
 #else
 
 #endif // USE_NETWORK
-			if (dwDirection1&& m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, 4.25f, true);
-			if (dwDirection&& m_ppPlayer[SECOND_PLAYER]->m_bUnable) m_ppPlayer[SECOND_PLAYER]->Move(dwDirection, 4.25f, true);
-		}
+		if (dwDirection1 && m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, m_dwLastDirection, 4.25f, true);
+		if (dwDirection && m_ppPlayer[SECOND_PLAYER]->m_bUnable) m_ppPlayer[SECOND_PLAYER]->Move(dwDirection, m_dwLastDirection, 4.25f, true);
+	}
+	if (m_dwLastDirection != dwDirection1)m_pMyPlayer->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+	m_dwLastDirection = dwDirection1;
 
 	return(false);
 

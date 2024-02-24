@@ -97,6 +97,5 @@ private:
 
 	_TCHAR						m_pszFrameRate[70];
 
-	DWORD						m_dwLastDirection;
 };
 
