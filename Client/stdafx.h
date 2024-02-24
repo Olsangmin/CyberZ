@@ -105,6 +105,18 @@ inline void Swap(float *pfS, float *pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT
 
 #define ANIMATION_CALLBACK_EPSILON		0.00165f
 
+#define ANIMATION_IDLE					0
+#define ANIMATION_WALK					0
+#define ANIMATION_RUN					0
+#define ANIMATION_CREEP					0
+#define ANIMATION_CRAWL					0
+#define ANIMATION_JUMP					0
+#define ANIMATION_HIT					0
+#define ANIMATION_DIE					0
+#define ANIMATION_USE					0
+#define ANIMATION_EAT					0
+#define ANIMATION_DUMMY					0
+
 // Player ÃÖ´ëÄ¡
 #define MAX_PLAYER						3
 

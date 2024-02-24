@@ -61,7 +61,8 @@ public:
 	CCamera *GetCamera() { return(m_pCamera); }
 	void SetCamera(CCamera *pCamera) { m_pCamera = pCamera; }
 
-	virtual void Move(ULONG nDirection, float fDistance, bool bVelocity = false);
+	virtual void Move(DWORD nDirection, float fDistance, bool bVelocity = false);
+	virtual void Move(DWORD dwDirection, DWORD dwLastDirection, float fDistance, bool bVelocity = false) {};
 	void Move(const XMFLOAT3& xmf3Shift, bool bVelocity = false);
 	void Move(float fxOffset = 0.0f, float fyOffset = 0.0f, float fzOffset = 0.0f);
 	void Rotate(float x, float y, float z);
@@ -127,7 +128,9 @@ public:
 	virtual void OnPlayerUpdateCallback(float fTimeElapsed);
 	virtual void OnCameraUpdateCallback(float fTimeElapsed);
 
-	virtual void Move(ULONG nDirection, float fDistance, bool bVelocity = false);
+	virtual void Move(DWORD dwDirection, DWORD dwLastDirection, float fDistance, bool bVelocity = false);
 
 	virtual void Update(float fTimeElapsed);
+
+	float						m_fAddDistance = 0.0f;
 };

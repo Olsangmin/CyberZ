@@ -412,9 +412,9 @@ void CGameFramework::BuildObjects()
 	m_ppModelInfoPlayer = new CLoadedModelInfo* [m_nPlayer];
 
 	// ÀúÀåµÈ ¸ðµ¨ ¹Ù²Ü ¼ö ÀÖÀ½
-	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Test/Player_1.bin", NULL);
-	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Test/Player_2.bin", NULL);
-	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Test/Player_3.bin", NULL);
+	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
+	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
+	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
 
 #else
 	CAirplanePlayer *pPlayer = new CAirplanePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), NULL);
@@ -475,7 +475,7 @@ void CGameFramework::ProcessInput()
 			cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
 			SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 		}
-
+		
 		DWORD dwDirection = 0;
 		DWORD dwDirection1 = 0;
 
@@ -530,13 +530,12 @@ void CGameFramework::ProcessInput()
 #else
 			
 #endif // USE_NETWORK
-
-			if (dwDirection1&& m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, 4.25f, true);
-			if (dwDirection&& m_ppPlayer[SECOND_PLAYER]->m_bUnable) m_ppPlayer[SECOND_PLAYER]->Move(dwDirection, 4.25f, true);
+			if (dwDirection1&& m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, m_dwLastDirection, 4.25f, true);
+			if (dwDirection&& m_ppPlayer[SECOND_PLAYER]->m_bUnable) m_ppPlayer[SECOND_PLAYER]->Move(dwDirection, m_dwLastDirection, 4.25f, true);
 		}
+		if (m_dwLastDirection != dwDirection1)m_pMyPlayer->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+		m_dwLastDirection = dwDirection1;
 	}
-
-	
 
 	for(int i=0;i<m_nPlayer;++i)
 		m_ppPlayer[i]->Update(m_GameTimer.GetTimeElapsed());

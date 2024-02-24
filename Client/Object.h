@@ -298,6 +298,7 @@ public:
 
 	int								m_nLowerBodyAnimation = 0;
 	int								m_nUpperBodyAnimation = 0;
+	float							m_fBlendingTime = 0.0f;
 
 	CAnimationSets					*m_pAnimationSets = NULL;
 	CAnimationSets					*m_pAnimationSets0 = NULL;
@@ -325,6 +326,8 @@ public:
 	void AdvanceTime(float fElapsedTime, CGameObject *pRootGameObject);
 
 	void SetTrackBlending(int nUpperBodyAnimation, int nLowerBodyAnimation);
+
+	void SetAllTrackDisable();
 
 	void SetAnimationBlending(bool bAnimationBlending) { m_bAnimationBlending = bAnimationBlending; }
 	bool GetAnimationBlending() { return m_bAnimationBlending; }
