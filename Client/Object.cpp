@@ -684,10 +684,12 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject* pRootGam
 		else
 		{
 			CAnimationSet* pLAnimationSet = m_pAnimationSets->m_pAnimationSets[m_pAnimationTracks[m_nLowerBodyAnimation].m_nAnimationSet];
-			float fLPosition = m_pAnimationTracks[m_nLowerBodyAnimation].UpdatePosition(m_pAnimationTracks[m_nLowerBodyAnimation].m_fPosition, fTimeElapsed, pLAnimationSet->m_fLength);
+			float fLPosition = m_pAnimationTracks[m_nLowerBodyAnimation].UpdatePosition(
+				m_pAnimationTracks[m_nLowerBodyAnimation].m_fPosition, fTimeElapsed, pLAnimationSet->m_fLength);
 
 			CAnimationSet* pUAnimationSet = m_pAnimationSets->m_pAnimationSets[m_pAnimationTracks[m_nUpperBodyAnimation].m_nAnimationSet];
-			//float fUPosition = m_pAnimationTracks[m_nLowerBodyAnimation].UpdatePosition(m_pAnimationTracks[m_nLowerBodyAnimation].m_fPosition, fTimeElapsed, pUAnimationSet->m_fLength);
+			//float fUPosition = m_pAnimationTracks[m_nLowerBodyAnimation].UpdatePosition(
+			// m_pAnimationTracks[m_nLowerBodyAnimation].m_fPosition, fTimeElapsed, pUAnimationSet->m_fLength);
 			
 
 			for (int j = 0; j < m_pAnimationSets->m_nBoneFrames; j++)
@@ -701,10 +703,12 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject* pRootGam
 
 				//XMMATRIX xmmTrackTransform = XMLoadFloat4x4(&xmf4x4BTrackTransform);
 
-				xmf4x4Transform = Matrix4x4::Add(xmf4x4Transform, Matrix4x4::Scale(xmf4x4BTrackTransform, 1.0f/*m_pAnimationTracks[m_nLowerBodyAnimation].m_fWeight*/));
+				xmf4x4Transform = Matrix4x4::Add(xmf4x4Transform, Matrix4x4::Scale(
+					xmf4x4BTrackTransform, 1.0f/*m_pAnimationTracks[m_nLowerBodyAnimation].m_fWeight*/));
 
 				//XMFLOAT4X4 xmf4x4Transform = m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent;
-				//xmf4x4Transform = Matrix4x4::Add(xmf4x4Transform, Matrix4x4::Scale(xmf4x4TrackTransform, m_pAnimationTracks[m_nUpperBodyAnimation].m_fWeight));
+				//xmf4x4Transform = Matrix4x4::Add(xmf4x4Transform, Matrix4x4::Scale(
+				// xmf4x4TrackTransform, m_pAnimationTracks[m_nUpperBodyAnimation].m_fWeight));
 				m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent = xmf4x4Transform;
 
 
