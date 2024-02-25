@@ -493,7 +493,7 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 	DWORD dwDirection = 0;
 	DWORD dwDirection1 = 0;
 	
-	if (m_pMyPlayer->m_bMove)
+	if (m_ppPlayer[SECOND_PLAYER]->m_bMove)
 	{
 		if (pKeysBuffer[VK_UP] & 0xF0) dwDirection |= DIR_FORWARD;
 		if (pKeysBuffer[VK_DOWN] & 0xF0) dwDirection |= DIR_BACKWARD;
@@ -503,7 +503,7 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 		if (pKeysBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
 	}
 
-	if (m_ppPlayer[SECOND_PLAYER]->m_bMove)
+	if (m_pMyPlayer->m_bMove)
 	{
 		if (pKeysBuffer['W'] & 0xF0) dwDirection1 |= DIR_FORWARD;
 		if (pKeysBuffer['S'] & 0xF0) dwDirection1 |= DIR_BACKWARD;
