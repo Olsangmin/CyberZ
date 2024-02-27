@@ -15,13 +15,7 @@
 #pragma comment(lib, "MSWSock.lib")
 
 #include <d3d12.h>
-
-
-
-struct Position
-{
-	float x, y, z;
-};
+#include <DirectXMath.h>
 
 static void ErrorDisplay(const char* msg)
 {

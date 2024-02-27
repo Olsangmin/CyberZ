@@ -83,6 +83,7 @@ void CScene::BuildDefaultLightsAndMaterials()
 
 void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList)
 {
+
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 76); //SuperCobra(17), Gunship(2), Player: Angrybot()
@@ -122,6 +123,10 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
+#ifdef USE_NETWORK
+	InitNetwork();
+#endif 
+
 	//---------------------------------------------------------------------
 	// Player
 
@@ -132,6 +137,8 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
 
 	// 저장된 모델 바꿀 수 있음
+
+
 	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
 	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
 	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
@@ -140,6 +147,7 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 		CTerrainPlayer* pPlayer = new CTerrainPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
 		m_ppPlayer[i] = pPlayer;
 	}
+
 	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
 
 }
@@ -534,19 +542,12 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 		}
 
 #ifdef USE_NETWORK
-		int my_id = network.my_id;
-		/*Position pos = { m_pPlayer[FIRST_PLAYER]->GetPosition().x, m_pPlayer[FIRST_PLAYER]->GetPosition().y, m_pPlayer[FIRST_PLAYER]->GetPosition().z };
-		float yaw = m_pPlayer[FIRST_PLAYER]->GetYaw();*/
-		network.game_users[my_id].pos = { m_pPlayer[FIRST_PLAYER]->GetPosition().x, m_pPlayer[FIRST_PLAYER]->GetPosition().y, m_pPlayer[FIRST_PLAYER]->GetPosition().z };
-		network.game_users[my_id].yaw = m_pPlayer[FIRST_PLAYER]->GetYaw();
-		CS_MOVE_PACKET p;
-		p.size = sizeof(p);
-		p.type = CS_MOVE;
-		p.x = network.game_users[my_id].pos.x;
-		p.y = network.game_users[my_id].pos.y;
-		p.z = network.game_users[my_id].pos.z;
-		p.yaw = network.game_users[my_id].yaw;
-		network.send_packet(&p);
+		CS_MOVE_PACKET packet;
+		packet.size = sizeof(packet);
+		packet.type = CS_MOVE;
+		packet.position = m_pMyPlayer->GetPosition();
+		packet.yaw = m_pMyPlayer->GetYaw();
+		send_packet(&packet);
 #else
 
 #endif // USE_NETWORK
@@ -579,9 +580,14 @@ void CScene::AnimateObjects(float fTimeElapsed)
 
 void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
 {
+#ifdef USE_NETWORK
+	Recv_Packet();
+	
+#endif 
 	if (m_pd3dGraphicsRootSignature) pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 	if (m_pd3dCbvSrvDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
-
+	
+	pCamera = m_pMyPlayer->GetCamera();
 	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	pCamera->UpdateShaderVariables(pd3dCommandList);
 
@@ -609,6 +615,7 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 			if (m_ppPlayer[i]->m_bUnable)m_ppPlayer[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
+	
 }
 
 void CScene::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -628,4 +635,116 @@ bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget)
 	if (pTarget->m_xmBoundingBox.Intersects(pBase->m_xmBoundingBox)) return(true);
 	else return false;
 }
+
+// @@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@
+void CScene::InitNetwork()
+{
+	wcout.imbue(locale("korean"));
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+		cout << "WSA START ERROR" << endl;
+	}
+
+	c_socket = WSASocket(AF_INET, SOCK_STREAM, 0, 0, 0, 0);
+	if (c_socket == INVALID_SOCKET) {
+		cout << "SOCKET INIT ERROR!" << endl;
+	}
+
+	SOCKADDR_IN server_address{};
+	ZeroMemory(&server_address, sizeof(server_address));
+	server_address.sin_family = AF_INET;
+	server_address.sin_port = htons(PORT_NUM);
+	inet_pton(AF_INET, ServerIP.c_str(), &(server_address.sin_addr.s_addr));
+
+	int ret = connect(c_socket, reinterpret_cast<SOCKADDR*>(&server_address), sizeof(server_address));
+	if (ret < 0) exit(-1);
+
+	unsigned long noblock = 1;
+	ioctlsocket(c_socket, FIONBIO, &noblock);
+
+	CS_LOGIN_PACKET p;
+	p.size = sizeof(p);
+	p.type = CS_LOGIN;
+	string player_name{ "P" };
+	strcpy_s(p.name, player_name.c_str());
+	send_packet(&p);
+}
+
+void CScene::Recv_Packet()
+{
+
+	char buf[BUF_SIZE] = { 0 };
+	WSABUF wsabuf{ BUF_SIZE, buf };
+	DWORD recv_byte{ 0 }, recv_flag{ 0 };
+
+	int retval = WSARecv(c_socket, &wsabuf, 1, &recv_byte, &recv_flag, nullptr, nullptr);
+
+	if (recv_byte > 0) {
+		process_data(wsabuf.buf, recv_byte);
+	}
+}
+
+void CScene::send_packet(void* packet)
+{
+	unsigned char* p = reinterpret_cast<unsigned char*>(packet);
+	size_t sent = 0;
+	send(c_socket, reinterpret_cast<char*>(p), static_cast<int>(p[0]), sent);
+}
+void CScene::ProcessPacket(char* p)
+{
+	switch (p[1])
+	{
+	case SC_LOGIN_INFO:
+	{
+		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
+		my_id = packet->id;
+		cout << "My ID is " << my_id << " !" << endl;
+		m_pMyPlayer = m_ppPlayer[my_id];
+	} break;
+	case SC_MOVE_OBJECT:
+	{
+		SC_MOVE_OBJECT_PACKET* packet = reinterpret_cast<SC_MOVE_OBJECT_PACKET*>(p);
+		// cout << packet->id << "Move" << endl;
+		if (packet->id == my_id) break;
+		else {
+			m_ppPlayer[packet->id]->SetPosition(packet->position);
+		}
+
+	} break;
+	case SC_ADD_PLAYER:
+	{
+		SC_ADD_PLAYER_PACKET* packet = reinterpret_cast<SC_ADD_PLAYER_PACKET*>(p);
+		cout << packet->id << " ADD" << endl;
+	}
+	break;
+	default:
+		printf("Unknown PACKET type [%d]\n", p[1]);
+	}
+}
+void CScene::process_data(char* net_buf, size_t io_byte)
+{
+	char* ptr = net_buf;
+	static size_t in_packet_size = 0;
+	static size_t saved_packet_size = 0;
+	static char packet_buffer[BUF_SIZE];
+
+	while (0 != io_byte) {
+		if (0 == in_packet_size) in_packet_size = ptr[0];
+		if (io_byte + saved_packet_size >= in_packet_size) {
+			memcpy(packet_buffer + saved_packet_size, ptr, in_packet_size - saved_packet_size);
+			ProcessPacket(packet_buffer);
+			ptr += in_packet_size - saved_packet_size;
+			io_byte -= in_packet_size - saved_packet_size;
+			in_packet_size = 0;
+			saved_packet_size = 0;
+		}
+		else {
+			memcpy(packet_buffer + saved_packet_size, ptr, io_byte);
+			saved_packet_size += io_byte;
+			io_byte = 0;
+		}
+	}
+
+}
+// @@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@
 

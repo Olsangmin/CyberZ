@@ -25,14 +25,27 @@ void Session::send_login_info_packet()
 	do_send(&p);
 }
 
-void Session::send_move_packet(int c_id, Position pos, float yaw)
+void Session::send_move_packet(int c_id, bool is_valid)
 {
 	SC_MOVE_OBJECT_PACKET p;
 	p.size = sizeof(p);
 	p.type = SC_MOVE_OBJECT;
 	p.id = c_id;
-	p.x = pos.x; p.y = pos.y; p.z = pos.z;
+	p.position = pos;
 	p.yaw = yaw;
+	p.is_valid = is_valid;
 	std::cout << "Cliend[" << id << "] <- " << "이동 패킷 전송" << std::endl;
+	do_send(&p);
+}
+
+void Session::send_add_player_packet(int c_id)
+{
+	SC_ADD_PLAYER_PACKET p;
+	p.size = sizeof(p);
+	p.type = SC_ADD_PLAYER;
+	p.id = c_id;
+	p.position = pos;
+	p.yaw = yaw;
+	// std::cout << "Cliend[" << id << "] <- " << "이동 패킷 전송" << std::endl;
 	do_send(&p);
 }
