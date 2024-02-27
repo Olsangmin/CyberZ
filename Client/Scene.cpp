@@ -94,13 +94,13 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	//---------------------------------------------------------------------
 	// SKY BOX
 	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-
+	
 	//---------------------------------------------------------------------
 	// TERRAIN
 	XMFLOAT3 xmf3Scale(15.0f, 1.0f, 15.0f);
 	XMFLOAT4 xmf4Color(0.2f, 0.2f, 0.2f, 0.0f);
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Terrain/BaseTerrain.raw"), 257, 257, xmf3Scale, xmf4Color);
-
+	
 	//---------------------------------------------------------------------
 	// OBG
 	m_nHierarchicalGameObjects = 1;
