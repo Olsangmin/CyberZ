@@ -57,15 +57,21 @@ public:
 	ID3D12RootSignature *CreateGraphicsRootSignature(ID3D12Device *pd3dDevice);
 	ID3D12RootSignature *GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
 
-	bool ProcessInput(UCHAR *pKeysBuffer);
+	bool ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer);
     void AnimateObjects(float fTimeElapsed);
     void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
 
 	void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+	bool CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget);
 
 	void ReleaseUploadBuffers();
 
-	CPlayer**							m_ppPlayer = NULL;
+
+	CPlayer**				m_ppPlayer = NULL;				// 모든 플레이어 정보
+	CPlayer*				m_pMyPlayer = NULL;				// 현재 플레이어 정보
+	int						m_nPlayer;						// 플레이어 갯수
+
+	CLoadedModelInfo**		m_ppModelInfoPlayer = NULL;		// Model Data
 
 protected:
 	ID3D12RootSignature*				m_pd3dGraphicsRootSignature = NULL;
@@ -100,9 +106,6 @@ public:
 
 	float								m_fElapsedTime = 0.0f;
 
-	int									m_nGameObjects = 0;
-	CGameObject**						m_ppGameObjects = NULL;
-
 	int									m_nHierarchicalGameObjects = 0;
 	CGameObject**						m_ppHierarchicalGameObjects = NULL;
 
@@ -121,4 +124,6 @@ public:
 
 	ID3D12Resource*						m_pd3dcbLights = NULL;
 	LIGHTS*								m_pcbMappedLights = NULL;
+
+	DWORD								m_dwLastDirection;
 };

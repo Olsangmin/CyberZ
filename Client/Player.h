@@ -36,6 +36,10 @@ protected:
 	CCamera						*m_pCamera = NULL;
 
 public:
+	bool						m_bUnable = true;
+	bool						m_bMove = true;
+
+public:
 	CPlayer();
 	virtual ~CPlayer();
 
@@ -85,7 +89,7 @@ public:
 	virtual void OnPrepareRender();
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
 
-	bool m_bUnable = false;
+
 };
 
 class CAirplanePlayer : public CPlayer
