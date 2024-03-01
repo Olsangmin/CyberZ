@@ -133,8 +133,8 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 	// 저장된 모델 바꿀 수 있음
 	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
-	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
-	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
+	//m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
+	//m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
 
 	for (int i = 0; i < m_nPlayer; ++i) {
 		CTerrainPlayer* pPlayer = new CTerrainPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
@@ -522,6 +522,13 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 	if (pKeysBuffer['5'] & 0xF0) m_ppPlayer[SECOND_PLAYER]->m_bUnable = false;
 	if (pKeysBuffer['6'] & 0xF0) m_ppPlayer[THIRD_PLAYER]->m_bUnable = false;
 
+	// Decide whether to blend
+	// 전에 입력한 키와 다르다면 블렌딩타임을 0으로 설정
+	// 블렌딩 타임이 0 -> 블렌딩 시작
+	// 블렌딩 타임이 1 -> 블렌딩 완료
+	if (m_dwLastDirection != dwDirection1) {
+		m_pMyPlayer->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+	}
 
 	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f) || (dwDirection1 != 0))
 	{
@@ -550,10 +557,11 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 #else
 
 #endif // USE_NETWORK
+
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, m_dwLastDirection, 4.25f, true);
 		if (dwDirection && m_ppPlayer[SECOND_PLAYER]->m_bUnable) m_ppPlayer[SECOND_PLAYER]->Move(dwDirection, m_dwLastDirection, 4.25f, true);
 	}
-	if (m_dwLastDirection != dwDirection1)m_pMyPlayer->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+	
 	m_dwLastDirection = dwDirection1;
 
 	return(false);

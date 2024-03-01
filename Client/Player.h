@@ -136,5 +136,5 @@ public:
 
 	virtual void Update(float fTimeElapsed);
 
-	float						m_fAddDistance = 0.0f;
+	void AnimationBlending(int type1, int type2);
 };
