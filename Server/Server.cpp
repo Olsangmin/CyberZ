@@ -135,25 +135,15 @@ void Server::Process_packet(int c_id, char* packet)
 		}
 		std::cout << "Client[" << c_id << "] Login.\n" << std::endl;
 		clients[c_id].send_login_info_packet();
-		//for (auto& cl : clients) { // 기존 -> 신입
-		//	if (cl.state != ST_INGAME) continue;
-		//	if (cl.GetId() == c_id) continue;
-		//	cl.send_add_player_packet(c_id, n_pos, n_yaw);
-		//}
-
-		//for (auto& cl : clients) { // 신입 -> 기존
-		//	if (cl.state != ST_INGAME) continue;
-		//	if (cl.GetId() == c_id) continue;
-		//	clients[c_id].send_add_player_packet(cl.GetId(), cl.GetPos(), cl.GetYaw());
-		//}
+		
 		for (auto& cl : clients) {
 			{
 				std::lock_guard<std::mutex> ll(cl.o_lock);
 				if (ST_INGAME != cl.state) continue;
 			}
 			if (cl.GetId() == c_id) continue;
-			cl.send_add_player_packet(c_id);
-			clients[c_id].send_add_player_packet(cl.GetId());
+			cl.send_add_player_packet(c_id, clients[c_id].GetPos());
+			clients[c_id].send_add_player_packet(cl.GetId(), cl.GetPos());
 		}
 	}
 				 break;
@@ -176,7 +166,7 @@ void Server::Process_packet(int c_id, char* packet)
 		
 		for (auto& cl : clients) {
 			if (cl.state != ST_INGAME) continue;
-			cl.send_move_packet(c_id, true);
+			cl.send_move_packet(c_id,pos, true);
 		}
 		std::cout << "Client[" << c_id << "] Move. -> ";
 		std::cout << "(" << pos.x << ", " << pos.y << ", " << pos.z << ")" << std::endl;

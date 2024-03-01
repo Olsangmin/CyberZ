@@ -700,6 +700,7 @@ void CScene::ProcessPacket(char* p)
 		my_id = packet->id;
 		cout << "My ID is " << my_id << " !" << endl;
 		m_pMyPlayer = m_ppPlayer[my_id];
+		m_pMyPlayer->m_bUnable = true;
 	} break;
 	case SC_MOVE_OBJECT:
 	{
@@ -708,13 +709,16 @@ void CScene::ProcessPacket(char* p)
 		if (packet->id == my_id) break;
 		else {
 			m_ppPlayer[packet->id]->SetPosition(packet->position);
+			
 		}
 
 	} break;
 	case SC_ADD_PLAYER:
 	{
 		SC_ADD_PLAYER_PACKET* packet = reinterpret_cast<SC_ADD_PLAYER_PACKET*>(p);
-		cout << packet->id << " ADD" << endl;
+		// cout << packet->id << " ADD" << endl;
+		m_ppPlayer[packet->id]->m_bUnable = true;
+		m_ppPlayer[packet->id]->SetPosition(packet->position);
 	}
 	break;
 	default:

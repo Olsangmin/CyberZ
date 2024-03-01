@@ -54,8 +54,8 @@ public:
 	const SOCKET& GetSocket() { return socket; }
 
 	void send_login_info_packet();
-	void send_move_packet(int c_id, bool is_valid);
-	void send_add_player_packet(int c_id);
+	void send_move_packet(int c_id, DirectX::XMFLOAT3 cid_pos, bool is_valid);
+	void send_add_player_packet(int c_id, DirectX::XMFLOAT3 cid_pos);
 private:
 	OVER_EXP recv_over;
 	SOCKET	socket;
