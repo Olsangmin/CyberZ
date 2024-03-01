@@ -47,7 +47,7 @@ using namespace std;
 #include "Network.h"
 
 // 주석하면 서버없이 가능@@@@@@@@@
-#define USE_NETWORK 
+ #define USE_NETWORK 
 
 // =================================================
 
@@ -120,15 +120,15 @@ inline void Swap(float *pfS, float *pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT
 #define ANIMATION_DUMMY					10
 
 // Player 최대치
-#define MAX_PLAYER						1
+#define MAX_PLAYER						3
 
 // 현재 Player	(0, 1, 2)
 #define MY_PLAYER						0
 
 // Plyer의 순서
 #define FIRST_PLAYER					0
-#define SECOND_PLAYER					0
-#define THIRD_PLAYER					0
+#define SECOND_PLAYER					1
+#define THIRD_PLAYER					2
 
 
 namespace Vector3

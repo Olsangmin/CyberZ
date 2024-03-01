@@ -145,8 +145,8 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 
 	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
-	//m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
-	//m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
+	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
+	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
 
 	for (int i = 0; i < m_nPlayer; ++i) {
 		CTerrainPlayer* pPlayer = new CTerrainPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
@@ -721,8 +721,8 @@ void CScene::ProcessPacket(char* p)
 		// cout << packet->id << "Move" << endl;
 		if (packet->id == my_id) break;
 		else {
-			m_ppPlayer[packet->id]->SetPosition(packet->position);
-			
+			m_ppPlayer[packet->id]->Move(DIR_FORWARD, DIR_FORWARD, 4.25f, true);
+			reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->AnimationBlending(ANIMATION_IDLE, ANIMATION_WALK);
 		}
 
 	} break;
