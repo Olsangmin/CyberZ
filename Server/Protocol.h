@@ -35,6 +35,9 @@ struct CS_MOVE_PACKET {
 	unsigned char size;
 	char	type;
 	DirectX::XMFLOAT3 position;
+	Pl_Anim pre_ani; // 0 1
+	Pl_Anim after_ani; // 0 1
+	float blending_time;
 	float	yaw;
 };
 
@@ -50,12 +53,17 @@ struct SC_LOGIN_INFO_PACKET {
 	int		id;
 };
 
+enum Pl_Anim { IDLE, WALK };
+
 struct SC_MOVE_OBJECT_PACKET {
 	unsigned char size;
 	char		type;
 	int		id;
 	DirectX::XMFLOAT3 position;
 	float	yaw;
+	Pl_Anim pre_ani; // 0 1
+	Pl_Anim after_ani; // 0 1
+	float blending_time;
 	bool		is_valid;
 	// unsigned int move_time;
 };
