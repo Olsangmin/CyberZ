@@ -36,7 +36,7 @@ protected:
 	CCamera						*m_pCamera = NULL;
 
 public:
-	bool						m_bUnable = true;
+	bool						m_bUnable = false;
 	bool						m_bMove = true;
 
 public:

@@ -14,14 +14,7 @@
 #pragma comment(lib, "WS2_32.lib")
 #pragma comment(lib, "MSWSock.lib")
 
-#include <d3d12.h>
 
-
-
-struct Position
-{
-	float x, y, z;
-};
 
 static void ErrorDisplay(const char* msg)
 {

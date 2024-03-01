@@ -1,4 +1,5 @@
 #pragma once
+#include <DirectXMath.h>
 
 constexpr int PORT_NUM = 4000;
 constexpr int MAX_USER = 1000;
@@ -14,6 +15,7 @@ constexpr char CS_TEST = 200;
 // =======================
 constexpr char SC_LOGIN_INFO = 0;
 constexpr char SC_MOVE_OBJECT = 1;
+constexpr char SC_ADD_PLAYER = 2;
 constexpr char SC_TEST = 200;
 
 
@@ -32,7 +34,7 @@ struct CS_LOGOUT_PACKET {
 struct CS_MOVE_PACKET {
 	unsigned char size;
 	char	type;
-	float	x, y, z;
+	DirectX::XMFLOAT3 position;
 	float	yaw;
 };
 
@@ -50,18 +52,19 @@ struct SC_LOGIN_INFO_PACKET {
 
 struct SC_MOVE_OBJECT_PACKET {
 	unsigned char size;
-	char	type;
+	char		type;
 	int		id;
-	float	x, y, z;
+	DirectX::XMFLOAT3 position;
 	float	yaw;
+	bool		is_valid;
 	// unsigned int move_time;
 };
 
-struct SC_ADD_OBJECT_PACKET {
+struct SC_ADD_PLAYER_PACKET {
 	unsigned char size;
 	char	type;
 	int id;
-	float x, y, z;
+	DirectX::XMFLOAT3 position;
 	float yaw;
 	char name[NAME_SIZE];
 };
