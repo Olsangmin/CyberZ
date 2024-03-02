@@ -65,7 +65,14 @@ public:
 	bool CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget);
 
 	void ReleaseUploadBuffers();
-
+public:
+	// @@서버코드@@서버코드@@
+	void InitNetwork();
+	void Recv_Packet();
+	void send_packet(void* packet);
+	void ProcessPacket(char* p);
+	void process_data(char* net_buf, size_t io_byte);
+	// @@서버코드@@서버코드@@
 
 	CPlayer**				m_ppPlayer = NULL;				// 모든 플레이어 정보
 	CPlayer*				m_pMyPlayer = NULL;				// 현재 플레이어 정보

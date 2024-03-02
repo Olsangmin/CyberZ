@@ -135,6 +135,16 @@ void Server::Process_packet(int c_id, char* packet)
 		}
 		std::cout << "Client[" << c_id << "] Login.\n" << std::endl;
 		clients[c_id].send_login_info_packet();
+		
+		for (auto& cl : clients) {
+			{
+				std::lock_guard<std::mutex> ll(cl.o_lock);
+				if (ST_INGAME != cl.state) continue;
+			}
+			if (cl.GetId() == c_id) continue;
+			cl.send_add_player_packet(c_id, clients[c_id].GetPos());
+			clients[c_id].send_add_player_packet(cl.GetId(), cl.GetPos());
+		}
 	}
 				 break;
 	case CS_LOGOUT: {
@@ -149,47 +159,18 @@ void Server::Process_packet(int c_id, char* packet)
 				  break;
 	case CS_MOVE: {
 		CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
-		if (clients[c_id].state != ST_INGAME) return;
-		// std::cout << "Client[" << c_id << "] Move. -> ";
-		//<< (int)p->direction << "\n" << std::endl;
-		Position pre_pos = clients[c_id].GetPos();
-		float pre_yaw = clients[c_id].GetYaw();
-		/*switch (p->direction) {
-		case 1: 
-			std::cout << "앞으로 이동" << std::endl; 
-			break;
-		case 2:
-			std::cout << "뒤로 이동" << std::endl; 
-			break;
-		case 4:
-			std::cout << "좌로 이동" << std::endl; 
-			break;
-		case 8:
-			std::cout << "우로 이동" << std::endl; 
-			break;
-
-		default:
-			std::cout << "이동 오류" << std::endl; 
-			break;
-		}*/
-		if (p->x < 0.f || p->x > 2048.f || p->z < 0.f || p->z > 2048.f) {
-			clients[c_id].send_move_packet(c_id, pre_pos, pre_yaw);
-			std::cout << "Client[" << c_id << "] 끝자락 " << std::endl;
-			return;
-		}
-		else {
-			Position ClearPos{ p->x, p->y, p->z };
-			float ClearYaw = p->yaw;
-			for (auto& cl : clients) {
-				if (cl.state != ST_INGAME) continue;
-				cl.send_move_packet(c_id, ClearPos, ClearYaw);
-			}
-			std::cout << "Client[" << c_id << "] Move. -> ";
-			std::cout << "(" << ClearPos.x << ", " << ClearPos.y << ", " << ClearPos.z << ")" << std::endl;
-		}
-
-
+		DirectX::XMFLOAT3 pos = { p->position };
+		float yaw = p->yaw;
+		clients[c_id].SetPos(pos);
+		clients[c_id].SetYaw(yaw);
 		
+		for (auto& cl : clients) {
+			if (cl.state != ST_INGAME) continue;
+			cl.send_move_packet(c_id,pos, true);
+		}
+		std::cout << "Client[" << c_id << "] Move. -> ";
+		std::cout << "(" << pos.x << ", " << pos.y << ", " << pos.z << ")" << std::endl;
+						
 	}
 				break;
 	case CS_TEST: {

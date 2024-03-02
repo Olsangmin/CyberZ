@@ -355,25 +355,20 @@ CTerrainPlayer::CTerrainPlayer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandLi
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
 	CLoadedModelInfo* pPlayerModel = pModel;
-	//if(!pPlayerModel) pPlayerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Player_1.bin", NULL);
+
 	SetChild(pPlayerModel->m_pModelRootObject, true);
 
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 2, pPlayerModel);
-	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 1);
-	//m_pSkinnedAnimationController->SetTrackAnimationSet(2, 2);
-	//m_pSkinnedAnimationController->SetTrackAnimationSet(3, 3);
-	//m_pSkinnedAnimationController->SetTrackAnimationSet(4, 4);
-	//m_pSkinnedAnimationController->SetTrackAnimationSet(5, 5);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, MAX_ANIMATION_TYPE, pPlayerModel);
 
+	// Animation Setting
+	for(int i=0;i< MAX_ANIMATION_TYPE;++i)
+		m_pSkinnedAnimationController->SetTrackAnimationSet(i, i);
 
-	m_pSkinnedAnimationController->SetTrackEnable(1, false);
-	//m_pSkinnedAnimationController->SetTrackEnable(5, false);
-	//m_pSkinnedAnimationController->SetTrackEnable(2, false);
-	//m_pSkinnedAnimationController->SetTrackEnable(3, false);
-	//m_pSkinnedAnimationController->SetTrackEnable(4, false);
-	//m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	// Default animation setting
+	m_pSkinnedAnimationController->SetAllTrackDisable();
+	m_pSkinnedAnimationController->SetTrackEnable(ANIMATION_IDLE, true);
 
+	// Sound setting
 	m_pSkinnedAnimationController->SetCallbackKeys(1, 2);
 #ifdef _WITH_SOUND_RESOURCE
 	m_pSkinnedAnimationController->SetCallbackKey(0, 0.1f, _T("Footstep01"));
@@ -487,7 +482,6 @@ void CTerrainPlayer::OnCameraUpdateCallback(float fTimeElapsed)
 		if (m_pCamera->GetMode() == THIRD_PERSON_CAMERA)
 		{
 			CThirdPersonCamera *p3rdPersonCamera = (CThirdPersonCamera *)m_pCamera;
-			//p3rdPersonCamera->SetLookAt(XMFLOAT3(0.0f,30.0f,0.0f));
 			p3rdPersonCamera->SetLookAt(GetPosition());
 		}
 	}
@@ -495,25 +489,9 @@ void CTerrainPlayer::OnCameraUpdateCallback(float fTimeElapsed)
 
 void CTerrainPlayer::Move(DWORD dwDirection, DWORD dwLastDirection, float fDistance, bool bUpdateVelocity)
 {
-	//if (dwDirection != dwLastDirection) {
-	//	m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
-	//}
 	if (dwDirection)
 	{
-
-		if (m_pSkinnedAnimationController->m_fBlendingTime <=1.0f) {
-			m_pSkinnedAnimationController->SetTrackBlending(0, 1);
-			m_pSkinnedAnimationController->SetAnimationBlending(true);
-		}
-		else {
-			m_pSkinnedAnimationController->m_pAnimationTracks[0].m_fPosition = 0.0f;
-			m_pSkinnedAnimationController->SetAnimationBlending(false);
-			m_pSkinnedAnimationController->SetTrackEnable(1, true);
-		}
-		
-
-
-		//m_pSkinnedAnimationController->SetTrackEnable(1, true);
+		AnimationBlending(ANIMATION_IDLE, ANIMATION_WALK);
 	}
 
 	CPlayer::Move(dwDirection, fDistance, bUpdateVelocity);
@@ -528,15 +506,22 @@ void CTerrainPlayer::Update(float fTimeElapsed)
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
 		if (::IsZero(fLength))
 		{
-			if (m_pSkinnedAnimationController->m_fBlendingTime <= 1.0f) {
-				m_pSkinnedAnimationController->SetTrackBlending(1, 0);
-				m_pSkinnedAnimationController->SetAnimationBlending(true);
-			}
-			else {
-				m_pSkinnedAnimationController->m_pAnimationTracks[1].m_fPosition = 0.0f;
-				m_pSkinnedAnimationController->SetAnimationBlending(false);
-				m_pSkinnedAnimationController->SetTrackEnable(0, true);
-			}
+			AnimationBlending(ANIMATION_WALK, ANIMATION_IDLE);
 		}
+	}
+}
+
+void CTerrainPlayer::AnimationBlending(int type1, int type2)
+{
+	if (m_pSkinnedAnimationController->m_fBlendingTime <= 1.0f) {
+		// If need to blending 
+		m_pSkinnedAnimationController->SetAnimationBlending(true);
+		m_pSkinnedAnimationController->SetTrackBlending(type1, type2);
+	}
+	else {
+		// If the blending is done 
+		m_pSkinnedAnimationController->SetTrackEnable(type2, true);
+		m_pSkinnedAnimationController->SetAnimationBlending(false);
+		m_pSkinnedAnimationController->m_pAnimationTracks[type1].m_fPosition = -ANIMATION_CALLBACK_EPSILON;
 	}
 }

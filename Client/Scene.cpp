@@ -83,6 +83,7 @@ void CScene::BuildDefaultLightsAndMaterials()
 
 void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList)
 {
+
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 76); //SuperCobra(17), Gunship(2), Player: Angrybot()
@@ -90,6 +91,69 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature); 
 
 	BuildDefaultLightsAndMaterials();
+
+	//---------------------------------------------------------------------
+	// SKY BOX
+	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	
+	//---------------------------------------------------------------------
+	// TERRAIN
+	XMFLOAT3 xmf3Scale(15.0f, 1.0f, 15.0f);
+	XMFLOAT4 xmf4Color(0.2f, 0.2f, 0.2f, 0.0f);
+	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Terrain/BaseTerrain.raw"), 257, 257, xmf3Scale, xmf4Color);
+	
+	//---------------------------------------------------------------------
+	// OBG
+	m_nHierarchicalGameObjects = 1;
+	m_ppHierarchicalGameObjects = new CGameObject*[m_nHierarchicalGameObjects];
+
+	CLoadedModelInfo *pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot.bin", NULL);
+	m_ppHierarchicalGameObjects[0] = new CRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 1);
+	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppHierarchicalGameObjects[0]->SetPosition(280.0f, m_pTerrain->GetHeight(280.0f, 640.0f), 620.0f);
+	m_ppHierarchicalGameObjects[0]->SetScale(10.f, 10.f, 10.f);
+	if (pRobotModel) delete pRobotModel;
+
+	// SHADER OBJ
+	m_nShaders = 0;
+/*
+	m_ppShaders = new CShader*[m_nShaders];
+
+	CEthanObjectsShader *pEthanObjectsShader = new CEthanObjectsShader();
+	pEthanObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pEthanModel, m_pTerrain);
+
+	m_ppShaders[0] = pEthanObjectsShader;
+	if (pEthanModel) delete pEthanModel;
+*/
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+#ifdef USE_NETWORK
+	InitNetwork();
+#endif 
+
+	//---------------------------------------------------------------------
+	// Player
+
+	m_nPlayer = MAX_PLAYER;
+
+	m_ppPlayer = new CPlayer * [m_nPlayer];
+
+	m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
+
+	// 저장된 모델 바꿀 수 있음
+
+
+	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
+	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
+	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
+
+	for (int i = 0; i < m_nPlayer; ++i) {
+		CTerrainPlayer* pPlayer = new CTerrainPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
+		m_ppPlayer[i] = pPlayer;
+	}
+
+	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
 
 }
 
@@ -441,7 +505,16 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 
 	DWORD dwDirection = 0;
 	DWORD dwDirection1 = 0;
-
+	
+	if (m_ppPlayer[SECOND_PLAYER]->m_bMove)
+	{
+		if (pKeysBuffer[VK_UP] & 0xF0) dwDirection |= DIR_FORWARD;
+		if (pKeysBuffer[VK_DOWN] & 0xF0) dwDirection |= DIR_BACKWARD;
+		if (pKeysBuffer[VK_LEFT] & 0xF0) dwDirection |= DIR_LEFT;
+		if (pKeysBuffer[VK_RIGHT] & 0xF0) dwDirection |= DIR_RIGHT;
+		if (pKeysBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
+		if (pKeysBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
+	}
 
 	if (m_pMyPlayer->m_bMove)
 	{
@@ -462,6 +535,14 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 	if (pKeysBuffer['5'] & 0xF0) m_ppPlayer[SECOND_PLAYER]->m_bUnable = false;
 	if (pKeysBuffer['6'] & 0xF0) m_ppPlayer[THIRD_PLAYER]->m_bUnable = false;
 
+	// Decide whether to blend
+	// 전에 입력한 키와 다르다면 블렌딩타임을 0으로 설정
+	// 블렌딩 타임이 0 -> 블렌딩 시작
+	// 블렌딩 타임이 1 -> 블렌딩 완료
+	if (m_dwLastDirection != dwDirection1) {
+		m_pMyPlayer->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+	}
+
 	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f) || (dwDirection1 != 0))
 	{
 		if ((cxDelta || cyDelta) && m_pMyPlayer->m_bUnable)
@@ -473,26 +554,20 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 		}
 
 #ifdef USE_NETWORK
-		int my_id = network.my_id;
-		/*Position pos = { m_pPlayer[FIRST_PLAYER]->GetPosition().x, m_pPlayer[FIRST_PLAYER]->GetPosition().y, m_pPlayer[FIRST_PLAYER]->GetPosition().z };
-		float yaw = m_pPlayer[FIRST_PLAYER]->GetYaw();*/
-		network.game_users[my_id].pos = { m_pPlayer[FIRST_PLAYER]->GetPosition().x, m_pPlayer[FIRST_PLAYER]->GetPosition().y, m_pPlayer[FIRST_PLAYER]->GetPosition().z };
-		network.game_users[my_id].yaw = m_pPlayer[FIRST_PLAYER]->GetYaw();
-		CS_MOVE_PACKET p;
-		p.size = sizeof(p);
-		p.type = CS_MOVE;
-		p.x = network.game_users[my_id].pos.x;
-		p.y = network.game_users[my_id].pos.y;
-		p.z = network.game_users[my_id].pos.z;
-		p.yaw = network.game_users[my_id].yaw;
-		network.send_packet(&p);
+		CS_MOVE_PACKET packet;
+		packet.size = sizeof(packet);
+		packet.type = CS_MOVE;
+		packet.position = m_pMyPlayer->GetPosition();
+		packet.yaw = m_pMyPlayer->GetYaw();
+		send_packet(&packet);
 #else
 
 #endif // USE_NETWORK
+
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, m_dwLastDirection, 4.25f, true);
 		if (dwDirection && m_ppPlayer[SECOND_PLAYER]->m_bUnable) m_ppPlayer[SECOND_PLAYER]->Move(dwDirection, m_dwLastDirection, 4.25f, true);
 	}
-	if (m_dwLastDirection != dwDirection1)m_pMyPlayer->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+	
 	m_dwLastDirection = dwDirection1;
 
 	return(false);
@@ -507,10 +582,8 @@ void CScene::AnimateObjects(float fTimeElapsed)
 	for (int i = 0; i < m_nPlayer; i++) if(m_ppPlayer[i])	m_ppPlayer[i]->Animate(fTimeElapsed);
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) if(m_ppHierarchicalGameObjects[i])	m_ppHierarchicalGameObjects[i]->Animate(m_fElapsedTime);
 
-	for (int i = 0; i < m_nPlayer; i++)
-	{
-		for (int j = 0; j < m_nHierarchicalGameObjects; j++) if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) m_ppPlayer[i]->m_bMove = false;
-	}
+	for (int i = 0; i < m_nPlayer; i++) if (CheckObjByObjCollition( m_ppPlayer[i], m_ppHierarchicalGameObjects[0])) m_ppPlayer[i]->m_bMove = false;
+	
 	if (m_pLights)
 	{
 		m_pLights[1].m_xmf3Position = m_ppPlayer[FIRST_PLAYER]->GetPosition();
@@ -520,9 +593,14 @@ void CScene::AnimateObjects(float fTimeElapsed)
 
 void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
 {
+#ifdef USE_NETWORK
+	Recv_Packet();
+	
+#endif 
 	if (m_pd3dGraphicsRootSignature) pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 	if (m_pd3dCbvSrvDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
-
+	
+	pCamera = m_pMyPlayer->GetCamera();
 	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	pCamera->UpdateShaderVariables(pd3dCommandList);
 
@@ -550,6 +628,7 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 			if (m_ppPlayer[i]->m_bUnable)m_ppPlayer[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
+	
 }
 
 void CScene::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -570,108 +649,119 @@ bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget)
 	else return false;
 }
 
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-
-void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+// @@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@
+void CScene::InitNetwork()
 {
-	CScene::BuildObjects(pd3dDevice, pd3dCommandList);
-
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
-	//===============================//
-	// TERRAIN
-	XMFLOAT3 xmf3Scale(15.0f, 1.0f, 15.0f);
-	XMFLOAT4 xmf4Color(0.2f, 0.2f, 0.2f, 0.0f);
-	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Terrain/BaseTerrain.raw"), 257, 257, xmf3Scale, xmf4Color);
-
-	//===============================//
-	// OBG
-
-	m_nHierarchicalGameObjects = 0;
-
-	//===============================//
-	// Player
-	m_nPlayer = MAX_PLAYER;
-	m_ppPlayer = new CPlayer * [m_nPlayer];
-	m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
-
-	// 저장된 모델 바꿀 수 있음
-	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
-	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
-	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
-
-	for (int i = 0; i < m_nPlayer; ++i) {
-		CTerrainPlayer* pPlayer = new CTerrainPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
-		m_ppPlayer[i] = pPlayer;
+	wcout.imbue(locale("korean"));
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+		cout << "WSA START ERROR" << endl;
 	}
-	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
+
+	c_socket = WSASocket(AF_INET, SOCK_STREAM, 0, 0, 0, 0);
+	if (c_socket == INVALID_SOCKET) {
+		cout << "SOCKET INIT ERROR!" << endl;
+	}
+
+	SOCKADDR_IN server_address{};
+	ZeroMemory(&server_address, sizeof(server_address));
+	server_address.sin_family = AF_INET;
+	server_address.sin_port = htons(PORT_NUM);
+	inet_pton(AF_INET, ServerIP.c_str(), &(server_address.sin_addr.s_addr));
+
+	int ret = connect(c_socket, reinterpret_cast<SOCKADDR*>(&server_address), sizeof(server_address));
+	if (ret < 0) exit(-1);
+
+	unsigned long noblock = 1;
+	ioctlsocket(c_socket, FIONBIO, &noblock);
+
+	CS_LOGIN_PACKET p;
+	p.size = sizeof(p);
+	p.type = CS_LOGIN;
+	string player_name{ "P" };
+	strcpy_s(p.name, player_name.c_str());
+	send_packet(&p);
 }
 
-//---------------------------------------------------------------------
-
-void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void CScene::Recv_Packet()
 {
 
-	CScene::BuildObjects(pd3dDevice, pd3dCommandList);
+	char buf[BUF_SIZE] = { 0 };
+	WSABUF wsabuf{ BUF_SIZE, buf };
+	DWORD recv_byte{ 0 }, recv_flag{ 0 };
 
-	//===============================//
-	// SKY BOX
-	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	int retval = WSARecv(c_socket, &wsabuf, 1, &recv_byte, &recv_flag, nullptr, nullptr);
 
-	//===============================//
-	// TERRAIN
-	XMFLOAT3 xmf3Scale(15.0f, 1.0f, 15.0f);
-	XMFLOAT4 xmf4Color(0.2f, 0.2f, 0.2f, 0.0f);
-	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Terrain/BaseTerrain.raw"), 257, 257, xmf3Scale, xmf4Color);
-
-	//===============================//
-	// OBG
-	m_nHierarchicalGameObjects = 1;
-	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
-
-	CLoadedModelInfo* pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot.bin", NULL);
-	m_ppHierarchicalGameObjects[0] = new CRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 1);
-	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppHierarchicalGameObjects[0]->SetPosition(280.0f, m_pTerrain->GetHeight(280.0f, 640.0f), 620.0f);
-	m_ppHierarchicalGameObjects[0]->SetScale(10.f, 10.f, 10.f);
-	if (pRobotModel) delete pRobotModel;
-
-	// SHADER OBJ
-	m_nShaders = 0;
-	/*
-		m_ppShaders = new CShader*[m_nShaders];
-
-		CEthanObjectsShader *pEthanObjectsShader = new CEthanObjectsShader();
-		pEthanObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pEthanModel, m_pTerrain);
-
-		m_ppShaders[0] = pEthanObjectsShader;
-		if (pEthanModel) delete pEthanModel;
-	*/
-
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
-	//===============================//
-	// Player
-
-	m_nPlayer = MAX_PLAYER;
-
-	m_ppPlayer = new CPlayer * [m_nPlayer];
-
-	m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
-
-	// 저장된 모델 바꿀 수 있음
-	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
-	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
-	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
-
-	for (int i = 0; i < m_nPlayer; ++i) {
-		CTerrainPlayer* pPlayer = new CTerrainPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
-		m_ppPlayer[i] = pPlayer;
+	if (recv_byte > 0) {
+		process_data(wsabuf.buf, recv_byte);
 	}
-	
-	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
+}
+
+void CScene::send_packet(void* packet)
+{
+	unsigned char* p = reinterpret_cast<unsigned char*>(packet);
+	size_t sent = 0;
+	send(c_socket, reinterpret_cast<char*>(p), static_cast<int>(p[0]), sent);
+}
+void CScene::ProcessPacket(char* p)
+{
+	switch (p[1])
+	{
+	case SC_LOGIN_INFO:
+	{
+		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
+		my_id = packet->id;
+		cout << "My ID is " << my_id << " !" << endl;
+		m_pMyPlayer = m_ppPlayer[my_id];
+		m_pMyPlayer->m_bUnable = true;
+	} break;
+	case SC_MOVE_OBJECT:
+	{
+		SC_MOVE_OBJECT_PACKET* packet = reinterpret_cast<SC_MOVE_OBJECT_PACKET*>(p);
+		// cout << packet->id << "Move" << endl;
+		if (packet->id == my_id) break;
+		else {
+			m_ppPlayer[packet->id]->Move(DIR_FORWARD, DIR_FORWARD, 4.25f, true);
+			reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->AnimationBlending(ANIMATION_IDLE, ANIMATION_WALK);
+		}
+
+	} break;
+	case SC_ADD_PLAYER:
+	{
+		SC_ADD_PLAYER_PACKET* packet = reinterpret_cast<SC_ADD_PLAYER_PACKET*>(p);
+		// cout << packet->id << " ADD" << endl;
+		m_ppPlayer[packet->id]->m_bUnable = true;
+		m_ppPlayer[packet->id]->SetPosition(packet->position);
+	}
+	break;
+	default:
+		printf("Unknown PACKET type [%d]\n", p[1]);
+	}
+}
+void CScene::process_data(char* net_buf, size_t io_byte)
+{
+	char* ptr = net_buf;
+	static size_t in_packet_size = 0;
+	static size_t saved_packet_size = 0;
+	static char packet_buffer[BUF_SIZE];
+
+	while (0 != io_byte) {
+		if (0 == in_packet_size) in_packet_size = ptr[0];
+		if (io_byte + saved_packet_size >= in_packet_size) {
+			memcpy(packet_buffer + saved_packet_size, ptr, in_packet_size - saved_packet_size);
+			ProcessPacket(packet_buffer);
+			ptr += in_packet_size - saved_packet_size;
+			io_byte -= in_packet_size - saved_packet_size;
+			in_packet_size = 0;
+			saved_packet_size = 0;
+		}
+		else {
+			memcpy(packet_buffer + saved_packet_size, ptr, io_byte);
+			saved_packet_size += io_byte;
+			io_byte = 0;
+		}
+	}
 
 }
+// @@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@
 
