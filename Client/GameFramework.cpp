@@ -326,6 +326,20 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 					break;
 				case 'B':
 					m_bRenderBoundingBox = !m_bRenderBoundingBox;
+					break;
+
+				//======================
+				// Scene Change
+				case VK_F5:
+					ReleaseObjects();
+					m_nSceneNum = FIRST_ROUND_SCENE;
+					BuildObjects();
+					break;
+				case VK_F6:
+					ReleaseObjects();
+					m_nSceneNum = SECOND_ROUND_SCENE;
+					BuildObjects();
+					break;
 
 				default:
 					break;
@@ -402,10 +416,26 @@ void CGameFramework::BuildObjects()
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
-	m_pScene = new CScene();
-	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+	switch (m_nSceneNum)
+	{
+		
+		case FIRST_ROUND_SCENE:
+		{
+			m_pScene = new CFirstRoundScene();
+			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
-	m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
+			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
+			break;
+		}
+		case SECOND_ROUND_SCENE:
+		{
+			m_pScene = new CSecondRoundScene();
+			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+
+			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
+			break;
+		}
+	}
 
 	m_pd3dCommandList->Close();
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
