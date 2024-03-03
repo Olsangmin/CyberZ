@@ -9,7 +9,9 @@ Server& Server::GetInstance()
 Server::Server()
 {
 	s_socket = 0; c_socket = 0; h_iocp = 0;
-	for (int i = 0; i < MAX_USER; ++i) clients[i].SetId(-1);
+	for (int i = 0; i < MAX_USER; ++i) {
+		clients[i].SetId(-1);
+	}
 }
 
 void Server::Network()
@@ -82,6 +84,7 @@ void Server::Worker_thread()
 				clients[c_id].SetId(c_id);
 				clients[c_id].SetSocket(c_socket);
 				clients[c_id].Set_prev_remain(0);
+				clients[c_id].SetPos(DirectX::XMFLOAT3(0.f, 0.f, 0.f));
 				CreateIoCompletionPort(reinterpret_cast<HANDLE>(c_socket), h_iocp, c_id, 0);
 				clients[c_id].do_recv();
 				c_socket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);

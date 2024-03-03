@@ -466,6 +466,7 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 	// 전에 입력한 키와 다르다면 블렌딩타임을 0으로 설정
 	// 블렌딩 타임이 0 -> 블렌딩 시작
 	// 블렌딩 타임이 1 -> 블렌딩 완료
+
 	if (m_dwLastDirection != dwDirection1) {
 		m_pMyPlayer->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 	}
@@ -480,6 +481,8 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 				m_pMyPlayer->Rotate(cyDelta, cxDelta, 0.0f);
 		}
 
+		if (dwDirection1 && m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, m_dwLastDirection, 4.25f, true);
+
 #ifdef USE_NETWORK
 		CS_MOVE_PACKET packet;
 		packet.size = sizeof(packet);
@@ -487,12 +490,8 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 		packet.position = m_pMyPlayer->GetPosition();
 		packet.yaw = m_pMyPlayer->GetYaw();
 		send_packet(&packet);
-#else
-
 #endif // USE_NETWORK
 
-		if (dwDirection1 && m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, m_dwLastDirection, 4.25f, true);
-		if (dwDirection && m_ppPlayer[SECOND_PLAYER]->m_bUnable) m_ppPlayer[SECOND_PLAYER]->Move(dwDirection, m_dwLastDirection, 4.25f, true);
 	}
 	
 	m_dwLastDirection = dwDirection1;
@@ -523,10 +522,7 @@ void CScene::AnimateObjects(float fTimeElapsed)
 
 void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
 {
-#ifdef USE_NETWORK
-	Recv_Packet();
-	
-#endif 
+
 	if (m_pd3dGraphicsRootSignature) pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 	if (m_pd3dCbvSrvDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
 	
@@ -558,7 +554,11 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 			if (m_ppPlayer[i]->m_bUnable)m_ppPlayer[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
-	
+
+#ifdef USE_NETWORK
+	Recv_Packet();
+#endif 
+
 }
 
 void CScene::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -741,6 +741,7 @@ void CScene::send_packet(void* packet)
 	size_t sent = 0;
 	send(c_socket, reinterpret_cast<char*>(p), static_cast<int>(p[0]), sent);
 }
+
 void CScene::ProcessPacket(char* p)
 {
 	switch (p[1])
@@ -753,17 +754,7 @@ void CScene::ProcessPacket(char* p)
 		m_pMyPlayer = m_ppPlayer[my_id];
 		m_pMyPlayer->m_bUnable = true;
 	} break;
-	case SC_MOVE_OBJECT:
-	{
-		SC_MOVE_OBJECT_PACKET* packet = reinterpret_cast<SC_MOVE_OBJECT_PACKET*>(p);
-		// cout << packet->id << "Move" << endl;
-		if (packet->id == my_id) break;
-		else {
-			m_ppPlayer[packet->id]->Move(DIR_FORWARD, DIR_FORWARD, 4.25f, true);
-			reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->AnimationBlending(ANIMATION_IDLE, ANIMATION_WALK);
-		}
 
-	} break;
 	case SC_ADD_PLAYER:
 	{
 		SC_ADD_PLAYER_PACKET* packet = reinterpret_cast<SC_ADD_PLAYER_PACKET*>(p);
@@ -771,6 +762,18 @@ void CScene::ProcessPacket(char* p)
 		m_ppPlayer[packet->id]->m_bUnable = true;
 		m_ppPlayer[packet->id]->SetPosition(packet->position);
 	}
+
+	case SC_MOVE_OBJECT:
+	{
+		SC_MOVE_OBJECT_PACKET* packet = reinterpret_cast<SC_MOVE_OBJECT_PACKET*>(p);
+		// cout << packet->id << "Move" << endl;
+		if (packet->id == my_id) break;
+		else {
+			m_ppPlayer[packet->id]->SetPosition(packet->position);
+		}
+
+	} break;
+	
 	break;
 	default:
 		printf("Unknown PACKET type [%d]\n", p[1]);

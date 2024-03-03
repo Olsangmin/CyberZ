@@ -47,7 +47,7 @@ using namespace std;
 #include "Network.h"
 
 // 주석하면 서버없이 가능@@@@@@@@@
-// #define USE_NETWORK 
+#define USE_NETWORK 
 
 // =================================================
 
@@ -110,14 +110,15 @@ inline void Swap(float *pfS, float *pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT
 #define ANIMATION_IDLE					0
 #define ANIMATION_WALK					1
 #define ANIMATION_RUN					2
-#define ANIMATION_CREEP					3
-#define ANIMATION_CRAWL					4
+#define ANIMATION_CREEP				3
+#define ANIMATION_CRAWL				4
 #define ANIMATION_JUMP					5
 #define ANIMATION_HIT					6
 #define ANIMATION_DIE					7
 #define ANIMATION_USE					8
 #define ANIMATION_EAT					9
 #define ANIMATION_DUMMY					10
+
 
 // Player 최대치
 #define MAX_PLAYER						3

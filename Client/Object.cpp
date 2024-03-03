@@ -703,7 +703,7 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject* pRootGam
 				m_pAnimationSets->m_ppBoneFrameCaches[j]->m_xmf4x4ToParent = xmf4x4Transform;
 
 			}
-			m_fBlendingTime += fTimeElapsed*4.0f;
+			m_fBlendingTime += fTimeElapsed * 4.0f;
 
 			m_pAnimationTracks[m_nUpperBodyAnimation].HandleCallback();
 		}
