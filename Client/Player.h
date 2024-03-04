@@ -18,6 +18,14 @@ protected:
 	XMFLOAT3					m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 	XMFLOAT3					m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
 
+	XMFLOAT3					m_xmf3CRight = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	XMFLOAT3					m_xmf3CUp = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	XMFLOAT3					m_xmf3CLook = XMFLOAT3(0.0f, 0.0f, 1.0f);
+
+	float           			m_fCPitch = 0.0f;
+	float           			m_fCYaw = 0.0f;
+	float           			m_fCRoll = 0.0f;
+
 	XMFLOAT3					m_xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f);
 
 	float           			m_fPitch = 0.0f;
@@ -33,9 +41,9 @@ protected:
 	LPVOID						m_pPlayerUpdatedContext = NULL;
 	LPVOID						m_pCameraUpdatedContext = NULL;
 
-	CCamera						*m_pCamera = NULL;
 
 public:
+	CCamera						*m_pCamera = NULL;
 	bool						m_bUnable = false;
 	bool						m_bMove = true;
 
@@ -47,6 +55,10 @@ public:
 	XMFLOAT3 GetLookVector() { return(m_xmf3Look); }
 	XMFLOAT3 GetUpVector() { return(m_xmf3Up); }
 	XMFLOAT3 GetRightVector() { return(m_xmf3Right); }
+
+	XMFLOAT3 GetCLookVector() { return(m_xmf3CLook); }
+	XMFLOAT3 GetCUpVector() { return(m_xmf3CUp); }
+	XMFLOAT3 GetCRightVector() { return(m_xmf3CRight); }
 
 	void SetFriction(float fFriction) { m_fFriction = fFriction; }
 	void SetGravity(const XMFLOAT3& xmf3Gravity) { m_xmf3Gravity = xmf3Gravity; }
@@ -70,6 +82,7 @@ public:
 	void Move(const XMFLOAT3& xmf3Shift, bool bVelocity = false);
 	void Move(float fxOffset = 0.0f, float fyOffset = 0.0f, float fzOffset = 0.0f);
 	void Rotate(float x, float y, float z);
+	void CameraRotate(float x, float y, float z);
 
 	virtual void Update(float fTimeElapsed);
 
@@ -92,23 +105,6 @@ public:
 
 };
 
-class CAirplanePlayer : public CPlayer
-{
-public:
-	CAirplanePlayer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, void *pContext=NULL);
-	virtual ~CAirplanePlayer();
-
-	CGameObject					*m_pMainRotorFrame = NULL;
-	CGameObject					*m_pTailRotorFrame = NULL;
-
-private:
-	virtual void OnPrepareAnimate();
-	virtual void Animate(float fTimeElapsed);
-
-public:
-	virtual CCamera *ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
-	virtual void OnPrepareRender();
-};
 
 class CSoundCallbackHandler : public CAnimationCallbackHandler
 {

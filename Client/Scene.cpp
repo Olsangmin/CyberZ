@@ -550,7 +550,7 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 			if (pKeysBuffer[VK_RBUTTON] & 0xF0)
 				m_pMyPlayer->Rotate(cyDelta, 0.0f, -cxDelta);
 			else
-				m_pMyPlayer->Rotate(cyDelta, cxDelta, 0.0f);
+				m_pMyPlayer->CameraRotate(cyDelta, cxDelta, 0.0f);
 		}
 
 #ifdef USE_NETWORK
