@@ -130,6 +130,9 @@ inline void Swap(float *pfS, float *pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT
 #define SECOND_PLAYER					1
 #define THIRD_PLAYER					2
 
+// Scene ¹øÈ£
+#define	FIRST_ROUND_SCENE				1
+#define SECOND_ROUND_SCENE				2
 
 namespace Vector3
 {

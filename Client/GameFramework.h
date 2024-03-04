@@ -90,5 +90,7 @@ private:
 
 	_TCHAR						m_pszFrameRate[70];
 
+	int							m_nSceneNum = FIRST_ROUND_SCENE;	// 출력 씬 번호
+
 };
 

@@ -92,69 +92,6 @@ void CScene::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *p
 
 	BuildDefaultLightsAndMaterials();
 
-	//---------------------------------------------------------------------
-	// SKY BOX
-	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	
-	//---------------------------------------------------------------------
-	// TERRAIN
-	XMFLOAT3 xmf3Scale(15.0f, 1.0f, 15.0f);
-	XMFLOAT4 xmf4Color(0.2f, 0.2f, 0.2f, 0.0f);
-	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Terrain/BaseTerrain.raw"), 257, 257, xmf3Scale, xmf4Color);
-	
-	//---------------------------------------------------------------------
-	// OBG
-	m_nHierarchicalGameObjects = 1;
-	m_ppHierarchicalGameObjects = new CGameObject*[m_nHierarchicalGameObjects];
-
-	CLoadedModelInfo *pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot.bin", NULL);
-	m_ppHierarchicalGameObjects[0] = new CRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 1);
-	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppHierarchicalGameObjects[0]->SetPosition(280.0f, m_pTerrain->GetHeight(280.0f, 640.0f), 620.0f);
-	m_ppHierarchicalGameObjects[0]->SetScale(10.f, 10.f, 10.f);
-	if (pRobotModel) delete pRobotModel;
-
-	// SHADER OBJ
-	m_nShaders = 0;
-/*
-	m_ppShaders = new CShader*[m_nShaders];
-
-	CEthanObjectsShader *pEthanObjectsShader = new CEthanObjectsShader();
-	pEthanObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pEthanModel, m_pTerrain);
-
-	m_ppShaders[0] = pEthanObjectsShader;
-	if (pEthanModel) delete pEthanModel;
-*/
-
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
-#ifdef USE_NETWORK
-	InitNetwork();
-#endif 
-
-	//---------------------------------------------------------------------
-	// Player
-
-	m_nPlayer = MAX_PLAYER;
-
-	m_ppPlayer = new CPlayer * [m_nPlayer];
-
-	m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
-
-	// 저장된 모델 바꿀 수 있음
-
-
-	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
-	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
-	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
-
-	for (int i = 0; i < m_nPlayer; ++i) {
-		CTerrainPlayer* pPlayer = new CTerrainPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
-		m_ppPlayer[i] = pPlayer;
-	}
-
-	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
-
 }
 
 void CScene::ReleaseObjects()
@@ -505,16 +442,6 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 
 	DWORD dwDirection = 0;
 	DWORD dwDirection1 = 0;
-	
-	if (m_ppPlayer[SECOND_PLAYER]->m_bMove)
-	{
-		if (pKeysBuffer[VK_UP] & 0xF0) dwDirection |= DIR_FORWARD;
-		if (pKeysBuffer[VK_DOWN] & 0xF0) dwDirection |= DIR_BACKWARD;
-		if (pKeysBuffer[VK_LEFT] & 0xF0) dwDirection |= DIR_LEFT;
-		if (pKeysBuffer[VK_RIGHT] & 0xF0) dwDirection |= DIR_RIGHT;
-		if (pKeysBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
-		if (pKeysBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
-	}
 
 	if (m_pMyPlayer->m_bMove)
 	{
@@ -582,8 +509,11 @@ void CScene::AnimateObjects(float fTimeElapsed)
 	for (int i = 0; i < m_nPlayer; i++) if(m_ppPlayer[i])	m_ppPlayer[i]->Animate(fTimeElapsed);
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) if(m_ppHierarchicalGameObjects[i])	m_ppHierarchicalGameObjects[i]->Animate(m_fElapsedTime);
 
-	for (int i = 0; i < m_nPlayer; i++) if (CheckObjByObjCollition( m_ppPlayer[i], m_ppHierarchicalGameObjects[0])) m_ppPlayer[i]->m_bMove = false;
-	
+	for (int i = 0; i < m_nPlayer; i++)
+	{
+		for (int j = 0; j < m_nHierarchicalGameObjects; j++) if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) m_ppPlayer[i]->m_bMove = false;
+	}
+
 	if (m_pLights)
 	{
 		m_pLights[1].m_xmf3Position = m_ppPlayer[FIRST_PLAYER]->GetPosition();
@@ -649,6 +579,114 @@ bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget)
 	else return false;
 }
 
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+
+void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	CScene::BuildObjects(pd3dDevice, pd3dCommandList);
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	//===============================//
+	// TERRAIN
+	XMFLOAT3 xmf3Scale(15.0f, 1.0f, 15.0f);
+	XMFLOAT4 xmf4Color(0.2f, 0.2f, 0.2f, 0.0f);
+	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Terrain/BaseTerrain.raw"), 257, 257, xmf3Scale, xmf4Color);
+
+	//===============================//
+	// OBG
+
+	m_nHierarchicalGameObjects = 0;
+
+	//===============================//
+	// Player
+	m_nPlayer = MAX_PLAYER;
+	m_ppPlayer = new CPlayer * [m_nPlayer];
+	m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
+
+	// 저장된 모델 바꿀 수 있음
+	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
+	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
+	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
+
+	for (int i = 0; i < m_nPlayer; ++i) {
+		CTerrainPlayer* pPlayer = new CTerrainPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
+		m_ppPlayer[i] = pPlayer;
+	}
+	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
+}
+
+//---------------------------------------------------------------------
+
+void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+
+	CScene::BuildObjects(pd3dDevice, pd3dCommandList);
+
+	//===============================//
+	// SKY BOX
+	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+
+	//===============================//
+	// TERRAIN
+	XMFLOAT3 xmf3Scale(15.0f, 1.0f, 15.0f);
+	XMFLOAT4 xmf4Color(0.2f, 0.2f, 0.2f, 0.0f);
+	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Terrain/BaseTerrain.raw"), 257, 257, xmf3Scale, xmf4Color);
+
+	//===============================//
+	// OBG
+	m_nHierarchicalGameObjects = 1;
+	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
+
+	CLoadedModelInfo* pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot.bin", NULL);
+	m_ppHierarchicalGameObjects[0] = new CRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 1);
+	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppHierarchicalGameObjects[0]->SetPosition(280.0f, m_pTerrain->GetHeight(280.0f, 640.0f), 620.0f);
+	m_ppHierarchicalGameObjects[0]->SetScale(10.f, 10.f, 10.f);
+	if (pRobotModel) delete pRobotModel;
+
+	// SHADER OBJ
+	m_nShaders = 0;
+	/*
+		m_ppShaders = new CShader*[m_nShaders];
+
+		CEthanObjectsShader *pEthanObjectsShader = new CEthanObjectsShader();
+		pEthanObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pEthanModel, m_pTerrain);
+
+		m_ppShaders[0] = pEthanObjectsShader;
+		if (pEthanModel) delete pEthanModel;
+	*/
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	//===============================//
+	// Player
+
+	m_nPlayer = MAX_PLAYER;
+
+	m_ppPlayer = new CPlayer * [m_nPlayer];
+
+	m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
+
+	// 저장된 모델 바꿀 수 있음
+	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
+	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
+	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
+
+	for (int i = 0; i < m_nPlayer; ++i) {
+		CTerrainPlayer* pPlayer = new CTerrainPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
+		m_ppPlayer[i] = pPlayer;
+	}
+
+	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
+
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // @@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@
 void CScene::InitNetwork()
 {
@@ -763,5 +801,6 @@ void CScene::process_data(char* net_buf, size_t io_byte)
 	}
 
 }
+
 // @@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@
 
