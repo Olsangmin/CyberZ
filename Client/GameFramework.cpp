@@ -422,8 +422,12 @@ void CGameFramework::BuildObjects()
 		case FIRST_ROUND_SCENE:
 		{
 			m_pScene = new CFirstRoundScene();
-			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
-
+			if (m_pScene) {
+#ifdef USE_NETWORK
+				m_pScene->InitNetwork();
+#endif // USE_NETWORK
+				m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+			}
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			break;
 		}
@@ -575,7 +579,7 @@ void CGameFramework::FrameAdvance()
 
 	m_GameTimer.GetFrameRate(m_pszFrameRate + 12, 37);
 	size_t nLength = _tcslen(m_pszFrameRate);
-	XMFLOAT3 xmf3Position = m_pScene->m_ppPlayer[FIRST_PLAYER]->GetPosition();
+	XMFLOAT3 xmf3Position = m_pScene->m_pMyPlayer->GetPosition();
 	_stprintf_s(m_pszFrameRate + nLength, 70 - nLength, _T("(%4f, %4f, %4f)"), xmf3Position.x, xmf3Position.y, xmf3Position.z);
 	::SetWindowText(m_hWnd, m_pszFrameRate);
 }

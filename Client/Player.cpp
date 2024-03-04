@@ -12,7 +12,6 @@
 CPlayer::CPlayer()
 {
 	m_pCamera = NULL;
-
 	m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
 	m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
@@ -53,7 +52,7 @@ void CPlayer::ReleaseShaderVariables()
 	if (m_pCamera) m_pCamera->ReleaseShaderVariables();
 }
 
-void CPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
+void CPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity) // 2
 {
 	if (dwDirection)
 	{
@@ -69,7 +68,7 @@ void CPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
 	}
 }
 
-void CPlayer::Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity)
+void CPlayer::Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity) // 3
 {
 	if (bUpdateVelocity)
 	{
@@ -77,7 +76,7 @@ void CPlayer::Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity)
 	}
 	else
 	{
-		m_xmf3Position = Vector3::Add(m_xmf3Position, xmf3Shift);
+		m_xmf3Position = Vector3::Add(m_xmf3Position, xmf3Shift); // 4 포지션
 		m_pCamera->Move(xmf3Shift);
 	}
 }
@@ -430,41 +429,56 @@ void CTerrainPlayer::OnCameraUpdateCallback(float fTimeElapsed)
 	}
 }
 
+
+// 1
 void CTerrainPlayer::Move(DWORD dwDirection, DWORD dwLastDirection, float fDistance, bool bUpdateVelocity)
 {
+	
 	if (dwDirection)
 	{
-		AnimationBlending(ANIMATION_IDLE, ANIMATION_WALK);
+		AnimationBlending(IDLE, WALK);
 	}
 
 	CPlayer::Move(dwDirection, fDistance, bUpdateVelocity);
 }
 
-void CTerrainPlayer::Update(float fTimeElapsed)
+void CTerrainPlayer::Update(float fTimeElapsed) 
 {
 	CPlayer::Update(fTimeElapsed);
-
+	cout << "[" << my_id << "] " << fTimeElapsed << endl;
+	
 	if (m_pSkinnedAnimationController)
 	{
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
 		if (::IsZero(fLength))
 		{
-			AnimationBlending(ANIMATION_WALK, ANIMATION_IDLE);
+			AnimationBlending(WALK, IDLE);
+			// anim_st = IDLE;
 		}
 	}
 }
 
-void CTerrainPlayer::AnimationBlending(int type1, int type2)
+void CTerrainPlayer::AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2)
 {
+	// 섞인 애니메이션
 	if (m_pSkinnedAnimationController->m_fBlendingTime <= 1.0f) {
-		// If need to blending 
-		m_pSkinnedAnimationController->SetAnimationBlending(true);
-		m_pSkinnedAnimationController->SetTrackBlending(type1, type2);
+		// If need to blending
+		// 체인지 애니메이션(섞인거) 
+		m_pSkinnedAnimationController->SetAnimationBlending(true); // 블렌딩을 할지 말지
+		m_pSkinnedAnimationController->SetTrackBlending(type1, type2); // 몇번째랑 몇번째
 	}
-	else { 
+	else { // 무조건 WALK
 		// If the blending is done 
+		// 체인지 애니메이션(walk)
+		/*CS_CHANGE_ANIMATION_PACKET* p;
+		p->size = sizeof(CS_CHANGE_ANIMATION_PACKET);
+		p->type = CS_CHANGE_ANIM;
+		p->ani_st = 
+		send(c_socket, reinterpret_cast<char*>(p), static_cast<int>(p[0]), sent);*/
 		m_pSkinnedAnimationController->SetTrackEnable(type2, true);
 		m_pSkinnedAnimationController->SetAnimationBlending(false);
 		m_pSkinnedAnimationController->m_pAnimationTracks[type1].m_fPosition = -ANIMATION_CALLBACK_EPSILON;
+		anim_st = type2;
 	}
+
 }

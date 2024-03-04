@@ -10,14 +10,19 @@ constexpr int NAME_SIZE = 20;
 constexpr char CS_LOGIN = 0;
 constexpr char CS_LOGOUT = 1;
 constexpr char CS_MOVE = 2;
+constexpr char CS_CHANGE_ANIM = 3;
+
 constexpr char CS_TEST = 200;
 
 // =======================
 constexpr char SC_LOGIN_INFO = 0;
 constexpr char SC_MOVE_OBJECT = 1;
 constexpr char SC_ADD_PLAYER = 2;
+constexpr char SC_CHANGE_ANIM = 3;
+
 constexpr char SC_TEST = 200;
 
+enum Player_Animation_ST { IDLE, WALK };
 
 #pragma pack (push, 1)
 struct CS_LOGIN_PACKET {
@@ -35,10 +40,13 @@ struct CS_MOVE_PACKET {
 	unsigned char size;
 	char	type;
 	DirectX::XMFLOAT3 position;
-	Pl_Anim pre_ani; // 0 1
-	Pl_Anim after_ani; // 0 1
-	float blending_time;
 	float	yaw;
+};
+
+struct CS_CHANGE_ANIMATION_PACKET {
+	unsigned char size;
+	char	type;
+	Player_Animation_ST ani_st;
 };
 
 struct CS_TEST_PACKET {
@@ -53,17 +61,12 @@ struct SC_LOGIN_INFO_PACKET {
 	int		id;
 };
 
-enum Pl_Anim { IDLE, WALK };
-
 struct SC_MOVE_OBJECT_PACKET {
 	unsigned char size;
 	char		type;
 	int		id;
 	DirectX::XMFLOAT3 position;
 	float	yaw;
-	Pl_Anim pre_ani; // 0 1
-	Pl_Anim after_ani; // 0 1
-	float blending_time;
 	bool		is_valid;
 	// unsigned int move_time;
 };
@@ -75,6 +78,13 @@ struct SC_ADD_PLAYER_PACKET {
 	DirectX::XMFLOAT3 position;
 	float yaw;
 	char name[NAME_SIZE];
+};
+
+struct SC_CHANGE_ANIMATION_PACKET {
+	unsigned char size;
+	char	type;
+	int id;
+	Player_Animation_ST ani_st;
 };
 
 

@@ -132,5 +132,7 @@ public:
 
 	virtual void Update(float fTimeElapsed);
 
-	void AnimationBlending(int type1, int type2);
+	void AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2);
+
+	Player_Animation_ST anim_st;
 };
