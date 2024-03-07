@@ -1305,6 +1305,9 @@ CGameObject *CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, I
 			CStandardMesh *pMesh = new CStandardMesh(pd3dDevice, pd3dCommandList);
 			pMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile);
 			pGameObject->SetMesh(pMesh);
+
+			CBoundingBoxMesh* pBoundingBoxMesh = new CBoundingBoxMesh(pd3dDevice, pd3dCommandList);
+			pGameObject->SetBoundingBoxMesh(pBoundingBoxMesh);
 		}
 		else if (!strcmp(pstrToken, "<SkinningInfo>:"))
 		{
@@ -1613,3 +1616,18 @@ CRobotObject::CRobotObject(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *
 CRobotObject::~CRobotObject()
 {
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+CStandardOBJ::CStandardOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel)
+{
+	CLoadedModelInfo* pObjectModel = pModel;
+	if (!pObjectModel) pObjectModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/BigContainer.bin", NULL);
+
+	SetChild(pObjectModel->m_pModelRootObject, true);
+}
+
+CStandardOBJ::~CStandardOBJ()
+{
+}
+
