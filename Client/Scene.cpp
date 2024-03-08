@@ -449,16 +449,15 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
 
+	for (int i = 0; i < m_nPlayer; i++) m_ppPlayer[i]->m_xmf3BeforeColliedPosition = m_ppPlayer[i]->GetPosition();
+
 	DWORD dwDirection = 0;
 	DWORD dwDirection1 = 0;
 
-	if (m_pMyPlayer->m_bMove)
-	{
 		if (pKeysBuffer['W'] & 0xF0) dwDirection1 |= DIR_FORWARD;
 		if (pKeysBuffer['S'] & 0xF0) dwDirection1 |= DIR_BACKWARD;
 		if (pKeysBuffer['A'] & 0xF0) dwDirection1 |= DIR_LEFT;
 		if (pKeysBuffer['D'] & 0xF0) dwDirection1 |= DIR_RIGHT;
-	}
 
 	// Player unable
 	// m_ppPlayer[원하는 캐릭터]->m_bUnable = true 면은 ADD_OBJ(실제로 생성이 아닌 렌더&움직임 가능 상태)
@@ -519,7 +518,8 @@ void CScene::AnimateObjects(float fTimeElapsed)
 
 	for (int i = 0; i < m_nPlayer; i++)
 	{
-		for (int j = 0; j < m_nHierarchicalGameObjects; j++) if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) m_ppPlayer[i]->m_bMove = false;
+		//m_ppPlayer[i]->UpdateBoundingBox();
+		for (int j = 0; j < m_nHierarchicalGameObjects; j++) if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) m_ppPlayer[i]->SetPosition(m_ppPlayer[i]->m_xmf3BeforeColliedPosition);
 	}
 
 	if (m_pLights)
