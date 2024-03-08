@@ -105,20 +105,8 @@ inline void Swap(float *pfS, float *pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT
 
 #define ANIMATION_CALLBACK_EPSILON		0.00165f
 
+// Animation Type 최대치
 #define MAX_ANIMATION_TYPE				11
-
-#define ANIMATION_IDLE					0
-#define ANIMATION_WALK					1
-#define ANIMATION_RUN					2
-#define ANIMATION_CREEP				3
-#define ANIMATION_CRAWL				4
-#define ANIMATION_JUMP					5
-#define ANIMATION_HIT					6
-#define ANIMATION_DIE					7
-#define ANIMATION_USE					8
-#define ANIMATION_EAT					9
-#define ANIMATION_DUMMY					10
-
 
 // Player 최대치
 #define MAX_PLAYER						3

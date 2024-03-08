@@ -182,35 +182,58 @@ void CPlayer::CameraRotate(float x, float y, float z)
 
 void CPlayer::Update(float fTimeElapsed)
 {
+	// Set Length(Vector)
 	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, m_xmf3Gravity);
 	float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
-	float fMaxVelocityXZ = m_fMaxVelocityXZ;
+
+	UpdateAcceleration(fLength);
+	UpdateGravity(fLength);
+	UpdatePlayerPostion(fTimeElapsed);
+	UpdateCameraPosition(fTimeElapsed);
+	UpdateFriction(fTimeElapsed);
+
+}
+
+void CPlayer::UpdateGravity(float& fLength)
+{
+	fLength = sqrtf(m_xmf3Velocity.y * m_xmf3Velocity.y);
+	if (fLength > m_fMaxVelocityY) m_xmf3Velocity.y *= (m_fMaxVelocityY / fLength);
+}
+
+void CPlayer::UpdateAcceleration(float& fLength)
+{
 	if (fLength > m_fMaxVelocityXZ)
 	{
-		m_xmf3Velocity.x *= (fMaxVelocityXZ / fLength);
-		m_xmf3Velocity.z *= (fMaxVelocityXZ / fLength);
+		m_xmf3Velocity.x *= (m_fMaxVelocityXZ / fLength);
+		m_xmf3Velocity.z *= (m_fMaxVelocityXZ / fLength);
 	}
-	float fMaxVelocityY = m_fMaxVelocityY;
-	fLength = sqrtf(m_xmf3Velocity.y * m_xmf3Velocity.y);
-	if (fLength > m_fMaxVelocityY) m_xmf3Velocity.y *= (fMaxVelocityY / fLength);
+}
 
+void CPlayer::UpdatePlayerPostion(float fTimeElapsed)
+{
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
 	Move(xmf3Velocity, false);
-
 	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
+}
 
+void CPlayer::UpdateCameraPosition(float fTimeElapsed)
+{
 	DWORD nCurrentCameraMode = m_pCamera->GetMode();
 	if (nCurrentCameraMode == THIRD_PERSON_CAMERA) m_pCamera->Update(m_xmf3Position, fTimeElapsed);
 	if (m_pCameraUpdatedContext) OnCameraUpdateCallback(fTimeElapsed);
 	if (nCurrentCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
-	//if (nCurrentCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(Vector3::Add(m_xmf3Position,Vector3::Add(GetLookVector(), XMFLOAT3(0.0f, 10.0f, 20.0f))));
 	m_pCamera->RegenerateViewMatrix();
+}
 
-	fLength = Vector3::Length(m_xmf3Velocity);
+void CPlayer::UpdateFriction(float fTimeElapsed)
+{
+	float fLength = Vector3::Length(m_xmf3Velocity);
 	float fDeceleration = (m_fFriction * fTimeElapsed);
 	if (fDeceleration > fLength) fDeceleration = fLength;
 	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(m_xmf3Velocity, -fDeceleration, true));
 }
+
+
 
 CCamera *CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
 {
@@ -268,6 +291,7 @@ void CPlayer::OnPrepareRender()
 
 void CPlayer::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
 {
+
 	DWORD nCameraMode = (pCamera) ? pCamera->GetMode() : 0x00;
 	if (nCameraMode == THIRD_PERSON_CAMERA) CGameObject::Render(pd3dCommandList, pCamera);
 }
@@ -308,7 +332,8 @@ CTerrainPlayer::CTerrainPlayer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandLi
 
 	// Default animation setting
 	m_pSkinnedAnimationController->SetAllTrackDisable();
-	m_pSkinnedAnimationController->SetTrackEnable(ANIMATION_IDLE, true);
+	m_pSkinnedAnimationController->SetTrackEnable(IDLE, true);
+	m_pasCurrentAni = IDLE;	
 
 	// Sound setting
 	m_pSkinnedAnimationController->SetCallbackKeys(1, 2);
@@ -436,7 +461,11 @@ void CTerrainPlayer::Move(DWORD dwDirection, DWORD dwLastDirection, float fDista
 	
 	if (dwDirection)
 	{
-		AnimationBlending(IDLE, WALK);
+		AnimationBlending(m_pasCurrentAni, DIE);
+		//cout <<GetPosition().x << "	";
+		//cout << GetPosition().y << "	";
+		//cout << GetPosition().z << endl;
+
 	}
 
 	CPlayer::Move(dwDirection, fDistance, bUpdateVelocity);
@@ -445,14 +474,15 @@ void CTerrainPlayer::Move(DWORD dwDirection, DWORD dwLastDirection, float fDista
 void CTerrainPlayer::Update(float fTimeElapsed) 
 {
 	CPlayer::Update(fTimeElapsed);
-	cout << "[" << my_id << "] " << fTimeElapsed << endl;
+
 	
 	if (m_pSkinnedAnimationController)
 	{
+		//AnimationBlending(m_pasCurrentAni, m_pasNextAni);
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
 		if (::IsZero(fLength))
 		{
-			AnimationBlending(WALK, IDLE);
+			AnimationBlending(m_pasCurrentAni, IDLE);
 			// anim_st = IDLE;
 		}
 	}
@@ -461,11 +491,11 @@ void CTerrainPlayer::Update(float fTimeElapsed)
 void CTerrainPlayer::AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2)
 {
 	// 섞인 애니메이션
-	if (m_pSkinnedAnimationController->m_fBlendingTime <= 1.0f) {
+	if (m_pSkinnedAnimationController->m_fBlendingTime <= 1.0f && type2 != m_pasCurrentAni) {
 		// If need to blending
 		// 체인지 애니메이션(섞인거) 
 		m_pSkinnedAnimationController->SetAnimationBlending(true); // 블렌딩을 할지 말지
-		m_pSkinnedAnimationController->SetTrackBlending(type1, type2); // 몇번째랑 몇번째
+		m_pSkinnedAnimationController->SetTrackBlending(m_pasCurrentAni, type2); // 몇번째랑 몇번째
 	}
 	else { // 무조건 WALK
 		// If the blending is done 
@@ -475,10 +505,10 @@ void CTerrainPlayer::AnimationBlending(Player_Animation_ST type1, Player_Animati
 		p->type = CS_CHANGE_ANIM;
 		p->ani_st = 
 		send(c_socket, reinterpret_cast<char*>(p), static_cast<int>(p[0]), sent);*/
-		m_pSkinnedAnimationController->SetTrackEnable(type2, true);
+
+		m_pasCurrentAni = type2;
+		m_pSkinnedAnimationController->SetTrackEnable(m_pasCurrentAni, true);
 		m_pSkinnedAnimationController->SetAnimationBlending(false);
-		m_pSkinnedAnimationController->m_pAnimationTracks[type1].m_fPosition = -ANIMATION_CALLBACK_EPSILON;
-		anim_st = type2;
 	}
 
 }

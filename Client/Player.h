@@ -85,6 +85,11 @@ public:
 	void CameraRotate(float x, float y, float z);
 
 	virtual void Update(float fTimeElapsed);
+	void UpdateGravity(float& fLength);
+	void UpdateAcceleration(float& fLength);
+	void UpdatePlayerPostion(float fTimeElapsed);
+	void UpdateCameraPosition(float fTimeElapsed);
+	void UpdateFriction(float fTimeElapsed);
 
 	virtual void OnPlayerUpdateCallback(float fTimeElapsed) { }
 	void SetPlayerUpdatedContext(LPVOID pContext) { m_pPlayerUpdatedContext = pContext; }
@@ -122,6 +127,9 @@ public:
 	CTerrainPlayer(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, void *pContext=NULL, CLoadedModelInfo* pModel=NULL);
 	virtual ~CTerrainPlayer();
 
+	Player_Animation_ST GetCurrentAni() { return m_pasCurrentAni; }
+	Player_Animation_ST GetNextAni() { return m_pasNextAni; }
+
 public:
 	virtual CCamera *ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 
@@ -134,5 +142,6 @@ public:
 
 	void AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2);
 
-	Player_Animation_ST anim_st;
+	Player_Animation_ST m_pasCurrentAni;
+	Player_Animation_ST m_pasNextAni;
 };

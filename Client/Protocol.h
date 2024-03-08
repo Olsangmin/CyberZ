@@ -22,7 +22,9 @@ constexpr char SC_CHANGE_ANIM = 3;
 
 constexpr char SC_TEST = 200;
 
-enum Player_Animation_ST { IDLE, WALK };
+enum Player_Animation_ST { 
+	IDLE, WALK, RUN, CREEP, CRAWL, 
+	JUMP, HIT, DIE, USE, EAT, DUMMY, NONE = 100 };
 
 #pragma pack (push, 1)
 struct CS_LOGIN_PACKET {

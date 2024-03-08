@@ -465,8 +465,6 @@ void CGameFramework::ProcessInput()
 	static UCHAR pKeysBuffer[256];
 	bool bProcessedByScene = false;
 	if (GetKeyboardState(pKeysBuffer) && m_pScene) bProcessedByScene = m_pScene->ProcessInput(m_hWnd, m_ptOldCursorPos, pKeysBuffer);
-
-	for(int i=0;i<MAX_PLAYER;++i) m_pScene->m_ppPlayer[i]->Update(m_GameTimer.GetTimeElapsed());
 }
 
 void CGameFramework::AnimateObjects()
