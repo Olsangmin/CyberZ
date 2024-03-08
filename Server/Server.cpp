@@ -169,13 +169,23 @@ void Server::Process_packet(int c_id, char* packet)
 		
 		for (auto& cl : clients) {
 			if (cl.state != ST_INGAME) continue;
-			cl.send_move_packet(c_id,pos, true);
+			cl.send_move_packet(c_id,pos, yaw, true);
 		}
 		std::cout << "Client[" << c_id << "] Move. -> ";
 		std::cout << "(" << pos.x << ", " << pos.y << ", " << pos.z << ")" << std::endl;
-						
+		// std::cout << "yaw : " << yaw << std::endl;
 	}
 				break;
+
+	case CS_CHANGE_ANIM: {
+		CS_CHANGE_ANIMATION_PACKET* p = reinterpret_cast<CS_CHANGE_ANIMATION_PACKET*>(packet);
+		for (auto& cl : clients) {
+			if (cl.state != ST_INGAME) continue;
+			cl.send_changeAnimation_packet(c_id, p->ani_st);
+		}
+		std::cout << "Client[" << c_id << "] Anim_Change. \n";
+	}
+					   break;
 	case CS_TEST: {
 		CS_TEST_PACKET* p = reinterpret_cast<CS_TEST_PACKET*>(packet);
 		std::cout << p->x << " ¼ö½Å" << std::endl;

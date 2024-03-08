@@ -7,9 +7,9 @@ constexpr int BUF_SIZE = 4096;
 constexpr int INGAME_USER = 3;
 constexpr int MAX_NPC = 10;
 
-static SOCKET c_socket{};
+extern SOCKET c_socket;
 static string ServerIP = { "127.0.0.1" };
-static int my_id = -1;
+extern int my_id;
 
 enum Obj_STATE{ FREE, INGAME};
 class ObjectInfo {

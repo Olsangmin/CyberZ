@@ -483,15 +483,6 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR *pKeysBuffe
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, m_dwLastDirection, 4.25f, true);
 
-#ifdef USE_NETWORK
-		CS_MOVE_PACKET packet;
-		packet.size = sizeof(packet);
-		packet.type = CS_MOVE;
-		packet.position = m_pMyPlayer->GetPosition();
-		packet.yaw = m_pMyPlayer->GetYaw();
-		send_packet(&packet);
-#endif // USE_NETWORK
-
 	}
 	
 	m_dwLastDirection = dwDirection1;
@@ -554,10 +545,6 @@ void CScene::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera
 			if (m_ppPlayer[i]->m_bUnable)m_ppPlayer[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
-
-#ifdef USE_NETWORK
-	Recv_Packet();
-#endif 
 
 }
 
@@ -749,7 +736,7 @@ void CScene::ProcessPacket(char* p)
 	case SC_LOGIN_INFO:
 	{
 		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
-		my_id = packet->id;
+		my_id = m_ppPlayer[packet->id]->p_id = packet->id;
 		cout << "My ID is " << my_id << " !" << endl;
 		m_pMyPlayer = m_ppPlayer[my_id];
 		m_pMyPlayer->m_bUnable = true;
@@ -759,8 +746,10 @@ void CScene::ProcessPacket(char* p)
 	{
 		SC_ADD_PLAYER_PACKET* packet = reinterpret_cast<SC_ADD_PLAYER_PACKET*>(p);
 		// cout << packet->id << " ADD" << endl;
+		m_ppPlayer[packet->id]->p_id = packet->id;
 		m_ppPlayer[packet->id]->m_bUnable = true;
 		m_ppPlayer[packet->id]->SetPosition(packet->position);
+		//m_ppPlayer[packet->id]->Rotate(0.f, 0.f, packet->yaw - m_ppPlayer[packet->id]->GetYaw());
 	}
 
 	case SC_MOVE_OBJECT:
@@ -770,10 +759,24 @@ void CScene::ProcessPacket(char* p)
 		if (packet->id == my_id) break;
 		else {
 			m_ppPlayer[packet->id]->SetPosition(packet->position);
+			m_ppPlayer[packet->id]->Rotate(0.f, packet->yaw - m_ppPlayer[packet->id]->GetYaw(), 0.f);
+			//reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->m_pSkinnedAnimationController->SetTrackEnable(ANIMATION_WALK, true);
+			
 		}
 
 	} break;
 	
+	case SC_CHANGE_ANIM: {
+		SC_CHANGE_ANIMATION_PACKET* packet = reinterpret_cast<SC_CHANGE_ANIMATION_PACKET*>(p);
+		if (packet->id == my_id) break;
+		else {
+			reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->AnimationBlending(IDLE, packet->ani_st);
+			// reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->m_pSkinnedAnimationController->m_fBlendingTime = 0.f;
+			
+		}
+	}
+					   break;
+
 	break;
 	default:
 		printf("Unknown PACKET type [%d]\n", p[1]);

@@ -39,6 +39,14 @@ public:
 	bool						m_bUnable = false;
 	bool						m_bMove = true;
 
+	// @@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@
+	int						p_id;
+	char						sendBuffer[1024];
+	int						bufSize;
+	void						SetBuffer(void* ptr, size_t size);
+	void						SendPacket();
+	// @@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@
+
 public:
 	CPlayer();
 	virtual ~CPlayer();
