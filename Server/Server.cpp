@@ -37,6 +37,7 @@ void Server::Network()
 	ac_over.comp_type = OP_ACCEPT;
 	AcceptEx(s_socket, c_socket, ac_over.send_buf, 0, addr_size + 16, addr_size + 16, 0, &ac_over.over);
 
+	InitializeNPC();
 	std::cout << "Server Start" << std::endl;
 	
 	// int num_threads = std::thread::hardware_concurrency();
@@ -214,4 +215,13 @@ int Server::Get_new_client_id()
 			return i;
 	}
 	return -1;
+}
+
+void Server::InitializeNPC()
+{
+	for (int i = 0; i < npcs.size(); ++i) {
+		npcs[i].n_state = NPC_INGAME;
+		npcs[i].SetId(i + 100);
+		npcs[i].SetPos(DirectX::XMFLOAT3(10.f + i, 0.f , 10.f + i));
+	}
 }

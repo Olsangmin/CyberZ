@@ -33,7 +33,7 @@ CPlayer::CPlayer()
 	m_pCameraUpdatedContext = NULL;
 
 
-	p_id = -1;
+	p_id = -99;
 	bufSize = 0;
 }
 

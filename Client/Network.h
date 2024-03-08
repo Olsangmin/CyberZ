@@ -1,7 +1,5 @@
 #pragma once
 #include "stdafx.h"
-#include "Common.h"
-#include "Protocol.h"
 
 constexpr int BUF_SIZE = 4096;
 constexpr int INGAME_USER = 3;

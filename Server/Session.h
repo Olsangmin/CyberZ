@@ -1,6 +1,6 @@
 #pragma once
 #include "Object.h"
-#include "Protocol.h"
+// #include "Protocol.h"
 
 constexpr int BUF_SIZE = 4096;
 

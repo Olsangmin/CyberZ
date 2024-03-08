@@ -42,8 +42,8 @@ using namespace std;
 #endif
 
 // =================================================
-#include "Protocol.h"
-#include "Common.h"
+#include "../Protocol.h"
+#include "../Common.h"
 #include "Network.h"
 
 // 주석하면 서버없이 가능@@@@@@@@@
