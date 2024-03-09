@@ -33,7 +33,8 @@ void CScene::BuildDefaultLightsAndMaterials()
 
 	m_xmf4GlobalAmbient = XMFLOAT4(0.15f, 0.15f, 0.15f, 1.0f);
 
-	m_pLights[0].m_bEnable = true;
+	// ??
+	m_pLights[0].m_bEnable = false;
 	m_pLights[0].m_nType = POINT_LIGHT;
 	m_pLights[0].m_fRange = 300.0f;
 	m_pLights[0].m_xmf4Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
@@ -41,7 +42,9 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[0].m_xmf4Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.0f);
 	m_pLights[0].m_xmf3Position = XMFLOAT3(230.0f, 330.0f, 480.0f);
 	m_pLights[0].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
-	m_pLights[1].m_bEnable = true;
+	
+	// Player Flash Light
+	m_pLights[1].m_bEnable = false;
 	m_pLights[1].m_nType = SPOT_LIGHT;
 	m_pLights[1].m_fRange = 500.0f;
 	m_pLights[1].m_xmf4Ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
@@ -53,13 +56,17 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[1].m_fFalloff = 8.0f;
 	m_pLights[1].m_fPhi = (float)cos(XMConvertToRadians(40.0f));
 	m_pLights[1].m_fTheta = (float)cos(XMConvertToRadians(20.0f));
+
+	// Sun
 	m_pLights[2].m_bEnable = true;
 	m_pLights[2].m_nType = DIRECTIONAL_LIGHT;
 	m_pLights[2].m_xmf4Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	m_pLights[2].m_xmf4Diffuse = XMFLOAT4(0.7f, 0.7f, 0.7f, 1.0f);
+	m_pLights[2].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.3f, 0.4f, 1.0f);
 	m_pLights[2].m_xmf4Specular = XMFLOAT4(0.4f, 0.4f, 0.4f, 0.0f);
 	m_pLights[2].m_xmf3Direction = XMFLOAT3(1.0f, -1.0f, 0.0f);
-	m_pLights[3].m_bEnable = true;
+	
+	// ??
+	m_pLights[3].m_bEnable = false;
 	m_pLights[3].m_nType = SPOT_LIGHT;
 	m_pLights[3].m_fRange = 600.0f;
 	m_pLights[3].m_xmf4Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
@@ -71,7 +78,9 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[3].m_fFalloff = 8.0f;
 	m_pLights[3].m_fPhi = (float)cos(XMConvertToRadians(90.0f));
 	m_pLights[3].m_fTheta = (float)cos(XMConvertToRadians(30.0f));
-	m_pLights[4].m_bEnable = true;
+	
+	// ??
+	m_pLights[4].m_bEnable = false;
 	m_pLights[4].m_nType = POINT_LIGHT;
 	m_pLights[4].m_fRange = 200.0f;
 	m_pLights[4].m_xmf4Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
@@ -440,16 +449,15 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffe
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
 
+	for (int i = 0; i < m_nPlayer; i++) m_ppPlayer[i]->m_xmf3BeforeColliedPosition = m_ppPlayer[i]->GetPosition();
+
 	DWORD dwDirection = 0;
 	DWORD dwDirection1 = 0;
 
-	if (m_pMyPlayer->m_bMove)
-	{
 		if (pKeysBuffer['W'] & 0xF0) dwDirection1 |= DIR_FORWARD;
 		if (pKeysBuffer['S'] & 0xF0) dwDirection1 |= DIR_BACKWARD;
 		if (pKeysBuffer['A'] & 0xF0) dwDirection1 |= DIR_LEFT;
 		if (pKeysBuffer['D'] & 0xF0) dwDirection1 |= DIR_RIGHT;
-	}
 
 	// Player unable
 	// m_ppPlayer[원하는 캐릭터]->m_bUnable = true 면은 ADD_OBJ(실제로 생성이 아닌 렌더&움직임 가능 상태)
@@ -501,7 +509,8 @@ void CScene::AnimateObjects(float fTimeElapsed)
 
 	for (int i = 0; i < m_nPlayer; i++)
 	{
-		for (int j = 0; j < m_nHierarchicalGameObjects; j++) if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) m_ppPlayer[i]->m_bMove = false;
+		//m_ppPlayer[i]->UpdateBoundingBox();
+		for (int j = 0; j < m_nHierarchicalGameObjects; j++) if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) m_ppPlayer[i]->SetPosition(m_ppPlayer[i]->m_xmf3BeforeColliedPosition);
 	}
 
 	if (m_pLights)
@@ -613,6 +622,7 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList);
 
+
 	//===============================//
 	// SKY BOX
 	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
@@ -624,16 +634,38 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Terrain/BaseTerrain.raw"), 257, 257, xmf3Scale, xmf4Color);
 
 	//===============================//
-	// OBG
-	m_nHierarchicalGameObjects = 1;
+	// OBJ
+	m_nHierarchicalGameObjects = 4;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
+	// 0 - Robot
 	CLoadedModelInfo* pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot.bin", NULL);
+	
 	m_ppHierarchicalGameObjects[0] = new CRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 1);
 	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 	m_ppHierarchicalGameObjects[0]->SetPosition(280.0f, m_pTerrain->GetHeight(280.0f, 640.0f), 620.0f);
 	m_ppHierarchicalGameObjects[0]->SetScale(10.f, 10.f, 10.f);
+	
 	if (pRobotModel) delete pRobotModel;
+
+	// 1 - big Container
+	CLoadedModelInfo* pContainerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/BigContainer.bin",NULL);
+	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pContainerModel);
+	m_ppHierarchicalGameObjects[1]->SetPosition(380.0f, 0, 520.0f);
+	
+	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pContainerModel);
+	m_ppHierarchicalGameObjects[2]->SetPosition(480.0f, 0, 520.0f);
+
+	if (pContainerModel) delete pContainerModel;
+
+
+	// 2 - Power
+	CLoadedModelInfo* pPowerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Power.bin", NULL);
+	m_ppHierarchicalGameObjects[3] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pPowerModel);
+	m_ppHierarchicalGameObjects[3]->SetPosition(180.0f, 0, 320.0f);
+
+	if (pPowerModel) delete pPowerModel;
+
 
 	// SHADER OBJ
 	m_nShaders = 0;

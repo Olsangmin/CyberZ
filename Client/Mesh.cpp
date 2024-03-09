@@ -437,6 +437,11 @@ void CStandardMesh::LoadMeshFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCom
 	for ( ; ; )
 	{
 		::ReadStringFromFile(pInFile, pstrToken);
+		if (!strcmp(pstrToken, "<Bounds>:"))
+		{
+			nReads = (UINT)::fread(&m_xmBoundingBox.Center, sizeof(XMFLOAT3), 1, pInFile);
+			nReads = (UINT)::fread(&m_xmBoundingBox.Extents, sizeof(XMFLOAT3), 1, pInFile);
+		}
 		if (!strcmp(pstrToken, "<Positions>:"))
 		{
 			nReads = (UINT)::fread(&nPositions, sizeof(int), 1, pInFile);
