@@ -57,10 +57,18 @@ void CPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity) // 
 	if (dwDirection)
 	{
 		XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
-		if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3CLook, fDistance);
-		if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3CLook, -fDistance);
-		if (dwDirection & DIR_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3CRight, fDistance);
-		if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3CRight, -fDistance);
+		if (dwDirection & DIR_FORWARD) {
+			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3CLook, fDistance);
+		}
+		if (dwDirection & DIR_BACKWARD) {
+			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3CLook, -fDistance);
+		}
+		if (dwDirection & DIR_RIGHT) {
+			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3CRight, fDistance);
+		}
+		if (dwDirection & DIR_LEFT) {
+			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3CRight, -fDistance);
+		}
 		if (dwDirection & DIR_UP) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Up, fDistance);
 		if (dwDirection & DIR_DOWN) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Up, -fDistance);
 
@@ -461,10 +469,7 @@ void CTerrainPlayer::Move(DWORD dwDirection, DWORD dwLastDirection, float fDista
 	
 	if (dwDirection)
 	{
-		AnimationBlending(m_pasCurrentAni, DIE);
-		//cout <<GetPosition().x << "	";
-		//cout << GetPosition().y << "	";
-		//cout << GetPosition().z << endl;
+		AnimationBlending(m_pasCurrentAni, WALK);
 
 	}
 
