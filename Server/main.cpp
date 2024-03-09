@@ -1,4 +1,3 @@
-#include "Protocol.h"
 #include "Server.h"
 
 int main()

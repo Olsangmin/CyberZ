@@ -37,6 +37,7 @@ void Server::Network()
 	ac_over.comp_type = OP_ACCEPT;
 	AcceptEx(s_socket, c_socket, ac_over.send_buf, 0, addr_size + 16, addr_size + 16, 0, &ac_over.over);
 
+	InitializeNPC();
 	std::cout << "Server Start" << std::endl;
 	
 	// int num_threads = std::thread::hardware_concurrency();
@@ -169,13 +170,23 @@ void Server::Process_packet(int c_id, char* packet)
 		
 		for (auto& cl : clients) {
 			if (cl.state != ST_INGAME) continue;
-			cl.send_move_packet(c_id,pos, true);
+			cl.send_move_packet(c_id,pos, yaw, true);
 		}
 		std::cout << "Client[" << c_id << "] Move. -> ";
 		std::cout << "(" << pos.x << ", " << pos.y << ", " << pos.z << ")" << std::endl;
-						
+		// std::cout << "yaw : " << yaw << std::endl;
 	}
 				break;
+
+	case CS_CHANGE_ANIM: {
+		CS_CHANGE_ANIMATION_PACKET* p = reinterpret_cast<CS_CHANGE_ANIMATION_PACKET*>(packet);
+		for (auto& cl : clients) {
+			if (cl.state != ST_INGAME) continue;
+			cl.send_changeAnimation_packet(c_id, p->ani_st);
+		}
+		std::cout << "Client[" << c_id << "] Anim_Change. \n";
+	}
+					   break;
 	case CS_TEST: {
 		CS_TEST_PACKET* p = reinterpret_cast<CS_TEST_PACKET*>(packet);
 		std::cout << p->x << " ¼ö½Å" << std::endl;
@@ -204,4 +215,13 @@ int Server::Get_new_client_id()
 			return i;
 	}
 	return -1;
+}
+
+void Server::InitializeNPC()
+{
+	for (int i = 0; i < npcs.size(); ++i) {
+		npcs[i].n_state = NPC_INGAME;
+		npcs[i].SetId(i + 100);
+		npcs[i].SetPos(DirectX::XMFLOAT3(10.f + i, 0.f , 10.f + i));
+	}
 }
