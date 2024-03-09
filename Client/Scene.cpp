@@ -648,7 +648,7 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 
 	//===============================//
 	// OBJ
-	m_nHierarchicalGameObjects = 2;
+	m_nHierarchicalGameObjects = 4;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
 	// 0 - Robot
@@ -662,11 +662,22 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	if (pRobotModel) delete pRobotModel;
 
 	// 1 - big Container
-	CLoadedModelInfo* pContainerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/BigContainer.bin",NULL);
+	CLoadedModelInfo* pContainerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/BigContainer.bin",NULL);
 	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pContainerModel);
 	m_ppHierarchicalGameObjects[1]->SetPosition(380.0f, 0, 520.0f);
 	
+	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pContainerModel);
+	m_ppHierarchicalGameObjects[2]->SetPosition(480.0f, 0, 520.0f);
+
 	if (pContainerModel) delete pContainerModel;
+
+
+	// 2 - Power
+	CLoadedModelInfo* pPowerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Power.bin", NULL);
+	m_ppHierarchicalGameObjects[3] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pPowerModel);
+	m_ppHierarchicalGameObjects[3]->SetPosition(180.0f, 0, 320.0f);
+
+	if (pPowerModel) delete pPowerModel;
 
 
 	// SHADER OBJ
