@@ -1,5 +1,7 @@
 #pragma once
 #include "Session.h"
+#include "NPC.h"
+
 class Server
 {
 public:
@@ -8,6 +10,7 @@ public:
 	HANDLE h_iocp;
 	OVER_EXP ac_over;
 	std::array<Session, MAX_USER> clients;
+	std::array<NPC, NUM_NPC> npcs;
 	std::vector<std::thread> worker_threads;
 public:
 	static Server& GetInstance();
@@ -22,5 +25,6 @@ public:
 	void Process_packet(int c_id, char* packet);
 	void Disconnect(int c_id);
 	int Get_new_client_id();
+	void InitializeNPC();
 };
 

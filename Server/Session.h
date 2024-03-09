@@ -1,6 +1,6 @@
 #pragma once
 #include "Object.h"
-#include "Protocol.h"
+// #include "Protocol.h"
 
 constexpr int BUF_SIZE = 4096;
 
@@ -54,8 +54,9 @@ public:
 	const SOCKET& GetSocket() { return socket; }
 
 	void send_login_info_packet();
-	void send_move_packet(int c_id, DirectX::XMFLOAT3 cid_pos, bool is_valid);
+	void send_move_packet(int c_id, DirectX::XMFLOAT3 cid_pos, float cid_yaw, bool is_valid);
 	void send_add_player_packet(int c_id, DirectX::XMFLOAT3 cid_pos);
+	void send_changeAnimation_packet(int c_id, Player_Animation_ST ch_ani);
 private:
 	OVER_EXP recv_over;
 	SOCKET	socket;

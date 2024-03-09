@@ -25,16 +25,16 @@ void Session::send_login_info_packet()
 	do_send(&p);
 }
 
-void Session::send_move_packet(int c_id, DirectX::XMFLOAT3 cid_pos, bool is_valid)
+void Session::send_move_packet(int c_id, DirectX::XMFLOAT3 cid_pos, float cid_yaw, bool is_valid)
 {
 	SC_MOVE_OBJECT_PACKET p;
 	p.size = sizeof(p);
 	p.type = SC_MOVE_OBJECT;
 	p.id = c_id;
 	p.position = cid_pos;
-	p.yaw = yaw;
+	p.yaw = cid_yaw;
 	p.is_valid = is_valid;
-	std::cout << "Cliend[" << id << "] <- " << "이동 패킷 전송" << std::endl;
+	// std::cout << "Cliend[" << id << "] <- " << "이동 패킷 전송" << std::endl;
 	do_send(&p);
 }
 
@@ -47,5 +47,15 @@ void Session::send_add_player_packet(int c_id, DirectX::XMFLOAT3 cid_pos)
 	p.position = cid_pos;
 	p.yaw = yaw;
 	// std::cout << "Cliend[" << id << "] <- " << "이동 패킷 전송" << std::endl;
+	do_send(&p);
+}
+
+void Session::send_changeAnimation_packet(int c_id, Player_Animation_ST ch_ani)
+{
+	SC_CHANGE_ANIMATION_PACKET p;
+	p.size = sizeof(p);
+	p.type = SC_CHANGE_ANIM;
+	p.id = c_id;
+	p.ani_st = ch_ani;
 	do_send(&p);
 }

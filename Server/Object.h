@@ -1,5 +1,6 @@
 #pragma once
-#include "Common.h"
+#include "../Common.h"
+#include "../Protocol.h"
 
 class Object
 {

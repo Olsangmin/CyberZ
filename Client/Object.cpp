@@ -253,7 +253,7 @@ void CMaterial::UpdateShaderVariable(ID3D12GraphicsCommandList *pd3dCommandList)
 	for (int i = 0; i < m_nTextures; i++)
 	{
 		if (m_ppTextures[i]) m_ppTextures[i]->UpdateShaderVariables(pd3dCommandList);
-		//		if (m_ppTextures[i]) m_ppTextures[i]->UpdateShaderVariable(pd3dCommandList, 0, 0);
+		//if (m_ppTextures[i]) m_ppTextures[i]->UpdateShaderVariable(pd3dCommandList, 0, 0);
 	}
 }
 
@@ -511,7 +511,7 @@ CAnimationController::CAnimationController(ID3D12Device *pd3dDevice, ID3D12Graph
     m_pAnimationTracks = new CAnimationTrack[nAnimationTracks];
 
 	m_pAnimationSets = pModel->m_pAnimationSets;
-	m_pAnimationSets->AddRef();
+	if (m_pAnimationSets) m_pAnimationSets->AddRef();
 
 	m_pModelRootObject = pModel->m_pModelRootObject;
 
@@ -1264,6 +1264,9 @@ CGameObject *CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, I
 			CStandardMesh *pMesh = new CStandardMesh(pd3dDevice, pd3dCommandList);
 			pMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile);
 			pGameObject->SetMesh(pMesh);
+
+			CBoundingBoxMesh* pBoundingBoxMesh = new CBoundingBoxMesh(pd3dDevice, pd3dCommandList);
+			pGameObject->SetBoundingBoxMesh(pBoundingBoxMesh);
 		}
 		else if (!strcmp(pstrToken, "<SkinningInfo>:"))
 		{
@@ -1572,3 +1575,18 @@ CRobotObject::CRobotObject(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *
 CRobotObject::~CRobotObject()
 {
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+CStandardOBJ::CStandardOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel)
+{
+	CLoadedModelInfo* pObjectModel = pModel;
+	if (!pObjectModel) pObjectModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/BigContainer.bin", NULL);
+
+	SetChild(pObjectModel->m_pModelRootObject, true);
+}
+
+CStandardOBJ::~CStandardOBJ()
+{
+}
+
