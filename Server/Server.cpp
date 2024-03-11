@@ -44,8 +44,12 @@ void Server::Network()
 	int num_threads = 1;
 	for (int i = 0; i < num_threads; ++i)
 		worker_threads.emplace_back(&Server::Worker_thread, this);
+	std::thread timer_thread{ &Server::TimerThread, this};
+	
+	timer_thread.join();
 	for (auto& th : worker_threads)
 		th.join();
+
 }
 
 void Server::Worker_thread()
@@ -223,5 +227,30 @@ void Server::InitializeNPC()
 		npcs[i].n_state = NPC_INGAME;
 		npcs[i].SetId(i + 100);
 		npcs[i].SetPos(DirectX::XMFLOAT3(10.f + i, 0.f , 10.f + i));
+	}
+	TIMER_EVENT start;
+	start.wakeup_time = std::chrono::system_clock::now() + std::chrono::seconds(3);
+	timer_queue.push(start);
+}
+
+void Server::TimerThread()
+{
+	while (true) {
+		TIMER_EVENT ev;
+		auto current_time = std::chrono::system_clock::now();
+		// std::cout << std::chrono::system_clock::to_time_t(current_time) << std::endl;
+		if (timer_queue.try_pop(ev)) { // 비었거나, 팝성공
+			// 비었을 때의 작업
+			if (ev.wakeup_time > current_time) {
+				timer_queue.push(ev);
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				continue;
+			}
+
+			// 성공했을때
+			std::cout << "Pop" << std::endl;
+		}
+		
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 }

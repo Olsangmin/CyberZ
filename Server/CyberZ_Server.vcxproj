@@ -136,12 +136,14 @@
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Session.cpp" />
+    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NPC.h" />
     <ClInclude Include="Server.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Session.h" />
+    <ClInclude Include="Timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
