@@ -475,9 +475,9 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffe
 	// 블렌딩 타임이 0 -> 블렌딩 시작
 	// 블렌딩 타임이 1 -> 블렌딩 완료
 
-	if (m_dwLastDirection != dwDirection1) {
-		m_pMyPlayer->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
-	}
+	//if (m_dwLastDirection != dwDirection1) {
+	//	m_pMyPlayer->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+	//}
 
 	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f) || (dwDirection1 != 0))
 	{
@@ -486,7 +486,7 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffe
 			if (pKeysBuffer[VK_RBUTTON] & 0xF0)
 				m_pMyPlayer->Rotate(cyDelta, 0.0f, -cxDelta);
 			else
-				m_pMyPlayer->CameraRotate(/*cyDelta*/0.0f, cxDelta, 0.0f);
+				m_pMyPlayer->CameraRotate(0.0f, cxDelta, 0.0f);
 		}
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, m_dwLastDirection, 4.25f, true);
@@ -805,8 +805,9 @@ void CScene::ProcessPacket(char* p)
 		SC_CHANGE_ANIMATION_PACKET* packet = reinterpret_cast<SC_CHANGE_ANIMATION_PACKET*>(p);
 		if (packet->id == my_id) break;
 		else {
-			reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->AnimationBlending(IDLE, packet->ani_st);
-
+			reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->m_pasNextAni = packet->ani_st;
+			// 
 		}
 	} break;
 
