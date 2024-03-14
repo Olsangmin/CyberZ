@@ -674,10 +674,6 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pBarrelModel);
 	m_ppHierarchicalGameObjects[1]->SetPosition(-10.0f, 0, 120.0f);
 
-	CLoadedModelInfo* pBarrelModel2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/BigContainer.bin", NULL);
-	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pBarrelModel2);
-	m_ppHierarchicalGameObjects[2]->SetPosition(-10.0f, 0, 120.0f);
-
 
 	if (pBarrelModel) delete pBarrelModel;
 
