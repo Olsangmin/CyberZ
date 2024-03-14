@@ -779,7 +779,6 @@ void CGameObject::SetBoundingBoxMesh(CBoundingBoxMesh* pMesh)
 
 void CGameObject::UpdateBoundingBox()
 {
-	OnPrepareRender();
 	if (m_pMesh)
 	{
 		m_xmBoundingBox = m_pMesh->m_xmBoundingBox;
@@ -1580,10 +1579,11 @@ CRobotObject::~CRobotObject()
 //
 CStandardOBJ::CStandardOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel)
 {
-	CLoadedModelInfo* pObjectModel = pModel;
+	CLoadedModelInfo *pObjectModel = pModel;
 	if (!pObjectModel) pObjectModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/BigContainer.bin", NULL);
 
 	SetChild(pObjectModel->m_pModelRootObject, true);
+
 }
 
 CStandardOBJ::~CStandardOBJ()

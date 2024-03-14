@@ -449,15 +449,19 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffe
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
 
-	for (int i = 0; i < m_nPlayer; i++) m_ppPlayer[i]->m_xmf3BeforeColliedPosition = m_ppPlayer[i]->GetPosition();
+
+	// collision test
+	//for (int i = 0; i < m_nPlayer; i++) m_ppPlayer[i]->m_xmf3BeforeColliedPosition = m_ppPlayer[i]->GetPosition();
+
+
 
 	DWORD dwDirection = 0;
 	DWORD dwDirection1 = 0;
 
-		if (pKeysBuffer['W'] & 0xF0) dwDirection1 |= DIR_FORWARD;
-		if (pKeysBuffer['S'] & 0xF0) dwDirection1 |= DIR_BACKWARD;
-		if (pKeysBuffer['A'] & 0xF0) dwDirection1 |= DIR_LEFT;
-		if (pKeysBuffer['D'] & 0xF0) dwDirection1 |= DIR_RIGHT;
+	if (pKeysBuffer['W'] & 0xF0) dwDirection1 |= DIR_FORWARD;
+	if (pKeysBuffer['S'] & 0xF0) dwDirection1 |= DIR_BACKWARD;
+	if (pKeysBuffer['A'] & 0xF0) dwDirection1 |= DIR_LEFT;
+	if (pKeysBuffer['D'] & 0xF0) dwDirection1 |= DIR_RIGHT;
 
 	// Player unable
 	// m_ppPlayer[원하는 캐릭터]->m_bUnable = true 면은 ADD_OBJ(실제로 생성이 아닌 렌더&움직임 가능 상태)
@@ -492,7 +496,6 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffe
 		}
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, m_dwLastDirection, 4.25f, true);
-
 	}
 
 	m_dwLastDirection = dwDirection1;
@@ -506,18 +509,23 @@ void CScene::AnimateObjects(float fTimeElapsed)
 	m_fElapsedTime = fTimeElapsed;
 
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(fTimeElapsed);
+	
+	//for (int i = 0; i < m_nPlayer; i++)
+	//{
+	//	XMFLOAT3 temp = m_ppPlayer[i]->GetPosition();
+	//	temp = Vector3::Subtract(temp, m_ppPlayer[i]->GetVelocity());
+	//	m_ppPlayer[i]->m_xmf3BeforeColliedPosition = temp;
+	//}
+
 	for (int i = 0; i < m_nPlayer; i++) if (m_ppPlayer[i]) {
+
 		m_ppPlayer[i]->Animate(fTimeElapsed);
 		m_ppPlayer[i]->Update(fTimeElapsed);
-	}
-	for (int i = 0; i < m_nHierarchicalGameObjects; i++) if(m_ppHierarchicalGameObjects[i])	m_ppHierarchicalGameObjects[i]->Animate(m_fElapsedTime);
 
-	for (int i = 0; i < m_nPlayer; i++)
-	{
-		//m_ppPlayer[i]->UpdateBoundingBox();
 		for (int j = 0; j < m_nHierarchicalGameObjects; j++) if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) m_ppPlayer[i]->SetPosition(m_ppPlayer[i]->m_xmf3BeforeColliedPosition);
 	}
-
+	for (int i = 0; i < m_nHierarchicalGameObjects; i++) if(m_ppHierarchicalGameObjects[i])	m_ppHierarchicalGameObjects[i]->Animate(m_fElapsedTime);
+		
 	if (m_pLights)
 	{
 		m_pLights[1].m_xmf3Position = m_ppPlayer[FIRST_PLAYER]->GetPosition();
@@ -551,6 +559,7 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 		if (m_ppHierarchicalGameObjects[i])
 		{
 			if (!m_ppHierarchicalGameObjects[i]->m_pSkinnedAnimationController) m_ppHierarchicalGameObjects[i]->UpdateTransform(NULL);
+			m_ppHierarchicalGameObjects[i]->Animate(m_fElapsedTime);
 			m_ppHierarchicalGameObjects[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
@@ -565,11 +574,15 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 
 void CScene::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
+	
 	CMaterial::m_pBoundingBoxShader->Render(pd3dCommandList, pCamera);
 
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++)
 	{
-		if (m_ppHierarchicalGameObjects[i]) m_ppHierarchicalGameObjects[i]->RenderBoundingBox(pd3dCommandList, pCamera);
+		if (m_ppHierarchicalGameObjects[i])
+		{
+			m_ppHierarchicalGameObjects[i]->RenderBoundingBox(pd3dCommandList, pCamera);
+		}
 	}
 
 	for (int i = 0; i < m_nPlayer; i++)	m_ppPlayer[i]->RenderBoundingBox(pd3dCommandList, pCamera);
@@ -577,7 +590,7 @@ void CScene::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 
 bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget)
 {
-	if (pTarget->m_xmBoundingBox.Intersects(pBase->m_xmBoundingBox)) return(true);
+	if (pBase->m_xmBoundingBox.Intersects(pTarget->m_xmBoundingBox)) return(true);
 	else return false;
 }
 
@@ -628,20 +641,24 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList);
 
-
 	//===============================//
-	// SKY BOX
+	// SKY BOX (1)
 	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-
+	
 	//===============================//
-	// TERRAIN
+	// TERRAIN (1)
 	XMFLOAT3 xmf3Scale(15.0f, 1.0f, 15.0f);
 	XMFLOAT4 xmf4Color(0.2f, 0.2f, 0.2f, 0.0f);
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Terrain/BaseTerrain.raw"), 257, 257, xmf3Scale, xmf4Color);
+	m_pTerrain->SetPosition(XMFLOAT3(-2000.f,0.f,-2000.f));
 
 	//===============================//
-	// OBJ
-	m_nHierarchicalGameObjects = 4;
+	// OBJ (4)
+	// [Present Setting]
+	// 0	- Robot				|| enemy
+	// 1	- Barrel			|| OBJ
+	
+	m_nHierarchicalGameObjects = 2;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
 	// 0 - Robot
@@ -649,31 +666,26 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	
 	m_ppHierarchicalGameObjects[0] = new CRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 1);
 	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppHierarchicalGameObjects[0]->SetPosition(280.0f, m_pTerrain->GetHeight(280.0f, 640.0f), 620.0f);
+	m_ppHierarchicalGameObjects[0]->SetPosition(100.0f, 0, 0.0f);
 	m_ppHierarchicalGameObjects[0]->SetScale(10.f, 10.f, 10.f);
-	
+
 	if (pRobotModel) delete pRobotModel;
 
-	// 1 - big Container
-	CLoadedModelInfo* pContainerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/BigContainer.bin",NULL);
-	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pContainerModel);
-	m_ppHierarchicalGameObjects[1]->SetPosition(380.0f, 0, 520.0f);
-	
-	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pContainerModel);
-	m_ppHierarchicalGameObjects[2]->SetPosition(480.0f, 0, 520.0f);
+	// 1 - Barrel
+	CLoadedModelInfo* pBarrelModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/BigContainer.bin",NULL);
+	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pBarrelModel);
+	m_ppHierarchicalGameObjects[1]->SetPosition(-10.0f, 0, 120.0f);
 
-	if (pContainerModel) delete pContainerModel;
-
-
-	// 2 - Power
-	CLoadedModelInfo* pPowerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Power.bin", NULL);
-	m_ppHierarchicalGameObjects[3] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pPowerModel);
-	m_ppHierarchicalGameObjects[3]->SetPosition(180.0f, 0, 320.0f);
-
-	if (pPowerModel) delete pPowerModel;
+	CLoadedModelInfo* pBarrelModel2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/BigContainer.bin", NULL);
+	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pBarrelModel2);
+	m_ppHierarchicalGameObjects[2]->SetPosition(-10.0f, 0, 120.0f);
 
 
-	// SHADER OBJ
+	if (pBarrelModel) delete pBarrelModel;
+
+	//===============================//
+	// SHADER OBJ (NULL)
+
 	m_nShaders = 0;
 	/*
 		m_ppShaders = new CShader*[m_nShaders];
@@ -688,7 +700,13 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	//===============================//
-	// Player
+	// Player (3 / 1 - Corzim, 2 - Evan, 3 - Uranya)
+	// [Present Setting]
+	// 1	- Corzim (Player)
+	// 2	- Evan
+	// 3	- Evan
+	// Able Model - Evam
+	// Unable Model - Corzim, Uranya
 
 	m_nPlayer = MAX_PLAYER;
 
@@ -697,7 +715,7 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
 
 	// 저장된 모델 바꿀 수 있음
-	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
+	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/test.bin", NULL);
 	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
 	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
 
