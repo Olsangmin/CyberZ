@@ -33,6 +33,7 @@ protected:
 	float           			m_fRoll = 0.0f;
 
 	XMFLOAT3					m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+
 	XMFLOAT3     				m_xmf3Gravity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	float           			m_fMaxVelocityXZ = 0.0f;
 	float           			m_fMaxVelocityY = 0.0f;
@@ -46,12 +47,13 @@ public:
 	CCamera						*m_pCamera = NULL;
 	bool						m_bUnable = false;
 	
+	//bool						m_bMove = true;
 	XMFLOAT3					m_xmf3BeforeColliedPosition = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	// @@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@
-	int						p_id;
+	int							p_id;
 	char						sendBuffer[1024];
-	int						bufSize;
+	int							bufSize;
 	void						SetBuffer(void* ptr, size_t size);
 	void						SendPacket();
 	// @@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@
