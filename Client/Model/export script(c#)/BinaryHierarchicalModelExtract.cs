@@ -442,6 +442,9 @@ public class BinaryHierarchicalModelExtract : MonoBehaviour
     {
         WriteObjectName("<Mesh>:", mesh.vertexCount, mesh);
 
+        // 애니메이션 o 모델 뽑을 때  -> 주석 O             (플레이어, 적)
+        // 애니메이션 x 모델 뽑을 때  -> 주석 X             (일반 오브젝트)
+
         //WriteBoundingBox("<Bounds>:", mesh.bounds);
 
         WriteVectors("<Positions>:", mesh.vertices);

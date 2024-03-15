@@ -56,12 +56,12 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[1].m_fFalloff = 8.0f;
 	m_pLights[1].m_fPhi = (float)cos(XMConvertToRadians(40.0f));
 	m_pLights[1].m_fTheta = (float)cos(XMConvertToRadians(20.0f));
-
+	 
 	// Sun
 	m_pLights[2].m_bEnable = true;
 	m_pLights[2].m_nType = DIRECTIONAL_LIGHT;
-	m_pLights[2].m_xmf4Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	m_pLights[2].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.3f, 0.4f, 1.0f);
+	m_pLights[2].m_xmf4Ambient = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
+	m_pLights[2].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f);
 	m_pLights[2].m_xmf4Specular = XMFLOAT4(0.4f, 0.4f, 0.4f, 0.0f);
 	m_pLights[2].m_xmf3Direction = XMFLOAT3(1.0f, -1.0f, 0.0f);
 	
@@ -95,7 +95,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
-	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 76); //SuperCobra(17), Gunship(2), Player: Angrybot()
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 180); //
 
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
@@ -453,8 +453,6 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffe
 	// collision test
 	//for (int i = 0; i < m_nPlayer; i++) m_ppPlayer[i]->m_xmf3BeforeColliedPosition = m_ppPlayer[i]->GetPosition();
 
-
-
 	DWORD dwDirection = 0;
 	DWORD dwDirection1 = 0;
 
@@ -606,7 +604,7 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	//===============================//
 	// TERRAIN
 	XMFLOAT3 xmf3Scale(15.0f, 1.0f, 15.0f);
-	XMFLOAT4 xmf4Color(0.2f, 0.2f, 0.2f, 0.0f);
+	XMFLOAT4 xmf4Color(0.0f, 0.1f, 0.1f, 0.0f);
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Terrain/BaseTerrain.raw"), 257, 257, xmf3Scale, xmf4Color);
 
 	//===============================//
@@ -670,9 +668,9 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	if (pRobotModel) delete pRobotModel;
 
 	// 1 - Barrel
-	CLoadedModelInfo* pBarrelModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/BigContainer.bin",NULL);
+	CLoadedModelInfo* pBarrelModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/temp_map.bin",NULL);
 	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pBarrelModel);
-	m_ppHierarchicalGameObjects[1]->SetPosition(-10.0f, 0, 120.0f);
+	m_ppHierarchicalGameObjects[1]->SetPosition(10.0f, 0.f, 120.0f);
 
 
 	if (pBarrelModel) delete pBarrelModel;
@@ -709,7 +707,7 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
 
 	// ÀúÀåµÈ ¸ðµ¨ ¹Ù²Ü ¼ö ÀÖÀ½
-	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/test.bin", NULL);
+	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
 	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
 	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
 

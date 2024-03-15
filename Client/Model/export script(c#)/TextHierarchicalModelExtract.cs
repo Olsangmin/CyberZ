@@ -358,6 +358,9 @@ public class TextHierarchicalModelExtract : MonoBehaviour
     {
         WriteObjectName(nLevel, "<Mesh>: " + mesh.vertexCount, mesh);
 
+        // 애니메이션 o 모델 뽑을 때  -> 주석 O             (플레이어, 적)
+        // 애니메이션 x 모델 뽑을 때  -> 주석 X             (일반 오브젝트)
+
         //WriteLineString(nLevel+1, "<Bounds>: " + mesh.bounds.center.x + " " + mesh.bounds.center.y + " " + mesh.bounds.center.z + " " + mesh.bounds.extents.x + " " + mesh.bounds.extents.y + " " + mesh.bounds.extents.z);
 
         WriteVectors(nLevel+1, "<Positions>:", mesh.vertices);
