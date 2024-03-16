@@ -94,6 +94,7 @@ public:
 	void Move(float fxOffset = 0.0f, float fyOffset = 0.0f, float fzOffset = 0.0f);
 	void Rotate(float x, float y, float z);
 	void CameraRotate(float x, float y, float z);
+	void RotateDirection(float angle);
 
 	virtual void Update(float fTimeElapsed);
 	void UpdateGravity(float& fLength);

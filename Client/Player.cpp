@@ -93,9 +93,6 @@ void CPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity) // 
 		if (dwDirection & DIR_LEFT) {
 			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3CRight, -fDistance);
 		}
-		if (dwDirection & DIR_UP) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Up, fDistance);
-		if (dwDirection & DIR_DOWN) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Up, -fDistance);
-
 		Move(xmf3Shift, bUpdateVelocity);
 
 	}
@@ -218,11 +215,13 @@ void CPlayer::CameraRotate(float x, float y, float z)
 void CPlayer::Update(float fTimeElapsed)
 {
 	// Set Length(Vector)
+
 	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, m_xmf3Gravity);
 	float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
 
 	UpdateAcceleration(fLength);
 	UpdateGravity(fLength);
+	RotateDirection(10.f);
 	UpdatePlayerPostion(fTimeElapsed);
 	UpdateCameraPosition(fTimeElapsed);
 	UpdateFriction(fTimeElapsed);
@@ -233,6 +232,24 @@ void CPlayer::UpdateGravity(float& fLength)
 {
 	fLength = sqrtf(m_xmf3Velocity.y * m_xmf3Velocity.y);
 	if (fLength > m_fMaxVelocityY) m_xmf3Velocity.y *= (m_fMaxVelocityY / fLength);
+}
+
+void CPlayer::RotateDirection(float angle)
+{
+	XMFLOAT3 xmfVel(m_xmf3Velocity.x, 0.0f, m_xmf3Velocity.z);
+	if (Vector3::IsZero(xmfVel))xmfVel = m_xmf3Look;
+
+	float fCurrentAngle = Vector3::Angle(Vector3::Normalize(xmfVel), m_xmf3Look);
+
+	if (fCurrentAngle > angle) {
+
+		XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&m_xmf3Up), XMConvertToRadians(angle));
+		XMFLOAT3 xmf3Look = Vector3::TransformNormal(m_xmf3Look, xmmtxRotate);
+
+		float fNextAngle = Vector3::Angle(Vector3::Normalize(xmfVel), xmf3Look);
+
+		fCurrentAngle > fNextAngle ? Rotate(0.0f, angle, 0.0f) : Rotate(0.0f, -angle, 0.0f);
+	}
 }
 
 void CPlayer::UpdateAcceleration(float& fLength)
@@ -247,7 +264,6 @@ void CPlayer::UpdateAcceleration(float& fLength)
 void CPlayer::UpdatePlayerPostion(float fTimeElapsed)
 {
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
-
 	Move(xmf3Velocity, false);
 	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
 }
