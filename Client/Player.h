@@ -148,7 +148,7 @@ public:
 	virtual void OnPlayerUpdateCallback(float fTimeElapsed);
 	virtual void OnCameraUpdateCallback(float fTimeElapsed);
 
-	virtual void Move(DWORD dwDirection, DWORD dwLastDirection, float fDistance, bool bVelocity = false);
+	virtual void Move(DWORD dwDirection, float fDistance, bool bVelocity = false);
 
 	virtual void Update(float fTimeElapsed);
 
@@ -156,4 +156,9 @@ public:
 
 	Player_Animation_ST m_pasCurrentAni;
 	Player_Animation_ST m_pasNextAni;
+
+	bool m_bIsRun{ false };
+	bool m_bIsCreep{ false };
+	bool m_bIsCreep_flag{ false };
+	bool m_bIsJump{ false };
 };

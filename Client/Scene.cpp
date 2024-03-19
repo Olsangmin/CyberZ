@@ -428,8 +428,37 @@ bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPar
 {
 	switch (nMessageID)
 	{
-	case WM_KEYDOWN:
+	case WM_KEYDOWN: {
+		switch (wParam) {
+		case VK_SHIFT: {
+			reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsRun = true;
+			reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsCreep = false;
+			reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsCreep_flag = false;
+			break;
+		}
+		case 'C': {
+			if (reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsCreep == reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsCreep_flag) {
+				reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsCreep = !reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsCreep;
+			}
+			break;
+		}
+		}
 		break;
+	}
+
+	case WM_KEYUP: {
+		switch (wParam) {
+		case VK_SHIFT: {
+			reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsRun = false;
+			break;
+		}
+		case 'C': {
+			reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsCreep_flag = reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsCreep;
+			break;
+		}
+		}
+		break;
+	}
 	default:
 		break;
 	}
@@ -491,7 +520,7 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffe
 				m_pMyPlayer->CameraRotate(0.0f, cxDelta, 0.0f);
 		}
 
-		if (dwDirection1 && m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, m_dwLastDirection, 4.25f, true);
+		if (dwDirection1 && m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, 4.25f, true);
 	}
 
 	m_dwLastDirection = dwDirection1;

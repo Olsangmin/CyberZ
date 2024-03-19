@@ -218,10 +218,10 @@ void CPlayer::Update(float fTimeElapsed)
 
 	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, m_xmf3Gravity);
 	float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
-
+	//cout << fLength << endl;
 	UpdateAcceleration(fLength);
 	UpdateGravity(fLength);
-	RotateDirection(10.f);
+	RotateDirection(20.f);
 	UpdatePlayerPostion(fTimeElapsed);
 	UpdateCameraPosition(fTimeElapsed);
 	UpdateFriction(fTimeElapsed);
@@ -241,14 +241,14 @@ void CPlayer::RotateDirection(float angle)
 
 	float fCurrentAngle = Vector3::Angle(Vector3::Normalize(xmfVel), m_xmf3Look);
 
-	if (fCurrentAngle > angle) {
+	if (fCurrentAngle > 0) {
 
 		XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&m_xmf3Up), XMConvertToRadians(angle));
 		XMFLOAT3 xmf3Look = Vector3::TransformNormal(m_xmf3Look, xmmtxRotate);
 
 		float fNextAngle = Vector3::Angle(Vector3::Normalize(xmfVel), xmf3Look);
 
-		fCurrentAngle > fNextAngle ? Rotate(0.0f, angle, 0.0f) : Rotate(0.0f, -angle, 0.0f);
+		fCurrentAngle > fNextAngle ? Rotate(0.0f, (fCurrentAngle-fNextAngle)/1.5, 0.0f) : Rotate(0.0f, -(fNextAngle - fCurrentAngle) / 1.5, 0.0f);
 	}
 }
 
@@ -462,13 +462,13 @@ CCamera* CTerrainPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 		break;
 	case THIRD_PERSON_CAMERA:
-		SetFriction(200.0f);
+		SetFriction(130.0f);
 		SetGravity(XMFLOAT3(0.0f, -250.0f, 0.0f));
-		SetMaxVelocityXZ(100.0f);
+		SetMaxVelocityXZ(40.0f);
 		SetMaxVelocityY(400.0f);
 		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.05f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 20.0f, -40.0f));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 20.0f, -15.0f));
 		m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -522,13 +522,13 @@ void CTerrainPlayer::OnCameraUpdateCallback(float fTimeElapsed)
 
 
 // 1
-void CTerrainPlayer::Move(DWORD dwDirection, DWORD dwLastDirection, float fDistance, bool bUpdateVelocity)
+void CTerrainPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
 {
 
 	if (dwDirection)
 	{
 		//AnimationBlending(m_pasCurrentAni, WALK);
-		if (m_pasCurrentAni != WALK && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+		if (m_pasCurrentAni != WALK && !m_bIsRun && !m_bIsCreep && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
 			m_pasNextAni = WALK;
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 #ifdef USE_NETWORK
@@ -555,10 +555,25 @@ void CTerrainPlayer::Update(float fTimeElapsed)
 	{
 		AnimationBlending(m_pasCurrentAni, m_pasNextAni);
 
+		if (m_pasCurrentAni != RUN && m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+			SetMaxVelocityXZ(80.f);
+			m_pasNextAni = RUN;
+			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+		}
+		if (m_pasCurrentAni != CREEP && m_bIsCreep && !m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+			SetMaxVelocityXZ(20.f);
+			m_pasNextAni = CREEP;
+			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+		}
+		if (!m_bIsRun && !m_bIsCreep) {
+			SetMaxVelocityXZ(40.f);
+		}
+
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
 		if (::IsZero(fLength))
 		{
-			if (m_pasCurrentAni != IDLE && m_pSkinnedAnimationController->m_fBlendingTime>=1.0f) {
+			if (m_pasCurrentAni != IDLE  && m_pSkinnedAnimationController->m_fBlendingTime>=1.0f) {
+				m_bIsRun = false;
 				m_pasNextAni = IDLE;
 				m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 #ifdef USE_NETWORK
