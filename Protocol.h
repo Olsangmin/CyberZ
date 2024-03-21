@@ -45,6 +45,7 @@ struct CS_MOVE_PACKET {
 	char	type;
 	DirectX::XMFLOAT3 position;
 	float	yaw;
+	float	velocity;
 };
 
 struct CS_CHANGE_ANIMATION_PACKET {

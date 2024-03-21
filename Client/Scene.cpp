@@ -487,8 +487,8 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffe
 		{
 			if (pKeysBuffer[VK_RBUTTON] & 0xF0)
 				m_pMyPlayer->Rotate(cyDelta, 0.0f, -cxDelta);
-			else
-				m_pMyPlayer->CameraRotate(0.0f, cxDelta, 0.0f);
+			/*else
+				m_pMyPlayer->CameraRotate(0.0f, cxDelta, 0.0f);*/
 		}
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, m_dwLastDirection, 4.25f, true);
@@ -806,9 +806,12 @@ void CScene::ProcessPacket(char* p)
 		// cout << packet->id << "Move" << endl;
 		if (packet->id == my_id) break;
 		else {
-			m_ppPlayer[packet->id]->SetPosition(packet->position);
+			m_ppPlayer[packet->id]->Move(packet->position, true);
+			// m_ppPlayer[packet->id]->SetPosition(packet->position);
 			m_ppPlayer[packet->id]->Rotate(0.f, packet->yaw - m_ppPlayer[packet->id]->GetYaw(), 0.f);
-
+			
+			/*cout << "P[" << packet->id << "] " <<
+				reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->m_pasCurrentAni << endl;*/
 		}
 
 	} break;

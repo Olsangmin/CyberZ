@@ -67,7 +67,7 @@ void CPlayer::SetBuffer(void* ptr, size_t size)
 
 void CPlayer::SendPacket()
 {
-
+	if (my_id != p_id) return;
 	if (0 == bufSize)
 		return;
 
@@ -76,7 +76,7 @@ void CPlayer::SendPacket()
 
 }
 
-void CPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity) // 2
+void CPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
 {
 	if (dwDirection)
 	{
@@ -96,23 +96,35 @@ void CPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity) // 
 		if (dwDirection & DIR_UP) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Up, fDistance);
 		if (dwDirection & DIR_DOWN) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Up, -fDistance);
 
+		if (!Vector3::IsZero(m_xmf3Velocity)) {
+#ifdef USE_NETWORK
+			CS_MOVE_PACKET packet;
+			packet.size = sizeof(packet);
+			packet.type = CS_MOVE;
+			packet.position = xmf3Shift;
+			packet.yaw = GetYaw();
+			SetBuffer(&packet, packet.size);
+#endif // USE_NETWORK
+		}
+
 		Move(xmf3Shift, bUpdateVelocity);
 
 	}
 }
 
-void CPlayer::Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity) // 3
+void CPlayer::Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity) 
 {
 	if (bUpdateVelocity)
 	{
 		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Shift);
+		cout << xmf3Shift.x << ", " << xmf3Shift.y<< ", "<<xmf3Shift.z << endl;
+		cout << m_xmf3Velocity.z << endl; // 키보드 누를 때
 	}
 	else
 	{
-		m_xmf3Position = Vector3::Add(m_xmf3Position, xmf3Shift); // 4 포지션
-		m_pCamera->Move(xmf3Shift);	
+		m_xmf3Position = Vector3::Add(m_xmf3Position, xmf3Shift); 
+		m_pCamera->Move(xmf3Shift);	// 업데이트할때만 호출
 	}
-
 }
 
 void CPlayer::Rotate(float x, float y, float z)
@@ -227,6 +239,10 @@ void CPlayer::Update(float fTimeElapsed)
 	UpdateCameraPosition(fTimeElapsed);
 	UpdateFriction(fTimeElapsed);
 
+
+#ifdef USE_NETWORK
+	SendPacket();
+#endif
 }
 
 void CPlayer::UpdateGravity(float& fLength)
@@ -268,21 +284,12 @@ void CPlayer::UpdateFriction(float fTimeElapsed)
 	if (fDeceleration > fLength) fDeceleration = fLength;
 	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(m_xmf3Velocity, -fDeceleration, true));
 	
-	if (!Vector3::IsZero(m_xmf3Velocity)) {
-#ifdef USE_NETWORK
-		CS_MOVE_PACKET packet;
-		packet.size = sizeof(packet);
-		packet.type = CS_MOVE;
-		packet.position = GetPosition();
-		packet.yaw = GetYaw();
-		SetBuffer(&packet, packet.size);
-#endif // USE_NETWORK
-	}
+
+	
 
 
-#ifdef USE_NETWORK
-	SendPacket();
-#endif
+
+
 }
 
 CCamera* CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
@@ -408,6 +415,7 @@ CTerrainPlayer::CTerrainPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 	SetPosition(XMFLOAT3(0.0f, pTerrain->GetHeight(310.0f, 590.0f), 0.0f));
 	SetScale(XMFLOAT3(10.0f, 10.0f, 10.0f));
 
+
 	if (pPlayerModel) delete pPlayerModel;
 }
 
@@ -508,21 +516,15 @@ void CTerrainPlayer::OnCameraUpdateCallback(float fTimeElapsed)
 // 1
 void CTerrainPlayer::Move(DWORD dwDirection, DWORD dwLastDirection, float fDistance, bool bUpdateVelocity)
 {
-
+	
 	if (dwDirection)
 	{
 		//AnimationBlending(m_pasCurrentAni, WALK);
 		if (m_pasCurrentAni != WALK && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
 			m_pasNextAni = WALK;
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
-#ifdef USE_NETWORK
-			CS_CHANGE_ANIMATION_PACKET packet;
-			packet.size = sizeof(packet);
-			packet.type = CS_CHANGE_ANIM;
-			packet.ani_st = m_pasNextAni;
-			SetBuffer(&packet, packet.size);
-			SendPacket();
-#endif // USE_NETWORK
+			
+			ChangeAnimationPacket();
 		}
 
 	}
@@ -533,7 +535,7 @@ void CTerrainPlayer::Move(DWORD dwDirection, DWORD dwLastDirection, float fDista
 void CTerrainPlayer::Update(float fTimeElapsed)
 {
 	CPlayer::Update(fTimeElapsed);
-
+	
 	
 	if (m_pSkinnedAnimationController)
 	{
@@ -545,17 +547,13 @@ void CTerrainPlayer::Update(float fTimeElapsed)
 			if (m_pasCurrentAni != IDLE && m_pSkinnedAnimationController->m_fBlendingTime>=1.0f) {
 				m_pasNextAni = IDLE;
 				m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
-#ifdef USE_NETWORK
-				CS_CHANGE_ANIMATION_PACKET packet;
-				packet.size = sizeof(packet);
-				packet.type = CS_CHANGE_ANIM;
-				packet.ani_st = m_pasNextAni;
-				SetBuffer(&packet, packet.size);
-				SendPacket();
-#endif // USE_NETWORK
+
+				ChangeAnimationPacket();
 			}
 		}
+		
 	}
+	
 }
 
 void CTerrainPlayer::AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2)
@@ -567,19 +565,13 @@ void CTerrainPlayer::AnimationBlending(Player_Animation_ST type1, Player_Animati
 		m_pSkinnedAnimationController->SetAnimationBlending(true); // 블렌딩을 할지 말지
 		m_pSkinnedAnimationController->SetTrackBlending(m_pasCurrentAni, type2); // 몇번째랑 몇번째
 	}
-	else { // 무조건 WALK
+	else { 
 		// If the blending is done 
 		// 체인지 애니메이션(walk)
-		/*CS_CHANGE_ANIMATION_PACKET* p;
-		p->size = sizeof(CS_CHANGE_ANIMATION_PACKET);
-		p->type = CS_CHANGE_ANIM;
-		p->ani_st = 
-		send(c_socket, reinterpret_cast<char*>(p), static_cast<int>(p[0]), sent);*/
-
 		if(type2!=NONE)m_pasCurrentAni = type2;
 		m_pSkinnedAnimationController->SetTrackEnable(m_pasCurrentAni, true);
 		m_pSkinnedAnimationController->SetAnimationBlending(false);
-		m_pasNextAni = NONE;
+		//m_pasNextAni = NONE;
 	}
 
 }

@@ -136,7 +136,6 @@
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Session.cpp" />
-    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="NPC.h" />

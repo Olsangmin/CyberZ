@@ -155,4 +155,15 @@ public:
 
 	Player_Animation_ST m_pasCurrentAni;
 	Player_Animation_ST m_pasNextAni;
+
+
+	void ChangeAnimationPacket()
+	{
+		CS_CHANGE_ANIMATION_PACKET packet;
+		packet.size = sizeof(packet);
+		packet.type = CS_CHANGE_ANIM;
+		packet.ani_st = m_pasNextAni;
+		SetBuffer(&packet, packet.size);
+	}
+
 };

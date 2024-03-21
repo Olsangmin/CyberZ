@@ -169,13 +169,16 @@ void Server::Process_packet(int c_id, char* packet)
 		CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
 		DirectX::XMFLOAT3 pos = { p->position };
 		float yaw = p->yaw;
+		float velo = p->velocity;
 		clients[c_id].SetPos(pos);
 		clients[c_id].SetYaw(yaw);
+		clients[c_id].SetVelocity(velo);
 		
 		for (auto& cl : clients) {
 			if (cl.state != ST_INGAME) continue;
 			cl.send_move_packet(c_id,pos, yaw, true);
 		}
+
 		std::cout << "Client[" << c_id << "] Move. -> ";
 		std::cout << "(" << pos.x << ", " << pos.y << ", " << pos.z << ")" << std::endl;
 		// std::cout << "yaw : " << yaw << std::endl;
