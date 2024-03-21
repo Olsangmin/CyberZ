@@ -94,6 +94,7 @@ public:
 	void Move(float fxOffset = 0.0f, float fyOffset = 0.0f, float fzOffset = 0.0f);
 	void Rotate(float x, float y, float z);
 	void CameraRotate(float x, float y, float z);
+	void RotateDirection(float angle);
 
 	virtual void Update(float fTimeElapsed);
 	void UpdateGravity(float& fLength);
@@ -147,7 +148,7 @@ public:
 	virtual void OnPlayerUpdateCallback(float fTimeElapsed);
 	virtual void OnCameraUpdateCallback(float fTimeElapsed);
 
-	virtual void Move(DWORD dwDirection, DWORD dwLastDirection, float fDistance, bool bVelocity = false);
+	virtual void Move(DWORD dwDirection, float fDistance, bool bVelocity = false);
 
 	virtual void Update(float fTimeElapsed);
 
@@ -156,14 +157,8 @@ public:
 	Player_Animation_ST m_pasCurrentAni;
 	Player_Animation_ST m_pasNextAni;
 
-
-	void ChangeAnimationPacket()
-	{
-		CS_CHANGE_ANIMATION_PACKET packet;
-		packet.size = sizeof(packet);
-		packet.type = CS_CHANGE_ANIM;
-		packet.ani_st = m_pasNextAni;
-		SetBuffer(&packet, packet.size);
-	}
-
+	bool m_bIsRun{ false };
+	bool m_bIsCreep{ false };
+	bool m_bIsCreep_flag{ false };
+	bool m_bIsJump{ false };
 };
