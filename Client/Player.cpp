@@ -67,7 +67,7 @@ void CPlayer::SetBuffer(void* ptr, size_t size)
 
 void CPlayer::SendPacket()
 {
-
+	if (my_id != p_id) return;
 	if (0 == bufSize)
 		return;
 
@@ -93,6 +93,17 @@ void CPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity) // 
 		if (dwDirection & DIR_LEFT) {
 			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3CRight, -fDistance);
 		}
+
+		
+#ifdef USE_NETWORK
+		CS_MOVE_PACKET packet;
+		packet.size = sizeof(packet);
+		packet.type = CS_MOVE;
+		packet.position = xmf3Shift;
+		packet.yaw = GetYaw();
+		SetBuffer(&packet, packet.size);
+#endif // USE_NETWORK
+
 		Move(xmf3Shift, bUpdateVelocity);
 
 	}
@@ -226,6 +237,10 @@ void CPlayer::Update(float fTimeElapsed)
 	UpdateCameraPosition(fTimeElapsed);
 	UpdateFriction(fTimeElapsed);
 
+#ifdef USE_NETWORK
+	SendPacket();
+#endif
+
 }
 
 void CPlayer::UpdateGravity(float& fLength)
@@ -284,21 +299,9 @@ void CPlayer::UpdateFriction(float fTimeElapsed)
 	if (fDeceleration > fLength) fDeceleration = fLength;
 	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, Vector3::ScalarProduct(m_xmf3Velocity, -fDeceleration, true));
 	
-	if (!Vector3::IsZero(m_xmf3Velocity)) {
-#ifdef USE_NETWORK
-		CS_MOVE_PACKET packet;
-		packet.size = sizeof(packet);
-		packet.type = CS_MOVE;
-		packet.position = GetPosition();
-		packet.yaw = GetYaw();
-		SetBuffer(&packet, packet.size);
-#endif // USE_NETWORK
-	}
+	
 
 
-#ifdef USE_NETWORK
-	SendPacket();
-#endif
 }
 
 CCamera* CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
@@ -584,7 +587,6 @@ void CTerrainPlayer::Update(float fTimeElapsed)
 				packet.type = CS_CHANGE_ANIM;
 				packet.ani_st = m_pasNextAni;
 				SetBuffer(&packet, packet.size);
-				SendPacket();
 #endif // USE_NETWORK
 			}
 		}

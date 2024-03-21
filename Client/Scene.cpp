@@ -516,8 +516,8 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffe
 		{
 			if (pKeysBuffer[VK_RBUTTON] & 0xF0)
 				m_pMyPlayer->Rotate(cyDelta, 0.0f, -cxDelta);
-			/*else
-				m_pMyPlayer->CameraRotate(0.0f, cxDelta, 0.0f);*/
+			else
+				m_pMyPlayer->CameraRotate(0.0f, cxDelta, 0.0f);
 		}
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, 4.25f, true);
