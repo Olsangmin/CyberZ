@@ -844,7 +844,7 @@ void CScene::ProcessPacket(char* p)
 		m_ppPlayer[packet->id]->p_id = packet->id;
 		m_ppPlayer[packet->id]->m_bUnable = true;
 		m_ppPlayer[packet->id]->SetPosition(packet->position);
-		m_ppPlayer[packet->id]->Rotate(0.f, packet->yaw - m_ppPlayer[packet->id]->GetYaw(), 0.f);
+		m_ppPlayer[packet->id]->Rotate(0.f, packet->rotation.y - m_ppPlayer[packet->id]->GetYaw(), 0.f);
 	} break;
 
 	case SC_MOVE_OBJECT:
@@ -853,14 +853,17 @@ void CScene::ProcessPacket(char* p)
 		// cout << packet->id << "Move" << endl;
 		if (packet->id == my_id) break;
 		else {
-			m_ppPlayer[packet->id]->Move(packet->position, true);
+			m_ppPlayer[packet->id]->Move(packet->dir, true);
 			// m_ppPlayer[packet->id]->SetPosition(packet->position);
 			m_ppPlayer[packet->id]->Rotate(0.f, packet->yaw - m_ppPlayer[packet->id]->GetYaw(), 0.f);
-			
-			/*cout << "P[" << packet->id << "] " <<
-				reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->m_pasCurrentAni << endl;*/
 		}
 
+	} break;
+
+	case SC_UPDATE_PLAYER:
+	{
+		SC_UPDATE_PLAYER_PACKET* packet = reinterpret_cast<SC_UPDATE_PLAYER_PACKET*>(p);
+		
 	} break;
 
 	case SC_CHANGE_ANIM: {
@@ -869,7 +872,7 @@ void CScene::ProcessPacket(char* p)
 		else {
 			reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 			reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->m_pasNextAni = packet->ani_st;
-			// 
+			
 		}
 	} break;
 

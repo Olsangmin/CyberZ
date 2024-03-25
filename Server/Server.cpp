@@ -150,8 +150,8 @@ void Server::Process_packet(int c_id, char* packet)
 				if (ST_INGAME != cl.state) continue;
 			}
 			if (cl.GetId() == c_id) continue;
-			cl.send_add_player_packet(c_id, clients[c_id].GetPos());
-			clients[c_id].send_add_player_packet(cl.GetId(), cl.GetPos());
+			cl.send_add_player_packet(c_id, clients[c_id].GetPos(), clients[c_id].GetRotation());
+			clients[c_id].send_add_player_packet(cl.GetId(), cl.GetPos(), cl.GetRotation());
 		}
 	}
 				 break;
@@ -167,23 +167,33 @@ void Server::Process_packet(int c_id, char* packet)
 				  break;
 	case CS_MOVE: {
 		CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
-		DirectX::XMFLOAT3 pos = { p->position };
+		DirectX::XMFLOAT3 dir = { p->dir };
 		float yaw = p->yaw;
-		float velo = p->velocity;
-		clients[c_id].SetPos(pos);
-		clients[c_id].SetYaw(yaw);
-		clients[c_id].SetVelocity(velo);
 		
 		for (auto& cl : clients) {
 			if (cl.state != ST_INGAME) continue;
-			cl.send_move_packet(c_id,pos, yaw, true);
+			cl.send_move_packet(c_id, dir, yaw, true);
 		}
 
-		std::cout << "Client[" << c_id << "] Move. -> ";
-		std::cout << "(" << pos.x << ", " << pos.y << ", " << pos.z << ")" << std::endl;
-		// std::cout << "yaw : " << yaw << std::endl;
+		// std::cout << "Client[" << c_id << "] Move.";
+		
 	}
 				break;
+
+	case CS_UPDATE_PLAYER: {
+		CS_UPDATE_PLAYER_PACKET* p = reinterpret_cast<CS_UPDATE_PLAYER_PACKET*>(packet);
+		{
+			std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
+			clients[c_id].SetPos(p->position);
+			clients[c_id].SetRotation(p->rotate);
+		}
+
+		for (auto& cl : clients) {
+			if (cl.state != ST_INGAME) continue;
+			cl.send_update_packet(c_id, clients[c_id].GetPos(), clients[c_id].GetRotation());
+		}
+	}
+						 break;
 
 	case CS_CHANGE_ANIM: {
 		CS_CHANGE_ANIMATION_PACKET* p = reinterpret_cast<CS_CHANGE_ANIMATION_PACKET*>(packet);

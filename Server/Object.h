@@ -13,17 +13,13 @@ public:
 	DirectX::XMFLOAT3 GetPos() const { return pos; }
 	void SetPos(DirectX::XMFLOAT3 p) { pos = p; }
 
-	float GetYaw() const { return yaw; }
-	void SetYaw(float _yaw) { yaw = _yaw; }
-
-	float GetVelocity() const { return velocity; }
-	void SetVelocity(float _velocity) { velocity = _velocity; }
+	DirectX::XMFLOAT3 GetRotation() const { return rotation; }
+	void SetRotation(DirectX::XMFLOAT3 _rotation) { rotation = _rotation; }
 
 protected:
 	int			id;
 	DirectX::XMFLOAT3		pos;
-	float		yaw;
-	float		velocity;
+	DirectX::XMFLOAT3		rotation;
 
 public:
 	std::mutex o_lock;

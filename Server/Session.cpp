@@ -25,28 +25,40 @@ void Session::send_login_info_packet()
 	do_send(&p);
 }
 
-void Session::send_move_packet(int c_id, DirectX::XMFLOAT3 cid_pos, float cid_yaw, bool is_valid)
-{
-	SC_MOVE_OBJECT_PACKET p;
-	p.size = sizeof(p);
-	p.type = SC_MOVE_OBJECT;
-	p.id = c_id;
-	p.position = cid_pos;
-	p.yaw = cid_yaw;
-	p.is_valid = is_valid;
-	// std::cout << "Cliend[" << id << "] <- " << "이동 패킷 전송" << std::endl;
-	do_send(&p);
-}
-
-void Session::send_add_player_packet(int c_id, DirectX::XMFLOAT3 cid_pos)
+void Session::send_add_player_packet(int c_id, DirectX::XMFLOAT3 cid_pos, DirectX::XMFLOAT3 cid_rotation)
 {
 	SC_ADD_PLAYER_PACKET p;
 	p.size = sizeof(p);
 	p.type = SC_ADD_PLAYER;
 	p.id = c_id;
 	p.position = cid_pos;
-	p.yaw = yaw;
+	p.rotation = cid_rotation;
+	std::cout << "Cliend[" << id << "] <- " << "ADD 패킷 전송" << std::endl;
+	std::cout << "[" << cid_pos.x << ", " << cid_pos.y << ", " << cid_pos.z << "]" << std::endl;
+	do_send(&p);
+}
+
+void Session::send_move_packet(int c_id, DirectX::XMFLOAT3 cid_dir, float cid_yaw, bool is_valid)
+{
+	SC_MOVE_OBJECT_PACKET p;
+	p.size = sizeof(p);
+	p.type = SC_MOVE_OBJECT;
+	p.id = c_id;
+	p.dir = cid_dir;
+	p.yaw = cid_yaw;
+	p.is_valid = is_valid;
 	// std::cout << "Cliend[" << id << "] <- " << "이동 패킷 전송" << std::endl;
+	do_send(&p);
+}
+
+void Session::send_update_packet(int c_id, DirectX::XMFLOAT3 cid_pos, DirectX::XMFLOAT3 cid_rotation)
+{
+	SC_UPDATE_PLAYER_PACKET p;
+	p.size = sizeof(p);
+	p.type = SC_UPDATE_PLAYER;
+	p.id = c_id;
+	p.position = cid_pos;
+	p.rotation = cid_rotation;
 	do_send(&p);
 }
 
