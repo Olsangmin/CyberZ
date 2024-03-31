@@ -656,7 +656,7 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	// 121		- fence2			|| OBJ
 
 	
-	m_nHierarchicalGameObjects = 3;
+	m_nHierarchicalGameObjects = 122;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
 	// 0 - Robot
@@ -666,49 +666,44 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 	m_ppHierarchicalGameObjects[0]->SetPosition(100.0f, 0, 0.0f);
 	m_ppHierarchicalGameObjects[0]->SetScale(10.f, 10.f, 10.f);
-
+	
 	if (pRobotModel) delete pRobotModel;
 
-	CLoadedModelInfo* pMapModle1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MAP1.bin", NULL);
+	// 1~120	- fence
+	CLoadedModelInfo* pFenceModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/fence1.bin",NULL);
+	
+	for(int i = 1; i < 31; i++)
+	{
+		// ºÏ
+		m_ppHierarchicalGameObjects[i] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFenceModel);
+		m_ppHierarchicalGameObjects[i]->SetPosition(-500+(i*31), 0.f, 500.f);
+	
+		//µ¿
+		m_ppHierarchicalGameObjects[i + 30] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFenceModel);
+		m_ppHierarchicalGameObjects[i + 30]->Rotate(0.f, 90.f, 0.f);
+		m_ppHierarchicalGameObjects[i + 30]->SetPosition(500.f, 0.f, 500 - (i * 31));
+	
+		//¼­
+		m_ppHierarchicalGameObjects[i + 60] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFenceModel);
+		m_ppHierarchicalGameObjects[i + 60]->Rotate(0.f, 90.f, 0.f);
+		m_ppHierarchicalGameObjects[i + 60]->SetPosition(-500.f, 0.f, 500 - (i * 31));
+	
+		//³²
+		m_ppHierarchicalGameObjects[i +	90] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFenceModel);
+		m_ppHierarchicalGameObjects[i +	90]->SetPosition(-500 + (i * 31), 0.f, -500.f);
+	}
+	
+	if (pFenceModel) delete pFenceModel;
 
-	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle1);
-	m_ppHierarchicalGameObjects[1]->SetScale(10.f, 10.f, 10.f);
+
+	// 121	- obj1
+	CLoadedModelInfo* pMapModle1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Comm.bin", NULL);
+
+	m_ppHierarchicalGameObjects[121] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle1);
+	//m_ppHierarchicalGameObjects[121]->SetScale(10.f, 10.f, 10.f);
+	m_ppHierarchicalGameObjects[121]->SetPosition(10.f, 0.f, 10.f);
 
 	if (pMapModle1) delete pMapModle1;
-
-
-	CLoadedModelInfo* pMapModle2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Second_section.bin", NULL);
-	
-	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle2);
-	m_ppHierarchicalGameObjects[2]->SetScale(10.f, 10.f, 10.f);
-	
-	if (pMapModle2) delete pMapModle2;
-	
-	// 1 - Barrel
-	//CLoadedModelInfo* pFenceModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/fence1.bin",NULL);
-	//
-	//for(int i = 1; i < 31; i++)
-	//{
-	//	// ºÏ
-	//	m_ppHierarchicalGameObjects[i] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFenceModel);
-	//	m_ppHierarchicalGameObjects[i]->SetPosition(-500+(i*31), 0.f, 500.f);
-	//
-	//	//µ¿
-	//	m_ppHierarchicalGameObjects[i + 30] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFenceModel);
-	//	m_ppHierarchicalGameObjects[i + 30]->Rotate(0.f, 90.f, 0.f);
-	//	m_ppHierarchicalGameObjects[i + 30]->SetPosition(500.f, 0.f, 500 - (i * 31));
-	//
-	//	//¼­
-	//	m_ppHierarchicalGameObjects[i + 60] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFenceModel);
-	//	m_ppHierarchicalGameObjects[i + 60]->Rotate(0.f, 90.f, 0.f);
-	//	m_ppHierarchicalGameObjects[i + 60]->SetPosition(-500.f, 0.f, 500 - (i * 31));
-	//
-	//	//³²
-	//	m_ppHierarchicalGameObjects[i +	90] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFenceModel);
-	//	m_ppHierarchicalGameObjects[i +	90]->SetPosition(-500 + (i * 31), 0.f, -500.f);
-	//}
-	//
-	//if (pFenceModel) delete pFenceModel;
 
 	//===============================//
 	// SHADER OBJ (NULL)
@@ -776,7 +771,7 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	//===============================//
 	// OBG
 
-	m_nHierarchicalGameObjects = 3;
+	m_nHierarchicalGameObjects = 1;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
 
@@ -786,21 +781,6 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppHierarchicalGameObjects[0]->SetScale(10.f, 10.f, 10.f);
 
 	if (pMapModle1) delete pMapModle1;
-
-	CLoadedModelInfo* pMapModle2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Map2.bin", NULL);
-
-	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle2);
-	m_ppHierarchicalGameObjects[1]->SetScale(10.f, 10.f, 10.f);
-
-	if (pMapModle2) delete pMapModle2;
-
-
-	CLoadedModelInfo* pMapModle3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/First_section.bin", NULL);
-	
-	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle3);
-	m_ppHierarchicalGameObjects[2]->SetScale(10.f, 10.f, 10.f);
-	
-	if (pMapModle3) delete pMapModle3;
 
 	//===============================//
 	// Player
