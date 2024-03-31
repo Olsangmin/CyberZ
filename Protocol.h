@@ -67,7 +67,7 @@ struct CS_CHANGE_ANIMATION_PACKET {
 struct CS_TEST_PACKET {
 	unsigned char size;
 	char	type;
-	float	x;
+	int	x;
 };
 // ------------------------------------------
 struct SC_LOGIN_INFO_PACKET {

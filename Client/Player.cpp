@@ -557,11 +557,13 @@ void CTerrainPlayer::Update(float fTimeElapsed)
 			SetMaxVelocityXZ(80.f);
 			m_pasNextAni = RUN;
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			AnimationPacket(m_pasNextAni);
 		}
 		if (m_pasCurrentAni != CREEP && m_bIsCreep && !m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
 			SetMaxVelocityXZ(20.f);
 			m_pasNextAni = CREEP;
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			AnimationPacket(m_pasNextAni);
 		}
 		if (!m_bIsRun && !m_bIsCreep) {
 			SetMaxVelocityXZ(40.f);

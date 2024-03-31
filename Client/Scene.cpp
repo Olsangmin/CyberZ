@@ -547,7 +547,15 @@ void CScene::AnimateObjects(float fTimeElapsed)
 		m_ppPlayer[i]->Animate(fTimeElapsed);
 		m_ppPlayer[i]->Update(fTimeElapsed);
 
-		for (int j = 0; j < m_nHierarchicalGameObjects; j++) if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) m_ppPlayer[i]->SetPosition(m_ppPlayer[i]->m_xmf3BeforeColliedPosition);
+		for (int j = 0; j < m_nHierarchicalGameObjects; j++) 
+			if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) {
+				m_ppPlayer[i]->SetPosition(m_ppPlayer[i]->m_xmf3BeforeColliedPosition);
+				CS_TEST_PACKET p;
+				p.size = sizeof(p);
+				p.type = CS_TEST;
+				p.x = j;
+				m_ppPlayer[i]->SetBuffer(&p, sizeof(p));
+			}
 	}
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) if(m_ppHierarchicalGameObjects[i])	m_ppHierarchicalGameObjects[i]->Animate(m_fElapsedTime);
 		
@@ -863,7 +871,11 @@ void CScene::ProcessPacket(char* p)
 	case SC_UPDATE_PLAYER:
 	{
 		SC_UPDATE_PLAYER_PACKET* packet = reinterpret_cast<SC_UPDATE_PLAYER_PACKET*>(p);
-		
+		if (packet->id == my_id) break;
+		else {
+			m_ppPlayer[packet->id]->SetPosition(packet->position);
+			
+		}
 	} break;
 
 	case SC_CHANGE_ANIM: {

@@ -40,15 +40,18 @@ void Server::Network()
 	InitializeNPC();
 	std::cout << "Server Start" << std::endl;
 	
-	// int num_threads = std::thread::hardware_concurrency();
-	int num_threads = 1;
+	int num_threads = std::thread::hardware_concurrency();
+	// int num_threads = 1;
 	for (int i = 0; i < num_threads; ++i)
 		worker_threads.emplace_back(&Server::Worker_thread, this);
 	std::thread timer_thread{ &Server::TimerThread, this};
 	
+
 	timer_thread.join();
 	for (auto& th : worker_threads)
 		th.join();
+
+	
 
 }
 
@@ -175,6 +178,7 @@ void Server::Process_packet(int c_id, char* packet)
 			cl.send_move_packet(c_id, dir, yaw, true);
 		}
 
+		
 		// std::cout << "Client[" << c_id << "] Move.";
 		
 	}
@@ -206,7 +210,11 @@ void Server::Process_packet(int c_id, char* packet)
 					   break;
 	case CS_TEST: {
 		CS_TEST_PACKET* p = reinterpret_cast<CS_TEST_PACKET*>(packet);
-		std::cout << p->x << " 수신" << std::endl;
+		
+		for (auto& npc : npcs) {
+			if ((p->x + 100) == npc.GetId())
+				npc.WakeUp(c_id);
+		}
 	}
 				break;
 
@@ -241,9 +249,9 @@ void Server::InitializeNPC()
 		npcs[i].SetId(i + 100);
 		npcs[i].SetPos(DirectX::XMFLOAT3(10.f + i, 0.f , 10.f + i));
 	}
-	TIMER_EVENT start;
+	/*TIMER_EVENT start;
 	start.wakeup_time = std::chrono::system_clock::now() + std::chrono::seconds(3);
-	timer_queue.push(start);
+	timer_queue.push(start);*/
 }
 
 void Server::TimerThread()
@@ -251,9 +259,8 @@ void Server::TimerThread()
 	while (true) {
 		TIMER_EVENT ev;
 		auto current_time = std::chrono::system_clock::now();
-		// std::cout << std::chrono::system_clock::to_time_t(current_time) << std::endl;
 		if (timer_queue.try_pop(ev)) { // 비었거나, 팝성공
-			// 비었을 때의 작업
+			
 			if (ev.wakeup_time > current_time) {
 				timer_queue.push(ev);
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -261,9 +268,16 @@ void Server::TimerThread()
 			}
 
 			// 성공했을때
-			std::cout << "Pop" << std::endl;
+			switch (ev.ev_type)
+			{
+			case EV_NPC_MOVE:
+				std::cout << "npc move" << std::endl; break;
+
+			default:
+				break;
+			}
 		}
-		
+		// 비었을 때의 작업
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 }
