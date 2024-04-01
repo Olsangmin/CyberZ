@@ -263,7 +263,7 @@ void CPlayer::RotateDirection(float angle)
 
 		float fNextAngle = Vector3::Angle(Vector3::Normalize(xmfVel), xmf3Look);
 
-		fCurrentAngle > fNextAngle ? Rotate(0.0f, (fCurrentAngle-fNextAngle)/1.5, 0.0f) : Rotate(0.0f, -(fNextAngle - fCurrentAngle) / 1.5, 0.0f);
+		fCurrentAngle >= fNextAngle ? Rotate(0.0f, (fCurrentAngle-fNextAngle)/1.5, 0.0f) : Rotate(0.0f, -(fNextAngle - fCurrentAngle) / 1.5, 0.0f);
 	}
 }
 
