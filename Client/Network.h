@@ -6,8 +6,8 @@ constexpr int INGAME_USER = 3;
 constexpr int MAX_NPC = 10;
 
 extern SOCKET c_socket;
-static string ServerIP = { "127.0.0.1" };
-//static string ServerIP = {"192.168.219.162"};
+//static string ServerIP = { "127.0.0.1" };
+static string ServerIP = {"192.168.207.169"};
 //static string ServerIP = { "192.168.219.194" };
 extern int my_id;
 
