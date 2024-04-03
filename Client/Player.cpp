@@ -60,6 +60,7 @@ void CPlayer::ReleaseShaderVariables()
 
 void CPlayer::SetBuffer(void* ptr, size_t size)
 {
+	if (my_id != p_id) return;
 	char* p = reinterpret_cast<char*>(ptr);
 	memcpy((sendBuffer + bufSize), p, size);
 	bufSize += static_cast<int>(size);
@@ -94,12 +95,11 @@ void CPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity) // 
 			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3CRight, -fDistance);
 		}
 
-		
 #ifdef USE_NETWORK
 		CS_MOVE_PACKET packet;
 		packet.size = sizeof(packet);
 		packet.type = CS_MOVE;
-		packet.position = xmf3Shift;
+		packet.dir = xmf3Shift;
 		packet.yaw = GetYaw();
 		SetBuffer(&packet, packet.size);
 #endif // USE_NETWORK
@@ -236,6 +236,7 @@ void CPlayer::Update(float fTimeElapsed)
 	UpdatePlayerPostion(fTimeElapsed);
 	UpdateCameraPosition(fTimeElapsed);
 	UpdateFriction(fTimeElapsed);
+
 
 #ifdef USE_NETWORK
 	SendPacket();
@@ -535,14 +536,7 @@ void CTerrainPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVeloci
 		if (m_pasCurrentAni != WALK && !m_bIsRun && !m_bIsCreep && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
 			m_pasNextAni = WALK;
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
-#ifdef USE_NETWORK
-			CS_CHANGE_ANIMATION_PACKET packet;
-			packet.size = sizeof(packet);
-			packet.type = CS_CHANGE_ANIM;
-			packet.ani_st = m_pasNextAni;
-			SetBuffer(&packet, packet.size);
-			SendPacket();
-#endif // USE_NETWORK
+			AnimationPacket(m_pasNextAni);
 		}
 
 	}
@@ -563,11 +557,13 @@ void CTerrainPlayer::Update(float fTimeElapsed)
 			SetMaxVelocityXZ(80.f);
 			m_pasNextAni = RUN;
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			AnimationPacket(m_pasNextAni);
 		}
 		if (m_pasCurrentAni != CREEP && m_bIsCreep && !m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
 			SetMaxVelocityXZ(20.f);
 			m_pasNextAni = CREEP;
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			AnimationPacket(m_pasNextAni);
 		}
 		if (!m_bIsRun && !m_bIsCreep) {
 			SetMaxVelocityXZ(40.f);
@@ -581,16 +577,19 @@ void CTerrainPlayer::Update(float fTimeElapsed)
 				m_bIsCreep = false;
 				m_pasNextAni = IDLE;
 				m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
-#ifdef USE_NETWORK
-				CS_CHANGE_ANIMATION_PACKET packet;
-				packet.size = sizeof(packet);
-				packet.type = CS_CHANGE_ANIM;
-				packet.ani_st = m_pasNextAni;
-				SetBuffer(&packet, packet.size);
-#endif // USE_NETWORK
+
+				AnimationPacket(m_pasNextAni);
 			}
 		}
 	}
+
+	CS_UPDATE_PLAYER_PACKET Upacket;
+	Upacket.size = sizeof(Upacket);
+	Upacket.type = CS_UPDATE_PLAYER;
+	Upacket.position = GetPosition();
+	Upacket.rotate = DirectX::XMFLOAT3(m_fPitch, m_fYaw, m_fRoll);
+	Upacket.ani_st = m_pasCurrentAni;
+	SetBuffer(&Upacket, Upacket.size);
 }
 
 void CTerrainPlayer::AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2)
@@ -603,18 +602,19 @@ void CTerrainPlayer::AnimationBlending(Player_Animation_ST type1, Player_Animati
 		m_pSkinnedAnimationController->SetTrackBlending(m_pasCurrentAni, type2); // 몇번째랑 몇번째
 	}
 	else { // 무조건 WALK
-		// If the blending is done 
-		// 체인지 애니메이션(walk)
-		/*CS_CHANGE_ANIMATION_PACKET* p;
-		p->size = sizeof(CS_CHANGE_ANIMATION_PACKET);
-		p->type = CS_CHANGE_ANIM;
-		p->ani_st = 
-		send(c_socket, reinterpret_cast<char*>(p), static_cast<int>(p[0]), sent);*/
-
 		if(type2!=NONE)m_pasCurrentAni = type2;
 		m_pSkinnedAnimationController->SetTrackEnable(m_pasCurrentAni, true);
 		m_pSkinnedAnimationController->SetAnimationBlending(false);
 		m_pasNextAni = NONE;
 	}
 
+}
+
+void CTerrainPlayer::AnimationPacket(const Player_Animation_ST next_anim)
+{
+	CS_CHANGE_ANIMATION_PACKET packet;
+	packet.size = sizeof(packet);
+	packet.type = CS_CHANGE_ANIM;
+	packet.ani_st = next_anim;
+	SetBuffer(&packet, packet.size);
 }

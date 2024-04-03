@@ -95,7 +95,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
-	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 180); //
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 800); //
 
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
@@ -547,7 +547,15 @@ void CScene::AnimateObjects(float fTimeElapsed)
 		m_ppPlayer[i]->Animate(fTimeElapsed);
 		m_ppPlayer[i]->Update(fTimeElapsed);
 
-		for (int j = 0; j < m_nHierarchicalGameObjects; j++) if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) m_ppPlayer[i]->SetPosition(m_ppPlayer[i]->m_xmf3BeforeColliedPosition);
+		for (int j = 0; j < m_nHierarchicalGameObjects; j++) 
+			if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) {
+				m_ppPlayer[i]->SetPosition(m_ppPlayer[i]->m_xmf3BeforeColliedPosition);
+				CS_TEST_PACKET p;
+				p.size = sizeof(p);
+				p.type = CS_TEST;
+				p.x = j;
+				m_ppPlayer[i]->SetBuffer(&p, sizeof(p));
+			}
 	}
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) if(m_ppHierarchicalGameObjects[i])	m_ppHierarchicalGameObjects[i]->Animate(m_fElapsedTime);
 		
@@ -644,9 +652,11 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	// OBJ (4)
 	// [Present Setting]
 	// 0		- Robot				|| enemy
-	// 1~120	- fence				|| OBJ
+	// 1~120	- fence1			|| OBJ
+	// 121		- fence2			|| OBJ
+
 	
-	m_nHierarchicalGameObjects = 121;
+	m_nHierarchicalGameObjects = 122;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
 	// 0 - Robot
@@ -656,34 +666,44 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 	m_ppHierarchicalGameObjects[0]->SetPosition(100.0f, 0, 0.0f);
 	m_ppHierarchicalGameObjects[0]->SetScale(10.f, 10.f, 10.f);
-
+	
 	if (pRobotModel) delete pRobotModel;
 
-	// 1 - Barrel
-	CLoadedModelInfo* pBarrelModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/fence2.bin",NULL);
+	// 1~120	- fence
+	CLoadedModelInfo* pFenceModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/fence1.bin",NULL);
 	
 	for(int i = 1; i < 31; i++)
 	{
 		// 북
-		m_ppHierarchicalGameObjects[i] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pBarrelModel);
+		m_ppHierarchicalGameObjects[i] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFenceModel);
 		m_ppHierarchicalGameObjects[i]->SetPosition(-500+(i*31), 0.f, 500.f);
-
+	
 		//동
-		m_ppHierarchicalGameObjects[i + 30] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pBarrelModel);
+		m_ppHierarchicalGameObjects[i + 30] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFenceModel);
 		m_ppHierarchicalGameObjects[i + 30]->Rotate(0.f, 90.f, 0.f);
 		m_ppHierarchicalGameObjects[i + 30]->SetPosition(500.f, 0.f, 500 - (i * 31));
 	
 		//서
-		m_ppHierarchicalGameObjects[i + 60] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pBarrelModel);
+		m_ppHierarchicalGameObjects[i + 60] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFenceModel);
 		m_ppHierarchicalGameObjects[i + 60]->Rotate(0.f, 90.f, 0.f);
 		m_ppHierarchicalGameObjects[i + 60]->SetPosition(-500.f, 0.f, 500 - (i * 31));
-
+	
 		//남
-		m_ppHierarchicalGameObjects[i +	90] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pBarrelModel);
+		m_ppHierarchicalGameObjects[i +	90] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFenceModel);
 		m_ppHierarchicalGameObjects[i +	90]->SetPosition(-500 + (i * 31), 0.f, -500.f);
 	}
 	
-	if (pBarrelModel) delete pBarrelModel;
+	if (pFenceModel) delete pFenceModel;
+
+
+	// 121	- obj1
+	CLoadedModelInfo* pMapModle1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Comm.bin", NULL);
+
+	m_ppHierarchicalGameObjects[121] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle1);
+	//m_ppHierarchicalGameObjects[121]->SetScale(10.f, 10.f, 10.f);
+	m_ppHierarchicalGameObjects[121]->SetPosition(10.f, 0.f, 10.f);
+
+	if (pMapModle1) delete pMapModle1;
 
 	//===============================//
 	// SHADER OBJ (NULL)
@@ -717,9 +737,9 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
 
 	// 저장된 모델 바꿀 수 있음
-	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
+	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
 	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
-	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
+	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
 
 	for (int i = 0; i < m_nPlayer; ++i) {
 		CTerrainPlayer* pPlayer = new CTerrainPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
@@ -739,6 +759,10 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	//===============================//
+	// SKY BOX (1)
+	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+
+	//===============================//
 	// TERRAIN
 	XMFLOAT3 xmf3Scale(15.0f, 1.0f, 15.0f);
 	XMFLOAT4 xmf4Color(0.0f, 0.1f, 0.1f, 0.0f);
@@ -747,7 +771,16 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	//===============================//
 	// OBG
 
-	m_nHierarchicalGameObjects = 0;
+	m_nHierarchicalGameObjects = 1;
+	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
+
+
+	CLoadedModelInfo* pMapModle1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Second_section.bin", NULL);
+
+	m_ppHierarchicalGameObjects[0] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle1);
+	m_ppHierarchicalGameObjects[0]->SetScale(10.f, 10.f, 10.f);
+
+	if (pMapModle1) delete pMapModle1;
 
 	//===============================//
 	// Player
@@ -844,7 +877,7 @@ void CScene::ProcessPacket(char* p)
 		m_ppPlayer[packet->id]->p_id = packet->id;
 		m_ppPlayer[packet->id]->m_bUnable = true;
 		m_ppPlayer[packet->id]->SetPosition(packet->position);
-		m_ppPlayer[packet->id]->Rotate(0.f, packet->yaw - m_ppPlayer[packet->id]->GetYaw(), 0.f);
+		m_ppPlayer[packet->id]->Rotate(0.f, packet->rotation.y - m_ppPlayer[packet->id]->GetYaw(), 0.f);
 	} break;
 
 	case SC_MOVE_OBJECT:
@@ -853,14 +886,21 @@ void CScene::ProcessPacket(char* p)
 		// cout << packet->id << "Move" << endl;
 		if (packet->id == my_id) break;
 		else {
-			m_ppPlayer[packet->id]->Move(packet->position, true);
+			m_ppPlayer[packet->id]->Move(packet->dir, true);
 			// m_ppPlayer[packet->id]->SetPosition(packet->position);
 			m_ppPlayer[packet->id]->Rotate(0.f, packet->yaw - m_ppPlayer[packet->id]->GetYaw(), 0.f);
-			
-			/*cout << "P[" << packet->id << "] " <<
-				reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->m_pasCurrentAni << endl;*/
 		}
 
+	} break;
+
+	case SC_UPDATE_PLAYER:
+	{
+		SC_UPDATE_PLAYER_PACKET* packet = reinterpret_cast<SC_UPDATE_PLAYER_PACKET*>(p);
+		if (packet->id == my_id) break;
+		else {
+			m_ppPlayer[packet->id]->SetPosition(packet->position);
+			
+		}
 	} break;
 
 	case SC_CHANGE_ANIM: {
@@ -869,7 +909,7 @@ void CScene::ProcessPacket(char* p)
 		else {
 			reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 			reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->m_pasNextAni = packet->ani_st;
-			// 
+			
 		}
 	} break;
 
@@ -905,4 +945,16 @@ void CScene::process_data(char* net_buf, size_t io_byte)
 }
 
 // @@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@
+
+
+
+
+
+
+
+
+
+
+
+
 

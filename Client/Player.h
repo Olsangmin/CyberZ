@@ -161,4 +161,8 @@ public:
 	bool m_bIsCreep{ false };
 	bool m_bIsCreep_flag{ false };
 	bool m_bIsJump{ false };
+
+	//-------------------------------------
+	void AnimationPacket(const Player_Animation_ST next_anim);
+	//-------------------------------------
 };

@@ -13,6 +13,39 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="01. Timer">
+      <UniqueIdentifier>{3d1e46d6-0ec4-4d5c-92a6-4a2e43570c8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="02. GameFramework">
+      <UniqueIdentifier>{abb79112-e362-45c3-b5a5-535d84ca3d66}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="03. Network">
+      <UniqueIdentifier>{90e808db-1448-471e-b839-9c7d76e62aca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="04. Mesh">
+      <UniqueIdentifier>{415035b6-0122-484c-b7a0-72a0c5351bec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="05. Object">
+      <UniqueIdentifier>{1d3a125a-4a41-45da-af64-c449e45aa7d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="06. Player">
+      <UniqueIdentifier>{dcff62ce-4440-4e6e-9cb2-2bb741eb9742}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="07. Camera">
+      <UniqueIdentifier>{1d6ce9f1-b581-45fe-b376-0986acbb8833}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="09. Scene">
+      <UniqueIdentifier>{e69663b1-30f4-43b7-9ae9-87554e06b573}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="08. Shader">
+      <UniqueIdentifier>{d0b6507b-7dd6-484e-80ba-7198f2e4f48b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="00. stdafx">
+      <UniqueIdentifier>{ccc6e6d0-e199-4c2f-a2f4-865cee8c3fcf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="10. TextureLoader">
+      <UniqueIdentifier>{ca65471a-e7df-49d2-a0ef-c2518d304039}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CyberZ_Client.rc">
@@ -28,98 +61,108 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Camera.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="DDSTextureLoader12.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="GameFramework.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Object.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Timer.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="WICTextureLoader12.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>02. GameFramework</Filter>
     </ClCompile>
     <ClCompile Include="CyberZ_Client.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>02. GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="DDSTextureLoader12.cpp">
+      <Filter>10. TextureLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="WICTextureLoader12.cpp">
+      <Filter>10. TextureLoader</Filter>
     </ClCompile>
     <ClCompile Include="Network.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>03. Network</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>00. stdafx</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>04. Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>01. Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>08. Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>07. Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>09. Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Object.cpp">
+      <Filter>05. Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>06. Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CyborgPlayer.cpp">
+      <Filter>06. Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="d3dx12.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="DDSTextureLoader12.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="GameFramework.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Object.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Timer.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="WICTextureLoader12.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>02. GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="CyberZ_Client.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>02. GameFramework</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="DDSTextureLoader12.h">
+      <Filter>10. TextureLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="WICTextureLoader12.h">
+      <Filter>10. TextureLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dx12.h">
+      <Filter>10. TextureLoader</Filter>
     </ClInclude>
     <ClInclude Include="Network.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>03. Network</Filter>
     </ClInclude>
     <ClInclude Include="..\Protocol.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>03. Network</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>00. stdafx</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>00. stdafx</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>04. Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>01. Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>08. Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>07. Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>09. Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Object.h">
+      <Filter>05. Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>06. Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CyborgPlayer.h">
+      <Filter>06. Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Light.hlsl" />
-    <FxCompile Include="Shaders.hlsl" />
+    <FxCompile Include="Light.hlsl">
+      <Filter>08. Shader</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders.hlsl">
+      <Filter>08. Shader</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

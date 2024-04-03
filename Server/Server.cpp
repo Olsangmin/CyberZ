@@ -40,15 +40,18 @@ void Server::Network()
 	InitializeNPC();
 	std::cout << "Server Start" << std::endl;
 	
-	// int num_threads = std::thread::hardware_concurrency();
-	int num_threads = 1;
+	int num_threads = std::thread::hardware_concurrency();
+	// int num_threads = 1;
 	for (int i = 0; i < num_threads; ++i)
 		worker_threads.emplace_back(&Server::Worker_thread, this);
 	std::thread timer_thread{ &Server::TimerThread, this};
 	
+
 	timer_thread.join();
 	for (auto& th : worker_threads)
 		th.join();
+
+	
 
 }
 
@@ -150,8 +153,8 @@ void Server::Process_packet(int c_id, char* packet)
 				if (ST_INGAME != cl.state) continue;
 			}
 			if (cl.GetId() == c_id) continue;
-			cl.send_add_player_packet(c_id, clients[c_id].GetPos());
-			clients[c_id].send_add_player_packet(cl.GetId(), cl.GetPos());
+			cl.send_add_player_packet(c_id, clients[c_id].GetPos(), clients[c_id].GetRotation());
+			clients[c_id].send_add_player_packet(cl.GetId(), cl.GetPos(), cl.GetRotation());
 		}
 	}
 				 break;
@@ -167,23 +170,34 @@ void Server::Process_packet(int c_id, char* packet)
 				  break;
 	case CS_MOVE: {
 		CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
-		DirectX::XMFLOAT3 pos = { p->position };
+		DirectX::XMFLOAT3 dir = { p->dir };
 		float yaw = p->yaw;
-		float velo = p->velocity;
-		clients[c_id].SetPos(pos);
-		clients[c_id].SetYaw(yaw);
-		clients[c_id].SetVelocity(velo);
 		
 		for (auto& cl : clients) {
 			if (cl.state != ST_INGAME) continue;
-			cl.send_move_packet(c_id,pos, yaw, true);
+			cl.send_move_packet(c_id, dir, yaw, true);
 		}
 
-		std::cout << "Client[" << c_id << "] Move. -> ";
-		std::cout << "(" << pos.x << ", " << pos.y << ", " << pos.z << ")" << std::endl;
-		// std::cout << "yaw : " << yaw << std::endl;
+		
+		// std::cout << "Client[" << c_id << "] Move.";
+		
 	}
 				break;
+
+	case CS_UPDATE_PLAYER: {
+		CS_UPDATE_PLAYER_PACKET* p = reinterpret_cast<CS_UPDATE_PLAYER_PACKET*>(packet);
+		{
+			std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
+			clients[c_id].SetPos(p->position);
+			clients[c_id].SetRotation(p->rotate);
+		}
+
+		for (auto& cl : clients) {
+			if (cl.state != ST_INGAME) continue;
+			cl.send_update_packet(c_id, clients[c_id].GetPos(), clients[c_id].GetRotation());
+		}
+	}
+						 break;
 
 	case CS_CHANGE_ANIM: {
 		CS_CHANGE_ANIMATION_PACKET* p = reinterpret_cast<CS_CHANGE_ANIMATION_PACKET*>(packet);
@@ -196,7 +210,11 @@ void Server::Process_packet(int c_id, char* packet)
 					   break;
 	case CS_TEST: {
 		CS_TEST_PACKET* p = reinterpret_cast<CS_TEST_PACKET*>(packet);
-		std::cout << p->x << " 수신" << std::endl;
+		
+		for (auto& npc : npcs) {
+			if ((p->x + 100) == npc.GetId())
+				npc.WakeUp(c_id);
+		}
 	}
 				break;
 
@@ -231,9 +249,9 @@ void Server::InitializeNPC()
 		npcs[i].SetId(i + 100);
 		npcs[i].SetPos(DirectX::XMFLOAT3(10.f + i, 0.f , 10.f + i));
 	}
-	TIMER_EVENT start;
+	/*TIMER_EVENT start;
 	start.wakeup_time = std::chrono::system_clock::now() + std::chrono::seconds(3);
-	timer_queue.push(start);
+	timer_queue.push(start);*/
 }
 
 void Server::TimerThread()
@@ -241,9 +259,8 @@ void Server::TimerThread()
 	while (true) {
 		TIMER_EVENT ev;
 		auto current_time = std::chrono::system_clock::now();
-		// std::cout << std::chrono::system_clock::to_time_t(current_time) << std::endl;
 		if (timer_queue.try_pop(ev)) { // 비었거나, 팝성공
-			// 비었을 때의 작업
+			
 			if (ev.wakeup_time > current_time) {
 				timer_queue.push(ev);
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -251,9 +268,16 @@ void Server::TimerThread()
 			}
 
 			// 성공했을때
-			std::cout << "Pop" << std::endl;
+			switch (ev.ev_type)
+			{
+			case EV_NPC_MOVE:
+				std::cout << "npc move" << std::endl; break;
+
+			default:
+				break;
+			}
 		}
-		
+		// 비었을 때의 작업
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 }
