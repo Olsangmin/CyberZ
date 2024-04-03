@@ -5,7 +5,7 @@
 #pragma once
 
 #include "Shader.h"
-#include "Player.h"
+#include "CyborgPlayer.h"
 
 #define MAX_LIGHTS						16 
 

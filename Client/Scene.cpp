@@ -431,14 +431,14 @@ bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPar
 	case WM_KEYDOWN: {
 		switch (wParam) {
 		case VK_SHIFT: {
-			reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsRun = true;
-			reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsCreep = false;
-			reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsCreep_flag = false;
+			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsRun = true;
+			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCreep = false;
+			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCreep_flag = false;
 			break;
 		}
 		case 'C': {
-			if (reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsCreep == reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsCreep_flag) {
-				reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsCreep = !reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsCreep;
+			if (reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCreep == reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCreep_flag) {
+				reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCreep = !reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCreep;
 			}
 			break;
 		}
@@ -449,11 +449,11 @@ bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPar
 	case WM_KEYUP: {
 		switch (wParam) {
 		case VK_SHIFT: {
-			reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsRun = false;
+			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsRun = false;
 			break;
 		}
 		case 'C': {
-			reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsCreep_flag = reinterpret_cast<CTerrainPlayer*>(m_pMyPlayer)->m_bIsCreep;
+			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCreep_flag = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCreep;
 			break;
 		}
 		}
@@ -737,12 +737,12 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
 
 	// ÀúÀåµÈ ¸ðµ¨ ¹Ù²Ü ¼ö ÀÖÀ½
-	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
+	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
 	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
 	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
 
 	for (int i = 0; i < m_nPlayer; ++i) {
-		CTerrainPlayer* pPlayer = new CTerrainPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
+		CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
 		m_ppPlayer[i] = pPlayer;
 	}
 
@@ -794,7 +794,7 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
 
 	for (int i = 0; i < m_nPlayer; ++i) {
-		CTerrainPlayer* pPlayer = new CTerrainPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
+		CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
 		m_ppPlayer[i] = pPlayer;
 	}
 	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
@@ -907,8 +907,8 @@ void CScene::ProcessPacket(char* p)
 		SC_CHANGE_ANIMATION_PACKET* packet = reinterpret_cast<SC_CHANGE_ANIMATION_PACKET*>(p);
 		if (packet->id == my_id) break;
 		else {
-			reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
-			reinterpret_cast<CTerrainPlayer*>(m_ppPlayer[packet->id])->m_pasNextAni = packet->ani_st;
+			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[packet->id])->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[packet->id])->m_pasNextAni = packet->ani_st;
 			
 		}
 	} break;
