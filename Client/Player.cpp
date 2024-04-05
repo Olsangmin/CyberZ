@@ -225,6 +225,7 @@ void CPlayer::CameraRotate(float x, float y, float z)
 
 void CPlayer::Update(float fTimeElapsed)
 {
+
 	// Set Length(Vector)
 
 	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, m_xmf3Gravity);

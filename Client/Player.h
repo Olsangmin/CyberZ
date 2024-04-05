@@ -48,7 +48,7 @@ public:
 	bool						m_bUnable = false;
 	
 	//bool						m_bMove = true;
-	XMFLOAT3					m_xmf3BeforeColliedPosition = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT3					m_xmf3BeforeColliedPosition = XMFLOAT3(10.0f, 0.0f, 0.0f);
 
 	// @@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@서버코드@@
 	int							p_id;
