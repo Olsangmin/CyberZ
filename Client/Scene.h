@@ -116,6 +116,9 @@ public:
 	int									m_nHierarchicalGameObjects = 0;
 	CGameObject**						m_ppHierarchicalGameObjects = NULL;
 
+	int									m_nEnemy = 0;
+	CGameObject**						m_ppEnemy = NULL;
+
 	XMFLOAT3							m_xmf3RotatePosition = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	int									m_nShaders = 0;
