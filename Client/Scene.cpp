@@ -685,7 +685,7 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	// 1	- Corzim (Player)
 	// 2	- Evan
 	// 3	- Evan
-	// Able Model - Evam
+	// Able Model - Evam, Corzim
 	// Unable Model - Corzim, Uranya
 
 	m_nPlayer = MAX_PLAYER;
