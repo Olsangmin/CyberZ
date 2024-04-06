@@ -644,7 +644,7 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	// 1		- map				|| OBJ
 	
 	
-	m_nHierarchicalGameObjects = 1;
+	m_nHierarchicalGameObjects = 2;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
 	// 0 - Robot
@@ -658,9 +658,13 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	
 	// 1 - obj1
 	CLoadedModelInfo* pMapModle1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/second_section.bin", NULL);
-	m_ppHierarchicalGameObjects[0] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle1);
-	m_ppHierarchicalGameObjects[0]->SetPosition(100.f, 0.f, 100.f);
-	m_ppHierarchicalGameObjects[0]->SetScale(10.f, 10.f, 10.f);
+	for (int i = 0; i < m_nHierarchicalGameObjects; i++)
+	{
+		m_ppHierarchicalGameObjects[i] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle1);
+		m_ppHierarchicalGameObjects[i]->SetPosition(100.f, 0.f, 100.f);
+		m_ppHierarchicalGameObjects[i]->SetScale(1.f, 1.f, 1.f);
+	}
+
 	if (pMapModle1) delete pMapModle1;
 
 	//===============================//
