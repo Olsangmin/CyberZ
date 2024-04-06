@@ -303,7 +303,7 @@ void CMaterial::LoadTextureFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 			{
 				while (pParent)
 				{
-					if (!pParent->m_pParent) break;
+					if (pParent->m_pParent == NULL) break;
 					pParent = pParent->m_pParent;
 				}
 				CGameObject* pRootGameObject = pParent;
@@ -782,7 +782,7 @@ void CGameObject::UpdateBoundingBox()
 	if (m_pMesh)
 	{
 		m_xmBoundingBox = m_pMesh->m_xmBoundingBox;
-		m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
+		m_pMesh->m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
 		XMStoreFloat4(&m_xmBoundingBox.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmBoundingBox.Orientation)));
 		MoveBBToParent(this);
 		return;
@@ -895,6 +895,7 @@ void CGameObject::Animate(float fTimeElapsed)
 {
 	OnPrepareRender();
 
+	//BB
 	UpdateBoundingBox();
 
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->AdvanceTime(fTimeElapsed, this);
