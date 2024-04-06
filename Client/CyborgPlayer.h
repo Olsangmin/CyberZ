@@ -29,6 +29,7 @@ public:
 
 	float m_fVelocitySpeed{};
 	float m_fStaminer{};
+	float m_fMaxStaminer{};
 	float m_fRepairSpeed{};
 	float m_fTakeOverSpeed{};
 
@@ -37,8 +38,12 @@ public:
 	bool m_bIsCreep_flag{ false };
 	bool m_bIsJump{ false };
 
-	bool m_bIsStaminer{ true };
-	virtual float GetStaminer() { return m_fStaminer; };
+	bool m_bHasStaminer{ true };
+	virtual bool GetStaminer() { return m_bHasStaminer; };
+	virtual float GetVelocitySpeed() { return m_fVelocitySpeed; };
+
+	void ExhaustionStaminer();
+	void RestorationStaminer();
 
 	// Animation
 	virtual void SetRun(bool value);

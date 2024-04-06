@@ -167,9 +167,10 @@ void CyborgPlayer::Update(float fTimeElapsed)
 	if (m_pSkinnedAnimationController)
 	{
 		AnimationBlending(m_pasCurrentAni, m_pasNextAni);
+		ExhaustionStaminer();
+		RestorationStaminer();
 		IsRun();
 		IsCreep();
-
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
 		if (::IsZero(fLength))
 		{
@@ -202,6 +203,29 @@ void CyborgPlayer::AnimationBlending(Player_Animation_ST type1, Player_Animation
 		m_pasNextAni = NONE;
 	}
 
+}
+
+void CyborgPlayer::ExhaustionStaminer()
+{
+	if (m_bIsRun)
+		if(m_fStaminer>0)m_fStaminer-=0.2f;
+	if (m_bIsCreep)
+		if (m_fStaminer > 0)m_fStaminer -= 0.1f;
+	if (m_fStaminer <= 0.0f) {
+		m_bHasStaminer = false;
+		m_bIsRun = false;
+		m_bIsCreep = false;
+		m_bIsCreep_flag = false;
+	}
+}
+
+void CyborgPlayer::RestorationStaminer()
+{
+	if (!m_bIsRun && !m_bIsCreep)
+		if (m_fStaminer < m_fMaxStaminer)m_fStaminer+=0.1f;
+	if (m_fStaminer >= 20.0f) {
+		m_bHasStaminer = true;
+	}
 }
 
 void CyborgPlayer::SetRun(bool value)
@@ -240,12 +264,12 @@ void CyborgPlayer::IsIdle()
 
 void CyborgPlayer::IsRun()
 {
-	if (m_pasCurrentAni != RUN && m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
-		SetMaxVelocityXZ(80.f);
-		m_pasNextAni = RUN;
-		m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
-		AnimationPacket(m_pasNextAni);
-	}
+		if (m_pasCurrentAni != RUN && m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+			SetMaxVelocityXZ(80.f);
+			m_pasNextAni = RUN;
+			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			AnimationPacket(m_pasNextAni);
+		}
 }
 
 void CyborgPlayer::IsCreep()
@@ -281,19 +305,22 @@ void CyborgPlayer::SetPlayerData(int type)
 	switch (type) {
 	case 0:
 		m_fVelocitySpeed = 4.5f;
-		m_fStaminer = 100.f;
+		m_fMaxStaminer = 100.f;
+		m_fStaminer = m_fMaxStaminer;
 		m_fRepairSpeed = 50.f;
 		m_fTakeOverSpeed = 50.f;
 		break;
 	case 1:
 		m_fVelocitySpeed = 4.5f;
-		m_fStaminer = 110.f;
+		m_fMaxStaminer = 110.f;
+		m_fStaminer = m_fMaxStaminer;
 		m_fRepairSpeed = 50.f;
 		m_fTakeOverSpeed = 80.f;
 		break;
 	case 2:
 		m_fVelocitySpeed = 4.5f;
-		m_fStaminer = 90.f;
+		m_fMaxStaminer = 90.f;
+		m_fStaminer = m_fMaxStaminer;
 		m_fRepairSpeed = 80.f;
 		m_fTakeOverSpeed = 50.f;
 		break;

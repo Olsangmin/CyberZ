@@ -441,11 +441,11 @@ bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPar
 	case WM_KEYDOWN: {
 		switch (wParam) {
 		case VK_SHIFT: {
-			m_pMyPlayer->SetRun(true);
+			if(m_pMyPlayer->GetStaminer())m_pMyPlayer->SetRun(true);
 			break;
 		}
 		case 'C': {
-			m_pMyPlayer->SetCreep();
+			if (m_pMyPlayer->GetStaminer())m_pMyPlayer->SetCreep();
 			break;
 		}
 		}
@@ -521,8 +521,8 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffe
 		if ((cxDelta || cyDelta) && m_pMyPlayer->m_bUnable)
 				m_pMyPlayer->CameraRotate(0.0f, cxDelta, 0.0f);
 
-		if (dwDirection1 && m_pMyPlayer->m_bUnable) 
-			m_pMyPlayer->Move(dwDirection1, reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fVelocitySpeed, true);
+		if (dwDirection1 && m_pMyPlayer->m_bUnable)
+			m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
 	}
 
 	m_dwLastDirection = dwDirection1;
@@ -533,6 +533,7 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffe
 
 void CScene::AnimateObjects(float fTimeElapsed)
 {
+	cout << reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer << endl;
 	m_fElapsedTime = fTimeElapsed;
 
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(fTimeElapsed);

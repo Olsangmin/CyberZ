@@ -135,7 +135,8 @@ public:
 	// Data
 	virtual void SetPlayerData(int type) {};
 
-	virtual float GetStaminer() { return 0; };
+	virtual bool GetStaminer() { return 0; };
+	virtual float GetVelocitySpeed() { return 0; };
 
 };
 
