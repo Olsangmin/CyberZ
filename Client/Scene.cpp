@@ -533,7 +533,8 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffe
 
 void CScene::AnimateObjects(float fTimeElapsed)
 {
-	cout << reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer << endl;
+	// 주석처리 풀면 현재 스테미너값 확인 가능
+	// cout << reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer << endl;
 	m_fElapsedTime = fTimeElapsed;
 
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(fTimeElapsed);
