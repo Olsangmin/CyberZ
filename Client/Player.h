@@ -120,6 +120,23 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
 
 
+	// Animation
+	virtual void SetRun(bool value) {};
+	virtual void SetCreep() {};
+	virtual void SetCreepFlag() {};
+	virtual void SetJump() {};
+
+	virtual void IsRun() {};
+	virtual void IsCreep() {};
+	virtual void IsCrawl() {};
+	virtual void IsWalk() {};
+	virtual void IsJump() {};
+
+	// Data
+	virtual void SetPlayerData(int type) {};
+
+	virtual float GetStaminer() {};
+
 };
 
 

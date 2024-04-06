@@ -31,6 +31,10 @@ enum Player_Animation_ST {
 	JUMP, HIT, DIE, USE, EAT, DUMMY, NONE = 100
 };
 
+enum Player_Character_Type {
+	Corzim, Evan, Uranya, Robot
+};
+
 #pragma pack (push, 1)
 struct CS_LOGIN_PACKET {
 	unsigned char size;

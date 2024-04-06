@@ -431,15 +431,11 @@ bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPar
 	case WM_KEYDOWN: {
 		switch (wParam) {
 		case VK_SHIFT: {
-			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsRun = true;
-			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCreep = false;
-			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCreep_flag = false;
+			m_pMyPlayer->SetRun(true);
 			break;
 		}
 		case 'C': {
-			if (reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCreep == reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCreep_flag) {
-				reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCreep = !reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCreep;
-			}
+			m_pMyPlayer->SetCreep();
 			break;
 		}
 		}
@@ -449,11 +445,11 @@ bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPar
 	case WM_KEYUP: {
 		switch (wParam) {
 		case VK_SHIFT: {
-			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsRun = false;
+			m_pMyPlayer->SetRun(false);
 			break;
 		}
 		case 'C': {
-			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCreep_flag = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCreep;
+			m_pMyPlayer->SetCreepFlag();
 			break;
 		}
 		}
@@ -513,14 +509,10 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffe
 	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f) || (dwDirection1 != 0))
 	{
 		if ((cxDelta || cyDelta) && m_pMyPlayer->m_bUnable)
-		{
-			if (pKeysBuffer[VK_RBUTTON] & 0xF0)
-				m_pMyPlayer->Rotate(cyDelta, 0.0f, -cxDelta);
-			else
 				m_pMyPlayer->CameraRotate(0.0f, cxDelta, 0.0f);
-		}
 
-		if (dwDirection1 && m_pMyPlayer->m_bUnable) m_pMyPlayer->Move(dwDirection1, 4.25f, true);
+		if (dwDirection1 && m_pMyPlayer->m_bUnable) 
+			m_pMyPlayer->Move(dwDirection1, reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fVelocitySpeed, true);
 	}
 
 	m_dwLastDirection = dwDirection1;
@@ -744,6 +736,7 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	for (int i = 0; i < m_nPlayer; ++i) {
 		CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
 		m_ppPlayer[i] = pPlayer;
+		m_ppPlayer[i]->SetPlayerData(i);
 	}
 
 	m_pMyPlayer = m_ppPlayer[MY_PLAYER];

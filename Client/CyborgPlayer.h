@@ -22,13 +22,39 @@ public:
 
 	void AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2);
 
+public:
+
 	Player_Animation_ST m_pasCurrentAni;
 	Player_Animation_ST m_pasNextAni;
+
+	float m_fVelocitySpeed{};
+	float m_fStaminer{};
+	float m_fRepairSpeed{};
+	float m_fTakeOverSpeed{};
 
 	bool m_bIsRun{ false };
 	bool m_bIsCreep{ false };
 	bool m_bIsCreep_flag{ false };
 	bool m_bIsJump{ false };
+
+	bool m_bIsStaminer{ true };
+	virtual float GetStaminer() { return m_fStaminer; };
+
+	// Animation
+	virtual void SetRun(bool value);
+	virtual void SetCreep();
+	virtual void SetCreepFlag();
+	virtual void SetJump();
+
+	virtual void IsIdle();
+	virtual void IsRun();
+	virtual void IsCreep();
+	virtual void IsCrawl();
+	virtual void IsWalk();
+	virtual void IsJump();
+
+	// Data
+	virtual void SetPlayerData(int type);
 
 	//-------------------------------------
 	void AnimationPacket(const Player_Animation_ST next_anim);

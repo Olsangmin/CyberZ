@@ -148,12 +148,12 @@ void CyborgPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity
 	if (dwDirection)
 	{
 		//AnimationBlending(m_pasCurrentAni, WALK);
-		if (m_pasCurrentAni != WALK && !m_bIsRun && !m_bIsCreep && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+		/*if (m_pasCurrentAni != WALK && !m_bIsRun && !m_bIsCreep && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
 			m_pasNextAni = WALK;
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 			AnimationPacket(m_pasNextAni);
-		}
-
+		}*/
+		IsWalk();
 	}
 
 	CPlayer::Move(dwDirection, fDistance, bUpdateVelocity);
@@ -167,34 +167,13 @@ void CyborgPlayer::Update(float fTimeElapsed)
 	if (m_pSkinnedAnimationController)
 	{
 		AnimationBlending(m_pasCurrentAni, m_pasNextAni);
-
-		if (m_pasCurrentAni != RUN && m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
-			SetMaxVelocityXZ(80.f);
-			m_pasNextAni = RUN;
-			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
-			AnimationPacket(m_pasNextAni);
-		}
-		if (m_pasCurrentAni != CREEP && m_bIsCreep && !m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
-			SetMaxVelocityXZ(20.f);
-			m_pasNextAni = CREEP;
-			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
-			AnimationPacket(m_pasNextAni);
-		}
-		if (!m_bIsRun && !m_bIsCreep) {
-			SetMaxVelocityXZ(40.f);
-		}
+		IsRun();
+		IsCreep();
 
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
 		if (::IsZero(fLength))
 		{
-			if (m_pasCurrentAni != IDLE && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
-				m_bIsRun = false;
-				m_bIsCreep = false;
-				m_pasNextAni = IDLE;
-				m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
-
-				AnimationPacket(m_pasNextAni);
-			}
+			IsIdle();
 		}
 	}
 
@@ -223,6 +202,102 @@ void CyborgPlayer::AnimationBlending(Player_Animation_ST type1, Player_Animation
 		m_pasNextAni = NONE;
 	}
 
+}
+
+void CyborgPlayer::SetRun(bool value)
+{
+	m_bIsRun = value;
+	m_bIsCreep = false;
+	m_bIsCreep_flag = false;
+}
+
+void CyborgPlayer::SetCreep()
+{
+	if (m_bIsCreep == m_bIsCreep_flag)
+		m_bIsCreep = !m_bIsCreep;
+}
+
+void CyborgPlayer::SetCreepFlag()
+{
+	m_bIsCreep_flag = m_bIsCreep;
+}
+
+void CyborgPlayer::SetJump()
+{
+}
+
+void CyborgPlayer::IsIdle()
+{
+	if (m_pasCurrentAni != IDLE && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+		m_bIsRun = false;
+		m_bIsCreep = false;
+		m_pasNextAni = IDLE;
+		m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+
+		AnimationPacket(m_pasNextAni);
+	}
+}
+
+void CyborgPlayer::IsRun()
+{
+	if (m_pasCurrentAni != RUN && m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+		SetMaxVelocityXZ(80.f);
+		m_pasNextAni = RUN;
+		m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+		AnimationPacket(m_pasNextAni);
+	}
+}
+
+void CyborgPlayer::IsCreep()
+{
+	if (m_pasCurrentAni != CRAWL && m_bIsCreep && !m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+		SetMaxVelocityXZ(20.f);
+		m_pasNextAni = CRAWL;
+		m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+		AnimationPacket(m_pasNextAni);
+	}
+}
+
+void CyborgPlayer::IsCrawl()
+{
+}
+
+void CyborgPlayer::IsWalk()
+{
+	if (m_pasCurrentAni != WALK && !m_bIsRun && !m_bIsCreep && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+		SetMaxVelocityXZ(40.f);
+		m_pasNextAni = WALK;
+		m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+		AnimationPacket(m_pasNextAni);
+	}
+}
+
+void CyborgPlayer::IsJump()
+{
+}
+
+void CyborgPlayer::SetPlayerData(int type)
+{
+	switch (type) {
+	case 0:
+		m_fVelocitySpeed = 4.5f;
+		m_fStaminer = 100.f;
+		m_fRepairSpeed = 50.f;
+		m_fTakeOverSpeed = 50.f;
+		break;
+	case 1:
+		m_fVelocitySpeed = 4.5f;
+		m_fStaminer = 110.f;
+		m_fRepairSpeed = 50.f;
+		m_fTakeOverSpeed = 80.f;
+		break;
+	case 2:
+		m_fVelocitySpeed = 4.5f;
+		m_fStaminer = 90.f;
+		m_fRepairSpeed = 80.f;
+		m_fTakeOverSpeed = 50.f;
+		break;
+	}
 }
 
 void CyborgPlayer::AnimationPacket(const Player_Animation_ST next_anim)
