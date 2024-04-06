@@ -133,6 +133,12 @@ void CScene::ReleaseObjects()
 		delete[] m_ppHierarchicalGameObjects;
 	}
 
+	if (m_ppEnemy)
+	{
+		for (int i = 0; i < m_nEnemy; i++) if (m_ppEnemy[i]) m_ppEnemy[i]->Release();
+		delete[] m_ppEnemy;
+	}
+
 	ReleaseShaderVariables();
 
 	if (m_pLights) delete[] m_pLights;
@@ -362,6 +368,7 @@ void CScene::ReleaseUploadBuffers()
 
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->ReleaseUploadBuffers();
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) m_ppHierarchicalGameObjects[i]->ReleaseUploadBuffers();
+	for (int i = 0; i < m_nEnemy; i++) m_ppEnemy[i]->ReleaseUploadBuffers();
 
 
 }
@@ -536,6 +543,8 @@ void CScene::AnimateObjects(float fTimeElapsed)
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(fTimeElapsed);
 	
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) if(m_ppHierarchicalGameObjects[i])	m_ppHierarchicalGameObjects[i]->Animate(m_fElapsedTime);
+	for (int i = 0; i < m_nEnemy; i++) if (m_ppEnemy[i]) m_ppEnemy[i]->Animate(m_fElapsedTime);
+
 
 	for (int i = 0; i < m_nPlayer; i++) if (m_ppPlayer[i]) {
 
@@ -591,6 +600,16 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 		}
 	}
 
+	for (int i = 0; i < m_nEnemy; i++)
+	{
+		if (m_ppEnemy[i])
+		{
+			if (!m_ppEnemy[i]->m_pSkinnedAnimationController) m_ppEnemy[i]->UpdateTransform(NULL);
+			m_ppEnemy[i]->Animate(m_fElapsedTime);
+			m_ppEnemy[i]->Render(pd3dCommandList, pCamera);
+		}
+	}
+
 	if (m_ppPlayer) {
 		for (int i = 0; i < m_nPlayer; ++i) {
 			if (m_ppPlayer[i]->m_bUnable)m_ppPlayer[i]->Render(pd3dCommandList, pCamera);
@@ -608,6 +627,14 @@ void CScene::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 		if (m_ppHierarchicalGameObjects[i])
 		{
 			m_ppHierarchicalGameObjects[i]->RenderBoundingBox(pd3dCommandList, pCamera);
+		}
+	}
+
+	for (int i = 0; i < m_nEnemy; i++)
+	{
+		if (m_ppEnemy[i])
+		{
+			m_ppEnemy[i]->RenderBoundingBox(pd3dCommandList, pCamera);
 		}
 	}
 
@@ -646,30 +673,35 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	m_pTerrain->SetPosition(XMFLOAT3(-2000.f,0.f,-2000.f));
 
 	//===============================//
-	// OBJ (4)
+	// OBJ (1)
 	// [Present Setting]
-	// 0		- Robot				|| enemy
-	// 1		- map				|| OBJ
-	
-	
+	// 0		- map				|| OBJ
 	m_nHierarchicalGameObjects = 1;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
-
-	// 0 - Robot
-	//CLoadedModelInfo* pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot.bin", NULL);	
-	//m_ppHierarchicalGameObjects[0] = new CRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 1);
-	//m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	//m_ppHierarchicalGameObjects[0]->SetPosition(100.0f, 0, 0.0f);
-	//m_ppHierarchicalGameObjects[0]->SetScale(10.f, 10.f, 10.f);
-	//
-	//if (pRobotModel) delete pRobotModel;
 	
-	// 1 - obj1
+	// 0 - obj1
 	CLoadedModelInfo* pMapModle1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/second_section.bin", NULL);
 	m_ppHierarchicalGameObjects[0] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle1);
 	m_ppHierarchicalGameObjects[0]->SetPosition(100.f, 0.f, 100.f);
 	m_ppHierarchicalGameObjects[0]->SetScale(10.f, 10.f, 10.f);
 	if (pMapModle1) delete pMapModle1;
+
+	//===============================//
+	m_nEnemy = 3;
+	m_ppEnemy = new CGameObject * [m_nEnemy];
+
+	// 0 - Robot
+	CLoadedModelInfo* pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot.bin", NULL);	
+	
+	for (int i = 0; i < m_nEnemy; i++)
+	{
+		m_ppEnemy[i] = new CRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 1);
+		m_ppEnemy[i]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+		m_ppEnemy[i]->SetPosition(0.0f+i*100, 0, 0.0f);
+		m_ppEnemy[i]->SetScale(10.f, 10.f, 10.f);
+	}
+
+	if (pRobotModel) delete pRobotModel;
 
 	//===============================//
 	// SHADER OBJ (NULL)
@@ -705,7 +737,7 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	// ÀúÀåµÈ ¸ðµ¨ ¹Ù²Ü ¼ö ÀÖÀ½
 	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
 	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
-	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
+	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
 
 	for (int i = 0; i < m_nPlayer; ++i) {
 		CTerrainPlayer* pPlayer = new CTerrainPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
@@ -781,9 +813,9 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
 
 	// ÀúÀåµÈ ¸ðµ¨ ¹Ù²Ü ¼ö ÀÖÀ½
-	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
+	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
 	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
-	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
+	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
 
 	for (int i = 0; i < m_nPlayer; ++i) {
 		CTerrainPlayer* pPlayer = new CTerrainPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
