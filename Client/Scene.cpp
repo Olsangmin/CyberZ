@@ -601,7 +601,6 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 
 void CScene::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-	
 	CMaterial::m_pBoundingBoxShader->Render(pd3dCommandList, pCamera);
 
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++)
@@ -666,9 +665,10 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	//if (pRobotModel) delete pRobotModel;
 	
 	// 1 - obj1
-	CLoadedModelInfo* pMapModle1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/Second_section.bin", NULL);
+	CLoadedModelInfo* pMapModle1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/second_section.bin", NULL);
 	m_ppHierarchicalGameObjects[0] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle1);
 	m_ppHierarchicalGameObjects[0]->SetPosition(100.f, 0.f, 100.f);
+	m_ppHierarchicalGameObjects[0]->SetScale(10.f, 10.f, 10.f);
 	if (pMapModle1) delete pMapModle1;
 
 	//===============================//

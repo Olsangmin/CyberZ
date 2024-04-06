@@ -303,7 +303,7 @@ void CMaterial::LoadTextureFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 			{
 				while (pParent)
 				{
-					if (!pParent->m_pParent) break;
+					if (pParent->m_pParent == NULL) break;
 					pParent = pParent->m_pParent;
 				}
 				CGameObject* pRootGameObject = pParent;
