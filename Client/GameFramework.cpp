@@ -337,7 +337,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 					break;
 				case VK_F6:
 					ReleaseObjects();
-					m_nSceneNum = SECOND_ROUND_SCENE;
+					m_nSceneNum = PREPARE_ROOM_SCENE;
 					BuildObjects();
 					break;
 
@@ -421,7 +421,7 @@ void CGameFramework::BuildObjects()
 		
 		case FIRST_ROUND_SCENE:
 		{
-			m_pScene = new CFirstRoundScene();
+			m_pScene = new PlayScene();
 			if (m_pScene) {
 #ifdef USE_NETWORK
 				m_pScene->InitNetwork();
@@ -431,11 +431,11 @@ void CGameFramework::BuildObjects()
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			break;
 		}
-		case SECOND_ROUND_SCENE:
+		case PREPARE_ROOM_SCENE:
 		{
-			m_pScene = new CSecondRoundScene();
+			m_pScene = new CPrepareRoomScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
-
+			
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			break;
 		}
@@ -455,7 +455,6 @@ void CGameFramework::BuildObjects()
 
 void CGameFramework::ReleaseObjects()
 {
-
 	if (m_pScene) m_pScene->ReleaseObjects();
 	if (m_pScene) delete m_pScene;
 }
@@ -505,7 +504,6 @@ void CGameFramework::MoveToNextFrame()
 
 void CGameFramework::FrameAdvance()
 {    
-
 	m_GameTimer.Tick(60.0f);
 	
 	ProcessInput();

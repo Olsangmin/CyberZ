@@ -50,14 +50,14 @@ public:
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void ReleaseShaderVariables();
 
-	void BuildDefaultLightsAndMaterials();
+	virtual void BuildDefaultLightsAndMaterials();
 	virtual void BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
 	void ReleaseObjects();
 
 	ID3D12RootSignature *CreateGraphicsRootSignature(ID3D12Device *pd3dDevice);
 	ID3D12RootSignature *GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
 
-	bool ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer);
+	virtual bool ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer);
     void AnimateObjects(float fTimeElapsed);
     void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
 
@@ -136,28 +136,5 @@ public:
 	LIGHTS*								m_pcbMappedLights = NULL;
 
 	DWORD								m_dwLastDirection;
-};
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-
-class CSecondRoundScene : public CScene
-{
-public:
-	CSecondRoundScene() {}
-	~CSecondRoundScene() {}
-
-	void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
-};
-
-class CFirstRoundScene : public CScene
-{
-public:
-	CFirstRoundScene() {}
-	~CFirstRoundScene() {}
-
-	void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
-
 };
 
