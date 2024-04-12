@@ -143,12 +143,51 @@ bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBu
 			m_pMyPlayer->CameraRotate(0.0f, cxDelta, 0.0f);
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable)
-			m_pMyPlayer->Move(dwDirection1, reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fVelocitySpeed, true);
+			m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
 	}
 
 	m_dwLastDirection = dwDirection1;
 
 	return(false);
+}
+
+bool PlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	CScene::OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+
+	switch (nMessageID)
+	{
+	case WM_KEYDOWN: {
+		switch (wParam) {
+		case VK_SHIFT: {
+			if (m_pMyPlayer->GetStaminer())m_pMyPlayer->SetRun(true);
+			break;
+		}
+		case 'C': {
+			if (m_pMyPlayer->GetStaminer())m_pMyPlayer->SetCreep();
+			break;
+		}
+		}
+		break;
+	}
+
+	case WM_KEYUP: {
+		switch (wParam) {
+		case VK_SHIFT: {
+			m_pMyPlayer->SetRun(false);
+			break;
+		}
+		case 'C': {
+			m_pMyPlayer->SetCreepFlag();
+			break;
+		}
+		}
+		break;
+	}
+	default:
+		break;
+	}
+	return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -196,8 +235,6 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_pMyPlayer->ChangeCamera(PREPARE_ROOM_CAMERA, 0.0f);
 }
 
-
-
 bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
 {
 	CScene::ProcessInput(m_hWnd, m_ptOldCursorPos, pKeysBuffer);
@@ -230,6 +267,12 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 	if (pKeysBuffer['R'] & 0xF0) m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
 
 	return(false);
+}
+
+bool CPrepareRoomScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	CScene::OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+	return false;
 }
 
 bool CPrepareRoomScene::AllPlayerReady()

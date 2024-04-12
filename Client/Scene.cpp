@@ -435,38 +435,6 @@ bool CScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam,
 
 bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
-	switch (nMessageID)
-	{
-	case WM_KEYDOWN: {
-		switch (wParam) {
-		case VK_SHIFT: {
-			m_pMyPlayer->SetRun(true);
-			break;
-		}
-		case 'C': {
-			m_pMyPlayer->SetCreep();
-			break;
-		}
-		}
-		break;
-	}
-
-	case WM_KEYUP: {
-		switch (wParam) {
-		case VK_SHIFT: {
-			m_pMyPlayer->SetRun(false);
-			break;
-		}
-		case 'C': {
-			m_pMyPlayer->SetCreepFlag();
-			break;
-		}
-		}
-		break;
-	}
-	default:
-		break;
-	}
 	return(false);
 }
 
