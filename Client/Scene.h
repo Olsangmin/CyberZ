@@ -136,5 +136,8 @@ public:
 	LIGHTS*								m_pcbMappedLights = NULL;
 
 	DWORD								m_dwLastDirection;
+
+public:
+	virtual bool AllPlayerReady() { return false; }
 };
 

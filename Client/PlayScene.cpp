@@ -212,19 +212,6 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 		cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
-
-	// Player unable
-	// m_ppPlayer[원하는 캐릭터]->m_bUnable = true 면은 ADD_OBJ(실제로 생성이 아닌 렌더&움직임 가능 상태)
-	//if (pKeysBuffer['1'] & 0xF0) m_ppPlayer[FIRST_PLAYER]->m_bUnable = true;
-	//if (pKeysBuffer['2'] & 0xF0) m_ppPlayer[SECOND_PLAYER]->m_bUnable = true;
-	//if (pKeysBuffer['3'] & 0xF0) m_ppPlayer[THIRD_PLAYER]->m_bUnable = true;
-	//if (pKeysBuffer['4'] & 0xF0) m_ppPlayer[TEMP_PLAYER]->m_bUnable = true;
-	//
-	//// Player disable
-	//if (pKeysBuffer['5'] & 0xF0) m_ppPlayer[FIRST_PLAYER]->m_bUnable = false;
-	//if (pKeysBuffer['6'] & 0xF0) m_ppPlayer[SECOND_PLAYER]->m_bUnable = false;
-	//if (pKeysBuffer['7'] & 0xF0) m_ppPlayer[THIRD_PLAYER]->m_bUnable = false;
-	//if (pKeysBuffer['8'] & 0xF0) m_ppPlayer[TEMP_PLAYER]->m_bUnable = false;
 	
 	if (pKeysBuffer['9'] & 0xF0) m_pMyPlayer->m_bUnable = true;
 	if (pKeysBuffer['0'] & 0xF0) m_pMyPlayer->m_bUnable = false;
@@ -240,8 +227,16 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 		m_pMyPlayer->m_bUnable = true;
 	}
 
-	if (pKeysBuffer['r'] & 0xF0) m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
+	if (pKeysBuffer['R'] & 0xF0) m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
 
 	return(false);
 }
+
+bool CPrepareRoomScene::AllPlayerReady()
+{
+	if (m_pMyPlayer->m_bReady) return true;
+	else return false;
+}
+
+
 
