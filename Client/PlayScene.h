@@ -16,6 +16,8 @@ public:
 	bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
 	bool AllPlayerReady() { return false; }
+
+	void ProcessPacket(char* p);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -31,4 +33,6 @@ public:
 	bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
 	bool AllPlayerReady();
+
+	void ProcessPacket(char* p);
 };

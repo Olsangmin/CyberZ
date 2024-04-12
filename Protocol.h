@@ -13,7 +13,8 @@ constexpr char CS_LOGIN = 0;
 constexpr char CS_LOGOUT = 1;
 constexpr char CS_MOVE = 2;
 constexpr char CS_UPDATE_PLAYER = 3;
-constexpr char CS_CHANGE_ANIM = 4;
+constexpr char CS_CHANGE_ANIM = 4; // 애니메이션 변경
+constexpr char CS_CHANGE_CHARACTER = 5; // 캐릭터 변경
 
 constexpr char CS_TEST = 200;
 
@@ -23,6 +24,8 @@ constexpr char SC_ADD_PLAYER = 1;
 constexpr char SC_MOVE_OBJECT = 2;
 constexpr char SC_UPDATE_PLAYER = 3;
 constexpr char SC_CHANGE_ANIM = 4;
+constexpr char SC_CHANGE_CHARACTER = 5;
+
 
 constexpr char SC_TEST = 200;
 
@@ -66,6 +69,12 @@ struct CS_CHANGE_ANIMATION_PACKET {
 	unsigned char size;
 	char	type;
 	Player_Animation_ST ani_st;
+};
+
+struct CS_CHANGE_CHARACTER_PACKET { // 캐릭터 변경
+	unsigned char size;
+	char	type;
+	Player_Character_Type c_type;
 };
 
 struct CS_TEST_PACKET {
@@ -114,6 +123,13 @@ struct SC_CHANGE_ANIMATION_PACKET {
 	char	type;
 	int id;
 	Player_Animation_ST ani_st;
+};
+
+struct SC_CHANGE_CHARACTER_PACKET {
+	unsigned char size;
+	char	type;
+	int id;
+	Player_Character_Type c_type;
 };
 
 

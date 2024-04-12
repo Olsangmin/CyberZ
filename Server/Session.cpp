@@ -71,3 +71,12 @@ void Session::send_changeAnimation_packet(int c_id, Player_Animation_ST ch_ani)
 	p.ani_st = ch_ani;
 	do_send(&p);
 }
+
+void Session::send_change_Character_type_packet(int c_id, Player_Character_Type type)
+{
+	SC_CHANGE_CHARACTER_PACKET p;
+	p.size = sizeof(p);
+	p.type = SC_CHANGE_CHARACTER;
+	p.c_type = type;
+	do_send(&p);
+}

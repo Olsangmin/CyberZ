@@ -68,10 +68,10 @@ public:
 public:
 	// @@서버코드@@서버코드@@
 	void InitNetwork();
-	void Recv_Packet();
-	void send_packet(void* packet);
-	void ProcessPacket(char* p);
-	void process_data(char* net_buf, size_t io_byte);
+	virtual void Recv_Packet();
+	virtual void send_packet(void* packet);
+	virtual void ProcessPacket(char* p) = 0;
+	virtual void process_data(char* net_buf, size_t io_byte);
 	// @@서버코드@@서버코드@@
 
 	CPlayer**				m_ppPlayer = NULL;				// 모든 플레이어 정보

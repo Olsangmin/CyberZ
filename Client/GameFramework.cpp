@@ -416,15 +416,15 @@ void CGameFramework::BuildObjects()
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
+
+
 	switch (m_nSceneNum)
 	{
 		case FIRST_ROUND_SCENE:
 		{
 			m_pScene = new PlayScene();
 			if (m_pScene) {
-#ifdef USE_NETWORK
-				m_pScene->InitNetwork();
-#endif // USE_NETWORK
+
 				m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 			}
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
@@ -436,9 +436,18 @@ void CGameFramework::BuildObjects()
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 			
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
+
+#ifdef USE_NETWORK
+			m_pScene->InitNetwork();
+#endif // USE_NETWORK
+
+
 			break;
 		}
 	}
+
+
+
 
 	m_pd3dCommandList->Close();
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };

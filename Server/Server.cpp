@@ -39,19 +39,19 @@ void Server::Network()
 
 	InitializeNPC();
 	std::cout << "Server Start" << std::endl;
-	
+
 	int num_threads = std::thread::hardware_concurrency();
 	// int num_threads = 1;
 	for (int i = 0; i < num_threads; ++i)
 		worker_threads.emplace_back(&Server::Worker_thread, this);
-	std::thread timer_thread{ &Server::TimerThread, this};
-	
+	std::thread timer_thread{ &Server::TimerThread, this };
+
 
 	timer_thread.join();
 	for (auto& th : worker_threads)
 		th.join();
 
-	
+
 
 }
 
@@ -80,7 +80,7 @@ void Server::Worker_thread()
 
 		switch (ex_over->comp_type) {
 		case OP_ACCEPT: {
-			
+
 			int c_id = Get_new_client_id();
 			if (c_id == -1)
 				std::cout << "Max User exceeded.\n";
@@ -102,7 +102,7 @@ void Server::Worker_thread()
 			AcceptEx(s_socket, c_socket, ac_over.send_buf, 0, addr_size + 16, addr_size + 16, 0, &ac_over.over);
 			break;
 		}
-					  
+
 		case OP_RECV: {
 			int remain_data = num_bytes + clients[key].Get_prev_remain();
 			char* p = ex_over->send_buf;
@@ -121,7 +121,7 @@ void Server::Worker_thread()
 				memcpy(ex_over->send_buf, p, remain_data);
 			clients[key].do_recv();
 		}
-			break;
+					break;
 		case OP_SEND:
 			delete ex_over;
 			break;
@@ -146,8 +146,8 @@ void Server::Process_packet(int c_id, char* packet)
 		}
 		std::cout << "Client[" << c_id << "] Login.\n" << std::endl;
 		clients[c_id].send_login_info_packet();
-		
-		for (auto& cl : clients) {
+
+		/*for (auto& cl : clients) {
 			{
 				std::lock_guard<std::mutex> ll(cl.o_lock);
 				if (ST_INGAME != cl.state) continue;
@@ -155,7 +155,7 @@ void Server::Process_packet(int c_id, char* packet)
 			if (cl.GetId() == c_id) continue;
 			cl.send_add_player_packet(c_id, clients[c_id].GetPos(), clients[c_id].GetRotation());
 			clients[c_id].send_add_player_packet(cl.GetId(), cl.GetPos(), cl.GetRotation());
-		}
+		}*/
 	}
 				 break;
 	case CS_LOGOUT: {
@@ -172,15 +172,15 @@ void Server::Process_packet(int c_id, char* packet)
 		CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
 		DirectX::XMFLOAT3 dir = { p->dir };
 		float yaw = p->yaw;
-		
+
 		for (auto& cl : clients) {
 			if (cl.state != ST_INGAME) continue;
 			cl.send_move_packet(c_id, dir, yaw, true);
 		}
 
-		
+
 		// std::cout << "Client[" << c_id << "] Move.";
-		
+
 	}
 				break;
 
@@ -192,10 +192,10 @@ void Server::Process_packet(int c_id, char* packet)
 			clients[c_id].SetRotation(p->rotate);
 		}
 
-		for (auto& cl : clients) {
+		/*for (auto& cl : clients) {
 			if (cl.state != ST_INGAME) continue;
 			cl.send_update_packet(c_id, clients[c_id].GetPos(), clients[c_id].GetRotation());
-		}
+		}*/
 	}
 						 break;
 
@@ -210,13 +210,25 @@ void Server::Process_packet(int c_id, char* packet)
 					   break;
 	case CS_TEST: {
 		CS_TEST_PACKET* p = reinterpret_cast<CS_TEST_PACKET*>(packet);
-		
+
 		for (auto& npc : npcs) {
 			if ((p->x + 100) == npc.GetId())
 				npc.WakeUp(c_id);
 		}
 	}
 				break;
+
+	case CS_CHANGE_CHARACTER: {
+		CS_CHANGE_CHARACTER_PACKET* p = reinterpret_cast<CS_CHANGE_CHARACTER_PACKET*>(packet);
+
+		clients[c_id].SetType(p->c_type);
+
+		for (auto& cl : clients) {
+			if (cl.state != ST_INGAME) continue;
+			cl.send_change_Character_type_packet(c_id, clients[c_id].GetType());
+		}
+	}
+							break;
 
 	default: {
 		std::cout << "정의되지 않은 패킷 - " << packet[1] << "\n" << std::endl;
@@ -247,7 +259,7 @@ void Server::InitializeNPC()
 	for (int i = 0; i < npcs.size(); ++i) {
 		npcs[i].n_state = NPC_INGAME;
 		npcs[i].SetId(i + 100);
-		npcs[i].SetPos(DirectX::XMFLOAT3(10.f + i, 0.f , 10.f + i));
+		npcs[i].SetPos(DirectX::XMFLOAT3(10.f + i, 0.f, 10.f + i));
 	}
 	/*TIMER_EVENT start;
 	start.wakeup_time = std::chrono::system_clock::now() + std::chrono::seconds(3);
@@ -260,7 +272,7 @@ void Server::TimerThread()
 		TIMER_EVENT ev;
 		auto current_time = std::chrono::system_clock::now();
 		if (timer_queue.try_pop(ev)) { // 비었거나, 팝성공
-			
+
 			if (ev.wakeup_time > current_time) {
 				timer_queue.push(ev);
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
