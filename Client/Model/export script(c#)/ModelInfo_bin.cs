@@ -201,16 +201,13 @@ public class ModelInfo_bin : MonoBehaviour
 
     void WriteFrameInfo(Transform current)
     {
-        int nTextures = GetTexturesCount(current);
-        WriteObjectName("<Frame>:", m_nFrames++, nTextures, current.gameObject);
-
-        WriteTransform("<Transform>:", current);
-        WriteLocalMatrix("<TransformMatrix>:", current);
-
         BoxCollider modelBoxCollder = current.gameObject.GetComponent<BoxCollider>();
 
         if (modelBoxCollder)
         {
+            int nTextures = GetTexturesCount(current);
+            WriteObjectName("<Frame>:", m_nFrames++, nTextures, current.gameObject);
+
             WriteBoundingBox("<Bounds>:", modelBoxCollder.bounds);
 
         }
@@ -220,8 +217,6 @@ public class ModelInfo_bin : MonoBehaviour
     {
         WriteFrameInfo(child);
 
-        WriteInteger("<Children>:", child.childCount);
-
         if (child.childCount > 0)
         {
             for (int k = 0; k < child.childCount; k++)
@@ -230,7 +225,6 @@ public class ModelInfo_bin : MonoBehaviour
             }
         }
 
-        WriteString("</Frame>");
     }
 
 
@@ -249,10 +243,8 @@ public class ModelInfo_bin : MonoBehaviour
 
         binaryWriter = new BinaryWriter(File.Open(string.Copy(gameObject.name).Replace(" ", "_") +"_info" + ".bin", FileMode.Create));
 
-        WriteString("<Hierarchy>:");
         WriteFrameHierarchyInfo(transform);
-        WriteString("</Hierarchy>");
-
+     
         binaryWriter.Flush();
         binaryWriter.Close();
 
