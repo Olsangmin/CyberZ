@@ -81,7 +81,7 @@ public class TextHierarchicalModelExtract : MonoBehaviour
         {
             if (FindTextureByName(m_rTextureNamesListForWriting, texture))
             {
-                m_rTextWriter.WriteLine("@" + string.Copy(texture.name).Replace(" ", "_"));
+                m_rTextWriter.WriteLine(string.Copy(texture.name).Replace(" ", "_"));
             }
             else
             {
