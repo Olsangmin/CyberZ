@@ -20,19 +20,28 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	//===============================//
 	// OBJ (1)
 	// [Present Setting]
-	// 1		- map				|| OBJ
+	// 1 - map				|| OBJ
 
-	m_nHierarchicalGameObjects = 1;
+	m_nHierarchicalGameObjects = 2;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
 	// 1 - obj1
-	CLoadedModelInfo* pMapModle1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/fence.bin", NULL);
-	m_ppHierarchicalGameObjects[0] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle1);
-	m_ppHierarchicalGameObjects[0]->SetPosition(100.f, 0.f, 100.f);
+	CLoadedModelInfo* pfenceModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/fence.bin", NULL);
+	m_ppHierarchicalGameObjects[0] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pfenceModel);
+	m_ppHierarchicalGameObjects[0]->SetScale(0.01f, 0.01f, 0.01f);
 
+	
+	CLoadedModelInfo* pMapModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MiddleCheckMap.bin", NULL);
+	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel);
+	//m_ppHierarchicalGameObjects[1]->SetScale(0.01f, 0.01f, 0.01f);
+	
 
-	if (pMapModle1) delete pMapModle1;
+	//CLoadedModelInfo* pMapModle2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MiddleCheckMap.bin", NULL);
+	//m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle2);
 
+	if (pMapModel) delete pMapModel;
+	if (pfenceModel) delete pfenceModel;
+	
 	//===============================//
 
 	m_nEnemy = 3;
@@ -92,6 +101,7 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		m_ppPlayer[i]->SetPlayerData(i);
 	}
 	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
+	m_pMyPlayer->SetPosition(XMFLOAT3( 30.f, 30.f, 30.f));
 }
 
 bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
