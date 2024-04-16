@@ -46,6 +46,9 @@
     <Filter Include="10. TextureLoader">
       <UniqueIdentifier>{ca65471a-e7df-49d2-a0ef-c2518d304039}</UniqueIdentifier>
     </Filter>
+    <Filter Include="05. Object\05-00. Animation">
+      <UniqueIdentifier>{df94dea6-592d-44ba-9ae4-8e269ab9ca70}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CyberZ_Client.rc">
@@ -103,6 +106,9 @@
     <ClCompile Include="CyborgPlayer.cpp">
       <Filter>06. Player</Filter>
     </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>05. Object\05-00. Animation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameFramework.h">
@@ -155,6 +161,9 @@
     </ClInclude>
     <ClInclude Include="CyborgPlayer.h">
       <Filter>06. Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>05. Object\05-00. Animation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

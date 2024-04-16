@@ -147,12 +147,6 @@ void CyborgPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity
 
 	if (dwDirection)
 	{
-		//AnimationBlending(m_pasCurrentAni, WALK);
-		/*if (m_pasCurrentAni != WALK && !m_bIsRun && !m_bIsCreep && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
-			m_pasNextAni = WALK;
-			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
-			AnimationPacket(m_pasNextAni);
-		}*/
 		IsWalk();
 	}
 
@@ -265,7 +259,8 @@ void CyborgPlayer::IsIdle()
 void CyborgPlayer::IsRun()
 {
 		if (m_pasCurrentAni != RUN && m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
-			SetMaxVelocityXZ(80.f);
+			SetMaxVelocityXZ(40.f);
+			m_fVelocitySpeed = 20.f;
 			m_pasNextAni = RUN;
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 			AnimationPacket(m_pasNextAni);
@@ -275,7 +270,7 @@ void CyborgPlayer::IsRun()
 void CyborgPlayer::IsCreep()
 {
 	if (m_pasCurrentAni != CRAWL && m_bIsCreep && !m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
-		SetMaxVelocityXZ(20.f);
+		SetMaxVelocityXZ(10.f);
 		m_pasNextAni = CRAWL;
 		m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 		AnimationPacket(m_pasNextAni);
@@ -289,7 +284,7 @@ void CyborgPlayer::IsCrawl()
 void CyborgPlayer::IsWalk()
 {
 	if (m_pasCurrentAni != WALK && !m_bIsRun && !m_bIsCreep && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
-		SetMaxVelocityXZ(40.f);
+		SetMaxVelocityXZ(20.f);
 		m_pasNextAni = WALK;
 		m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 		AnimationPacket(m_pasNextAni);

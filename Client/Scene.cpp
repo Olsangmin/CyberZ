@@ -42,7 +42,7 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[0].m_xmf4Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.0f);
 	m_pLights[0].m_xmf3Position = XMFLOAT3(230.0f, 330.0f, 480.0f);
 	m_pLights[0].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
-	
+
 	// Player Flash Light
 	m_pLights[1].m_bEnable = false;
 	m_pLights[1].m_nType = SPOT_LIGHT;
@@ -56,7 +56,7 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[1].m_fFalloff = 8.0f;
 	m_pLights[1].m_fPhi = (float)cos(XMConvertToRadians(40.0f));
 	m_pLights[1].m_fTheta = (float)cos(XMConvertToRadians(20.0f));
-	 
+
 	// Sun
 	m_pLights[2].m_bEnable = true;
 	m_pLights[2].m_nType = DIRECTIONAL_LIGHT;
@@ -64,7 +64,7 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[2].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f);
 	m_pLights[2].m_xmf4Specular = XMFLOAT4(0.4f, 0.4f, 0.4f, 0.0f);
 	m_pLights[2].m_xmf3Direction = XMFLOAT3(1.0f, -1.0f, 0.0f);
-	
+
 	// ??
 	m_pLights[3].m_bEnable = false;
 	m_pLights[3].m_nType = SPOT_LIGHT;
@@ -78,7 +78,7 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[3].m_fFalloff = 8.0f;
 	m_pLights[3].m_fPhi = (float)cos(XMConvertToRadians(90.0f));
 	m_pLights[3].m_fTheta = (float)cos(XMConvertToRadians(30.0f));
-	
+
 	// ??
 	m_pLights[4].m_bEnable = false;
 	m_pLights[4].m_nType = POINT_LIGHT;
@@ -441,11 +441,24 @@ bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPar
 	case WM_KEYDOWN: {
 		switch (wParam) {
 		case VK_SHIFT: {
-			if(m_pMyPlayer->GetStaminer())m_pMyPlayer->SetRun(true);
+			if (m_pMyPlayer->GetStaminer())m_pMyPlayer->SetRun(true);
 			break;
 		}
 		case 'C': {
 			if (m_pMyPlayer->GetStaminer())m_pMyPlayer->SetCreep();
+			break;
+		}
+		case 'P': {
+			// Animation Test
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->m_pasNextAni = WALK;
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+
+			break;
+		}
+		case 'O': {
+			// Animation Test
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->m_pasNextAni = IDLE;
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 			break;
 		}
 		}
@@ -519,7 +532,7 @@ bool CScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffe
 	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f) || (dwDirection1 != 0))
 	{
 		if ((cxDelta || cyDelta) && m_pMyPlayer->m_bUnable)
-				m_pMyPlayer->CameraRotate(0.0f, cxDelta, 0.0f);
+			m_pMyPlayer->CameraRotate(0.0f, cxDelta, 0.0f);
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable)
 			m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
@@ -537,8 +550,8 @@ void CScene::AnimateObjects(float fTimeElapsed)
 	m_fElapsedTime = fTimeElapsed;
 
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(fTimeElapsed);
-	
-	for (int i = 0; i < m_nHierarchicalGameObjects; i++) if(m_ppHierarchicalGameObjects[i])	m_ppHierarchicalGameObjects[i]->Animate(m_fElapsedTime);
+
+	for (int i = 0; i < m_nHierarchicalGameObjects; i++) if (m_ppHierarchicalGameObjects[i])	m_ppHierarchicalGameObjects[i]->Animate(m_fElapsedTime);
 	for (int i = 0; i < m_nEnemy; i++) if (m_ppEnemy[i]) m_ppEnemy[i]->Animate(m_fElapsedTime);
 
 
@@ -547,7 +560,7 @@ void CScene::AnimateObjects(float fTimeElapsed)
 		m_ppPlayer[i]->Animate(fTimeElapsed);
 		m_ppPlayer[i]->Update(fTimeElapsed);
 
-		for (int j = 0; j < m_nHierarchicalGameObjects; j++) 
+		for (int j = 0; j < m_nHierarchicalGameObjects; j++)
 			if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) {
 				m_ppPlayer[i]->SetPosition(m_ppPlayer[i]->m_xmf3BeforeColliedPosition);
 				CS_TEST_PACKET p;
@@ -639,7 +652,7 @@ void CScene::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 
 bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget)
 {
-	if(pBase->m_xmBoundingBox.Intersects(pTarget->m_xmBoundingBox)) return(true);
+	if (pBase->m_xmBoundingBox.Intersects(pTarget->m_xmBoundingBox)) return(true);
 
 	if (pTarget->m_pChild && CheckObjByObjCollition(pBase, pTarget->m_pChild)) return(true);
 	if (pTarget->m_pSibling && CheckObjByObjCollition(pBase, pTarget->m_pSibling)) return(true);
@@ -660,22 +673,22 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	//===============================//
 	// SKY BOX (1)
 	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	
+
 	//===============================//
 	// TERRAIN (1)
 	XMFLOAT3 xmf3Scale(15.0f, 1.0f, 15.0f);
 	XMFLOAT4 xmf4Color(0.2f, 0.2f, 0.2f, 0.0f);
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Terrain/BaseTerrain.raw"), 257, 257, xmf3Scale, xmf4Color);
-	m_pTerrain->SetPosition(XMFLOAT3(-2000.f,0.f,-2000.f));
+	m_pTerrain->SetPosition(XMFLOAT3(-2000.f, 0.f, -2000.f));
 
 	//===============================//
 	// OBJ (1)
 	// [Present Setting]
 	// 1		- map				|| OBJ
-	
+
 	m_nHierarchicalGameObjects = 2;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
-	
+
 	// 1 - obj1
 	CLoadedModelInfo* pMapModle1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/second_section.bin", NULL);
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++)
@@ -696,14 +709,13 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	{
 		// 0 - Robot
 		CLoadedModelInfo* pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot.bin", NULL);
-		m_ppEnemy[i] = new CRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 1);
-		m_ppEnemy[i]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-		m_ppEnemy[i]->SetPosition(0.0f, 0, 0.0f + i*100);
+		m_ppEnemy[i] = new CRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 3);
+		m_ppEnemy[i]->SetPosition(0.0f, 0, 0.0f + i * 100);
 		m_ppEnemy[i]->SetScale(10.f, 10.f, 10.f);
 
 		if (pRobotModel) delete pRobotModel;
 	}
-	
+
 	//===============================//
 	// SHADER OBJ (NULL)
 
@@ -924,7 +936,7 @@ void CScene::ProcessPacket(char* p)
 		if (packet->id == my_id) break;
 		else {
 			m_ppPlayer[packet->id]->SetPosition(packet->position);
-			
+
 		}
 	} break;
 
@@ -934,7 +946,7 @@ void CScene::ProcessPacket(char* p)
 		else {
 			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[packet->id])->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[packet->id])->m_pasNextAni = packet->ani_st;
-			
+
 		}
 	} break;
 
