@@ -38,7 +38,10 @@ void Server::Network()
 	AcceptEx(s_socket, c_socket, ac_over.send_buf, 0, addr_size + 16, addr_size + 16, 0, &ac_over.over);
 
 	InitializeNPC();
+	gMap.initializeMap();
+
 	std::cout << "Server Start" << std::endl;
+
 
 	int num_threads = std::thread::hardware_concurrency();
 	// int num_threads = 1;
@@ -46,6 +49,8 @@ void Server::Network()
 		worker_threads.emplace_back(&Server::Worker_thread, this);
 	std::thread timer_thread{ &Server::TimerThread, this };
 
+	
+	gMap.printMap();
 
 	timer_thread.join();
 	for (auto& th : worker_threads)
@@ -177,7 +182,6 @@ void Server::Process_packet(int c_id, char* packet)
 			if (cl.state != ST_INGAME) continue;
 			cl.send_move_packet(c_id, dir, yaw, true);
 		}
-
 
 		// std::cout << "Client[" << c_id << "] Move.";
 
