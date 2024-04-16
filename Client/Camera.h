@@ -6,6 +6,7 @@
 #define SPACESHIP_CAMERA			0x02
 #define THIRD_PERSON_CAMERA			0x03
 #define PREPARE_ROOM_CAMERA			0x04
+#define SHOULDER_VIEW_CAMERA		0x05
 
 struct VS_CB_CAMERA_INFO
 {
@@ -29,6 +30,8 @@ protected:
 	float           				m_fYaw;
 
 	DWORD							m_nMode;
+
+	bool							m_bShoulder{ false };
 
 	XMFLOAT3						m_xmf3LookAtWorld;
 	XMFLOAT3						m_xmf3Offset;
@@ -95,6 +98,9 @@ public:
 	XMFLOAT4X4 GetProjectionMatrix() { return(m_xmf4x4Projection); }
 	D3D12_VIEWPORT GetViewport() { return(m_d3dViewport); }
 	D3D12_RECT GetScissorRect() { return(m_d3dScissorRect); }
+
+	void ChangeView() { m_bShoulder = !m_bShoulder; }
+	bool GetViewType() { return m_bShoulder; }
 
 	virtual void Move(const XMFLOAT3& xmf3Shift) { m_xmf3Position.x += xmf3Shift.x; m_xmf3Position.y += xmf3Shift.y; m_xmf3Position.z += xmf3Shift.z; }
 	virtual void Rotate(float fPitch = 0.0f, float fYaw = 0.0f, float fRoll = 0.0f) { }
