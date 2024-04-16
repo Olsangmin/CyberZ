@@ -3,7 +3,7 @@
 #include <DirectXMath.h>
 
 constexpr int PORT_NUM = 4000;
-constexpr int MAX_USER = 1000;
+constexpr int MAX_USER = 3;
 constexpr int NUM_NPC = 8;
 
 constexpr int NAME_SIZE = 20;

@@ -108,7 +108,7 @@ public class BinaryHierarchicalModelExtract : MonoBehaviour
         {
             if (FindTextureByName(m_pTextureNamesListForWriting, texture))
             {
-                binaryWriter.Write("@" + string.Copy(texture.name).Replace(" ", "_"));
+                binaryWriter.Write("@"+string.Copy(texture.name).Replace(" ", "_"));
             }
             else
             {
@@ -445,7 +445,7 @@ public class BinaryHierarchicalModelExtract : MonoBehaviour
         // 애니메이션 o 모델 뽑을 때  -> 주석 O             (플레이어, 적)
         // 애니메이션 x 모델 뽑을 때  -> 주석 X             (일반 오브젝트)
 
-        //WriteBoundingBox("<Bounds>:", mesh.bounds);
+        WriteBoundingBox("<Bounds>:", mesh.bounds);
 
         WriteVectors("<Positions>:", mesh.vertices);
         WriteColors("<Colors>:", mesh.colors);

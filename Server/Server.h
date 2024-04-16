@@ -3,6 +3,7 @@
 #include "NPC.h"
 #include "Timer.h"
 #include <concurrent_priority_queue.h>
+#include "GameMap.h"
 
 class Server
 {
@@ -36,9 +37,7 @@ public:
 
 	concurrency::concurrent_priority_queue<TIMER_EVENT> timer_queue;
 
-
-
-
-
+	GameMap gMap{ 100.f, 100.f, 10, 10 };
+	
 };
 
