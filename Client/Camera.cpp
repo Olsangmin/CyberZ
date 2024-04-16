@@ -325,3 +325,4 @@ void CThirdPersonCamera::Rotate(float x, float y, float z)
 		m_xmf3Right = Vector3::TransformNormal(m_xmf3Right, xmmtxRotate);
 	}
 }
+

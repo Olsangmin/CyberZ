@@ -32,6 +32,8 @@ public:
 	float m_fMaxStaminer{};
 	float m_fRepairSpeed{};
 	float m_fTakeOverSpeed{};
+	
+	int	m_nCharacter;
 
 	bool m_bIsRun{ false };
 	bool m_bIsCreep{ false };

@@ -47,7 +47,7 @@ using namespace std;
 #include "Network.h"
 
 // 주석하면 서버없이 가능@@@@@@@@@
-// #define USE_NETWORK 
+#define USE_NETWORK 
 
 // =================================================
 
@@ -119,9 +119,11 @@ inline void Swap(float *pfS, float *pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT
 #define SECOND_PLAYER					1
 #define THIRD_PLAYER					2
 
+#define TEMP_PLAYER						3	//캐릭터 선택 전
+
 // Scene 번호
 #define	FIRST_ROUND_SCENE				1
-#define SECOND_ROUND_SCENE				2
+#define PREPARE_ROOM_SCENE				2
 
 namespace Vector3
 {

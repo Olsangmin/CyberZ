@@ -35,5 +35,10 @@ public:
 	std::vector<std::thread> worker_threads;
 
 	concurrency::concurrent_priority_queue<TIMER_EVENT> timer_queue;
+
+
+
+
+
 };
 

@@ -76,7 +76,6 @@ CCamera* CyborgPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		m_pCamera = OnChangeCamera(SPACESHIP_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
 		m_pCamera->SetOffset(XMFLOAT3(0.0f, 200.0f, 0.0f));
-		//m_pCamera->Rotate(90.f, 0.f, 0.f);
 		m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -89,6 +88,19 @@ CCamera* CyborgPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.05f);
 		m_pCamera->SetOffset(XMFLOAT3(0.0f, 20.0f, -40.0f));
+		m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
+		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
+		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+		break;
+	case PREPARE_ROOM_CAMERA:
+		SetFriction(130.0f);
+		SetGravity(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		SetMaxVelocityXZ(0.0f);
+		SetMaxVelocityY(0.0f);
+		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
+		m_pCamera->SetTimeLag(0.05f);
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 15.0f, -40.0f));
+		m_pCamera->SetLookAt(XMFLOAT3(0.f, 15.f, 0.f));
 		m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -304,6 +316,7 @@ void CyborgPlayer::SetPlayerData(int type)
 		m_fStaminer = m_fMaxStaminer;
 		m_fRepairSpeed = 50.f;
 		m_fTakeOverSpeed = 50.f;
+		m_nCharacter = type;
 		break;
 	case 1:
 		m_fVelocitySpeed = 4.5f;
@@ -311,6 +324,7 @@ void CyborgPlayer::SetPlayerData(int type)
 		m_fStaminer = m_fMaxStaminer;
 		m_fRepairSpeed = 50.f;
 		m_fTakeOverSpeed = 80.f;
+		m_nCharacter = type;
 		break;
 	case 2:
 		m_fVelocitySpeed = 4.5f;
@@ -318,9 +332,12 @@ void CyborgPlayer::SetPlayerData(int type)
 		m_fStaminer = m_fMaxStaminer;
 		m_fRepairSpeed = 80.f;
 		m_fTakeOverSpeed = 50.f;
+		m_nCharacter = type;
 		break;
 	}
 }
+
+
 
 void CyborgPlayer::AnimationPacket(const Player_Animation_ST next_anim)
 {

@@ -6,6 +6,7 @@
 #include "Timer.h"
 #include "Player.h"
 #include "Scene.h"
+#include "PlayScene.h"
 
 class CGameFramework
 {
@@ -40,7 +41,6 @@ public:
 	void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 	void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 	LRESULT CALLBACK OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
-
 
 
 private:
@@ -90,7 +90,7 @@ private:
 
 	_TCHAR						m_pszFrameRate[70];
 
-	int							m_nSceneNum = FIRST_ROUND_SCENE;	// 출력 씬 번호
+	int							m_nSceneNum = PREPARE_ROOM_SCENE;	// 출력 씬 번호
 
 };
 

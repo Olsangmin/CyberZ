@@ -337,7 +337,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 					break;
 				case VK_F6:
 					ReleaseObjects();
-					m_nSceneNum = SECOND_ROUND_SCENE;
+					m_nSceneNum = PREPARE_ROOM_SCENE;
 					BuildObjects();
 					break;
 
@@ -416,30 +416,38 @@ void CGameFramework::BuildObjects()
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
+
+
 	switch (m_nSceneNum)
 	{
-		
 		case FIRST_ROUND_SCENE:
 		{
-			m_pScene = new CFirstRoundScene();
+			m_pScene = new PlayScene();
 			if (m_pScene) {
-#ifdef USE_NETWORK
-				m_pScene->InitNetwork();
-#endif // USE_NETWORK
+
 				m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 			}
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			break;
 		}
-		case SECOND_ROUND_SCENE:
+		case PREPARE_ROOM_SCENE:
 		{
-			m_pScene = new CSecondRoundScene();
+			m_pScene = new CPrepareRoomScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
-
+			
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
+
+#ifdef USE_NETWORK
+			m_pScene->InitNetwork();
+#endif // USE_NETWORK
+
+
 			break;
 		}
 	}
+
+
+
 
 	m_pd3dCommandList->Close();
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
@@ -455,7 +463,6 @@ void CGameFramework::BuildObjects()
 
 void CGameFramework::ReleaseObjects()
 {
-
 	if (m_pScene) m_pScene->ReleaseObjects();
 	if (m_pScene) delete m_pScene;
 }
@@ -471,7 +478,15 @@ void CGameFramework::AnimateObjects()
 {
 	float fTimeElapsed = m_GameTimer.GetTimeElapsed();
 
-	if (m_pScene) m_pScene->AnimateObjects(fTimeElapsed);
+	if (m_pScene)
+	{
+		m_pScene->AnimateObjects(fTimeElapsed);
+		if (m_nSceneNum == PREPARE_ROOM_SCENE && m_pScene->AllPlayerReady())
+		{
+			m_nSceneNum = FIRST_ROUND_SCENE;
+			BuildObjects();
+		}
+	}
 
 }	
 
@@ -505,7 +520,6 @@ void CGameFramework::MoveToNextFrame()
 
 void CGameFramework::FrameAdvance()
 {    
-
 	m_GameTimer.Tick(60.0f);
 	
 	ProcessInput();
@@ -537,14 +551,11 @@ void CGameFramework::FrameAdvance()
 	m_pd3dCommandList->OMSetRenderTargets(1, &d3dRtvCPUDescriptorHandle, TRUE, &d3dDsvCPUDescriptorHandle);
 
 	if (m_pScene) m_pScene->Render(m_pd3dCommandList, m_pCamera);
+	if (m_bRenderBoundingBox) m_pScene->RenderBoundingBox(m_pd3dCommandList, m_pCamera);
 
 #ifdef _WITH_PLAYER_TOP
 	m_pd3dCommandList->ClearDepthStencilView(d3dDsvCPUDescriptorHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
-
-
-	if (m_bRenderBoundingBox) m_pScene->RenderBoundingBox(m_pd3dCommandList, m_pCamera);
-
 
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
