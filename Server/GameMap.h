@@ -1,7 +1,12 @@
 #pragma once
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
 #include <vector>
 #include <DirectXMath.h>
+#include <DirectXCollision.h>
+#include <unordered_map>
 
 enum CELL_TYPE { GROUND, CONT, PLAYER };
 
@@ -14,6 +19,16 @@ struct CELL
 
     CELL() : center(DirectX::XMFLOAT3(0.f, 0.f, 0.f)), width(10), height(10),
         cellType(GROUND), isObstacle(false) {}
+
+    void InCell(DirectX::BoundingOrientedBox& bb)
+    {
+        DirectX::BoundingOrientedBox cell;
+        cell.Center = center;
+        DirectX::XMFLOAT3 cell_ex{ width, 0.f, height };
+        cell.Extents = cell_ex;
+
+        isObstacle = (bb.Intersects(cell));
+    }
 };
 
 class GameMap
@@ -21,7 +36,7 @@ class GameMap
 public:
     GameMap(float width, float depth, int gridWidth, int gridHeight)
         : mapWidth(width), mapDepth(depth), cellWidth(gridWidth), cellDepth(gridHeight) {
-        initializeMap();
+        // initializeMap();
     }
 
     ~GameMap() = default;
@@ -32,6 +47,7 @@ public:
 
     void Update();
 
+
 private:
     std::vector<std::vector<CELL>> cells;
     float mapWidth, mapDepth;
@@ -40,3 +56,4 @@ private:
 
 
 
+ 

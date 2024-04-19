@@ -50,7 +50,7 @@ void Server::Network()
 	std::thread timer_thread{ &Server::TimerThread, this };
 
 	
-	gMap.printMap();
+	// gMap.printMap();
 
 	timer_thread.join();
 	for (auto& th : worker_threads)
