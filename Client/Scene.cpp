@@ -129,7 +129,11 @@ void CScene::ReleaseObjects()
 
 	if (m_ppHierarchicalGameObjects)
 	{
-		for (int i = 0; i < m_nHierarchicalGameObjects; i++) if (m_ppHierarchicalGameObjects[i]) m_ppHierarchicalGameObjects[i]->Release();
+		for (int i = 0; i < m_nHierarchicalGameObjects; i++) if (m_ppHierarchicalGameObjects[i])
+		{
+			m_ppHierarchicalGameObjects[i]->ReleaseUploadBuffers();
+			m_ppHierarchicalGameObjects[i]->Release();
+		}
 		delete[] m_ppHierarchicalGameObjects;
 	}
 

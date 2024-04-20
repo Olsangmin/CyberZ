@@ -1108,7 +1108,7 @@ CHeightMapTerrain::~CHeightMapTerrain(void)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 
-CSkyBox::CSkyBox(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature) : CGameObject(1)
+CSkyBox::CSkyBox(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, wchar_t* pszFileName) : CGameObject(1)
 {
 	CSkyBoxMesh *pSkyBoxMesh = new CSkyBoxMesh(pd3dDevice, pd3dCommandList, 20.0f, 20.0f, 2.0f);
 	SetMesh(pSkyBoxMesh);
@@ -1116,7 +1116,7 @@ CSkyBox::CSkyBox(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dComman
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	CTexture* pSkyBoxTexture = new CTexture(1, RESOURCE_TEXTURE_CUBE, 0, 1);
-	pSkyBoxTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"SkyBox/SkyBox_sunset.dds", RESOURCE_TEXTURE_CUBE, 0);
+	pSkyBoxTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, pszFileName, RESOURCE_TEXTURE_CUBE, 0);
 
 	CSkyBoxShader *pSkyBoxShader = new CSkyBoxShader();
 	pSkyBoxShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
@@ -1179,7 +1179,7 @@ CAngrybotObject::~CAngrybotObject()
 CRobotObject::CRobotObject(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CLoadedModelInfo *pModel, int nAnimationTracks)
 {
 	CLoadedModelInfo *pRobotModel = pModel;
-	//if (!pRobotModel) pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Robot.bin", NULL);
+	if (!pRobotModel) pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Robot.bin", NULL);
 
 	SetChild(pRobotModel->m_pModelRootObject, true);
 
@@ -1192,6 +1192,7 @@ CRobotObject::CRobotObject(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *
 	m_pSkinnedAnimationController->SetAllTrackDisable();
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
 	m_pSkinnedAnimationController->SetTrackSpeed(0,0.5f);
+
 }
 
 CRobotObject::~CRobotObject()
@@ -1258,3 +1259,47 @@ CStandardOBJ::~CStandardOBJ()
 {
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+CSelectCharacterOBJ::CSelectCharacterOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nModel, int nAnimationTracks)
+{
+
+	switch (nModel)
+	{
+	case Corzim:
+		strcpy_s(modelFile, nP1);
+		break;
+	case Evan:
+		strcpy_s(modelFile, nP2);
+		break;
+	case Uranya:
+		strcpy_s(modelFile, nP3);
+		break;
+	case Robot:
+		strcpy_s(modelFile, nP4);
+		break;
+	}
+
+	CLoadedModelInfo* pptempModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, modelFile, NULL);
+
+	SetChild(pptempModel->m_pModelRootObject, true);
+	SetScale(10.f, 10.f, 10.f);
+	m_nModelNum = nModel;
+
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pptempModel);
+	
+	for (int i = 0; i < nAnimationTracks; ++i)
+		m_pSkinnedAnimationController->SetTrackAnimationSet(i, i);
+	
+	// Default animation setting
+	m_pSkinnedAnimationController->SetAllTrackDisable();
+	m_pSkinnedAnimationController->SetTrackEnable(IDLE, true);
+	m_pSkinnedAnimationController->SetTrackSpeed(0, 0.5f);
+
+	if (pptempModel)delete pptempModel;
+
+}
+
+CSelectCharacterOBJ::~CSelectCharacterOBJ()
+{
+}

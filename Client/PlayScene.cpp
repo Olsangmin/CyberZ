@@ -8,7 +8,7 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 
 	//===============================//
 	// SKY BOX (1)
-	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, L"SkyBox/SkyBox_sunset.dds");
 
 	//===============================//
 	// TERRAIN (1)
@@ -33,8 +33,6 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	
 	CLoadedModelInfo* pMapModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MiddleCheckMap.bin", NULL);
 	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel);
-	//m_ppHierarchicalGameObjects[1]->SetScale(0.01f, 0.01f, 0.01f);
-	
 
 	//CLoadedModelInfo* pMapModle2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MiddleCheckMap.bin", NULL);
 	//m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle2);
@@ -233,7 +231,6 @@ void PlayScene::ProcessPacket(char* p)
 		if (packet->id == my_id) break;
 		else {
 			m_ppPlayer[packet->id]->SetPosition(packet->position);
-
 		}
 	} break;
 
@@ -243,7 +240,6 @@ void PlayScene::ProcessPacket(char* p)
 		else {
 			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[packet->id])->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[packet->id])->m_pasNextAni = packet->ani_st;
-
 		}
 	} break;
 
@@ -261,41 +257,83 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
+	pScened3dDevice = pd3dDevice;
+	pScened3dCommandList = pd3dCommandList;
+
+	//===============================//
+	// SKY BOX (1)
+	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, L"SkyBox/SkyBox_0.dds");
+
+
 	//===============================//
 	// TERRAIN
-	XMFLOAT3 xmf3Scale(0.0001f, 0.0001f, 0.0001f);
-	XMFLOAT4 xmf4Color(0.0f, 0.1f, 0.1f, 0.0f);
+	XMFLOAT3 xmf3Scale(10.f, 10.f, 10.f);
+	XMFLOAT4 xmf4Color(0.0f, 0.0f, 0.0f, 0.0f);
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Terrain/BaseTerrain.raw"), 257, 257, xmf3Scale, xmf4Color);
+	m_pTerrain->SetPosition(-1000.f, 0, -1000.f);
+
 
 	//===============================//
 	// OBG
-	m_nHierarchicalGameObjects = 0;
+
+	m_nHierarchicalGameObjects = 3;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
+	CLoadedModelInfo* pContainerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/ConcreteWall.bin", NULL);
+	m_ppHierarchicalGameObjects[0] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pContainerModel);
+	m_ppHierarchicalGameObjects[0]->SetScale(8.f, 4.f, 4.f);
+	m_ppHierarchicalGameObjects[0]->Rotate(0.f, 90.f, 0.f);
+	m_ppHierarchicalGameObjects[0]->SetPosition(-60.f, 0.f, 40.f);
+	if (pContainerModel) delete pContainerModel;
+
+
+	CLoadedModelInfo* pMiddleContainer = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/MiddleContainer.bin", NULL);
+	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMiddleContainer);
+	m_ppHierarchicalGameObjects[1]->SetPosition(-35.f, 0.f, 0.f);
+	
+	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMiddleContainer);
+	m_ppHierarchicalGameObjects[2]->SetPosition(35.f, 0.f, 0.f);
+	if (pMiddleContainer) delete pMiddleContainer;
+
+	
+	//===============================//
+	// OBG
+	
+	m_nPlayerSelecter = 3;
+	m_ppPlayerSelecter = new CSelectCharacterOBJ * [m_nPlayerSelecter];
+
+	m_ppPlayerSelecter[0] = new CSelectCharacterOBJ(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), Robot, 3);
+	m_ppPlayerSelecter[0]->Rotate(0.f, 180.f, 0.f);
+	m_ppPlayerSelecter[0]->SetPosition(0.0f, 0.0f, 0.0f);
+
+	m_ppPlayerSelecter[1] = new CSelectCharacterOBJ(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), Robot, 3);
+	m_ppPlayerSelecter[1]->Rotate(0.f, 180.f, 0.f);
+	m_ppPlayerSelecter[1]->SetPosition(-15.0f, 0.0f, 0.0f);
+	
+	m_ppPlayerSelecter[2] = new CSelectCharacterOBJ(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), Robot, 3);
+	m_ppPlayerSelecter[2]->Rotate(0.f, 180.f, 0.f);
+	m_ppPlayerSelecter[2]->SetPosition(15.0f, 0.0f, 0.0f);
+
+	
 	//===============================//
 	// Player
-	m_nPlayer = MAX_PLAYER + 1;
+	m_nPlayer = 1;
 	m_ppPlayer = new CPlayer * [m_nPlayer];
 	m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer]; // Play Character
 
 	// ÀúÀåµÈ ¸ðµ¨ ¹Ù²Ü ¼ö ÀÖÀ½
 	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
-	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
-	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
-	m_ppModelInfoPlayer[TEMP_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/robot.bin", NULL);
-
-
+	
 	for (int i = 0; i < m_nPlayer; ++i) {
 		CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
 		m_ppPlayer[i] = pPlayer;
-		m_ppPlayer[i]->Rotate(0.f, 180.f, 0.f);
+		m_ppPlayer[i]->SetPlayerData(i);
 	}
 
-	for (int i = 0; i < m_nPlayer; ++i) m_ppPlayer[i]->SetPlayerData(i);
-	
-	m_pMyPlayer = m_ppPlayer[TEMP_PLAYER];
-	m_pMyPlayer->m_bUnable = true;
-	m_pMyPlayer->ChangeCamera(PREPARE_ROOM_CAMERA, 0.0f);
+	m_pMyPlayer = m_ppPlayer[FIRST_PLAYER];
+	m_pMyPlayer->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	m_pMyPlayer->ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+
 }
 
 bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
@@ -315,20 +353,19 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 	
 	if (pKeysBuffer['9'] & 0xF0) m_pMyPlayer->m_bUnable = true;
 	if (pKeysBuffer['0'] & 0xF0) m_pMyPlayer->m_bUnable = false;
+		
+	//if (pKeysBuffer['4'] & 0xF0) ChangeModel(0, Evan);
 
 	// change Character
 	if (pKeysBuffer['1'] & 0xF0 || pKeysBuffer['2'] & 0xF0 || pKeysBuffer['3'] & 0xF0)
 	{
 		Player_Character_Type select{ Robot };
-		m_pMyPlayer->m_bUnable = false;
-		if (pKeysBuffer['1'] & 0xF0)select = Corzim;
-		if (pKeysBuffer['2'] & 0xF0)select = Evan;
-		if (pKeysBuffer['3'] & 0xF0)select = Uranya;
 
-		m_pMyPlayer = m_ppPlayer[select];
+		if (pKeysBuffer['1'] & 0xF0)ChangeModel(0, Corzim);
+		if (pKeysBuffer['2'] & 0xF0)ChangeModel(0, Evan);
+		if (pKeysBuffer['3'] & 0xF0)ChangeModel(0, Uranya);
 
-		m_pMyPlayer->m_bUnable = true;
-
+		
 #ifdef USE_NETWORK
 		CS_CHANGE_CHARACTER_PACKET p;
 		p.size = sizeof(p);
@@ -337,9 +374,6 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 		send_packet(&p);
 #endif // USE_NETWORK
 	}
-	
-
-
 
 	if (pKeysBuffer['R'] & 0xF0) m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
 
@@ -352,11 +386,78 @@ bool CPrepareRoomScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 	return false;
 }
 
+void CPrepareRoomScene::ReleaseObjects()
+{
+
+	if (m_ppPlayerSelecter)
+	{
+		for (int i = 0; i < m_nPlayerSelecter; i++)
+		{
+			m_ppPlayerSelecter[i]->ReleaseUploadBuffers();
+			m_ppPlayerSelecter[i]->Release();
+
+		}
+		delete[] m_ppPlayerSelecter; 
+	}
+
+	CScene::ReleaseObjects();
+}
+
+void CPrepareRoomScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	CScene::Render(pd3dCommandList, pCamera);
+
+	for (int i = 0; i < m_nPlayerSelecter; i++)
+	{
+		if (m_ppPlayerSelecter[i])
+		{
+			if (!m_ppPlayerSelecter[i]->m_pSkinnedAnimationController) m_ppPlayerSelecter[i]->UpdateTransform(NULL);
+			m_ppPlayerSelecter[i]->Animate(m_fElapsedTime);
+			m_ppPlayerSelecter[i]->Render(pd3dCommandList, pCamera);
+		}
+	}
+}
+
+void CPrepareRoomScene::ReleaseUploadBuffers()
+{
+	CScene::ReleaseUploadBuffers();
+
+	for (int i = 0; i < m_nPlayerSelecter; i++) m_ppPlayerSelecter[i]->ReleaseUploadBuffers();
+
+}
+
 bool CPrepareRoomScene::AllPlayerReady()
 {
 	if (m_pMyPlayer->m_bReady) return true;
 	else return false;
 }
+
+void CPrepareRoomScene::SetChangedModel(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{	
+	for (int i = 0; i < m_nPlayerSelecter; i++)
+	{
+		if (m_ppPlayerSelecter[i]->m_bChanged)
+		{
+			XMFLOAT3 beforeLoc = m_ppPlayerSelecter[i]->GetPosition();
+			
+			CSelectCharacterOBJ* pTemp = new CSelectCharacterOBJ(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_ppPlayerSelecter[i]->m_nChangedModelNum, 3);
+			m_ppPlayerSelecter[i] = pTemp;
+			m_ppPlayerSelecter[i]->SetPosition(beforeLoc);
+			m_ppPlayerSelecter[i]->Rotate(0.f, 180.f, 0.f);
+			m_ppPlayerSelecter[i]->m_nModelNum = m_ppPlayerSelecter[i]->m_nChangedModelNum;
+			m_ppPlayerSelecter[i]->m_bChanged = false;
+
+
+		}
+	}
+}
+
+void CPrepareRoomScene::ChangeModel(int nPlayer, int nModel)
+{
+	m_ppPlayerSelecter[nPlayer]->m_nChangedModelNum = nModel;
+	m_ppPlayerSelecter[nPlayer]->m_bChanged = true;
+}
+
 
 void CPrepareRoomScene::ProcessPacket(char* p)
 {
