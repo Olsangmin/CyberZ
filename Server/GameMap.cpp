@@ -52,17 +52,17 @@ void GameMap::initializeMap()
 			}
 		}
 
-		//// 데이터 출력 (확인용)
+		
 		//for (const auto& pair : data) {
 		//	std::cout << "Object Name: " << pair.first << std::endl;
 		//	const DirectX::BoundingOrientedBox& box = pair.second;
 		//	std::cout << "Center: (" << box.Center.x << ", " << box.Center.y << ", " << box.Center.z << ")" << std::endl;
-		//	std::cout << "Extents: (" << box.Extents.x << ", " << box.Extents.y << ", " << box.Extents.z << ")" << std::endl;
+		//	// std::cout << "Extents: (" << box.Extents.x << ", " << box.Extents.y << ", " << box.Extents.z << ")" << std::endl;
 		//}
 
 
 	}
-
+	std::cout << "파일 처리 완료\n";
 
 	// 각 셀을 초기화하고 셀의 위치 및 크기를 설정합니다.
 	for (int x = 0; x < cellWidth; ++x) {
@@ -70,6 +70,7 @@ void GameMap::initializeMap()
 			// 각 셀의 위치와 크기를 설정
 			cells[x][y] = CELL();
 			cells[x][y].cellType = GROUND;
+			cells[x][y].isObstacle = false;
 			cells[x][y].center.x = (x + 0.5f) * mapWidth / cellWidth;
 			cells[x][y].center.z = (y + 0.5f) * mapDepth / cellDepth;
 			cells[x][y].width = static_cast<int>(mapWidth / cellWidth);
@@ -77,26 +78,59 @@ void GameMap::initializeMap()
 			
 		}
 	}
-
+	std::cout << "셀 초기화 완료\n";
 	
+	for (int x = 0; x < cellWidth; ++x) {
+		for (int y = 0; y < cellDepth; ++y) {
+			for (auto& datas : data) {
+				/*if (cells[x][y].InCell(datas.second.Center)) {
+					cells[x][y].isObstacle = true;
+				}*/
+				if (cells[x][y].InCell(datas.second)) {
+					cells[x][y].isObstacle = true;
+				}
+			}
+			/*const CELL& cell = cells[x][y];
+			std::cout << "CELL 중심좌표(" << cell.center.x << ", " << cell.center.z << ")\n";*/
+		}
+		// std::cout << x << " 완료\n";
+	}
+	std::cout << "셀 구분 완료\n";
 }
 
 void GameMap::printMap() const
 {
-	return;
-	std::cout << "맵의 각 셀:\n";
+	
+	/*std::cout << "맵의 각 셀:\n";
 	for (int x = 0; x < cellWidth; ++x) {
 		for (int y = 0; y < cellDepth; ++y) {
 			const CELL& cell = cells[x][y];
+			if (cell.isObstacle) {
+				std::cout << "Container " << std::endl;
+				continue;
+			}
 			std::cout << "CELL 중심좌표(" << cell.center.x << ", " << cell.center.z << ") - "
 				<< "가로: " << cell.width << ", 세로: " << cell.height << "\n";
 		}
 	}
+	std::cout << "------------------\n";*/
+	
+	std::cout << "-----------------------------\n";
+	for (int y = cellDepth-1; y >= 0; --y) {
+		for (int x = 0; x < cellDepth; ++x) {
+			const CELL& cell = cells[x][y];
+			if (cell.isObstacle) {
+				std::cout << "X";
+				continue;
+			}
+			std::cout << ".";
+		}
+		std::cout << "\n" << std::endl;
+	}
+	std::cout << "----------------------------\n";
 }
 
 void GameMap::Update()
 {
 
-	std::cout << "전체 셀 개수 : " << cellWidth * cellDepth << "장애물 갯수: " << std::endl;
-	// printMap();
 }

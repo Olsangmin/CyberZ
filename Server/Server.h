@@ -37,7 +37,7 @@ public:
 
 	concurrency::concurrent_priority_queue<TIMER_EVENT> timer_queue;
 
-	GameMap gMap{ 100.f, 100.f, 10, 10 };
+	GameMap gMap{ 1000.f, 1000.f, 200, 200};
 	
 };
 

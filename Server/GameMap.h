@@ -20,14 +20,21 @@ struct CELL
     CELL() : center(DirectX::XMFLOAT3(0.f, 0.f, 0.f)), width(10), height(10),
         cellType(GROUND), isObstacle(false) {}
 
-    void InCell(DirectX::BoundingOrientedBox& bb)
+   /* bool InCell(const DirectX::XMFLOAT3& point)
     {
-        DirectX::BoundingOrientedBox cell;
-        cell.Center = center;
-        DirectX::XMFLOAT3 cell_ex{ width, 0.f, height };
-        cell.Extents = cell_ex;
+        
+        if (abs(center.x - point.x) > (width/2)) return false;
+        return (abs(center.z - point.z) <= (height/2));
+    }*/
 
-        isObstacle = (bb.Intersects(cell));
+    bool InCell(const DirectX::BoundingOrientedBox& obj)
+    {
+        DirectX::BoundingOrientedBox bb;
+        bb.Center = center;
+        DirectX::XMFLOAT3 extents{ static_cast<float>(width), 1.f, static_cast<float>(height) };
+        bb.Extents = extents;
+
+        return bb.Intersects(obj);
     }
 };
 

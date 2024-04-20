@@ -40,6 +40,8 @@ void Server::Network()
 	InitializeNPC();
 	gMap.initializeMap();
 
+	gMap.printMap();
+
 	std::cout << "Server Start" << std::endl;
 
 
@@ -50,7 +52,7 @@ void Server::Network()
 	std::thread timer_thread{ &Server::TimerThread, this };
 
 	
-	// gMap.printMap();
+	
 
 	timer_thread.join();
 	for (auto& th : worker_threads)
