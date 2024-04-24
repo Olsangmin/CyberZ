@@ -136,7 +136,16 @@ bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBu
 	// Player disable
 	if (pKeysBuffer['4'] & 0xF0) m_ppPlayer[FIRST_PLAYER]->m_bUnable = false;
 	if (pKeysBuffer['5'] & 0xF0) m_ppPlayer[SECOND_PLAYER]->m_bUnable = false;
-	if (pKeysBuffer['6'] & 0xF0) m_ppPlayer[THIRD_PLAYER]->m_bUnable = false;
+	if (pKeysBuffer['6'] & 0xF0) {
+#ifdef USE_NETWORK
+		CS_TEST_PACKET p;
+		p.size = sizeof(p);
+		p.type = CS_TEST;
+		p.x = 0.f;
+		send_packet(&p);
+#endif // USE_NETWORK
+
+	}
 
 	// Decide whether to blend
 	// 전에 입력한 키와 다르다면 블렌딩타임을 0으로 설정
@@ -232,7 +241,7 @@ void PlayScene::ProcessPacket(char* p)
 		SC_UPDATE_PLAYER_PACKET* packet = reinterpret_cast<SC_UPDATE_PLAYER_PACKET*>(p);
 		if (packet->id == my_id) break;
 		else {
-			m_ppPlayer[packet->id]->SetPosition(packet->position);
+			// m_ppPlayer[packet->id]->SetPosition(packet->position);
 
 		}
 	} break;
@@ -246,6 +255,14 @@ void PlayScene::ProcessPacket(char* p)
 
 		}
 	} break;
+
+	case SC_ADD_NPC: {
+		SC_ADD_NPC_PACKET* packet = reinterpret_cast<SC_ADD_NPC_PACKET*>(p);
+		break;
+		int n_id = packet->id - 100;
+		m_ppEnemy[n_id]->SetPosition(packet->position);
+	}
+				   break;
 
 
 	default:
@@ -341,7 +358,15 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 
 
 
-	if (pKeysBuffer['R'] & 0xF0) m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
+	if (pKeysBuffer['R'] & 0xF0) {
+		m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
+#ifdef USE_NETWORK
+		CS_GAMESTART_PACKET p;
+		p.size = sizeof(p);
+		p.type = CS_GAME_START;
+		send_packet(&p);
+#endif // USE_NETWORK
+	}
 
 	return(false);
 }

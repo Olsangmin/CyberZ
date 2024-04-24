@@ -1,7 +1,6 @@
 #pragma once
 #include "Object.h"
 // #include "Protocol.h"
-
 constexpr int BUF_SIZE = 4096;
 
 enum COMP_TYPE { OP_ACCEPT, OP_RECV, OP_SEND, OP_NPC_AI };
@@ -59,6 +58,8 @@ public:
 	void send_update_packet(int c_id, DirectX::XMFLOAT3 cid_pos, DirectX::XMFLOAT3 cid_rotation);
 	void send_changeAnimation_packet(int c_id, Player_Animation_ST ch_ani);
 	void send_change_Character_type_packet(int c_id, Player_Character_Type type);
+
+	void send_add_npc_packet(int n_id, DirectX::XMFLOAT3 nid_pos, DirectX::XMFLOAT3 nid_rotation);
 
 private:
 	OVER_EXP recv_over;

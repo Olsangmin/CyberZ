@@ -37,7 +37,7 @@ void Server::Network()
 	ac_over.comp_type = OP_ACCEPT;
 	AcceptEx(s_socket, c_socket, ac_over.send_buf, 0, addr_size + 16, addr_size + 16, 0, &ac_over.over);
 
-	InitializeNPC();
+
 	gMap.initializeMap();
 
 	gMap.printMap();
@@ -52,7 +52,40 @@ void Server::Network()
 	std::thread timer_thread{ &Server::TimerThread, this };
 
 	
+	using frame = std::chrono::duration<int32_t, std::ratio<1, MAX_FRAME>>;
+	using ms = std::chrono::duration<float, std::milli>;
+	std::chrono::time_point<std::chrono::steady_clock> fps_timer{ std::chrono::steady_clock::now() };
+
+	frame fps{}, frame_count{};
+
 	
+	while (true) {
+		if (!gMap.is_InGame()) {
+			fps_timer = std::chrono::steady_clock::now();
+			continue;
+		}
+	
+
+		fps = duration_cast<frame>(std::chrono::steady_clock::now() - fps_timer);
+		
+		// 아직 1/60초가 안지났으면 패스
+		if (fps.count() < 1) continue;
+
+
+		// std::cout << frame_count.count() << std::endl;
+		/*if (frame_count.count() & 1) {
+			gMap.Update();
+		}*/
+
+		gMap.Update();
+		frame_count = duration_cast<frame>(frame_count + fps);
+		if (frame_count.count() >= MAX_FRAME) {
+			frame_count = frame::zero();
+		}
+		else {
+		}
+		fps_timer = std::chrono::steady_clock::now();
+	}
 
 	timer_thread.join();
 	for (auto& th : worker_threads)
@@ -150,9 +183,12 @@ void Server::Process_packet(int c_id, char* packet)
 		{
 			std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
 			clients[c_id].state = ST_INGAME;
+			// gMap.StartGame();
 		}
 		std::cout << "Client[" << c_id << "] Login.\n" << std::endl;
 		clients[c_id].send_login_info_packet();
+
+		clients[c_id].SetPos(random_pos[uid(rd)]);
 
 		/*for (auto& cl : clients) {
 			{
@@ -165,11 +201,34 @@ void Server::Process_packet(int c_id, char* packet)
 		}*/
 	}
 				 break;
+
+	case CS_GAME_START: {
+		for (auto& cl : clients) {
+			{
+				std::lock_guard<std::mutex> ll(cl.o_lock);
+				if (ST_INGAME != cl.state) continue;
+			}
+			// if (cl.GetId() == c_id) continue;
+			cl.send_add_player_packet(c_id, clients[c_id].GetPos(), clients[c_id].GetRotation());
+			clients[c_id].send_add_player_packet(cl.GetId(), cl.GetPos(), cl.GetRotation());
+			GameMap& gmap = GameMap::GetInstance();
+			auto& copy = gmap.npcs;
+			for (int i = 0; i < NUM_NPC; ++i) {
+				clients[c_id].send_add_npc_packet(copy[i].GetId(), copy[i].GetPos(), copy[i].GetRotation());
+			}
+		}
+
+		/*CS_GAMESTART_PACKET* p = reinterpret_cast<CS_GAMESTART_PACKET*>(packet);
+		TIMER_EVENT ev{ -99, 0, std::chrono::system_clock::now() + std::chrono::seconds(3), EV_SEND_COUNT };
+		timer_queue.push(ev);*/
+		break;
+	}
 	case CS_LOGOUT: {
 		CS_LOGOUT_PACKET* p = reinterpret_cast<CS_LOGOUT_PACKET*>(packet);
 		{
 			std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
 			clients[c_id].state = ST_FREE;
+			gMap.EndGame();
 		}
 		Disconnect(c_id);
 		std::cout << "Client[" << c_id << "] LogOut.\n" << std::endl;
@@ -185,7 +244,9 @@ void Server::Process_packet(int c_id, char* packet)
 			cl.send_move_packet(c_id, dir, yaw, true);
 		}
 
-		// std::cout << "Client[" << c_id << "] Move.";
+		
+
+		std::cout << "Client[" << c_id << "] Move.";
 
 	}
 				break;
@@ -194,7 +255,7 @@ void Server::Process_packet(int c_id, char* packet)
 		CS_UPDATE_PLAYER_PACKET* p = reinterpret_cast<CS_UPDATE_PLAYER_PACKET*>(packet);
 		{
 			std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
-			clients[c_id].SetPos(p->position);
+			// clients[c_id].SetPos(p->position);
 			clients[c_id].SetRotation(p->rotate);
 		}
 
@@ -216,11 +277,8 @@ void Server::Process_packet(int c_id, char* packet)
 					   break;
 	case CS_TEST: {
 		CS_TEST_PACKET* p = reinterpret_cast<CS_TEST_PACKET*>(packet);
-
-		for (auto& npc : npcs) {
-			if ((p->x + 100) == npc.GetId())
-				npc.WakeUp(c_id);
-		}
+		gMap.StartGame();
+		
 	}
 				break;
 
@@ -260,17 +318,7 @@ int Server::Get_new_client_id()
 	return -1;
 }
 
-void Server::InitializeNPC()
-{
-	for (int i = 0; i < npcs.size(); ++i) {
-		npcs[i].n_state = NPC_INGAME;
-		npcs[i].SetId(i + 100);
-		npcs[i].SetPos(DirectX::XMFLOAT3(10.f + i, 0.f, 10.f + i));
-	}
-	/*TIMER_EVENT start;
-	start.wakeup_time = std::chrono::system_clock::now() + std::chrono::seconds(3);
-	timer_queue.push(start);*/
-}
+
 
 void Server::TimerThread()
 {
@@ -291,9 +339,17 @@ void Server::TimerThread()
 			case EV_NPC_MOVE:
 				std::cout << "npc move" << std::endl; break;
 
+			case EV_SEND_COUNT: {
+				//OVER_EXP* overE = new OVER_EXP;
+				//// overE->comp_type
+				//PostQueuedCompletionStatus(h_iocp, 1, ev.pl_id, &overE->over);
+			}
+
+
 			default:
 				break;
 			}
+			continue;
 		}
 		// 비었을 때의 작업
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));

@@ -1,20 +1,27 @@
 #pragma once
 
-
-
-
-
 struct Node
 {
-	int index;
-	float heuristic; // 목표지점까지의 휴리스틱 값
-	float cost; // 출발지점부터 현재 노드까지의 비용
-	Node* parent; // 부모 노드
+    int x, z;
+    int gCost, hCost;
+    Node* parent;
 
-	Node(int idx, float h, float c, Node* p) : index(idx), heuristic(h), cost(c), parent(p) {}
+    Node(int _x, int _z, int _gCost, int _hCost, Node* _parent)
+        : x(_x), z(_z), gCost(_gCost), hCost(_hCost), parent(_parent) {}
 
-	// 비용과 휴리스틱 값을 합친 우선순위 큐를 위한 연산자 오버로딩
-	bool operator<(const Node& other) const {
-		return (cost + heuristic) > (other.cost + other.heuristic);
-	}
+    bool operator==(const Node& other) const {
+        return (x == other.x && z == other.z);
+    }
+
+    
+};
+
+//int CalculateManhattanDistance(const Node& nodeA, const Node& nodeB) {
+//    return abs(nodeA.x - nodeB.x) + abs(nodeA.z - nodeB.z);
+//}
+
+struct CompareNodes {
+    bool operator()(const Node* a, const Node* b) const {
+        return (a->gCost + a->hCost) > (b->gCost + b->hCost);
+    }
 };

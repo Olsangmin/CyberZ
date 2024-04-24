@@ -48,6 +48,7 @@ void Session::send_move_packet(int c_id, DirectX::XMFLOAT3 cid_dir, float cid_ya
 	p.yaw = cid_yaw;
 	p.is_valid = is_valid;
 	// std::cout << "Cliend[" << id << "] <- " << "이동 패킷 전송" << std::endl;
+	std::cout << "Cliend[" << id << "] - (" << GetPos().x << ", " << GetPos().z << ") " << std::endl;
 	do_send(&p);
 }
 
@@ -80,3 +81,16 @@ void Session::send_change_Character_type_packet(int c_id, Player_Character_Type 
 	p.c_type = type;
 	do_send(&p);
 }
+
+void Session::send_add_npc_packet(int n_id, DirectX::XMFLOAT3 nid_pos, DirectX::XMFLOAT3 nid_rotation)
+{
+	SC_ADD_NPC_PACKET p;
+	p.size = sizeof(p);
+	p.type = SC_ADD_NPC;
+	p.position = nid_pos;
+	p.rotation = nid_rotation;
+	do_send(&p);
+}
+
+
+
