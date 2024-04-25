@@ -22,17 +22,24 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	// [Present Setting]
 	// 1 - map				|| OBJ
 
-	m_nHierarchicalGameObjects = 2;
+	m_nHierarchicalGameObjects = 3;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
 	// 1 - obj1
-	CLoadedModelInfo* pfenceModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/fence.bin", NULL);
+	CLoadedModelInfo* pfenceModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/fence.bin", NULL);
 	m_ppHierarchicalGameObjects[0] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pfenceModel);
 	m_ppHierarchicalGameObjects[0]->SetScale(0.01f, 0.01f, 0.01f);
+	m_ppHierarchicalGameObjects[0]->SetPosition(-10.f, -10.f, -10.f);
 
 	
 	CLoadedModelInfo* pMapModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MiddleCheckMap.bin", NULL);
 	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel);
+
+
+	CLoadedModelInfo* pMachine = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/MissionMachine.bin", NULL);
+	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine);
+	m_ppHierarchicalGameObjects[2]->SetPosition(50.f, 0.f, 50.f);
+
 
 	//CLoadedModelInfo* pMapModle2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MiddleCheckMap.bin", NULL);
 	//m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle2);
@@ -446,7 +453,6 @@ void CPrepareRoomScene::SetChangedModel(ID3D12Device* pd3dDevice, ID3D12Graphics
 			m_ppPlayerSelecter[i]->Rotate(0.f, 180.f, 0.f);
 			m_ppPlayerSelecter[i]->m_nModelNum = m_ppPlayerSelecter[i]->m_nChangedModelNum;
 			m_ppPlayerSelecter[i]->m_bChanged = false;
-
 
 		}
 	}
