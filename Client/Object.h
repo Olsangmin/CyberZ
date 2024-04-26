@@ -312,7 +312,7 @@ public:
 class CSkyBox : public CGameObject
 {
 public:
-	CSkyBox(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
+	CSkyBox(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, wchar_t* pszFileName);
 	virtual ~CSkyBox();
 
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
@@ -376,6 +376,31 @@ class CStandardOBJ : public CGameObject
 public:
 	CStandardOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel);
 	virtual ~CStandardOBJ();
+
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+
+class CSelectCharacterOBJ : public CGameObject
+{
+public:
+	CSelectCharacterOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nModel, int nAnimationTracks);
+	virtual ~CSelectCharacterOBJ();
+
+	//CLoadedModelInfo** pptempModel = NULL;
+	int m_nModelNum = Robot;
+	int m_nChangedModelNum = NULL;
+
+	bool m_bChanged = false;
+
+public:
+	char modelFile[50] = "";
+
+	char nP1[50] = "Model/Player_1.bin";
+	char nP2[50] = "Model/Player_2.bin";
+	char nP3[50] = "Model/Player_3.bin";
+	char nP4[50] = "Model/Robot.bin";
 
 };
 

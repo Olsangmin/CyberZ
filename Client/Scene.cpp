@@ -129,7 +129,11 @@ void CScene::ReleaseObjects()
 
 	if (m_ppHierarchicalGameObjects)
 	{
-		for (int i = 0; i < m_nHierarchicalGameObjects; i++) if (m_ppHierarchicalGameObjects[i]) m_ppHierarchicalGameObjects[i]->Release();
+		for (int i = 0; i < m_nHierarchicalGameObjects; i++) if (m_ppHierarchicalGameObjects[i])
+		{
+			m_ppHierarchicalGameObjects[i]->ReleaseUploadBuffers();
+			m_ppHierarchicalGameObjects[i]->Release();
+		}
 		delete[] m_ppHierarchicalGameObjects;
 	}
 
@@ -460,7 +464,7 @@ void CScene::AnimateObjects(float fTimeElapsed)
 
 		for (int j = 0; j < m_nHierarchicalGameObjects; j++)
 			if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) {
-				m_ppPlayer[i]->SetPosition(m_ppPlayer[i]->m_xmf3BeforeColliedPosition);
+				reinterpret_cast<CyborgPlayer*>(m_ppPlayer[i])->Move(DIR_FORWARD, -3.0f);
 				CS_TEST_PACKET p;
 				p.size = sizeof(p);
 				p.type = CS_TEST;
@@ -553,7 +557,8 @@ void CScene::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 
 bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget)
 {
-	if (pBase->m_xmBoundingBox.Intersects(pTarget->m_xmBoundingBox)) return(true);
+	if (pBase->m_xmBoundingBox.Intersects(pTarget->m_xmBoundingBox)|| 
+		pTarget->m_xmBoundingBox.Intersects(pBase->m_xmBoundingBox)) return(true);
 
 	if (pTarget->m_pChild && CheckObjByObjCollition(pBase, pTarget->m_pChild)) return(true);
 	if (pTarget->m_pSibling && CheckObjByObjCollition(pBase, pTarget->m_pSibling)) return(true);

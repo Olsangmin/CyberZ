@@ -52,19 +52,19 @@ public:
 
 	virtual void BuildDefaultLightsAndMaterials();
 	virtual void BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
-	void ReleaseObjects();
+	virtual void ReleaseObjects();
 
 	ID3D12RootSignature *CreateGraphicsRootSignature(ID3D12Device *pd3dDevice);
 	ID3D12RootSignature *GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
 
 	virtual bool ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer);
     void AnimateObjects(float fTimeElapsed);
-    void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
+    virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
 
 	void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	bool CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget);
 
-	void ReleaseUploadBuffers();
+	virtual void ReleaseUploadBuffers();
 public:
 	// @@서버코드@@서버코드@@
 	void InitNetwork();
@@ -138,6 +138,7 @@ public:
 	DWORD								m_dwLastDirection;
 
 public:
+	virtual void SetChangedModel(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList) {}
 	virtual bool AllPlayerReady() { return false; }
 };
 

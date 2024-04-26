@@ -319,6 +319,8 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				case VK_F1:
 				case VK_F2:
 				case VK_F3:
+				case VK_F4:
+				case VK_F5:
 					m_pCamera = m_pScene->m_ppPlayer[FIRST_PLAYER]->ChangeCamera((DWORD)(wParam - VK_F1 + 1), m_GameTimer.GetTimeElapsed());
 					break;
 				case VK_F9:
@@ -330,7 +332,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 
 				//======================
 				// Scene Change
-				case VK_F5:
+				case VK_F7:
 					ReleaseObjects();
 					m_nSceneNum = FIRST_ROUND_SCENE;
 					BuildObjects();
@@ -549,6 +551,8 @@ void CGameFramework::FrameAdvance()
 	m_pd3dCommandList->ClearDepthStencilView(d3dDsvCPUDescriptorHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 
 	m_pd3dCommandList->OMSetRenderTargets(1, &d3dRtvCPUDescriptorHandle, TRUE, &d3dDsvCPUDescriptorHandle);
+
+	if (m_nSceneNum == PREPARE_ROOM_SCENE) m_pScene->SetChangedModel(m_pd3dDevice,m_pd3dCommandList);
 
 	if (m_pScene) m_pScene->Render(m_pd3dCommandList, m_pCamera);
 	if (m_bRenderBoundingBox) m_pScene->RenderBoundingBox(m_pd3dCommandList, m_pCamera);
