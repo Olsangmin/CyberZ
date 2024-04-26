@@ -379,11 +379,13 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 	{
 		Player_Character_Type select{ Robot };
 
-		if (pKeysBuffer['1'] & 0xF0)ChangeModel(0, Corzim);
-		if (pKeysBuffer['2'] & 0xF0)ChangeModel(0, Evan);
-		if (pKeysBuffer['3'] & 0xF0)ChangeModel(0, Uranya);
-
+		if (pKeysBuffer['1'] & 0xF0) select = Corzim;
+		if (pKeysBuffer['2'] & 0xF0)select = Evan;
+		if (pKeysBuffer['3'] & 0xF0)select = Uranya;
 		
+
+		// ChangeModel(0, select);
+
 #ifdef USE_NETWORK
 		CS_CHANGE_CHARACTER_PACKET p;
 		p.size = sizeof(p);
@@ -473,7 +475,7 @@ void CPrepareRoomScene::SetChangedModel(ID3D12Device* pd3dDevice, ID3D12Graphics
 			m_ppPlayerSelecter[i] = pTemp;
 			m_ppPlayerSelecter[i]->SetPosition(beforeLoc);
 			m_ppPlayerSelecter[i]->Rotate(0.f, 180.f, 0.f);
-			m_ppPlayerSelecter[i]->m_nModelNum = m_ppPlayerSelecter[i]->m_nChangedModelNum;
+			// m_ppPlayerSelecter[i]->m_nModelNum = m_ppPlayerSelecter[i]->m_nChangedModelNum;
 			m_ppPlayerSelecter[i]->m_bChanged = false;
 
 
@@ -495,29 +497,38 @@ void CPrepareRoomScene::ProcessPacket(char* p)
 	case SC_LOGIN_INFO:
 	{
 		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
-		my_id = m_ppPlayer[packet->id]->p_id = packet->id;
+		//my_id = m_ppPlayer[packet->id]->p_id = packet->id;
+		my_id = packet->id;
 		cout << "My ID is " << my_id << " !" << endl;
-		m_pMyPlayer = m_ppPlayer[my_id];
-		m_pMyPlayer->m_bUnable = true;
+		// m_pMyPlayer = m_ppPlayer[my_id];
+		// m_pMyPlayer->m_bUnable = true;
 	} break;
 
 	case SC_CHANGE_CHARACTER: {
 		SC_CHANGE_CHARACTER_PACKET* packet = reinterpret_cast<SC_CHANGE_CHARACTER_PACKET*>(p);
 
-		if (packet->id == my_id) {
-
+		/*if (packet->id == my_id) {
+			ChangeModel(0, packet->c_type);
 		}
 		else {
-
-		}
+			ChangeModel(packet->id, packet->c_type);
+		}*/
 
 		cout << packet->id << ", " << packet->c_type << endl;
+		ChangeModel(packet->id, packet->c_type);
+
 
 	}break;
+
+	case SC_GAME_START: {
+		// 
+		break;
+	}
 
 
 	default:
 		printf("Unknown PACKET type [%d]\n", p[1]);
+		break;
 	}
 }
 

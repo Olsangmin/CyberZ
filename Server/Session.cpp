@@ -78,6 +78,7 @@ void Session::send_change_Character_type_packet(int c_id, Player_Character_Type 
 	SC_CHANGE_CHARACTER_PACKET p;
 	p.size = sizeof(p);
 	p.type = SC_CHANGE_CHARACTER;
+	p.id = c_id;
 	p.c_type = type;
 	do_send(&p);
 }
