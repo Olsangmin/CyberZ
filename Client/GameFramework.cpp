@@ -485,6 +485,7 @@ void CGameFramework::AnimateObjects()
 		m_pScene->AnimateObjects(fTimeElapsed);
 		if (m_nSceneNum == PREPARE_ROOM_SCENE && m_pScene->AllPlayerReady())
 		{
+			ReleaseObjects();
 			m_nSceneNum = FIRST_ROUND_SCENE;
 			BuildObjects();
 		}

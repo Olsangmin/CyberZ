@@ -1296,7 +1296,7 @@ CSelectCharacterOBJ::CSelectCharacterOBJ(ID3D12Device* pd3dDevice, ID3D12Graphic
 	m_pSkinnedAnimationController->SetTrackEnable(IDLE, true);
 	m_pSkinnedAnimationController->SetTrackSpeed(0, 0.5f);
 
-	if (pptempModel)delete pptempModel;
+	if (pptempModel) delete pptempModel;
 
 }
 
