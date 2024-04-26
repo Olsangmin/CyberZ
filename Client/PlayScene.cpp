@@ -311,11 +311,11 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	m_ppPlayerSelecter[0] = new CSelectCharacterOBJ(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), Robot, 3);
 	m_ppPlayerSelecter[0]->Rotate(0.f, 180.f, 0.f);
-	m_ppPlayerSelecter[0]->SetPosition(0.0f, 0.0f, 0.0f);
+	m_ppPlayerSelecter[0]->SetPosition(-15.0f, 0.0f, 0.0f);
 
 	m_ppPlayerSelecter[1] = new CSelectCharacterOBJ(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), Robot, 3);
 	m_ppPlayerSelecter[1]->Rotate(0.f, 180.f, 0.f);
-	m_ppPlayerSelecter[1]->SetPosition(-15.0f, 0.0f, 0.0f);
+	m_ppPlayerSelecter[1]->SetPosition(0.0f, 0.0f, 0.0f);
 	
 	m_ppPlayerSelecter[2] = new CSelectCharacterOBJ(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), Robot, 3);
 	m_ppPlayerSelecter[2]->Rotate(0.f, 180.f, 0.f);
@@ -371,7 +371,7 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 		if (pKeysBuffer['1'] & 0xF0)ChangeModel(0, Corzim);
 		if (pKeysBuffer['2'] & 0xF0)ChangeModel(0, Evan);
 		if (pKeysBuffer['3'] & 0xF0)ChangeModel(0, Uranya);
-
+		
 		
 #ifdef USE_NETWORK
 		CS_CHANGE_CHARACTER_PACKET p;
@@ -441,13 +441,14 @@ bool CPrepareRoomScene::AllPlayerReady()
 
 void CPrepareRoomScene::SetChangedModel(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {	
+
 	for (int i = 0; i < m_nPlayerSelecter; i++)
 	{
 		if (m_ppPlayerSelecter[i]->m_bChanged)
 		{
 			XMFLOAT3 beforeLoc = m_ppPlayerSelecter[i]->GetPosition();
-			
-			CSelectCharacterOBJ* pTemp = new CSelectCharacterOBJ(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_ppPlayerSelecter[i]->m_nChangedModelNum, 3);
+
+			CSelectCharacterOBJ* pTemp = new CSelectCharacterOBJ(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_ppPlayerSelecter[i]->m_nChangedModelNum, 1);
 			m_ppPlayerSelecter[i] = pTemp;
 			m_ppPlayerSelecter[i]->SetPosition(beforeLoc);
 			m_ppPlayerSelecter[i]->Rotate(0.f, 180.f, 0.f);
