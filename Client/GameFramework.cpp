@@ -50,7 +50,7 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 
 	CoInitialize(NULL);
 
-	BuildObjects();
+	BuildObjects(0);
 
 	return(true);
 }
@@ -335,12 +335,12 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				case VK_F7:
 					ReleaseObjects();
 					m_nSceneNum = FIRST_ROUND_SCENE;
-					BuildObjects();
+					BuildObjects(0);
 					break;
 				case VK_F6:
 					ReleaseObjects();
 					m_nSceneNum = PREPARE_ROOM_SCENE;
-					BuildObjects();
+					BuildObjects(0);
 					break;
 
 				default:
@@ -414,11 +414,9 @@ void CGameFramework::OnDestroy()
 
 #define _WITH_TERRAIN_PLAYER
 
-void CGameFramework::BuildObjects()
+void CGameFramework::BuildObjects(int myPlayerNum)
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
-
-
 
 	switch (m_nSceneNum)
 	{
@@ -426,8 +424,7 @@ void CGameFramework::BuildObjects()
 		{
 			m_pScene = new PlayScene();
 			if (m_pScene) {
-
-				m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+				m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
 			}
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			break;
@@ -435,7 +432,7 @@ void CGameFramework::BuildObjects()
 		case PREPARE_ROOM_SCENE:
 		{
 			m_pScene = new CPrepareRoomScene();
-			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
 			
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 
@@ -485,9 +482,12 @@ void CGameFramework::AnimateObjects()
 		m_pScene->AnimateObjects(fTimeElapsed);
 		if (m_nSceneNum == PREPARE_ROOM_SCENE && m_pScene->AllPlayerReady())
 		{
+			int myPlayerNum = 0;
+			myPlayerNum = m_pScene->getModelInfo();
+			
 			ReleaseObjects();
 			m_nSceneNum = FIRST_ROUND_SCENE;
-			BuildObjects();
+			BuildObjects(myPlayerNum);
 		}
 	}
 

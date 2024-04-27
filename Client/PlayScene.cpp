@@ -2,9 +2,9 @@
 #include "stdafx.h"
 #include "PlayScene.h"
 
-void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum)
 {
-	CScene::BuildObjects(pd3dDevice, pd3dCommandList);
+	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
 
 	//===============================//
 	// SKY BOX (1)
@@ -99,13 +99,17 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
 	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
 	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
-
+	
 	for (int i = 0; i < m_nPlayer; ++i) {
 		CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
 		m_ppPlayer[i] = pPlayer;
 		m_ppPlayer[i]->SetPlayerData(i);
 	}
-	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
+	
+	int playernum = 0;
+	if(myPlayernum) playernum = myPlayernum;
+
+	m_pMyPlayer = m_ppPlayer[playernum];
 	m_pMyPlayer->SetPosition(XMFLOAT3( 30.f, 30.f, 30.f));
 }
 
@@ -137,6 +141,7 @@ bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBu
 	if (pKeysBuffer['1'] & 0xF0) m_ppPlayer[FIRST_PLAYER]->m_bUnable = true;
 	if (pKeysBuffer['2'] & 0xF0) m_ppPlayer[SECOND_PLAYER]->m_bUnable = true;
 	if (pKeysBuffer['3'] & 0xF0) m_ppPlayer[THIRD_PLAYER]->m_bUnable = true;
+	if (pKeysBuffer['7'] & 0xF0) m_pMyPlayer->m_bUnable = true;
 
 	// Player disable
 	if (pKeysBuffer['4'] & 0xF0) m_ppPlayer[FIRST_PLAYER]->m_bUnable = false;
@@ -276,9 +281,9 @@ void PlayScene::ProcessPacket(char* p)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum)
 {
-	CScene::BuildObjects(pd3dDevice, pd3dCommandList);
+	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -355,10 +360,9 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 		m_ppPlayer[i]->SetPlayerData(i);
 	}
 
-	m_pMyPlayer = m_ppPlayer[FIRST_PLAYER];
+	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
 	m_pMyPlayer->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	m_pMyPlayer->ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
-
 }
 
 bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
@@ -390,8 +394,8 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 		if (pKeysBuffer['2'] & 0xF0)select = Evan;
 		if (pKeysBuffer['3'] & 0xF0)select = Uranya;
 		
-
-		// ChangeModel(0, select);
+		// 클라에서 테스트 할거면 주석 처리 수정해줄것
+		ChangeModel(0, select);
 
 #ifdef USE_NETWORK
 		CS_CHANGE_CHARACTER_PACKET p;
@@ -402,17 +406,14 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 #endif // USE_NETWORK
 	}
 	
-
-
-
 	if (pKeysBuffer['R'] & 0xF0) {
 		m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
-#ifdef USE_NETWORK
-		CS_GAMESTART_PACKET p;
-		p.size = sizeof(p);
-		p.type = CS_GAME_START;
-		send_packet(&p);
-#endif // USE_NETWORK
+//#ifdef USE_NETWORK
+//		CS_GAMESTART_PACKET p;
+//		p.size = sizeof(p);
+//		p.type = CS_GAME_START;
+//		send_packet(&p);
+//#endif // USE_NETWORK
 	}
 
 	return(false);
@@ -426,7 +427,6 @@ bool CPrepareRoomScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 
 void CPrepareRoomScene::ReleaseObjects()
 {
-
 	if (m_ppPlayerSelecter)
 	{
 		for (int i = 0; i < m_nPlayerSelecter; i++)
@@ -483,9 +483,7 @@ void CPrepareRoomScene::SetChangedModel(ID3D12Device* pd3dDevice, ID3D12Graphics
 			m_ppPlayerSelecter[i] = pTemp;
 			m_ppPlayerSelecter[i]->SetPosition(beforeLoc);
 			m_ppPlayerSelecter[i]->Rotate(0.f, 180.f, 0.f);
-			// m_ppPlayerSelecter[i]->m_nModelNum = m_ppPlayerSelecter[i]->m_nChangedModelNum;
 			m_ppPlayerSelecter[i]->m_bChanged = false;
-
 		}
 	}
 }
@@ -494,6 +492,13 @@ void CPrepareRoomScene::ChangeModel(int nPlayer, int nModel)
 {
 	m_ppPlayerSelecter[nPlayer]->m_nChangedModelNum = nModel;
 	m_ppPlayerSelecter[nPlayer]->m_bChanged = true;
+}
+
+
+int CPrepareRoomScene::getModelInfo()
+{
+	int playerId = 0;
+	return m_ppPlayerSelecter[playerId]->m_nModelNum;
 }
 
 

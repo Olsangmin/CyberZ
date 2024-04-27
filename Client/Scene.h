@@ -51,7 +51,7 @@ public:
 	virtual void ReleaseShaderVariables();
 
 	virtual void BuildDefaultLightsAndMaterials();
-	virtual void BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int myPlayernum);
 	virtual void ReleaseObjects();
 
 	ID3D12RootSignature *CreateGraphicsRootSignature(ID3D12Device *pd3dDevice);
@@ -140,5 +140,6 @@ public:
 public:
 	virtual void SetChangedModel(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList) {}
 	virtual bool AllPlayerReady() { return false; }
+	virtual int getModelInfo() { return 0; }
 };
 
