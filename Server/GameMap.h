@@ -11,6 +11,7 @@
 #include "NPC.h"
 #include "Node.h"
 
+#include <set>
 #include <queue>
 #include <unordered_set>
 #include <cmath>
@@ -95,13 +96,15 @@ public:
     std::vector<Node> GetNeighbors(const Node& node) const;
 
     std::array<NPC, NUM_NPC> npcs;
+
+    std::vector<int> cl_ids;
+
 private:
     std::vector<std::vector<CELL>> cells;
     float mapWidth, mapDepth;
     int cellWidth, cellDepth;
     bool InGame;
 
-    std::vector<int> cl_ids;
 };
 
 

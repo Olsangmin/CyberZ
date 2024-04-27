@@ -3,7 +3,7 @@
 #include "Timer.h"
 #include <queue>
 
-enum NPC_STATE {NPC_FREE, NPC_INGAME, NPC_STAY};
+enum NPC_STATE {NPC_FREE, NPC_INGAME, NPC_STAY, NPC_MOVE, NPC_PATROL};
 
 class NPC : public Object
 {

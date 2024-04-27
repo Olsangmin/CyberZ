@@ -107,6 +107,7 @@ struct SC_ADD_PLAYER_PACKET {
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 rotation;
 	char name[NAME_SIZE];
+	Player_Character_Type c_type;
 };
 
 struct SC_MOVE_OBJECT_PACKET {

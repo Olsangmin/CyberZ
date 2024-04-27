@@ -226,7 +226,9 @@ void PlayScene::ProcessPacket(char* p)
 	case SC_ADD_PLAYER:
 	{
 		SC_ADD_PLAYER_PACKET* packet = reinterpret_cast<SC_ADD_PLAYER_PACKET*>(p);
-		// cout << packet->id << " ADD" << endl;
+		int c_id = packet->id;
+		Player_Character_Type type = packet->c_type;
+		if(c_id == my_id)
 		m_ppPlayer[packet->id]->p_id = packet->id;
 		m_ppPlayer[packet->id]->m_bUnable = true;
 		m_ppPlayer[packet->id]->SetPosition(packet->position);
@@ -240,7 +242,6 @@ void PlayScene::ProcessPacket(char* p)
 		if (packet->id == my_id) break;
 		else {
 			m_ppPlayer[packet->id]->Move(packet->dir, true);
-			// m_ppPlayer[packet->id]->SetPosition(packet->position);
 			m_ppPlayer[packet->id]->Rotate(0.f, packet->yaw - m_ppPlayer[packet->id]->GetYaw(), 0.f);
 		}
 
@@ -249,11 +250,7 @@ void PlayScene::ProcessPacket(char* p)
 	case SC_UPDATE_PLAYER:
 	{
 		SC_UPDATE_PLAYER_PACKET* packet = reinterpret_cast<SC_UPDATE_PLAYER_PACKET*>(p);
-		if (packet->id == my_id) break;
-		else {
-			// m_ppPlayer[packet->id]->SetPosition(packet->position);
-
-		}
+		break;
 	} break;
 
 	case SC_CHANGE_ANIM: {
@@ -512,31 +509,19 @@ void CPrepareRoomScene::ProcessPacket(char* p)
 	case SC_LOGIN_INFO:
 	{
 		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
-		//my_id = m_ppPlayer[packet->id]->p_id = packet->id;
 		my_id = packet->id;
 		cout << "My ID is " << my_id << " !" << endl;
-		// m_pMyPlayer = m_ppPlayer[my_id];
-		// m_pMyPlayer->m_bUnable = true;
 	} break;
 
 	case SC_CHANGE_CHARACTER: {
 		SC_CHANGE_CHARACTER_PACKET* packet = reinterpret_cast<SC_CHANGE_CHARACTER_PACKET*>(p);
-
-		/*if (packet->id == my_id) {
-			ChangeModel(0, packet->c_type);
-		}
-		else {
-			ChangeModel(packet->id, packet->c_type);
-		}*/
-
-		cout << packet->id << ", " << packet->c_type << endl;
+		cout << packet->id << " -> " << packet->c_type << endl;
 		ChangeModel(packet->id, packet->c_type);
-
 
 	}break;
 
 	case SC_GAME_START: {
-		// 
+		// 플레이게임으로 씬전환
 		break;
 	}
 
