@@ -22,7 +22,7 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	// [Present Setting]
 	// 1 - map				|| OBJ
 
-	m_nHierarchicalGameObjects = 3;
+	m_nHierarchicalGameObjects = 4;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
 	// 1 - obj1
@@ -31,14 +31,18 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	m_ppHierarchicalGameObjects[0]->SetScale(0.01f, 0.01f, 0.01f);
 	m_ppHierarchicalGameObjects[0]->SetPosition(-10.f, -10.f, -10.f);
 
-	
 	CLoadedModelInfo* pMapModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MiddleCheckMap.bin", NULL);
 	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel);
+	m_ppHierarchicalGameObjects[1]->SetScale(0.01f, 0.01f, 0.01f);
+	m_ppHierarchicalGameObjects[1]->SetPosition(-10.f, -10.f, -10.f);
+
+	CLoadedModelInfo* pMapModel2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MiddleCheckMap.bin", NULL);
+	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel2);
 
 
 	CLoadedModelInfo* pMachine = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/MissionMachine.bin", NULL);
-	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine);
-	m_ppHierarchicalGameObjects[2]->SetPosition(50.f, 0.f, 50.f);
+	m_ppHierarchicalGameObjects[3] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine);
+	m_ppHierarchicalGameObjects[3]->SetPosition(50.f, 0.f, 50.f);
 
 
 	//CLoadedModelInfo* pMapModle2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MiddleCheckMap.bin", NULL);
@@ -498,6 +502,7 @@ void CPrepareRoomScene::ChangeModel(int nPlayer, int nModel)
 int CPrepareRoomScene::getModelInfo()
 {
 	int playerId = 0;
+	if (my_id != -1) playerId = my_id;
 	return m_ppPlayerSelecter[playerId]->m_nModelNum;
 }
 
