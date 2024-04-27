@@ -27,9 +27,9 @@ public:
 
 	void TimerThread();
 
-	std::vector<DirectX::XMFLOAT3> random_pos{ (DirectX::XMFLOAT3(200.f,0.f, 200.f))
-	,(DirectX::XMFLOAT3(40.f,0.f, 200.f))
-		,(DirectX::XMFLOAT3(300.f,0.f, 200.f)) };
+	std::vector<DirectX::XMFLOAT3> random_pos{ (DirectX::XMFLOAT3(500.f,0.f, 500.f))
+	,(DirectX::XMFLOAT3(950.f,0.f, 750.f))
+		,(DirectX::XMFLOAT3(523.f,0.f, 881.f)) };
 
 	std::random_device rd{};
 	std::uniform_int_distribution<int> uid{0, 2};

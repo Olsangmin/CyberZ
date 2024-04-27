@@ -29,6 +29,27 @@ void NPC::WakeUp(int p_id)
 
 void NPC::Update()
 {
+	int state = n_state;
+	switch (state)
+	{
+	case NPC_INGAME: {
+
+	} break;
+
+	case NPC_STAY: {
+
+	} break;
+
+	case NPC_MOVE: {
+
+	}
+
+
+
+
+	default:
+		break;
+	}
 	if (n_path.empty())
 		return;
 	DirectX::XMFLOAT3 next = n_path.front();

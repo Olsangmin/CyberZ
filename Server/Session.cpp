@@ -25,7 +25,7 @@ void Session::send_login_info_packet()
 	do_send(&p);
 }
 
-void Session::send_add_player_packet(int c_id, DirectX::XMFLOAT3 cid_pos, DirectX::XMFLOAT3 cid_rotation)
+void Session::send_add_player_packet(int c_id, DirectX::XMFLOAT3 cid_pos, DirectX::XMFLOAT3 cid_rotation, Player_Character_Type cid_type)
 {
 	SC_ADD_PLAYER_PACKET p;
 	p.size = sizeof(p);
@@ -33,6 +33,7 @@ void Session::send_add_player_packet(int c_id, DirectX::XMFLOAT3 cid_pos, Direct
 	p.id = c_id;
 	p.position = cid_pos;
 	p.rotation = cid_rotation;
+	p.c_type = cid_type;
 	std::cout << "Cliend[" << id << "] <- " << "ADD 패킷 전송" << std::endl;
 	std::cout << "[" << cid_pos.x << ", " << cid_pos.y << ", " << cid_pos.z << "]" << std::endl;
 	do_send(&p);

@@ -72,7 +72,12 @@ public:
 	virtual void send_packet(void* packet);
 	virtual void ProcessPacket(char* p) = 0;
 	virtual void process_data(char* net_buf, size_t io_byte);
+
+	// vector<pair<int, int>> idANDcharacter; // id, selecter
+	
+
 	// @@서버코드@@서버코드@@
+
 
 	CPlayer**				m_ppPlayer = NULL;				// 모든 플레이어 정보
 	CPlayer*				m_pMyPlayer = NULL;				// 현재 플레이어 정보

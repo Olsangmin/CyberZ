@@ -57,13 +57,13 @@ void Server::Network()
 	std::chrono::time_point<std::chrono::steady_clock> fps_timer{ std::chrono::steady_clock::now() };
 
 	frame fps{}, frame_count{};
-
+	gMap.StartGame();
 	
 	while (true) {
-		if (!gMap.is_InGame()) {
+		/*if (!gMap.is_InGame()) {
 			fps_timer = std::chrono::steady_clock::now();
 			continue;
-		}
+		}*/
 	
 
 		fps = duration_cast<frame>(std::chrono::steady_clock::now() - fps_timer);
@@ -78,6 +78,9 @@ void Server::Network()
 		}*/
 
 		gMap.Update();
+
+		
+
 		frame_count = duration_cast<frame>(frame_count + fps);
 		if (frame_count.count() >= MAX_FRAME) {
 			frame_count = frame::zero();
@@ -182,41 +185,54 @@ void Server::Process_packet(int c_id, char* packet)
 		strcpy_s(clients[c_id].name, p->name);
 		{
 			std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
-			clients[c_id].state = ST_INGAME;
+			clients[c_id].state = ST_LOBBY;
 			// gMap.StartGame();
 		}
 		std::cout << "Client[" << c_id << "] Login.\n" << std::endl;
 		clients[c_id].send_login_info_packet();
+		gMap.cl_ids.push_back(c_id);
 
-		clients[c_id].SetPos(random_pos[uid(rd)]);
+		// clients[c_id].SetPos(random_pos[uid(rd)]);
 
 		/*for (auto& cl : clients) {
 			{
 				std::lock_guard<std::mutex> ll(cl.o_lock);
-				if (ST_INGAME != cl.state) continue;
+				if (ST_LOBBY != cl.state) continue;
 			}
 			if (cl.GetId() == c_id) continue;
 			cl.send_add_player_packet(c_id, clients[c_id].GetPos(), clients[c_id].GetRotation());
 			clients[c_id].send_add_player_packet(cl.GetId(), cl.GetPos(), cl.GetRotation());
 		}*/
+
+		for (auto& cl : clients) {
+			{
+				std::lock_guard<std::mutex> ll(cl.o_lock);
+				if (ST_LOBBY != cl.state) continue;
+			}
+			if (cl.GetId() == c_id) continue;
+			cl.send_change_Character_type_packet(c_id, clients[c_id].GetType());
+			clients[c_id].send_change_Character_type_packet(cl.GetId(), cl.GetType());
+		}
 	}
 				 break;
 
 	case CS_GAME_START: {
+		GameMap& gmap = GameMap::GetInstance();
 		for (auto& cl : clients) {
 			{
 				std::lock_guard<std::mutex> ll(cl.o_lock);
-				if (ST_INGAME != cl.state) continue;
+				if (ST_LOBBY != cl.state) continue;
+				else {
+					cl.state = ST_INGAME;
+				}
 			}
 			// if (cl.GetId() == c_id) continue;
-			cl.send_add_player_packet(c_id, clients[c_id].GetPos(), clients[c_id].GetRotation());
-			clients[c_id].send_add_player_packet(cl.GetId(), cl.GetPos(), cl.GetRotation());
-			GameMap& gmap = GameMap::GetInstance();
-			auto& copy = gmap.npcs;
-			for (int i = 0; i < NUM_NPC; ++i) {
-				clients[c_id].send_add_npc_packet(copy[i].GetId(), copy[i].GetPos(), copy[i].GetRotation());
-			}
+			cl.send_add_player_packet(c_id, clients[c_id].GetPos(), clients[c_id].GetRotation(), clients[c_id].GetType());
+			clients[c_id].send_add_player_packet(cl.GetId(), cl.GetPos(), cl.GetRotation(), cl.GetType());
+			
+			gmap.cl_ids.push_back(cl.GetId());
 		}
+		gMap.StartGame();
 
 		/*CS_GAMESTART_PACKET* p = reinterpret_cast<CS_GAMESTART_PACKET*>(packet);
 		TIMER_EVENT ev{ -99, 0, std::chrono::system_clock::now() + std::chrono::seconds(3), EV_SEND_COUNT };
@@ -228,7 +244,7 @@ void Server::Process_packet(int c_id, char* packet)
 		{
 			std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
 			clients[c_id].state = ST_FREE;
-			gMap.EndGame();
+			// gMap.EndGame();
 		}
 		Disconnect(c_id);
 		std::cout << "Client[" << c_id << "] LogOut.\n" << std::endl;
@@ -243,9 +259,7 @@ void Server::Process_packet(int c_id, char* packet)
 			if (cl.state != ST_INGAME) continue;
 			cl.send_move_packet(c_id, dir, yaw, true);
 		}
-
 		
-
 		std::cout << "Client[" << c_id << "] Move.";
 
 	}
@@ -255,14 +269,9 @@ void Server::Process_packet(int c_id, char* packet)
 		CS_UPDATE_PLAYER_PACKET* p = reinterpret_cast<CS_UPDATE_PLAYER_PACKET*>(packet);
 		{
 			std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
-			// clients[c_id].SetPos(p->position);
+			clients[c_id].SetPos(p->position);
 			clients[c_id].SetRotation(p->rotate);
 		}
-
-		/*for (auto& cl : clients) {
-			if (cl.state != ST_INGAME) continue;
-			cl.send_update_packet(c_id, clients[c_id].GetPos(), clients[c_id].GetRotation());
-		}*/
 	}
 						 break;
 
@@ -277,7 +286,7 @@ void Server::Process_packet(int c_id, char* packet)
 					   break;
 	case CS_TEST: {
 		CS_TEST_PACKET* p = reinterpret_cast<CS_TEST_PACKET*>(packet);
-		gMap.StartGame();
+		// gMap.StartGame();
 		
 	}
 				break;
@@ -288,7 +297,7 @@ void Server::Process_packet(int c_id, char* packet)
 		clients[c_id].SetType(p->c_type);
 
 		for (auto& cl : clients) {
-			if (cl.state != ST_INGAME) continue;
+			if (cl.state != ST_LOBBY) continue;
 			cl.send_change_Character_type_packet(c_id, clients[c_id].GetType());
 		}
 	}
