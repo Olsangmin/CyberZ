@@ -107,7 +107,7 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	}
 	
 	int playernum = 0;
-	if(myPlayernum) playernum = myPlayernum;
+	if(myPlayernum != 4) playernum = myPlayernum;
 
 	m_pMyPlayer = m_ppPlayer[playernum];
 	m_pMyPlayer->SetPosition(XMFLOAT3( 30.f, 30.f, 30.f));
@@ -472,7 +472,6 @@ bool CPrepareRoomScene::AllPlayerReady()
 
 void CPrepareRoomScene::SetChangedModel(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {	
-
 	for (int i = 0; i < m_nPlayerSelecter; i++)
 	{
 		if (m_ppPlayerSelecter[i]->m_bChanged)
@@ -480,6 +479,10 @@ void CPrepareRoomScene::SetChangedModel(ID3D12Device* pd3dDevice, ID3D12Graphics
 			XMFLOAT3 beforeLoc = m_ppPlayerSelecter[i]->GetPosition();
 
 			CSelectCharacterOBJ* pTemp = new CSelectCharacterOBJ(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_ppPlayerSelecter[i]->m_nChangedModelNum, 1);
+
+			if (m_ppPlayerSelecter[i])
+				delete m_ppPlayerSelecter[i];
+
 			m_ppPlayerSelecter[i] = pTemp;
 			m_ppPlayerSelecter[i]->SetPosition(beforeLoc);
 			m_ppPlayerSelecter[i]->Rotate(0.f, 180.f, 0.f);
