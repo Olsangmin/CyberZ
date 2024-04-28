@@ -109,12 +109,11 @@ void GameMap::initializeMap()
 void GameMap::StartGame()
 {
 	Server& server = Server::GetInstance();
-	cl_ids.push_back(0); // 임시
-	cl_ids.push_back(1);// 임시
-	cl_ids.push_back(2);// 임시
+	
 	for (int i = 0; i < cl_ids.size(); ++i) {
 		server.clients[i].SetPos(server.random_pos[i]);
-		for (auto& npc : npcs) {
+		std::cout << "player[" << i << "]의 캐릭터 " << server.clients[i].GetType() << std::endl;
+		/*for (auto& npc : npcs) {
 			SC_ADD_PLAYER_PACKET p;
 			p.size = sizeof(p);
 			p.type = SC_ADD_PLAYER;
@@ -123,11 +122,34 @@ void GameMap::StartGame()
 			p.rotation = npc.GetRotation();
 			p.c_type = Robot;
 			server.clients[cl_ids[i]].do_send(&p);
-		}
+		}*/
 	}
+
+	for (auto& cl : cl_ids) {
+		std::cout << cl << " ";
+		SC_GAME_START_PACKET p;
+		p.size = sizeof(p);
+		p.type = SC_GAME_START;
+		server.clients[cl].do_send(&p);
+		
+	}
+	std::cout << std::endl;
+
+	/*for (auto& cl : cl_ids) {
+		server.clients[cl].send_add_player_packet(cl, server.clients[cl].GetPos(), server.clients[cl].GetRotation(), server.clients[cl].GetType());
+	}*/
+	
+	
+
+
+	return;
+	//cl_ids.push_back(0); // 임시
+	//cl_ids.push_back(1);// 임시
+	//cl_ids.push_back(2);// 임시
+	
 	// std::vector<DirectX::XMFLOAT3> p = BFS(npcs[0].GetPos(), DirectX::XMFLOAT3(50.f, 0.f, 50.f));
 	/*for (auto& path : p) {
-		npcs[0].n_path.push(path);
+		// npcs[0].n_path.push(path);
 	}*/
 
 	InGame = true;

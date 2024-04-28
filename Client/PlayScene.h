@@ -5,6 +5,8 @@
 #pragma once
 #include "Scene.h"
 #include "Object.h"
+#include <unordered_map>
+#include <algorithm>
 
 class PlayScene :public CScene
 {
@@ -19,6 +21,8 @@ public:
 	bool AllPlayerReady() { return false; }
 
 	void ProcessPacket(char* p);
+
+	unordered_map<int, Player_Character_Type> idANDtype;
 
 };
 
@@ -48,6 +52,8 @@ public:
 
 public:
 
+	Player_Character_Type select{ Robot };
+
 	int								m_nPlayerSelecter = 0;
 	CSelectCharacterOBJ**			m_ppPlayerSelecter = NULL;
 
@@ -55,6 +61,6 @@ public:
 	ID3D12Device*					pScened3dDevice;
 	ID3D12GraphicsCommandList*		pScened3dCommandList;
 
-	int								m_nOnPlayer = NULL;
+	
 	CSelectCharacterOBJ**			m_ppOnPlayer = NULL;
 };
