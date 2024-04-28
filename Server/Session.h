@@ -1,7 +1,6 @@
 #pragma once
 #include "Object.h"
 // #include "Protocol.h"
-
 constexpr int BUF_SIZE = 4096;
 
 enum COMP_TYPE { OP_ACCEPT, OP_RECV, OP_SEND, OP_NPC_AI };
@@ -31,7 +30,7 @@ public:
 	}
 };
 
-enum S_STATE {ST_FREE, ST_ALLOC, ST_INGAME};
+enum S_STATE {ST_FREE, ST_ALLOC, ST_LOBBY, ST_INGAME};
 class Session : public Object
 {
 public:
@@ -54,11 +53,13 @@ public:
 	const SOCKET& GetSocket() { return socket; }
 
 	void send_login_info_packet();
-	void send_add_player_packet(int c_id, DirectX::XMFLOAT3 cid_pos, DirectX::XMFLOAT3 cid_rotation);
+	void send_add_player_packet(int c_id, DirectX::XMFLOAT3 cid_pos, DirectX::XMFLOAT3 cid_rotation, Player_Character_Type cid_type);
 	void send_move_packet(int c_id, DirectX::XMFLOAT3 cid_dir, float cid_yaw, bool is_valid);
 	void send_update_packet(int c_id, DirectX::XMFLOAT3 cid_pos, DirectX::XMFLOAT3 cid_rotation);
 	void send_changeAnimation_packet(int c_id, Player_Animation_ST ch_ani);
 	void send_change_Character_type_packet(int c_id, Player_Character_Type type);
+
+	void send_add_npc_packet(int n_id, DirectX::XMFLOAT3 nid_pos, DirectX::XMFLOAT3 nid_rotation);
 
 private:
 	OVER_EXP recv_over;

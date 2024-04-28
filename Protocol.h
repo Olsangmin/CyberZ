@@ -4,7 +4,9 @@
 
 constexpr int PORT_NUM = 4000;
 constexpr int MAX_USER = 3;
-constexpr int NUM_NPC = 8;
+constexpr int NUM_NPC = 3;
+
+constexpr int MAX_FRAME = 60;
 
 constexpr int NAME_SIZE = 20;
 
@@ -15,6 +17,7 @@ constexpr char CS_MOVE = 2;
 constexpr char CS_UPDATE_PLAYER = 3;
 constexpr char CS_CHANGE_ANIM = 4; // 애니메이션 변경
 constexpr char CS_CHANGE_CHARACTER = 5; // 캐릭터 변경
+constexpr char CS_GAME_START = 6; // 게임 시작(방장)
 
 constexpr char CS_TEST = 200;
 
@@ -25,6 +28,9 @@ constexpr char SC_MOVE_OBJECT = 2;
 constexpr char SC_UPDATE_PLAYER = 3;
 constexpr char SC_CHANGE_ANIM = 4;
 constexpr char SC_CHANGE_CHARACTER = 5;
+constexpr char SC_GAME_START = 6;
+constexpr char SC_ADD_NPC = 7;
+
 
 
 constexpr char SC_TEST = 200;
@@ -77,6 +83,11 @@ struct CS_CHANGE_CHARACTER_PACKET { // 캐릭터 변경
 	Player_Character_Type c_type;
 };
 
+struct CS_GAMESTART_PACKET {
+	unsigned char size;
+	char	type;
+};
+
 struct CS_TEST_PACKET {
 	unsigned char size;
 	char	type;
@@ -96,6 +107,7 @@ struct SC_ADD_PLAYER_PACKET {
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 rotation;
 	char name[NAME_SIZE];
+	Player_Character_Type c_type;
 };
 
 struct SC_MOVE_OBJECT_PACKET {
@@ -132,6 +144,13 @@ struct SC_CHANGE_CHARACTER_PACKET {
 	Player_Character_Type c_type;
 };
 
+struct SC_ADD_NPC_PACKET {
+	unsigned char size;
+	char	type;
+	int id;
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT3 rotation;
+};
 
 struct SC_TEST_PACKET {
 	unsigned char size;

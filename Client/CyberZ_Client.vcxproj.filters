@@ -52,6 +52,9 @@
     <Filter Include="09. Scene\09-00. PlayScene">
       <UniqueIdentifier>{628086f9-716d-4d9b-b93f-8d43e242d8e8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="11. GUI">
+      <UniqueIdentifier>{b1f1e808-01a9-441e-a84d-a44c42b4be0b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CyberZ_Client.rc">
@@ -115,6 +118,9 @@
     <ClCompile Include="PlayScene.cpp">
       <Filter>09. Scene\09-00. PlayScene</Filter>
     </ClCompile>
+    <ClCompile Include="GUI.cpp">
+      <Filter>11. GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameFramework.h">
@@ -173,6 +179,9 @@
     </ClInclude>
     <ClInclude Include="PlayScene.h">
       <Filter>09. Scene\09-00. PlayScene</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI.h">
+      <Filter>11. GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

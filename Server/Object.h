@@ -1,6 +1,7 @@
 #pragma once
 #include "../Common.h"
 #include "../Protocol.h"
+#include <atomic>
 
 class Object
 {

@@ -28,7 +28,7 @@ public:
 
 	void ChangeSwapChainState();
 
-    void BuildObjects();
+    void BuildObjects(int myPlayerNum);
     void ReleaseObjects();
 
     void ProcessInput();

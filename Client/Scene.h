@@ -51,7 +51,7 @@ public:
 	virtual void ReleaseShaderVariables();
 
 	virtual void BuildDefaultLightsAndMaterials();
-	virtual void BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int myPlayernum);
 	virtual void ReleaseObjects();
 
 	ID3D12RootSignature *CreateGraphicsRootSignature(ID3D12Device *pd3dDevice);
@@ -72,7 +72,12 @@ public:
 	virtual void send_packet(void* packet);
 	virtual void ProcessPacket(char* p) = 0;
 	virtual void process_data(char* net_buf, size_t io_byte);
+
+	// vector<pair<int, int>> idANDcharacter; // id, selecter
+	
+
 	// @@서버코드@@서버코드@@
+
 
 	CPlayer**				m_ppPlayer = NULL;				// 모든 플레이어 정보
 	CPlayer*				m_pMyPlayer = NULL;				// 현재 플레이어 정보
@@ -140,5 +145,6 @@ public:
 public:
 	virtual void SetChangedModel(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList) {}
 	virtual bool AllPlayerReady() { return false; }
+	virtual int getModelInfo() { return 0; }
 };
 

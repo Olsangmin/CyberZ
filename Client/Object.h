@@ -387,7 +387,7 @@ class CSelectCharacterOBJ : public CGameObject
 {
 public:
 	CSelectCharacterOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nModel, int nAnimationTracks);
-	virtual ~CSelectCharacterOBJ();
+	~CSelectCharacterOBJ();
 
 	//CLoadedModelInfo** pptempModel = NULL;
 	int m_nModelNum = Robot;
