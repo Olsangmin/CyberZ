@@ -19,28 +19,30 @@ public:
 	virtual void Move(DWORD dwDirection, float fDistance, bool bVelocity = false);
 
 	virtual void Update(float fTimeElapsed);
+	void UpdateBB();
 
 	void AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2);
 
 public:
 
-	Player_Animation_ST m_pasCurrentAni;
-	Player_Animation_ST m_pasNextAni;
+	Player_Animation_ST				m_pasCurrentAni;
+	Player_Animation_ST				m_pasNextAni;
 
-	float m_fVelocitySpeed{};
-	float m_fStaminer{};
-	float m_fMaxStaminer{};
-	float m_fRepairSpeed{};
-	float m_fTakeOverSpeed{};
+	float							m_fVelocitySpeed{};
+	float							m_fStaminer{};
+	float							m_fMaxStaminer{};
+	float							m_fRepairSpeed{};
+	float							m_fTakeOverSpeed{};
 	
-	int	m_nCharacter;
+	int								m_nCharacter;
 
-	bool m_bIsRun{ false };
-	bool m_bIsCreep{ false };
-	bool m_bIsCreep_flag{ false };
-	bool m_bIsJump{ false };
+	bool							m_bIsRun{ false };
+	bool							m_bIsCreep{ false };
+	bool							m_bIsCreep_flag{ false };
+	bool							m_bIsJump{ false };
 
-	bool m_bHasStaminer{ true };
+	bool							m_bHasStaminer{ true };
+
 	virtual bool GetStaminer() { return m_bHasStaminer; };
 	virtual float GetVelocitySpeed() { return m_fVelocitySpeed; };
 

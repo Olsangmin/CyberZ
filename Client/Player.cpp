@@ -103,8 +103,9 @@ void CPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity) // 
 		packet.yaw = GetYaw();
 		SetBuffer(&packet, packet.size);
 #endif // USE_NETWORK
-
 		Move(xmf3Shift, bUpdateVelocity);
+
+
 
 	}
 }
@@ -281,7 +282,8 @@ void CPlayer::UpdateAcceleration(float& fLength)
 void CPlayer::UpdatePlayerPostion(float fTimeElapsed)
 {
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
-	Move(xmf3Velocity, false);
+	m_xmf3NextPos = xmf3Velocity;
+	if(!m_bIntersects)Move(xmf3Velocity, false);
 	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
 }
 

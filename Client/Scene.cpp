@@ -460,17 +460,16 @@ void CScene::AnimateObjects(float fTimeElapsed)
 	for (int i = 0; i < m_nPlayer; i++) if (m_ppPlayer[i]) {
 
 		m_ppPlayer[i]->Animate(fTimeElapsed);
+		bool flag = false;
+		for (int j = 0; j < m_nHierarchicalGameObjects; ++j) {
+			if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) {
+				flag = true;
+				break;
+			}
+		}
+		m_ppPlayer[i]->m_bIntersects = flag;
 		m_ppPlayer[i]->Update(fTimeElapsed);
 
-		for (int j = 0; j < m_nHierarchicalGameObjects; j++)
-			if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) {
-				reinterpret_cast<CyborgPlayer*>(m_ppPlayer[i])->Move(DIR_FORWARD, -3.0f);
-				CS_TEST_PACKET p;
-				p.size = sizeof(p);
-				p.type = CS_TEST;
-				p.x = j;
-				m_ppPlayer[i]->SetBuffer(&p, sizeof(p));
-			}
 	}
 
 	// 플레이어 플레쉬 라이트 사용 안하니까 일단 주석
@@ -557,9 +556,34 @@ void CScene::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 
 bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget)
 {
-	if (pBase->m_xmBoundingBox.Intersects(pTarget->m_xmBoundingBox)|| 
-		pTarget->m_xmBoundingBox.Intersects(pBase->m_xmBoundingBox)) return(true);
+	//BoundingOrientedBox xmBoundingBox = pBase->m_xmBoundingBox;
+	//XMFLOAT3 zero(1, 1, 1);
+	//pBase->m_xmBoundingBox.Transform(xmBoundingBox, 1.f, XMLoadFloat3(&zero), XMLoadFloat3(&target));
+	if (pBase->m_xmBoundingBox.Intersects(pTarget->m_xmBoundingBox)) {
+		/*XMFLOAT3 corner[8];
+		pTarget->m_xmBoundingBox.GetCorners(corner);
+		
+		XMFLOAT3 vecP = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[0], corner[1], corner[2], corner[3]));
+		XMVECTOR vecD = XMLoadFloat3(&Vector3::Minus(pTarget->m_xmBoundingBox.Center, pBase->GetPosition()));
 
+		if (Vector3::PlaneIntersectsOBB(corner[0], corner[1], corner[2], corner[3], pTarget->m_xmBoundingBox.Center, pBase->GetPosition())) {
+			XMFLOAT3 vecP = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[0], corner[1], corner[2], corner[3]));
+			cout << vecP.x << "	" << vecP.y << "	" << vecP.z << endl;
+		}
+		if (Vector3::PlaneIntersectsOBB(corner[1], corner[5], corner[6], corner[2], pTarget->m_xmBoundingBox.Center, pBase->GetPosition())) {
+			XMFLOAT3 vecP = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[1], corner[5], corner[6], corner[2]));
+			cout << vecP.x << "	" << vecP.y << "	" << vecP.z << endl;
+		}
+		if (Vector3::PlaneIntersectsOBB(corner[5], corner[4], corner[7], corner[6], pTarget->m_xmBoundingBox.Center, pBase->GetPosition())) {
+			XMFLOAT3 vecP = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[5], corner[4], corner[7], corner[6]));
+			cout << vecP.x << "	" << vecP.y << "	" << vecP.z << endl;
+		}
+		if (Vector3::PlaneIntersectsOBB(corner[4], corner[0], corner[3], corner[7], pTarget->m_xmBoundingBox.Center, pBase->GetPosition())) {
+			XMFLOAT3 vecP = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[4], corner[0], corner[3], corner[7]));
+			cout << vecP.x << "	" << vecP.y << "	" << vecP.z << endl;
+		}*/
+		return(true);
+	}
 	if (pTarget->m_pChild && CheckObjByObjCollition(pBase, pTarget->m_pChild)) return(true);
 	if (pTarget->m_pSibling && CheckObjByObjCollition(pBase, pTarget->m_pSibling)) return(true);
 

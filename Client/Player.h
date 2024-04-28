@@ -17,6 +17,7 @@ protected:
 	XMFLOAT3					m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
 	XMFLOAT3					m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 	XMFLOAT3					m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	XMFLOAT3					m_xmf3NextPos = XMFLOAT3(0.f, 0.f, 0.f);
 
 	XMFLOAT3					m_xmf3CRight = XMFLOAT3(1.0f, 0.0f, 0.0f);
 	XMFLOAT3					m_xmf3CUp = XMFLOAT3(0.0f, 1.0f, 0.0f);
@@ -44,6 +45,7 @@ protected:
 
 
 public:
+	bool						m_bIntersects = false;
 	CCamera						*m_pCamera = NULL;
 	bool						m_bUnable = false;
 	bool						m_bReady = false;
@@ -70,6 +72,8 @@ public:
 	XMFLOAT3 GetCLookVector() { return(m_xmf3CLook); }
 	XMFLOAT3 GetCUpVector() { return(m_xmf3CUp); }
 	XMFLOAT3 GetCRightVector() { return(m_xmf3CRight); }
+	XMFLOAT3 GetCVelocityVector() { return(m_xmf3Velocity); }
+	
 
 	void SetFriction(float fFriction) { m_fFriction = fFriction; }
 	void SetGravity(const XMFLOAT3& xmf3Gravity) { m_xmf3Gravity = xmf3Gravity; }

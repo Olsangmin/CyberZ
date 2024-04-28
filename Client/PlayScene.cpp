@@ -91,7 +91,7 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	// 저장된 모델 바꿀 수 있음
 	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
 	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
-	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
+	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
 
 	for (int i = 0; i < m_nPlayer; ++i) {
 		CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
@@ -99,7 +99,7 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		m_ppPlayer[i]->SetPlayerData(i);
 	}
 	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
-	m_pMyPlayer->SetPosition(XMFLOAT3( 30.f, 30.f, 30.f));
+	m_pMyPlayer->SetPosition(XMFLOAT3( 430.f, 30.f, 530.f));
 }
 
 bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
@@ -150,8 +150,11 @@ bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBu
 		if ((cxDelta || cyDelta) && m_pMyPlayer->m_bUnable)
 			m_pMyPlayer->CameraRotate(0.0f, cxDelta, 0.0f);
 
-		if (dwDirection1 && m_pMyPlayer->m_bUnable)
+
+		if (dwDirection1 && m_pMyPlayer->m_bUnable) {
 			m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
+
+		}
 	}
 
 	m_dwLastDirection = dwDirection1;

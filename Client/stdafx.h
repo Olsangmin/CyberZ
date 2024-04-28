@@ -134,6 +134,17 @@ namespace Vector3
 		return(xmf3Result);
 	}
 
+	inline XMFLOAT3 Minus(XMFLOAT3& xmf3Vector, XMFLOAT3& xmf3Vector1, bool bNormalize = true)
+	{
+		XMFLOAT3 xmf3Result;
+		if (bNormalize) {
+			XMStoreFloat3(&xmf3Result, XMVector3Normalize(XMLoadFloat3(&xmf3Vector) - XMLoadFloat3(&xmf3Vector1)));
+		}
+		else
+			XMStoreFloat3(&xmf3Result, XMLoadFloat3(&xmf3Vector) - XMLoadFloat3(&xmf3Vector1));
+		return(xmf3Result);
+	}
+
 	inline XMFLOAT3 ScalarProduct(XMFLOAT3& xmf3Vector, float fScalar, bool bNormalize = true)
 	{
 		XMFLOAT3 xmf3Result;
@@ -170,6 +181,13 @@ namespace Vector3
 		XMFLOAT3 xmf3Result;
 		XMStoreFloat3(&xmf3Result, XMVector3Dot(XMLoadFloat3(&xmf3Vector1), XMLoadFloat3(&xmf3Vector2)));
 		return(xmf3Result.x);
+	}
+
+	inline XMFLOAT3 Dot(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2)
+	{
+		XMFLOAT3 xmf3Result;
+		XMStoreFloat3(&xmf3Result, XMVector3Dot(XMLoadFloat3(&xmf3Vector1), XMLoadFloat3(&xmf3Vector2)));
+		return(xmf3Result);
 	}
 
 	inline XMFLOAT3 CrossProduct(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2, bool bNormalize = true)
@@ -238,6 +256,69 @@ namespace Vector3
 	inline XMFLOAT3 TransformCoord(XMFLOAT3& xmf3Vector, XMFLOAT4X4& xmmtx4x4Matrix)
 	{
 		return(TransformCoord(xmf3Vector, XMLoadFloat4x4(&xmmtx4x4Matrix)));
+	}
+
+	inline XMVECTOR NormalFromPlane(const XMFLOAT3& v0, const XMFLOAT3& v1, const XMFLOAT3& v2, const XMFLOAT3& v3)
+	{
+		XMVECTOR a = XMLoadFloat3(&v0);
+		XMVECTOR b = XMLoadFloat3(&v1);
+		XMVECTOR c = XMLoadFloat3(&v2);
+		XMVECTOR d = XMLoadFloat3(&v3);
+
+		// 점들을 이용하여 두 벡터를 계산합니다
+		XMVECTOR edge1 = b - a;
+		XMVECTOR edge2 = c - a;
+
+		// 첫 번째 삼각형의 법선 벡터 계산
+		XMVECTOR normal1 = XMVector3Normalize(XMVector3Cross(edge1, edge2));
+
+		// 세 번째 점과 두 번째 점, 첫 번째 점을 이용하여 두 벡터를 다시 계산합니다
+		edge1 = d - c;
+		edge2 = a - c;
+
+		// 두 번째 삼각형의 법선 벡터 계산
+		XMVECTOR normal2 = XMVector3Normalize(XMVector3Cross(edge1, edge2));
+
+		// 두 법선 벡터의 평균을 계산하여 평면의 법선 벡터를 얻습니다
+		XMVECTOR normal = XMVector3Normalize((normal1 + normal2) * 0.5f);
+
+		return normal;
+	}
+
+	inline XMVECTOR DefinePlane(XMVECTOR point1, XMVECTOR point2, XMVECTOR point3)
+	{
+		XMVECTOR vec1 = point2 - point1;
+		XMVECTOR vec2 = point3 - point1;
+		return XMVector3Normalize(XMVector3Cross(vec1, vec2));
+	}
+
+	// OBB와 플레이어 위치를 사용하여 특정 평면을 통과하는지 확인하는 함수
+	inline bool PlaneIntersectsOBB(const XMFLOAT3& p0, const XMFLOAT3& p1, const XMFLOAT3& p2, const XMFLOAT3& p3, const XMFLOAT3& center, const XMFLOAT3& player)
+	{
+		XMVECTOR planeNormal = DefinePlane(XMLoadFloat3(&p0), XMLoadFloat3(&p1), XMLoadFloat3(&p2));
+		XMVECTOR playerToCenter = XMLoadFloat3(&center) - XMLoadFloat3(&player);
+
+		// OBB 중심에서 플레이어 위치로 이어진 벡터와 평면의 노멀 벡터의 내적을 구함
+		float dotProduct = XMVectorGetX(XMVector3Dot(playerToCenter, planeNormal));
+
+		// 내적이 양수이면 벡터가 평면을 통과하지 않음
+		if (dotProduct > 0.0f)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+
+	inline bool IsDirectionOnPlane(const XMVECTOR& plane, const XMVECTOR& direction)
+	{
+		// 평면의 방정식과 방향 벡터의 내적을 계산합니다
+		float dotProduct = XMVectorGetX(XMVector3Dot(plane, direction));
+
+		// 내적이 0에 가까우면 평면을 통과하는 것으로 간주합니다
+		return fabs(dotProduct) < 0.0001f; // 허용 오차를 설정할 수 있습니다
 	}
 }
 

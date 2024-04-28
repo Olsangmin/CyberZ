@@ -192,9 +192,10 @@ public:
 
 	BoundingOrientedBox				m_xmBoundingBox = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	CBoundingBoxMesh				*m_pBoundingBoxMesh = NULL;
+	bool							m_bCheckBB = false;
 	
 	void SetBoundingBoxMesh(CBoundingBoxMesh* pMesh);
-	void UpdateBoundingBox();
+	void UpdateBoundingBox(XMFLOAT3 xmf3NextPos);
 	void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 	void MoveBBToParent(CGameObject* pTargetLv);
 

@@ -390,18 +390,22 @@ void CGameObject::SetBoundingBoxMesh(CBoundingBoxMesh* pMesh)
 	if (pMesh) pMesh->AddRef();
 }
 
-void CGameObject::UpdateBoundingBox()
+void CGameObject::UpdateBoundingBox(XMFLOAT3 xmf3NextPos)
 {
+	m_bCheckBB = true;
 	if (m_pMesh)
 	{
 		m_xmBoundingBox = m_pMesh->m_xmBoundingBox;
-		m_pMesh->m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
+		XMFLOAT4X4 xmf4x4World = m_xmf4x4World;
+		xmf4x4World._41 += xmf3NextPos.x * 0.1;
+		xmf4x4World._43 += xmf3NextPos.z * 0.1;
+		m_pMesh->m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&xmf4x4World));
 		XMStoreFloat4(&m_xmBoundingBox.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmBoundingBox.Orientation)));
 		MoveBBToParent(this);
 		return;
 	}
-	if (m_pSibling)m_pSibling->UpdateBoundingBox();
-	if (m_pChild)m_pChild->UpdateBoundingBox();
+	if (m_pSibling)m_pSibling->UpdateBoundingBox(xmf3NextPos);
+	if (m_pChild)m_pChild->UpdateBoundingBox(xmf3NextPos);
 
 }
 
@@ -509,8 +513,7 @@ void CGameObject::Animate(float fTimeElapsed)
 	OnPrepareRender();
 	Update(fTimeElapsed);
 	//BB
-	UpdateBoundingBox();
-
+	if(!m_bCheckBB)UpdateBoundingBox(XMFLOAT3(0,0,0));
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->AdvanceTime(fTimeElapsed, this);
 
 	if (m_pSibling) m_pSibling->Animate(fTimeElapsed);

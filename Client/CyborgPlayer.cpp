@@ -27,8 +27,8 @@ CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	m_pSkinnedAnimationController->SetCallbackKey(1, 0.5f, _T("Footstep02"));
 	m_pSkinnedAnimationController->SetCallbackKey(2, 0.9f, _T("Footstep03"));
 #else
-	m_pSkinnedAnimationController->SetCallbackKey(1, 0, 0.2f, _T("Sound/Footstep01.wav"));
-	m_pSkinnedAnimationController->SetCallbackKey(1, 1, 0.5f, _T("Sound/Footstep02.wav"));
+	//m_pSkinnedAnimationController->SetCallbackKey(1, 0, 0.2f, _T("Sound/Footstep01.wav"));
+	//m_pSkinnedAnimationController->SetCallbackKey(1, 1, 0.5f, _T("Sound/Footstep02.wav"));
 	//	m_pSkinnedAnimationController->SetCallbackKey(1, 2, 0.39f, _T("Sound/Footstep03.wav"));
 #endif
 	CAnimationCallbackHandler* pAnimationCallbackHandler = new CSoundCallbackHandler();
@@ -40,7 +40,7 @@ CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	SetCameraUpdatedContext(pContext);
 
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
-	SetPosition(XMFLOAT3(0.0f, pTerrain->GetHeight(310.0f, 590.0f), 0.0f));
+	SetPosition(XMFLOAT3(100.0f, pTerrain->GetHeight(310.0f, 590.0f), 300.0f));
 	SetScale(XMFLOAT3(10.0f, 10.0f, 10.0f));
 
 	if (pPlayerModel) delete pPlayerModel;
@@ -182,7 +182,7 @@ void CyborgPlayer::Update(float fTimeElapsed)
 {
 	CPlayer::Update(fTimeElapsed);
 
-
+	UpdateBB();
 	if (m_pSkinnedAnimationController)
 	{
 		AnimationBlending(m_pasCurrentAni, m_pasNextAni);
@@ -204,6 +204,12 @@ void CyborgPlayer::Update(float fTimeElapsed)
 	Upacket.rotate = DirectX::XMFLOAT3(m_fPitch, m_fYaw, m_fRoll);
 	Upacket.ani_st = m_pasCurrentAni;
 	SetBuffer(&Upacket, Upacket.size);
+}
+
+void CyborgPlayer::UpdateBB()
+{
+	if (m_pSibling)m_pSibling->UpdateBoundingBox(m_xmf3Velocity);
+	if (m_pChild)m_pChild->UpdateBoundingBox(m_xmf3Velocity);
 }
 
 void CyborgPlayer::AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2)
@@ -294,9 +300,9 @@ void CyborgPlayer::IsRun()
 
 void CyborgPlayer::IsCreep()
 {
-	if (m_pasCurrentAni != CRAWL && m_bIsCreep && !m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+	if (m_pasCurrentAni != CREEP && m_bIsCreep && !m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
 		SetMaxVelocityXZ(10.f);
-		m_pasNextAni = CRAWL;
+		m_pasNextAni = CREEP;
 		m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 		AnimationPacket(m_pasNextAni);
 	}
