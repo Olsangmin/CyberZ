@@ -57,7 +57,6 @@ void Server::Network()
 	std::chrono::time_point<std::chrono::steady_clock> fps_timer{ std::chrono::steady_clock::now() };
 
 	frame fps{}, frame_count{};
-	gMap.StartGame();
 	
 	while (true) {
 		/*if (!gMap.is_InGame()) {
@@ -77,7 +76,7 @@ void Server::Network()
 			gMap.Update();
 		}*/
 
-		gMap.Update();
+		// gMap.Update();
 
 		
 
@@ -217,22 +216,38 @@ void Server::Process_packet(int c_id, char* packet)
 				 break;
 
 	case CS_GAME_START: {
-		GameMap& gmap = GameMap::GetInstance();
+		// GameMap& gmap = GameMap::GetInstance();
 		for (auto& cl : clients) {
 			{
 				std::lock_guard<std::mutex> ll(cl.o_lock);
 				if (ST_LOBBY != cl.state) continue;
 				else {
+					// gMap.cl_ids.push_back(cl.GetId());
 					cl.state = ST_INGAME;
 				}
 			}
 			// if (cl.GetId() == c_id) continue;
+		}
+
+		std::cout << "¹æÀå[" << c_id << "] - " << std::endl;
+		gMap.StartGame();
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+		std::vector<int> players = gMap.cl_ids;
+
+		for (auto& pl: players) { // 012
+			for (auto& others : gMap.cl_ids) {
+				clients[pl].send_add_player_packet(others, 
+					clients[others].GetPos(),clients[others].GetRotation(), clients[others].GetType());
+			}
+		}
+
+		/*auto& pl = gMap.cl_ids;
+		for (auto& cl : clients) {
+			
 			cl.send_add_player_packet(c_id, clients[c_id].GetPos(), clients[c_id].GetRotation(), clients[c_id].GetType());
 			clients[c_id].send_add_player_packet(cl.GetId(), cl.GetPos(), cl.GetRotation(), cl.GetType());
-			
-			gmap.cl_ids.push_back(cl.GetId());
-		}
-		gMap.StartGame();
+		}*/
 
 		/*CS_GAMESTART_PACKET* p = reinterpret_cast<CS_GAMESTART_PACKET*>(packet);
 		TIMER_EVENT ev{ -99, 0, std::chrono::system_clock::now() + std::chrono::seconds(3), EV_SEND_COUNT };
@@ -260,7 +275,7 @@ void Server::Process_packet(int c_id, char* packet)
 			cl.send_move_packet(c_id, dir, yaw, true);
 		}
 		
-		std::cout << "Client[" << c_id << "] Move.";
+		// std::cout << "Client[" << c_id << "] Move.";
 
 	}
 				break;

@@ -144,6 +144,11 @@ struct SC_CHANGE_CHARACTER_PACKET {
 	Player_Character_Type c_type;
 };
 
+struct SC_GAME_START_PACKET {
+	unsigned char size;
+	char type;
+};
+
 struct SC_ADD_NPC_PACKET {
 	unsigned char size;
 	char	type;

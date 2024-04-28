@@ -34,7 +34,7 @@ void Session::send_add_player_packet(int c_id, DirectX::XMFLOAT3 cid_pos, Direct
 	p.position = cid_pos;
 	p.rotation = cid_rotation;
 	p.c_type = cid_type;
-	std::cout << "Cliend[" << id << "] <- " << "ADD 패킷 전송" << std::endl;
+	std::cout << "Cliend[" << id << "] <- P" << c_id << " ADD 패킷 전송" << std::endl;
 	std::cout << "[" << cid_pos.x << ", " << cid_pos.y << ", " << cid_pos.z << "]" << std::endl;
 	do_send(&p);
 }
@@ -49,7 +49,7 @@ void Session::send_move_packet(int c_id, DirectX::XMFLOAT3 cid_dir, float cid_ya
 	p.yaw = cid_yaw;
 	p.is_valid = is_valid;
 	// std::cout << "Cliend[" << id << "] <- " << "이동 패킷 전송" << std::endl;
-	std::cout << "Cliend[" << id << "] - (" << GetPos().x << ", " << GetPos().z << ") " << std::endl;
+	// std::cout << "Cliend[" << id << "] - (" << GetPos().x << ", " << GetPos().z << ") " << std::endl;
 	do_send(&p);
 }
 
