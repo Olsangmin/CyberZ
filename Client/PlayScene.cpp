@@ -150,16 +150,6 @@ bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBu
 	// Player disable
 	if (pKeysBuffer['4'] & 0xF0) m_ppPlayer[FIRST_PLAYER]->m_bUnable = false;
 	if (pKeysBuffer['5'] & 0xF0) m_ppPlayer[SECOND_PLAYER]->m_bUnable = false;
-	if (pKeysBuffer['6'] & 0xF0) {
-#ifdef USE_NETWORK
-		CS_TEST_PACKET p;
-		p.size = sizeof(p);
-		p.type = CS_TEST;
-		p.x = 0.f;
-		send_packet(&p);
-#endif // USE_NETWORK
-
-	}
 
 	// Decide whether to blend
 	// 전에 입력한 키와 다르다면 블렌딩타임을 0으로 설정
@@ -454,15 +444,16 @@ bool CPrepareRoomScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 		}break;
 		case '1': {
 			select = Corzim;
+			//ChangeModel(0, select);
 
 		}break;
 		case '2': {
 			select = Evan;
-
+			//ChangeModel(0, select);
 		}break;
 		case '3': {
 			select = Uranya;
-
+			//ChangeModel(0, select);
 		}break;
 
 		}

@@ -79,6 +79,7 @@ void Server::Network()
 		// gMap.Update();
 
 		
+		
 
 		frame_count = duration_cast<frame>(frame_count + fps);
 		if (frame_count.count() >= MAX_FRAME) {
@@ -287,6 +288,7 @@ void Server::Process_packet(int c_id, char* packet)
 			clients[c_id].SetPos(p->position);
 			clients[c_id].SetRotation(p->rotate);
 		}
+		
 	}
 						 break;
 

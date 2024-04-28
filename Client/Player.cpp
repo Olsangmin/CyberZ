@@ -114,11 +114,14 @@ void CPlayer::Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity) // 3
 	if (bUpdateVelocity)
 	{
 		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Shift);
+		if (p_id == 1) {
+			cout << m_xmf3Velocity.x << ", " << m_xmf3Velocity.z << endl;
+		}
 	}
 	else
 	{
 		m_xmf3Position = Vector3::Add(m_xmf3Position, xmf3Shift); // 4 Æ÷Áö¼Ç
-		m_pCamera->Move(xmf3Shift);	
+		m_pCamera->Move(xmf3Shift);
 	}
 
 }
@@ -292,6 +295,7 @@ void CPlayer::UpdateCameraPosition(float fTimeElapsed)
 	if (m_pCameraUpdatedContext) OnCameraUpdateCallback(fTimeElapsed);
 	if (nCurrentCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
 	m_pCamera->RegenerateViewMatrix();
+
 }
 
 void CPlayer::UpdateFriction(float fTimeElapsed)
