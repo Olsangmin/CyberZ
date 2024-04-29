@@ -1207,14 +1207,43 @@ void CRobotObject::Update(float fTimeElapsed)
 	CGameObject::Update(fTimeElapsed);
 	if (m_pSkinnedAnimationController) {
 		AnimationBlending(m_pasCurrentAni, m_pasNextAni);
+		MoveToTarget();
 		IsMove(m_pasNextAni);
 
 	}
 }
 
-void CRobotObject::MoveToTarget(XMFLOAT3 target)
+void CRobotObject::MoveToTarget()
 {
-	
+	XMFLOAT3 xmfVel = Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()));
+	float fLength = xmfVel.x * xmfVel.x + xmfVel.z * xmfVel.z;
+	if (fLength < 1.0f)m_xmf3Target = XMFLOAT3(0, 0, 0);
+
+	Vector3::IsZero(m_xmf3Target) ?
+		m_pasNextAni = IDLE : RotateDirection(0.1f), m_pasNextAni = WALK;
+	if (!Vector3::IsZero(m_xmf3Target))
+		Vector3::IsZero(Vector3::XMVectorToFloat3(XMLoadFloat3(&GetPosition()) - XMLoadFloat3(&m_xmf3Target))) ?
+		m_pasNextAni = IDLE : MoveForward(0.3f), m_pasNextAni = WALK;
+	else { m_pasNextAni = IDLE; }
+
+}
+
+void CRobotObject::RotateDirection(float fAngle)
+{
+	XMFLOAT3 xmfVel = Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()));
+	if (Vector3::IsZero(xmfVel))m_xmf3Target = XMFLOAT3(0.f, 0.f, 0.f);
+
+		float fCurrentAngle = Vector3::Angle(Vector3::Normalize(xmfVel), GetLook());
+
+		if (fCurrentAngle > 0) {
+
+			XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&GetUp()), XMConvertToRadians(fAngle));
+			XMFLOAT3 xmf3Look = Vector3::TransformNormal(GetLook(), xmmtxRotate);
+
+			float fNextAngle = Vector3::Angle(Vector3::Normalize(xmfVel), xmf3Look);
+
+			fCurrentAngle >= fNextAngle ? Rotate(0.0f, (fCurrentAngle - fNextAngle) / 1.5, 0.0f) : Rotate(0.0f, -(fNextAngle - fCurrentAngle) / 1.5, 0.0f);
+		}
 }
 
 void CRobotObject::AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2)

@@ -354,16 +354,22 @@ public:
 //
 class CRobotObject : public CGameObject
 {
+private:
+
+	XMFLOAT3				m_xmf3Target{ 500.0f, 0.0f, 500.0f };
+
 public:
 	CRobotObject(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CLoadedModelInfo *pModel, int nAnimationTracks);
 	virtual ~CRobotObject();
 
 	virtual void Update(float fTimeElapsed);
 
-	void MoveToTarget(XMFLOAT3 target);
+	void MoveToTarget();
+	void RotateDirection(float fAngle);
 
 	void AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2);
 
+	void SetTarget(XMFLOAT3 xmf3Target) { m_xmf3Target = xmf3Target; }
 	virtual void IsMove(Player_Animation_ST CheckAni);
 	virtual void IsIdle();
 	virtual void IsAttack();
