@@ -360,6 +360,8 @@ public:
 
 	virtual void Update(float fTimeElapsed);
 
+	void MoveToTarget(XMFLOAT3 target);
+
 	void AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2);
 
 	virtual void IsMove(Player_Animation_ST CheckAni);

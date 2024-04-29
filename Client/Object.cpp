@@ -1212,6 +1212,11 @@ void CRobotObject::Update(float fTimeElapsed)
 	}
 }
 
+void CRobotObject::MoveToTarget(XMFLOAT3 target)
+{
+	
+}
+
 void CRobotObject::AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2)
 {
 	if (m_pSkinnedAnimationController->m_fBlendingTime <= 1.0f && type2 != NONE) {
