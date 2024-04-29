@@ -50,7 +50,7 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 
 	if (pMapModel) delete pMapModel;
 	if (pfenceModel) delete pfenceModel;
-	
+
 	//===============================//
 
 	m_nEnemy = 3;
@@ -64,7 +64,7 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		m_ppEnemy[i]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 		m_ppEnemy[i]->SetPosition(100.0f, 0, 0.0f + i * 100);
 		m_ppEnemy[i]->SetScale(10.f, 10.f, 10.f);
-	
+
 		if (pRobotModel) delete pRobotModel;
 	}
 
@@ -103,24 +103,24 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
 	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
 	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
-	
+
 	for (int i = 0; i < m_nPlayer; ++i) {
 		CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
 		m_ppPlayer[i] = pPlayer;
 		m_ppPlayer[i]->SetPlayerData(i);
 	}
-	
+
 	int playernum = 0;
-	if(myPlayernum != 4) playernum = myPlayernum;
+	if (myPlayernum != 4) playernum = myPlayernum;
 
 	m_pMyPlayer = m_ppPlayer[playernum];
-	m_pMyPlayer->SetPosition(XMFLOAT3( 30.f, 30.f, 30.f));
+	m_pMyPlayer->SetPosition(XMFLOAT3(50.f, 0.f, 70.f));
 }
 
 bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
 {
 	CScene::ProcessInput(m_hWnd, m_ptOldCursorPos, pKeysBuffer);
-	
+
 	float cxDelta = 0.0f, cyDelta = 0.0f;
 	POINT ptCursorPos;
 	if (GetCapture() == m_hWnd)
@@ -150,16 +150,6 @@ bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBu
 	// Player disable
 	if (pKeysBuffer['4'] & 0xF0) m_ppPlayer[FIRST_PLAYER]->m_bUnable = false;
 	if (pKeysBuffer['5'] & 0xF0) m_ppPlayer[SECOND_PLAYER]->m_bUnable = false;
-	if (pKeysBuffer['6'] & 0xF0) {
-#ifdef USE_NETWORK
-		CS_TEST_PACKET p;
-		p.size = sizeof(p);
-		p.type = CS_TEST;
-		p.x = 0.f;
-		send_packet(&p);
-#endif // USE_NETWORK
-
-	}
 
 	// Decide whether to blend
 	// 전에 입력한 키와 다르다면 블렌딩타임을 0으로 설정
@@ -233,23 +223,33 @@ void PlayScene::ProcessPacket(char* p)
 	case SC_ADD_PLAYER:
 	{
 		SC_ADD_PLAYER_PACKET* packet = reinterpret_cast<SC_ADD_PLAYER_PACKET*>(p);
-		int c_id = packet->id;
+		// m_ppPlayerSelecter[c_id]
 		Player_Character_Type type = packet->c_type;
-		if(c_id == my_id)
-		m_ppPlayer[packet->id]->p_id = packet->id;
-		m_ppPlayer[packet->id]->m_bUnable = true;
-		m_ppPlayer[packet->id]->SetPosition(packet->position);
-		m_ppPlayer[packet->id]->Rotate(0.f, packet->rotation.y - m_ppPlayer[packet->id]->GetYaw(), 0.f);
+
+		idANDtype.insert({ packet->id, packet->c_type });
+
+		// m_pMyPlayer = m_ppPlayer[packet->c_type];
+
+		m_ppPlayer[type]->p_id = packet->id;
+		m_ppPlayer[type]->m_bUnable = true;
+		m_ppPlayer[type]->SetPosition(packet->position);
+		m_ppPlayer[type]->Rotate(0.f, packet->rotation.y - m_ppPlayer[type]->GetYaw(), 0.f);
 	} break;
 
 	case SC_MOVE_OBJECT:
 	{
 		SC_MOVE_OBJECT_PACKET* packet = reinterpret_cast<SC_MOVE_OBJECT_PACKET*>(p);
-		// cout << packet->id << "Move" << endl;
-		if (packet->id == my_id) break;
+		int id = packet->id;
+		if (id == my_id) break;
+
+
+		auto it = idANDtype.find(id);
+		if (it == idANDtype.end()) break;
 		else {
-			m_ppPlayer[packet->id]->Move(packet->dir, true);
-			m_ppPlayer[packet->id]->Rotate(0.f, packet->yaw - m_ppPlayer[packet->id]->GetYaw(), 0.f);
+			Player_Character_Type type = it->second;
+			m_ppPlayer[type]->Move(packet->dir, true);
+			m_ppPlayer[type]->Rotate(0.f, packet->yaw - m_ppPlayer[type]->GetYaw(), 0.f);
+
 		}
 
 	} break;
@@ -257,16 +257,26 @@ void PlayScene::ProcessPacket(char* p)
 	case SC_UPDATE_PLAYER:
 	{
 		SC_UPDATE_PLAYER_PACKET* packet = reinterpret_cast<SC_UPDATE_PLAYER_PACKET*>(p);
+
 		break;
 	} break;
 
 	case SC_CHANGE_ANIM: {
 		SC_CHANGE_ANIMATION_PACKET* packet = reinterpret_cast<SC_CHANGE_ANIMATION_PACKET*>(p);
-		if (packet->id == my_id) break;
+		int id = packet->id;
+		auto& it = idANDtype.find(id);
+		if (id == my_id) break;
+
+		if (it == idANDtype.end()) break;
 		else {
-			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[packet->id])->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
-			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[packet->id])->m_pasNextAni = packet->ani_st;
+
+
+			Player_Character_Type type = it->second;
+			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->m_pasNextAni = packet->ani_st;
+
 		}
+
 	} break;
 
 	case SC_ADD_NPC: {
@@ -279,7 +289,7 @@ void PlayScene::ProcessPacket(char* p)
 
 
 	default:
-		printf("Unknown PACKET type [%d]\n", p[1]);
+		printf("Scene[Stage1] - Unknown PACKET type [%d]\n", p[1]);
 	}
 }
 
@@ -324,15 +334,15 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CLoadedModelInfo* pMiddleContainer = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/MiddleContainer.bin", NULL);
 	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMiddleContainer);
 	m_ppHierarchicalGameObjects[1]->SetPosition(-35.f, 0.f, 0.f);
-	
+
 	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMiddleContainer);
 	m_ppHierarchicalGameObjects[2]->SetPosition(35.f, 0.f, 0.f);
 	if (pMiddleContainer) delete pMiddleContainer;
 
-	
+
 	//===============================//
 	// OBG
-	
+
 	m_nPlayerSelecter = 3;
 	m_ppPlayerSelecter = new CSelectCharacterOBJ * [m_nPlayerSelecter];
 
@@ -343,12 +353,12 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppPlayerSelecter[1] = new CSelectCharacterOBJ(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), Robot, 3);
 	m_ppPlayerSelecter[1]->Rotate(0.f, 180.f, 0.f);
 	m_ppPlayerSelecter[1]->SetPosition(0.0f, 0.0f, 0.0f);
-	
+
 	m_ppPlayerSelecter[2] = new CSelectCharacterOBJ(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), Robot, 3);
 	m_ppPlayerSelecter[2]->Rotate(0.f, 180.f, 0.f);
 	m_ppPlayerSelecter[2]->SetPosition(15.0f, 0.0f, 0.0f);
 
-	
+
 	//===============================//
 	// Player
 	m_nPlayer = 1;
@@ -357,7 +367,7 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	// 저장된 모델 바꿀 수 있음
 	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
-	
+
 	for (int i = 0; i < m_nPlayer; ++i) {
 		CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
 		m_ppPlayer[i] = pPlayer;
@@ -383,48 +393,83 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 		cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
-	
+
 	if (pKeysBuffer['9'] & 0xF0) m_pMyPlayer->m_bUnable = true;
 	if (pKeysBuffer['0'] & 0xF0) m_pMyPlayer->m_bUnable = false;
-		
+
 	//if (pKeysBuffer['4'] & 0xF0) ChangeModel(0, Evan);
 
 	// change Character
-	if (pKeysBuffer['1'] & 0xF0 || pKeysBuffer['2'] & 0xF0 || pKeysBuffer['3'] & 0xF0)
-	{
-		Player_Character_Type select{ Robot };
+	//if (pKeysBuffer['1'] & 0xF0 || pKeysBuffer['2'] & 0xF0 || pKeysBuffer['3'] & 0xF0)
+	//{
+	//	Player_Character_Type select{ Robot };
 
-		if (pKeysBuffer['1'] & 0xF0) select = Corzim;
-		if (pKeysBuffer['2'] & 0xF0)select = Evan;
-		if (pKeysBuffer['3'] & 0xF0)select = Uranya;
-		
-		// 클라에서 테스트 할거면 주석 처리 수정해줄것
-		ChangeModel(0, select);
+	//	if (pKeysBuffer['1'] & 0xF0) select = Corzim;
+	//	if (pKeysBuffer['2'] & 0xF0)select = Evan;
+	//	if (pKeysBuffer['3'] & 0xF0)select = Uranya;
+	//	
+	//	// 클라에서 테스트 할거면 주석 처리 수정해줄것
+	//	// ChangeModel(0, select);
 
-#ifdef USE_NETWORK
-		CS_CHANGE_CHARACTER_PACKET p;
-		p.size = sizeof(p);
-		p.type = CS_CHANGE_CHARACTER;
-		p.c_type = select;
-		send_packet(&p);
-#endif // USE_NETWORK
-	}
-	
-	if (pKeysBuffer['R'] & 0xF0) {
-		m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
+	//	cout << 1 << endl;
+
+
+	//}
+
+//	if (pKeysBuffer['R'] & 0xF0) {
 //#ifdef USE_NETWORK
-//		CS_GAMESTART_PACKET p;
-//		p.size = sizeof(p);
-//		p.type = CS_GAME_START;
-//		send_packet(&p);
+//		
 //#endif // USE_NETWORK
-	}
+//
+//		// m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
+//	}
 
 	return(false);
 }
 
 bool CPrepareRoomScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
+	switch (nMessageID)
+	{
+	case WM_KEYDOWN: {
+		switch (wParam) {
+
+		case 'R': {
+			CS_GAMESTART_PACKET p;
+			p.size = sizeof(p);
+			p.type = CS_GAME_START;
+#ifdef USE_NETWORK
+	send_packet(&p);
+#else
+	m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
+#endif // USE_NETWORK
+
+		}break;
+		case '1': {
+			select = Corzim;
+			//ChangeModel(0, select);
+
+		}break;
+		case '2': {
+			select = Evan;
+			//ChangeModel(0, select);
+		}break;
+		case '3': {
+			select = Uranya;
+			//ChangeModel(0, select);
+		}break;
+
+		}
+		break;
+	}
+	}
+#ifdef USE_NETWORK
+	CS_CHANGE_CHARACTER_PACKET p;
+	p.size = sizeof(p);
+	p.type = CS_CHANGE_CHARACTER;
+	p.c_type = select;
+	send_packet(&p);
+#endif // USE_NETWORK
 	CScene::OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 	return false;
 }
@@ -439,7 +484,7 @@ void CPrepareRoomScene::ReleaseObjects()
 			m_ppPlayerSelecter[i]->Release();
 
 		}
-		delete[] m_ppPlayerSelecter; 
+		delete[] m_ppPlayerSelecter;
 	}
 
 	CScene::ReleaseObjects();
@@ -475,7 +520,7 @@ bool CPrepareRoomScene::AllPlayerReady()
 }
 
 void CPrepareRoomScene::SetChangedModel(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
-{	
+{
 	for (int i = 0; i < m_nPlayerSelecter; i++)
 	{
 		if (m_ppPlayerSelecter[i]->m_bChanged)
@@ -529,13 +574,14 @@ void CPrepareRoomScene::ProcessPacket(char* p)
 	}break;
 
 	case SC_GAME_START: {
+		m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
 		// 플레이게임으로 씬전환
 		break;
 	}
 
 
 	default:
-		printf("Unknown PACKET type [%d]\n", p[1]);
+		printf("Scene[LOBBY] - Unknown PACKET type [%d]\n", p[1]);
 		break;
 	}
 }

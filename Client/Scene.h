@@ -73,8 +73,6 @@ public:
 	virtual void ProcessPacket(char* p) = 0;
 	virtual void process_data(char* net_buf, size_t io_byte);
 
-	// vector<pair<int, int>> idANDcharacter; // id, selecter
-	
 
 	// @@서버코드@@서버코드@@
 
