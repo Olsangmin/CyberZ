@@ -176,12 +176,16 @@ void Server::Worker_thread()
 			int sector = gMap.getSector(clients[npc.near_player].GetPos());
 			if (npc.my_sector == sector) keep_alive = true;
 			if (keep_alive) {
-				clients[npc.near_player].send_move_npc_packet(key, npc.Move());
+				for (auto& cl : clients) {
+					if (cl.state != ST_INGAME) continue;
+					cl.send_move_npc_packet(key, npc.Move());
+				}
 				TIMER_EVENT ev{ key, key, std::chrono::system_clock::now() + std::chrono::milliseconds(200), EV_NPC_MOVE };
 				timer_queue.push(ev);
 			}
 			else {
-				npc.n_state = NPC_STAY;
+				std::queue<DirectX::XMFLOAT3> q{};
+				npc.n_path = q;
 				npc.is_active = false;
 			}
 			delete ex_over;

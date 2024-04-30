@@ -38,8 +38,7 @@ void NPC::Update()
 	switch (state)
 	{
 	case NPC_STAY: {
-		std::queue<DirectX::XMFLOAT3> new_path;
-		n_path = new_path;
+		
 	} break;
 
 	case NPC_MOVE: {
@@ -60,6 +59,10 @@ void NPC::Update()
 DirectX::XMFLOAT3 NPC::Move()
 {
 	n_state = NPC_MOVE;
+
+	
+	if (n_path.empty())
+		return GetPos();
 
 	DirectX::XMFLOAT3 next = n_path.front();
 	std::cout << "NPC[" << id << "] Move " << next.x << ", " << next.z << std::endl;

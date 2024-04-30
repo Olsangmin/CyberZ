@@ -475,7 +475,6 @@ bool CPrepareRoomScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 		break;
 	}
 	}
-	std::cout << 1 << endl;
 #ifdef USE_NETWORK
 	CS_CHANGE_CHARACTER_PACKET p;
 	p.size = sizeof(p);
