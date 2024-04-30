@@ -14,8 +14,15 @@ public:
 
 	void Update();
 
+	DirectX::XMFLOAT3 Move();
+
+	bool NeedPath();
+
 public:
 	NPC_STATE n_state;
+	
+	int my_sector;
+
 	int near_player;
 	std::atomic_bool is_active;
 	std::queue<DirectX::XMFLOAT3> n_path;

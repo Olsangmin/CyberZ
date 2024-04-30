@@ -60,6 +60,7 @@ public:
 	void send_change_Character_type_packet(int c_id, Player_Character_Type type);
 
 	void send_add_npc_packet(int n_id, DirectX::XMFLOAT3 nid_pos, DirectX::XMFLOAT3 nid_rotation);
+	void send_move_npc_packet(int n_id, DirectX::XMFLOAT3 pos);
 
 private:
 	OVER_EXP recv_over;

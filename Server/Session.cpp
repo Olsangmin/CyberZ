@@ -89,8 +89,19 @@ void Session::send_add_npc_packet(int n_id, DirectX::XMFLOAT3 nid_pos, DirectX::
 	SC_ADD_NPC_PACKET p;
 	p.size = sizeof(p);
 	p.type = SC_ADD_NPC;
+	p.id = n_id;
 	p.position = nid_pos;
 	p.rotation = nid_rotation;
+	do_send(&p);
+}
+
+void Session::send_move_npc_packet(int n_id, DirectX::XMFLOAT3 pos)
+{
+	SC_MOVE_NPC_PACKET p;
+	p.size = sizeof(p);
+	p.type = SC_MOVE_NPC;
+	p.id = n_id;
+	p.next_pos = pos;
 	do_send(&p);
 }
 

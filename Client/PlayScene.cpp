@@ -204,7 +204,8 @@ bool PlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM w
 			break;
 		}
 		case 'C': {
-			m_pMyPlayer->SetCreepFlag();
+			// m_pMyPlayer->SetCreepFlag();
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->SetTarget(m_pMyPlayer->GetPosition());
 			break;
 		}
 		}
@@ -281,11 +282,22 @@ void PlayScene::ProcessPacket(char* p)
 
 	case SC_ADD_NPC: {
 		SC_ADD_NPC_PACKET* packet = reinterpret_cast<SC_ADD_NPC_PACKET*>(p);
-		break;
 		int n_id = packet->id - 100;
 		m_ppEnemy[n_id]->SetPosition(packet->position);
+		// reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(m_ppEnemy[n_id]->GetPosition());
+		
 	}
 				   break;
+
+	case SC_MOVE_NPC: {
+		SC_MOVE_NPC_PACKET* packet = reinterpret_cast<SC_MOVE_NPC_PACKET*>(p);
+		
+		int n_id = packet->id - 100;
+		m_ppEnemy[n_id]->SetPosition(packet->next_pos);
+		// std::cout << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << std::endl;
+		std::cout << packet->next_pos.x << "," << packet->next_pos.z << std::endl;
+	}
+					break;
 
 
 	default:
@@ -463,6 +475,7 @@ bool CPrepareRoomScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 		break;
 	}
 	}
+	std::cout << 1 << endl;
 #ifdef USE_NETWORK
 	CS_CHANGE_CHARACTER_PACKET p;
 	p.size = sizeof(p);
