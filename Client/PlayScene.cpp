@@ -293,7 +293,7 @@ void PlayScene::ProcessPacket(char* p)
 		SC_MOVE_NPC_PACKET* packet = reinterpret_cast<SC_MOVE_NPC_PACKET*>(p);
 		
 		int n_id = packet->id - 100;
-		m_ppEnemy[n_id]->SetPosition(packet->next_pos);
+		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(packet->next_pos);
 		// std::cout << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << std::endl;
 		std::cout << packet->next_pos.x << "," << packet->next_pos.z << std::endl;
 	}
