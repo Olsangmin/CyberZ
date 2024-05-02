@@ -881,7 +881,9 @@ CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, I
 			pMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile);
 			pGameObject->SetMesh(pMesh);
 
-			CBoundingBoxMesh* pBoundingBoxMesh = new CBoundingBoxMesh(pd3dDevice, pd3dCommandList);
+			XMFLOAT4 bbColor = XMFLOAT4(1.f, 0.f, 0.f, 1.f); // 애니 없으면 빨강
+
+			CBoundingBoxMesh* pBoundingBoxMesh = new CBoundingBoxMesh(pd3dDevice, pd3dCommandList, bbColor);
 			pGameObject->SetBoundingBoxMesh(pBoundingBoxMesh);
 		}
 		else if (!strcmp(pstrToken, "<SkinningInfo>:"))
@@ -895,7 +897,10 @@ CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, I
 			::ReadStringFromFile(pInFile, pstrToken); //<Mesh>:
 			if (!strcmp(pstrToken, "<Mesh>:")) {
 				pSkinnedMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile);
-				CBoundingBoxMesh* pBoundingBoxMesh = new CBoundingBoxMesh(pd3dDevice, pd3dCommandList);
+
+				XMFLOAT4 bbColor = XMFLOAT4(0.f, 1.f, 0.f, 1.f); // 애니 있음 초록
+
+				CBoundingBoxMesh* pBoundingBoxMesh = new CBoundingBoxMesh(pd3dDevice, pd3dCommandList, bbColor);
 				pGameObject->SetBoundingBoxMesh(pBoundingBoxMesh);
 			}
 
@@ -1298,6 +1303,27 @@ CStandardOBJ::CStandardOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 
 CStandardOBJ::~CStandardOBJ()
 {
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+CMissonOBJ::CMissonOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel)
+{
+	CLoadedModelInfo* pObjectModel = pModel;
+	if (!pObjectModel) pObjectModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/ObjModel/Barrel.bin", NULL);
+
+	SetChild(pObjectModel->m_pModelRootObject, true);
+
+}
+
+CMissonOBJ::~CMissonOBJ()
+{
+}
+
+void CMissonOBJ::SetMissionRange()
+{
+	m_xmMissionRange.Center = m_xmBoundingBox.Center;
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
