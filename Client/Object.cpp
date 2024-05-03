@@ -409,15 +409,15 @@ void CGameObject::UpdateBoundingBox(XMFLOAT3 xmf3NextPos)
 
 }
 
-void CGameObject::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+void CGameObject::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	if (m_pBoundingBoxMesh)
 	{
 		m_pBoundingBoxMesh->UpdateVertexPosition(&m_xmBoundingBox);
 		m_pBoundingBoxMesh->Render(pd3dCommandList);
 	}
-	if (m_pSibling) m_pSibling->RenderBoundingBox(pd3dCommandList, pCamera);
-	if (m_pChild) m_pChild->RenderBoundingBox(pd3dCommandList, pCamera);
+	if (m_pSibling) m_pSibling->RenderBoundingBox(pd3dCommandList);
+	if (m_pChild) m_pChild->RenderBoundingBox(pd3dCommandList);
 }
 
 void CGameObject::MoveBBToParent(CGameObject* pTargetLv)
@@ -1307,12 +1307,18 @@ CStandardOBJ::~CStandardOBJ()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-CMissonOBJ::CMissonOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel)
+CMissonOBJ::CMissonOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, XMFLOAT3 f3MissionRange)
 {
 	CLoadedModelInfo* pObjectModel = pModel;
 	if (!pObjectModel) pObjectModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/ObjModel/Barrel.bin", NULL);
 
 	SetChild(pObjectModel->m_pModelRootObject, true);
+
+	SetMissionRange(f3MissionRange.x, f3MissionRange.y, f3MissionRange.z);
+
+	XMFLOAT4 bbColor = XMFLOAT4(0.f, 0.f, 1.f, 1.f); // 미션 범위는 파랑
+	CBoundingBoxMesh* MissionRangeMesh = new CBoundingBoxMesh(pd3dDevice, pd3dCommandList, bbColor);
+	SetMissionRangeMesh(MissionRangeMesh);
 
 }
 
@@ -1320,11 +1326,43 @@ CMissonOBJ::~CMissonOBJ()
 {
 }
 
-void CMissonOBJ::SetMissionRange()
+void CMissonOBJ::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	m_xmMissionRange.Center = m_xmBoundingBox.Center;
+	CGameObject::RenderBoundingBox(pd3dCommandList);
+	RenderMissionRange(pd3dCommandList);
+}
+
+void CMissonOBJ::SetMissionRange(float x, float y, float z)
+{
+	m_xmMissionRange.Extents.x = x;
+	m_xmMissionRange.Extents.y = y;
+	m_xmMissionRange.Extents.z = z;
+}
+
+void CMissonOBJ::SetMissionRangeMesh(CBoundingBoxMesh* pMesh)
+{
+	if (m_pMissionRangeMesh) m_pMissionRangeMesh->Release();
+	m_pMissionRangeMesh = pMesh;
+	if (pMesh) pMesh->AddRef();
+}
+
+void CMissonOBJ::RenderMissionRange(ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	if (m_pMissionRangeMesh)
+	{
+		m_pMissionRangeMesh->UpdateVertexPosition(&m_xmMissionRange);
+		m_pMissionRangeMesh->Render(pd3dCommandList);
+	}
+}
+
+void CMissonOBJ::SetPosition(float x, float y, float z)
+{
+	CGameObject::SetPosition(x, y, z);
+
+	m_xmMissionRange.Center = XMFLOAT3(x, y, z);
 
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //

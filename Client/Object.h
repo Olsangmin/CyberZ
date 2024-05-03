@@ -196,7 +196,7 @@ public:
 	
 	void SetBoundingBoxMesh(CBoundingBoxMesh* pMesh);
 	void UpdateBoundingBox(XMFLOAT3 xmf3NextPos);
-	void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	virtual void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList);
 	void MoveBBToParent(CGameObject* pTargetLv);
 
 
@@ -391,14 +391,24 @@ public:
 class CMissonOBJ : public CGameObject
 {
 public:
-	CMissonOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel);
+	CMissonOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, XMFLOAT3 f3MissionRange);
 	virtual ~CMissonOBJ();
 
 	BoundingOrientedBox				m_xmMissionRange = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	CBoundingBoxMesh*				m_pMissionRangeMesh = NULL;
+
+	// 미션 종류
+	// 0 - 점령미션, 1 - 보안키 미션
+	int		m_nCategory = 0;
 
 public:
+	void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList);
 
-	void SetMissionRange();
+	void SetMissionRange(float x, float y, float z);
+	void SetMissionRangeMesh(CBoundingBoxMesh* pMesh);
+	void RenderMissionRange(ID3D12GraphicsCommandList* pd3dCommandList);
+
+	void SetPosition(float x, float y, float z);
 
 };
 

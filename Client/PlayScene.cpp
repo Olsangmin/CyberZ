@@ -18,17 +18,17 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	m_pTerrain->SetPosition(XMFLOAT3(-2000.f, 0.f, -2000.f));
 
 	//===============================//
-	// OBJ (4)
+	// Map (4)
 	// [Present Setting]
 	// 1 - 울타리				|| OBJ
 	// 2 - 맵 1(우상단)			|| OBJ
 	// 3 - 맵 2(좌하단)			|| OBJ
 
-	// 4 - 점령 미션			|| OBJ
+	// 4 - 점령 미션용 obj		|| OBJ
 
 
 
-	m_nHierarchicalGameObjects = 4;
+	m_nHierarchicalGameObjects = 3;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
 	// 1 - obj1
@@ -43,16 +43,18 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	CLoadedModelInfo* pMapModel2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/middle/MAP3_2.bin", NULL);
 	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel2);
 	if (pMapModel2) delete pMapModel2;
-	
+
+
+	//===============================//
+	// Mission Obj(1)
+	m_nMissionObj = 1;
+	m_ppMissionObj = new CMissonOBJ * [m_nMissionObj];
+
 	CLoadedModelInfo* pMachine = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/Comm.bin", NULL);
-	m_ppHierarchicalGameObjects[3] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine);
-	m_ppHierarchicalGameObjects[3]->SetPosition(300.f, 0.f, 700.f);
+	XMFLOAT3 missionRange = XMFLOAT3(30.f, 30.f, 30.f);
+	m_ppMissionObj[0] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine, missionRange);
+	m_ppMissionObj[0]->SetPosition(300.f, 0.f, 700.f);
 	if (pMachine) delete pMachine;
-
-
-	//CLoadedModelInfo* pMapModle2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MiddleCheckMap.bin", NULL);
-	//m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle2);
-
 
 	//===============================//
 
@@ -119,6 +121,7 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	m_pMyPlayer = m_ppPlayer[playernum];
 	m_pMyPlayer->SetPosition(XMFLOAT3(300.f, 0.f, 600.f));
 }
+
 
 bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
 {
@@ -219,6 +222,7 @@ bool PlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM w
 	}
 	return false;
 }
+
 
 void PlayScene::ProcessPacket(char* p)
 {
@@ -331,7 +335,6 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Terrain/BaseTerrain.raw"), 257, 257, xmf3Scale, xmf4Color);
 	m_pTerrain->SetPosition(-1000.f, 0, -1000.f);
 
-
 	//===============================//
 	// OBG
 
@@ -408,7 +411,7 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 		cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
-
+	
 	if (pKeysBuffer['9'] & 0xF0) m_pMyPlayer->m_bUnable = true;
 	if (pKeysBuffer['0'] & 0xF0) m_pMyPlayer->m_bUnable = false;
 

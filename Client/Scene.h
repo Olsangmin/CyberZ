@@ -58,11 +58,12 @@ public:
 	ID3D12RootSignature *GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
 
 	virtual bool ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer);
-    void AnimateObjects(float fTimeElapsed);
+    virtual void AnimateObjects(float fTimeElapsed);
     virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
 
-	void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+	virtual void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	bool CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget);
+	bool CheckMissionBound(CGameObject* pBase, CMissonOBJ* pTarget);
 
 	virtual void ReleaseUploadBuffers();
 public:
@@ -72,7 +73,6 @@ public:
 	virtual void send_packet(void* packet);
 	virtual void ProcessPacket(char* p) = 0;
 	virtual void process_data(char* net_buf, size_t io_byte);
-
 
 	// @@서버코드@@서버코드@@
 
@@ -118,6 +118,9 @@ public:
 
 	int									m_nHierarchicalGameObjects = 0;
 	CGameObject**						m_ppHierarchicalGameObjects = NULL;
+
+	int									m_nMissionObj = 0;
+	CMissonOBJ**						m_ppMissionObj = NULL;
 
 	int									m_nEnemy = 0;
 	CGameObject**						m_ppEnemy = NULL;
