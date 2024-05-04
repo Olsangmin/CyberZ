@@ -109,44 +109,21 @@ void GameMap::initializeMap()
 void GameMap::StartGame()
 {
 	Server& server = Server::GetInstance();
-	
-	for (int i = 0; i < cl_ids.size(); ++i) {
-		server.clients[i].SetPos(server.random_pos[i]);
-		std::cout << "player[" << i << "]의 캐릭터 " << server.clients[i].GetType() << std::endl;
-		/*for (auto& npc : npcs) {
-			SC_ADD_PLAYER_PACKET p;
-			p.size = sizeof(p);
-			p.type = SC_ADD_PLAYER;
-			p.id = npc.GetId();
-			p.position = npc.GetPos();
-			p.rotation = npc.GetRotation();
-			p.c_type = Robot;
-			server.clients[cl_ids[i]].do_send(&p);
-		}*/
-	}
 
 	for (auto& cl : cl_ids) {
-		std::cout << cl << " ";
+		server.clients[cl].SetPos(server.random_pos[cl]);
+		std::cout << "player[" << cl << "]의 캐릭터 " << server.clients[cl].GetType() << std::endl;
 		SC_GAME_START_PACKET p;
 		p.size = sizeof(p);
 		p.type = SC_GAME_START;
 		server.clients[cl].do_send(&p);
-		
+
 	}
-	std::cout << std::endl;
 
-	/*for (auto& cl : cl_ids) {
-		server.clients[cl].send_add_player_packet(cl, server.clients[cl].GetPos(), server.clients[cl].GetRotation(), server.clients[cl].GetType());
-	}*/
-	
-	
-
-
-	return;
 	//cl_ids.push_back(0); // 임시
 	//cl_ids.push_back(1);// 임시
 	//cl_ids.push_back(2);// 임시
-	
+
 	// std::vector<DirectX::XMFLOAT3> p = BFS(npcs[0].GetPos(), DirectX::XMFLOAT3(50.f, 0.f, 50.f));
 	/*for (auto& path : p) {
 		// npcs[0].n_path.push(path);
@@ -202,7 +179,37 @@ void GameMap::Update()
 	if (!InGame) return;
 	Server& server = Server::GetInstance();
 
+	// npc가 이동해야 하면 깨우기
+
+
+
+
 	for (auto& npc : npcs) {
+		for (auto& ids : cl_ids) {
+			if (npc.my_sector == getSector(server.clients[ids].GetPos())) {
+				
+				if (npc.n_path.empty()) {
+					std::cout << "경로 탐색" << std::endl;
+					std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[ids].GetPos());
+					for (auto& p : path) {
+						npc.n_path.push(p);
+					}
+				}
+				npc.WakeUp(ids);
+			}
+		}
+
+		npc.Update();
+	}
+
+
+
+
+
+
+
+
+	/*for (auto& npc : npcs) {
 		std::set<std::pair<int, float>> s;
 		for (auto& ids : cl_ids) {
 			float distance_x = abs(server.clients[ids].GetPos().x - npc.GetPos().x);
@@ -216,7 +223,7 @@ void GameMap::Update()
 		std::cout << npc.GetId() << ", " << s.begin()->first << std::endl;
 
 		npc.near_player = s.begin()->first;
-		
+
 		std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[npc.near_player].GetPos());
 		for (auto& p : path) {
 			npc.n_path.push(p);
@@ -224,8 +231,7 @@ void GameMap::Update()
 
 
 		npc.Update();
-	}
-	EndGame();
+	}*/
 }
 
 
@@ -254,7 +260,7 @@ std::pair<int, int> GameMap::CoordsToIndex(const DirectX::XMFLOAT3& coords) cons
 void GameMap::InitializeNPC()
 {
 
-	std::vector<DirectX::XMFLOAT3> init_pos{ DirectX::XMFLOAT3(500.f, 0.f, 600.f),
+	std::vector<DirectX::XMFLOAT3> init_pos{ DirectX::XMFLOAT3(500.f, 0.f, 590.f),
 	DirectX::XMFLOAT3(900.f, 0.f, 970.f) ,
 	DirectX::XMFLOAT3(500.f, 0.f, 967.f) };
 
@@ -263,8 +269,8 @@ void GameMap::InitializeNPC()
 		npcs[i].n_state = NPC_INGAME;
 		npcs[i].SetId(i + 100);
 		npcs[i].SetPos(init_pos[i]);
+		npcs[i].my_sector = getSector(npcs[i].GetPos());
 		CELL& cell = GetCurrentCell(npcs[i].GetPos());
-
 		cell.cellType = CT_NPC;
 		std::cout << "NPC[" << npcs[i].GetId() << "] goto " << std::endl;
 	}

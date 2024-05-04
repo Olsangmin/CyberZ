@@ -99,6 +99,28 @@ public:
 
     std::vector<int> cl_ids;
 
+    int getSector(const DirectX::XMFLOAT3& pos)
+    {
+        int num{};
+        int x = static_cast<int>((pos.x + 0.5f) / (mapWidth / 3));
+        int z = static_cast<int>((pos.z + 0.5f) / (mapWidth / 3));
+        
+        switch (z)
+        {
+        case 0:
+            return x;
+        case 1:
+            return x + 3;
+        case 2:
+            return x + 6;
+
+        default:
+            std::cout << "?!?!" << std::endl;
+            break;
+        }
+    }
+
+
 private:
     std::vector<std::vector<CELL>> cells;
     float mapWidth, mapDepth;
@@ -106,6 +128,7 @@ private:
     bool InGame;
 
 };
+
 
 
 

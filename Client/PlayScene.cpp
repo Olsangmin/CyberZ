@@ -26,30 +26,27 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
 	// 1 - obj1
-	CLoadedModelInfo* pfenceModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/fence.bin", NULL);
+	CLoadedModelInfo* pfenceModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/middle/Fence.bin", NULL);
 	m_ppHierarchicalGameObjects[0] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pfenceModel);
-	m_ppHierarchicalGameObjects[0]->SetScale(0.01f, 0.01f, 0.01f);
-	m_ppHierarchicalGameObjects[0]->SetPosition(-10.f, -10.f, -10.f);
+	if (pfenceModel) delete pfenceModel;
 
-	CLoadedModelInfo* pMapModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MiddleCheckMap.bin", NULL);
+	CLoadedModelInfo* pMapModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/middle/MAP3_1.bin", NULL);
 	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel);
-	m_ppHierarchicalGameObjects[1]->SetScale(0.01f, 0.01f, 0.01f);
-	m_ppHierarchicalGameObjects[1]->SetPosition(-10.f, -10.f, -10.f);
-
-	CLoadedModelInfo* pMapModel2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MiddleCheckMap.bin", NULL);
+	if (pMapModel) delete pMapModel;
+	
+	CLoadedModelInfo* pMapModel2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/middle/MAP3_2.bin", NULL);
 	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel2);
-
-
+	if (pMapModel2) delete pMapModel2;
+	
 	CLoadedModelInfo* pMachine = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/MissionMachine.bin", NULL);
 	m_ppHierarchicalGameObjects[3] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine);
 	m_ppHierarchicalGameObjects[3]->SetPosition(50.f, 0.f, 50.f);
+	if (pMachine) delete pMachine;
 
 
 	//CLoadedModelInfo* pMapModle2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MiddleCheckMap.bin", NULL);
 	//m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle2);
 
-	if (pMapModel) delete pMapModel;
-	if (pfenceModel) delete pfenceModel;
 
 	//===============================//
 
@@ -208,7 +205,8 @@ bool PlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM w
 			break;
 		}
 		case 'C': {
-			m_pMyPlayer->SetCreepFlag();
+			// m_pMyPlayer->SetCreepFlag();
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->SetTarget(m_pMyPlayer->GetPosition());
 			break;
 		}
 		}
@@ -285,11 +283,22 @@ void PlayScene::ProcessPacket(char* p)
 
 	case SC_ADD_NPC: {
 		SC_ADD_NPC_PACKET* packet = reinterpret_cast<SC_ADD_NPC_PACKET*>(p);
-		break;
 		int n_id = packet->id - 100;
 		m_ppEnemy[n_id]->SetPosition(packet->position);
+		// reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(m_ppEnemy[n_id]->GetPosition());
+		
 	}
 				   break;
+
+	case SC_MOVE_NPC: {
+		SC_MOVE_NPC_PACKET* packet = reinterpret_cast<SC_MOVE_NPC_PACKET*>(p);
+		
+		int n_id = packet->id - 100;
+		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(packet->next_pos);
+		// std::cout << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << std::endl;
+		std::cout << packet->next_pos.x << "," << packet->next_pos.z << std::endl;
+	}
+					break;
 
 
 	default:

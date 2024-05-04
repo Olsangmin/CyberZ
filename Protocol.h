@@ -30,7 +30,7 @@ constexpr char SC_CHANGE_ANIM = 4;
 constexpr char SC_CHANGE_CHARACTER = 5;
 constexpr char SC_GAME_START = 6;
 constexpr char SC_ADD_NPC = 7;
-
+constexpr char SC_MOVE_NPC = 8;
 
 
 constexpr char SC_TEST = 200;
@@ -155,6 +155,13 @@ struct SC_ADD_NPC_PACKET {
 	int id;
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT3 rotation;
+};
+
+struct SC_MOVE_NPC_PACKET {
+	unsigned char size;
+	char	type;
+	int id;
+	DirectX::XMFLOAT3 next_pos;
 };
 
 struct SC_TEST_PACKET {
