@@ -167,8 +167,8 @@ bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBu
 
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) {
+			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(-1);
 			m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
-
 		}
 	}
 
@@ -191,6 +191,10 @@ bool PlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM w
 		}
 		case 'C': {
 			if (m_pMyPlayer->GetStaminer())m_pMyPlayer->SetCreep();
+			break;
+		}
+		case 'H': {
+			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(0);
 			break;
 		}
 		}
@@ -253,7 +257,7 @@ void PlayScene::ProcessPacket(char* p)
 		}
 
 	} break;
-
+		
 	case SC_UPDATE_PLAYER:
 	{
 		SC_UPDATE_PLAYER_PACKET* packet = reinterpret_cast<SC_UPDATE_PLAYER_PACKET*>(p);

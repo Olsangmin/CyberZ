@@ -43,6 +43,10 @@ CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	SetPosition(XMFLOAT3(100.0f, pTerrain->GetHeight(310.0f, 590.0f), 300.0f));
 	SetScale(XMFLOAT3(10.0f, 10.0f, 10.0f));
 
+	CLoadedModelInfo* pMiddleContainer = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/ObjModel/MiddleContainer.bin", NULL);
+	m_pHierarchicalGameObjects = new Mission(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, pMiddleContainer);
+	m_pHierarchicalGameObjects->SetScale(0.5, 0.5, 0.5);
+
 	if (pPlayerModel) delete pPlayerModel;
 }
 
@@ -63,7 +67,8 @@ CCamera* CyborgPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		SetMaxVelocityY(400.0f);
 		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 20.0f, 0.0f));
+		m_pCamera->ChangeView(true);
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 20.5f, 0.0f));
 		m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -75,6 +80,7 @@ CCamera* CyborgPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		SetMaxVelocityY(400.0f);
 		m_pCamera = OnChangeCamera(SPACESHIP_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
+		m_pCamera->ChangeView(false);
 		m_pCamera->SetOffset(XMFLOAT3(0.0f, 200.0f, 0.0f));
 		m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
@@ -87,6 +93,7 @@ CCamera* CyborgPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		SetMaxVelocityY(400.0f);
 		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.05f);
+		m_pCamera->ChangeView(false);
 		m_pCamera->SetOffset(XMFLOAT3(0.0f, 20.0f, -40.0f));
 		m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
@@ -99,6 +106,7 @@ CCamera* CyborgPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		SetMaxVelocityY(0.0f);
 		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.05f);
+		m_pCamera->ChangeView(false);
 		m_pCamera->SetOffset(XMFLOAT3(0.0f, 15.0f, -40.0f));
 		m_pCamera->SetLookAt(XMFLOAT3(0.f, 15.f, 0.f));
 		m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
@@ -112,7 +120,7 @@ CCamera* CyborgPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		SetMaxVelocityY(400.0f);
 		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.05f);
-		m_pCamera->ChangeView();
+		m_pCamera->ChangeView(true);
 		m_pCamera->SetOffset(XMFLOAT3(0.0f, 20.5f, -10.0f));
 		m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
@@ -181,7 +189,16 @@ void CyborgPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity
 void CyborgPlayer::Update(float fTimeElapsed)
 {
 	CPlayer::Update(fTimeElapsed);
-
+	if (m_pHierarchicalGameObjects)
+	{
+		if (!m_pHierarchicalGameObjects->m_pSkinnedAnimationController) {
+			
+			if (reinterpret_cast<Mission*>(m_pHierarchicalGameObjects)->GetUnable()) {
+				m_pHierarchicalGameObjects->SetPosition(Vector3::Add(Vector3::Add(GetPosition(), Vector3::ScalarProduct(GetLook(),15.0f)), XMFLOAT3(0.0f,10.f,0.0f)));
+				m_pHierarchicalGameObjects->Animate(fTimeElapsed);
+			}
+		}
+	}
 	UpdateBB();
 	if (m_pSkinnedAnimationController)
 	{
@@ -230,6 +247,34 @@ void CyborgPlayer::AnimationBlending(Player_Animation_ST type1, Player_Animation
 		m_pasNextAni = NONE;
 	}
 
+}
+
+void CyborgPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	CPlayer::Render(pd3dCommandList, pCamera);
+	if (reinterpret_cast<Mission*>(m_pHierarchicalGameObjects)->GetUnable())m_pHierarchicalGameObjects->Render(pd3dCommandList, pCamera);
+}
+
+bool CyborgPlayer::StartKeyMission(int type)
+{
+	switch (type) {
+	case 0: {
+		if (!reinterpret_cast<Mission*>(m_pHierarchicalGameObjects)->GetUnable()) {
+			ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
+			reinterpret_cast<Mission*>(m_pHierarchicalGameObjects)->SetUnable(true);
+		}
+		break;
+	}
+	default: {
+		if (reinterpret_cast<Mission*>(m_pHierarchicalGameObjects)->GetUnable()) {
+			ChangeCamera(SHOULDER_VIEW_CAMERA, 0.0f);
+			reinterpret_cast<Mission*>(m_pHierarchicalGameObjects)->SetUnable(false);
+		}
+		break;
+	}
+	}
+
+	return false;
 }
 
 void CyborgPlayer::ExhaustionStaminer()

@@ -321,7 +321,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 				case VK_F3:
 				case VK_F4:
 				case VK_F5:
-					m_pCamera = m_pScene->m_ppPlayer[FIRST_PLAYER]->ChangeCamera((DWORD)(wParam - VK_F1 + 1), m_GameTimer.GetTimeElapsed());
+					m_pCamera = m_pScene->m_pMyPlayer->ChangeCamera((DWORD)(wParam - VK_F1 + 1), m_GameTimer.GetTimeElapsed());
 					break;
 				case VK_F9:
 					ChangeSwapChainState();

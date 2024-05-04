@@ -356,7 +356,7 @@ class CRobotObject : public CGameObject
 {
 private:
 
-	XMFLOAT3				m_xmf3Target{ 500.0f, 0.0f, 500.0f };
+	XMFLOAT3				m_xmf3Target{ 0.0f, 0.0f, 0.0f };
 
 public:
 	CRobotObject(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CLoadedModelInfo *pModel, int nAnimationTracks);
@@ -383,6 +383,7 @@ public:
 class CStandardOBJ : public CGameObject
 {
 public:
+	CStandardOBJ() {};
 	CStandardOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel);
 	virtual ~CStandardOBJ();
 

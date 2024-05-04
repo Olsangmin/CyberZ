@@ -33,7 +33,7 @@ public:
 	float							m_fMaxStaminer{};
 	float							m_fRepairSpeed{};
 	float							m_fTakeOverSpeed{};
-	
+
 	int								m_nCharacter;
 
 	bool							m_bIsRun{ false };
@@ -43,8 +43,14 @@ public:
 
 	bool							m_bHasStaminer{ true };
 
+	CGameObject*					m_pHierarchicalGameObjects = NULL;
+
 	virtual bool GetStaminer() { return m_bHasStaminer; };
 	virtual float GetVelocitySpeed() { return m_fVelocitySpeed; };
+
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+
+	bool StartKeyMission(int type);
 
 	void ExhaustionStaminer();
 	void RestorationStaminer();
