@@ -15,7 +15,7 @@ void GameMap::initializeMap()
 	std::unordered_map<std::string, DirectX::BoundingOrientedBox> data;
 
 
-	std::ifstream in{ "Resource/Map/Map_Object_Info.txt" };
+	std::ifstream in{ "Resource/Map/MiddleMap_info.txt" };
 	if (!in) {
 		std::cout << "File Error!" << std::endl;
 		exit(-1);
@@ -109,9 +109,9 @@ void GameMap::initializeMap()
 void GameMap::StartGame()
 {
 	Server& server = Server::GetInstance();
-
+	std::cout << "size" << cl_ids.size() << std::endl;
 	for (auto& cl : cl_ids) {
-		server.clients[cl].SetPos(server.random_pos[cl]);
+		server.clients[cl].SetPos(PlayerInitPos[cl]);
 		std::cout << "player[" << cl << "]의 캐릭터 " << server.clients[cl].GetType() << std::endl;
 		SC_GAME_START_PACKET p;
 		p.size = sizeof(p);
@@ -134,24 +134,11 @@ void GameMap::StartGame()
 
 void GameMap::printMap() const
 {
+	// return;
 	std::cout << "-----PrintMap------------------------\n";
 	for (int y = cellDepth - 1; y >= 0; --y) {
 		for (int x = 0; x < cellWidth; ++x) {
 			const CELL& cell = cells[x][y];
-			/*if (cell.isObstacle) {
-				switch (cell.cellType)
-				{
-
-				case CONT:
-					std::cout << "X"; break;
-				case CT_NPC:
-					std::cout << "N"; break;
-
-				default:
-					break;
-				}
-				continue;
-			}*/
 			switch (cell.cellType)
 			{
 
@@ -181,33 +168,45 @@ void GameMap::Update()
 
 	// npc가 이동해야 하면 깨우기
 
-
-
+	auto& players = server.clients;
 
 	for (auto& npc : npcs) {
+		
 		for (auto& ids : cl_ids) {
-			if (npc.my_sector == getSector(server.clients[ids].GetPos())) {
+			npc.near_player = ids;
+			// 같은 섹터
+			if (npc.my_sector == getSector(players[ids].GetPos())) {
 				
-				if (npc.n_path.empty()) {
+				if (false == npc.n_path.empty()) break; // 갈길이 남았으면 break;
+
+				
+				if (GetCurrentCell(npc.GetPos()) == GetCurrentCell(players[ids].GetPos())) {
+					npc.next_behavior = ATTACK;
+					std::queue<DirectX::XMFLOAT3> q{};
+					npc.n_path = q;
+					break; // 같은 셀이면 공격과 경로 초기화
+				}
+				
+				if (npc.n_path.empty()) { // 경로가 비었으면 길찾기
+					npc.current_behavior = CHASE;
 					std::cout << "경로 탐색" << std::endl;
 					std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[ids].GetPos());
 					for (auto& p : path) {
 						npc.n_path.push(p);
 					}
+					npc.next_behavior = CHASE; break;
 				}
-				npc.WakeUp(ids);
+
+				// npc.WakeUp(ids);
+			}
+			else {
+				// 같은 섹터가 아니면 서성이기
+				npc.next_behavior = PATROL;
 			}
 		}
 
 		npc.Update();
 	}
-
-
-
-
-
-
-
 
 	/*for (auto& npc : npcs) {
 		std::set<std::pair<int, float>> s;
@@ -235,11 +234,6 @@ void GameMap::Update()
 }
 
 
-/*SC_TEST_PACKET p;
-
-for (int i = 0; i < cl_ids.size(); ++i) {
-	server.clients[cl_ids[i]].do_send(&p);
-}*/
 
 CELL& GameMap::GetCurrentCell(DirectX::XMFLOAT3 in_pos)
 {
@@ -260,15 +254,15 @@ std::pair<int, int> GameMap::CoordsToIndex(const DirectX::XMFLOAT3& coords) cons
 void GameMap::InitializeNPC()
 {
 
-	std::vector<DirectX::XMFLOAT3> init_pos{ DirectX::XMFLOAT3(500.f, 0.f, 590.f),
+	/*std::vector<DirectX::XMFLOAT3> init_pos{ DirectX::XMFLOAT3(500.f, 0.f, 590.f),
 	DirectX::XMFLOAT3(900.f, 0.f, 970.f) ,
-	DirectX::XMFLOAT3(500.f, 0.f, 967.f) };
+	DirectX::XMFLOAT3(500.f, 0.f, 967.f) };*/
 
 
 	for (int i = 0; i < npcs.size(); ++i) {
 		npcs[i].n_state = NPC_INGAME;
 		npcs[i].SetId(i + 100);
-		npcs[i].SetPos(init_pos[i]);
+		npcs[i].SetPos(NPCInitPos[i]);
 		npcs[i].my_sector = getSector(npcs[i].GetPos());
 		CELL& cell = GetCurrentCell(npcs[i].GetPos());
 		cell.cellType = CT_NPC;

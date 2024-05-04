@@ -3,7 +3,9 @@
 #include "Timer.h"
 #include <queue>
 
-enum NPC_STATE {NPC_FREE, NPC_INGAME, NPC_STAY, NPC_MOVE, NPC_PATROL};
+enum NPC_STATE {NPC_FREE, NPC_INGAME};
+
+
 
 class NPC : public Object
 {
@@ -16,10 +18,17 @@ public:
 
 	DirectX::XMFLOAT3 Move();
 
-	bool NeedPath();
+	void Patrol();
+	void Chase();
+	void Attack();
+
+	
 
 public:
 	NPC_STATE n_state;
+
+	NPC_BEHAVIOR current_behavior;
+	NPC_BEHAVIOR next_behavior;
 	
 	int my_sector;
 

@@ -33,11 +33,11 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	CLoadedModelInfo* pMapModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/middle/MAP3_1.bin", NULL);
 	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel);
 	if (pMapModel) delete pMapModel;
-	
+
 	CLoadedModelInfo* pMapModel2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/middle/MAP3_2.bin", NULL);
 	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel2);
 	if (pMapModel2) delete pMapModel2;
-	
+
 	CLoadedModelInfo* pMachine = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/MissionMachine.bin", NULL);
 	m_ppHierarchicalGameObjects[3] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine);
 	m_ppHierarchicalGameObjects[3]->SetPosition(50.f, 0.f, 50.f);
@@ -59,7 +59,7 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		CLoadedModelInfo* pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot.bin", NULL);
 		m_ppEnemy[i] = new CRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 3);
 		m_ppEnemy[i]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-		m_ppEnemy[i]->SetPosition(100.0f, 0, 0.0f + i * 100);
+		m_ppEnemy[i]->SetPosition(NPCInitPos[i]);
 		m_ppEnemy[i]->SetScale(10.f, 10.f, 10.f);
 
 		if (pRobotModel) delete pRobotModel;
@@ -111,7 +111,15 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	if (myPlayernum != 4) playernum = myPlayernum;
 
 	m_pMyPlayer = m_ppPlayer[playernum];
-	m_pMyPlayer->SetPosition(XMFLOAT3(50.f, 0.f, 70.f));
+	// m_pMyPlayer->SetPosition(XMFLOAT3(50.f, 0.f, 70.f));
+	m_pMyPlayer->SetPosition(PlayerInitPos[playernum]);
+//#ifdef USE_NETWORK
+//	CS_GAMESTART_PACKET p;
+//	p.size = sizeof(p);
+//	p.type = CS_GAME_START;
+//	
+//#endif // USE_NETWORK
+
 }
 
 bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
@@ -202,7 +210,7 @@ bool PlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM w
 		}
 		case 'C': {
 			// m_pMyPlayer->SetCreepFlag();
-			reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->SetTarget(m_pMyPlayer->GetPosition());
+			
 			break;
 		}
 		}
@@ -282,13 +290,13 @@ void PlayScene::ProcessPacket(char* p)
 		int n_id = packet->id - 100;
 		m_ppEnemy[n_id]->SetPosition(packet->position);
 		// reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(m_ppEnemy[n_id]->GetPosition());
-		
+
 	}
 				   break;
 
 	case SC_MOVE_NPC: {
 		SC_MOVE_NPC_PACKET* packet = reinterpret_cast<SC_MOVE_NPC_PACKET*>(p);
-		
+
 		int n_id = packet->id - 100;
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(packet->next_pos);
 		// std::cout << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << std::endl;
@@ -416,11 +424,6 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 	//	if (pKeysBuffer['1'] & 0xF0) select = Corzim;
 	//	if (pKeysBuffer['2'] & 0xF0)select = Evan;
 	//	if (pKeysBuffer['3'] & 0xF0)select = Uranya;
-	//	
-	//	// 클라에서 테스트 할거면 주석 처리 수정해줄것
-	//	// ChangeModel(0, select);
-
-	//	cout << 1 << endl;
 
 
 	//}
@@ -446,38 +449,39 @@ bool CPrepareRoomScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 		case 'R': {
 			CS_GAMESTART_PACKET p;
 			p.size = sizeof(p);
-			p.type = CS_GAME_START;
+			p.type = CS_ALLPLAYER_READY;
 #ifdef USE_NETWORK
-	send_packet(&p);
+			send_packet(&p);
 #else
-	m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
+			m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
 #endif // USE_NETWORK
 
 		}break;
 		case '1': {
 			select = Corzim;
-			//ChangeModel(0, select);
 
 		}break;
 		case '2': {
 			select = Evan;
-			//ChangeModel(0, select);
 		}break;
 		case '3': {
 			select = Uranya;
-			//ChangeModel(0, select);
 		}break;
 
 		}
+	default:
 		break;
 	}
 	}
+
 #ifdef USE_NETWORK
 	CS_CHANGE_CHARACTER_PACKET p;
 	p.size = sizeof(p);
 	p.type = CS_CHANGE_CHARACTER;
 	p.c_type = select;
 	send_packet(&p);
+#else
+	ChangeModel(0, select);
 #endif // USE_NETWORK
 	CScene::OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 	return false;

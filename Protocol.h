@@ -1,6 +1,6 @@
 #pragma once
-
 #include <DirectXMath.h>
+#include <array>
 
 constexpr int PORT_NUM = 4000;
 constexpr int MAX_USER = 3;
@@ -10,6 +10,18 @@ constexpr int MAX_FRAME = 60;
 
 constexpr int NAME_SIZE = 20;
 
+using namespace DirectX;
+
+static std::array<DirectX::XMFLOAT3, MAX_USER> PlayerInitPos = {
+	XMFLOAT3(700.f, 0.f, 200.f), XMFLOAT3(900.f, 0.f, 400.f),
+	XMFLOAT3(200.f, 0.f, 800.f) };
+
+static std::array<DirectX::XMFLOAT3, MAX_USER> NPCInitPos = {
+	XMFLOAT3(450.f, 0.f, 600.f), XMFLOAT3(200.f, 0.f, 220.f),
+	XMFLOAT3(750.f, 0.f, 900.f) };
+
+enum NPC_BEHAVIOR { PATROL, CHASE, ATTACK };
+
 // Packet Key
 constexpr char CS_LOGIN = 0;
 constexpr char CS_LOGOUT = 1;
@@ -17,7 +29,8 @@ constexpr char CS_MOVE = 2;
 constexpr char CS_UPDATE_PLAYER = 3;
 constexpr char CS_CHANGE_ANIM = 4; // 애니메이션 변경
 constexpr char CS_CHANGE_CHARACTER = 5; // 캐릭터 변경
-constexpr char CS_GAME_START = 6; // 게임 시작(방장)
+constexpr char CS_ALLPLAYER_READY = 6; // 게임 시작(방장)
+constexpr char CS_GAME_START = 7; // 게임 시작(서버)
 
 constexpr char CS_TEST = 200;
 
@@ -84,6 +97,11 @@ struct CS_CHANGE_CHARACTER_PACKET { // 캐릭터 변경
 };
 
 struct CS_GAMESTART_PACKET {
+	unsigned char size;
+	char	type;
+};
+
+struct CS_ALLPLAYER_READY_PACKET {
 	unsigned char size;
 	char	type;
 };
