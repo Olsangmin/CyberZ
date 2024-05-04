@@ -422,7 +422,7 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 	{
 		case FIRST_ROUND_SCENE:
 		{
-			m_pScene = new PlayScene();
+			m_pScene = new CPlayScene();
 			if (m_pScene) {
 				m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
 			}
@@ -444,9 +444,7 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 			break;
 		}
 	}
-
-
-
+	m_pScene->m_pUI->CreateDirect2DDevice(m_hWnd, m_pd3dDevice, m_pd3dCommandList, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers);
 
 	m_pd3dCommandList->Close();
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
@@ -562,17 +560,15 @@ void CGameFramework::FrameAdvance()
 	m_pd3dCommandList->ClearDepthStencilView(d3dDsvCPUDescriptorHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
 
-	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
-	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
-	d3dResourceBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
-	m_pd3dCommandList->ResourceBarrier(1, &d3dResourceBarrier);
-
 	hResult = m_pd3dCommandList->Close();
-	
+
 	ID3D12CommandList *ppd3dCommandLists[] = { m_pd3dCommandList };
 	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
 
+	m_pScene->m_pUI->DrawUI(m_nSwapChainBufferIndex);
+	
 	WaitForGpuComplete();
+
 
 #ifdef _WITH_PRESENT_PARAMETERS
 	DXGI_PRESENT_PARAMETERS dxgiPresentParameters;

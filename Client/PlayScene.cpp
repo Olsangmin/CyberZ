@@ -2,9 +2,11 @@
 #include "stdafx.h"
 #include "PlayScene.h"
 
-void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum)
+void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum)
 {
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
+
+	m_pUI = new CPlaySceneUI();
 
 	//===============================//
 	// SKY BOX (1)
@@ -47,7 +49,7 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 
 	//===============================//
 	// Mission Obj(1)
-	m_nMissionObj = 1;
+	m_nMissionObj = 2;
 	m_ppMissionObj = new CMissonOBJ * [m_nMissionObj];
 
 	CLoadedModelInfo* pMachine = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/Comm.bin", NULL);
@@ -55,6 +57,11 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	m_ppMissionObj[0] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine, missionRange);
 	m_ppMissionObj[0]->SetPosition(300.f, 0.f, 700.f);
 	if (pMachine) delete pMachine;
+
+	CLoadedModelInfo* pMachine2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/Comm.bin", NULL);
+	m_ppMissionObj[1] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine2, missionRange);
+	m_ppMissionObj[1]->SetPosition(100.f, 0.f, 700.f);
+	if (pMachine2) delete pMachine2;
 
 	//===============================//
 
@@ -123,7 +130,7 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 }
 
 
-bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
+bool CPlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
 {
 	CScene::ProcessInput(m_hWnd, m_ptOldCursorPos, pKeysBuffer);
 
@@ -183,7 +190,7 @@ bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBu
 	return(false);
 }
 
-bool PlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+bool CPlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	CScene::OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 
@@ -223,8 +230,20 @@ bool PlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM w
 	return false;
 }
 
+void CPlayScene::AnimateObjects(float fTimeElapsed)
+{
+	CScene::AnimateObjects(fTimeElapsed);
 
-void PlayScene::ProcessPacket(char* p)
+	if (m_pUI->MissionGauge < 170)
+	{
+		if (Missionflag) m_pUI->MissionGauge += 0.5f;
+		else if (m_pUI->MissionGauge > 0) m_pUI->MissionGauge -= 0.5f;
+	}
+
+}
+
+
+void CPlayScene::ProcessPacket(char* p)
 {
 	switch (p[1])
 	{
@@ -318,10 +337,9 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 {
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
 
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	m_pUI = new CFirstSceneUI();
 
-	pScened3dDevice = pd3dDevice;
-	pScened3dCommandList = pd3dCommandList;
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	//===============================//
 	// SKY BOX (1)

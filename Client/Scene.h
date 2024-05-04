@@ -6,6 +6,8 @@
 
 #include "Shader.h"
 #include "CyborgPlayer.h"
+#include "GUI.h"
+
 
 #define MAX_LIGHTS						16 
 
@@ -132,6 +134,9 @@ public:
 
 	CSkyBox*							m_pSkyBox = NULL;
 	CHeightMapTerrain*					m_pTerrain = NULL;
+	CUI*								m_pUI = NULL;
+
+	bool								Missionflag = false;
 
 	LIGHT*								m_pLights = NULL;
 	int									m_nLights = 0;

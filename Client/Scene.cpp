@@ -101,10 +101,18 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	BuildDefaultLightsAndMaterials();
 
+
 }
 
 void CScene::ReleaseObjects()
 {
+
+	if (m_pUI)
+	{
+		m_pUI->Release();
+		delete m_pUI;
+	}
+
 	if (m_pd3dGraphicsRootSignature) m_pd3dGraphicsRootSignature->Release();
 	if (m_pd3dCbvSrvDescriptorHeap) m_pd3dCbvSrvDescriptorHeap->Release();
 
@@ -469,11 +477,12 @@ void CScene::AnimateObjects(float fTimeElapsed)
 	for (int i = 0; i < m_nEnemy; i++) if (m_ppEnemy[i]) m_ppEnemy[i]->Animate(m_fElapsedTime);
 
 
+	Missionflag = false;
+	
 	for (int i = 0; i < m_nPlayer; i++) if (m_ppPlayer[i]) {
 
 		m_ppPlayer[i]->Animate(fTimeElapsed);
 		bool flag = false;
-		bool Missionflag = false;
 		
 		// MAP Obj
 		for (int j = 0; j < m_nHierarchicalGameObjects; ++j) {
@@ -489,19 +498,18 @@ void CScene::AnimateObjects(float fTimeElapsed)
 		//Mission Obj
 		for (int j = 0; j < m_nMissionObj; ++j) {
 			if (CheckObjByObjCollition(m_ppPlayer[i], m_ppMissionObj[j])) {
+
 				flag = true;
 			}
-			if (CheckMissionBound(m_ppPlayer[i], m_ppMissionObj[j])) //요기 자고 일어나서 추가해야함
+			if (CheckMissionBound(m_ppPlayer[i], m_ppMissionObj[j])) 
 			{
-				Missionflag = true; // 요거 어케 할건지 고민해볼 것! 
-				cout << "look 1:" << look.x << "," << look.y << "," << look.z << "," << endl;
-				cout << "look 2:" << look2.x << "," << look2.y << "," << look2.z << "," << endl;;
-
+				Missionflag = true;
 			}
 		}
 		m_ppPlayer[i]->m_bIntersects = flag;
 		m_ppPlayer[i]->Update(fTimeElapsed);
 	}
+
 
 	// 플레이어 플레쉬 라이트 사용 안하니까 일단 주석
 	/*

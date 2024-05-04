@@ -8,16 +8,17 @@
 #include <unordered_map>
 #include <algorithm>
 
-class PlayScene :public CScene
+class CPlayScene :public CScene
 {
 public:
-	PlayScene(){}
-	~PlayScene() {}
+	CPlayScene(){}
+	~CPlayScene() {}
 
 	void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum = 4);
 	
 	bool ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer);
 	bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
+	void AnimateObjects(float fTimeElapsed);
 
 	bool AllPlayerReady() { return false; }
 
@@ -57,10 +58,6 @@ public:
 	int								m_nPlayerSelecter = 0;
 	CSelectCharacterOBJ**			m_ppPlayerSelecter = NULL;
 
-public:
-	ID3D12Device*					pScened3dDevice;
-	ID3D12GraphicsCommandList*		pScened3dCommandList;
-
-	
+public:	
 	CSelectCharacterOBJ**			m_ppOnPlayer = NULL;
 };
