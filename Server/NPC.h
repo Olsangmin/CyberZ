@@ -14,9 +14,9 @@ public:
 	
 	void WakeUp(int p_id);
 
-	void Update();
+	void DoWork();
 
-	DirectX::XMFLOAT3 Move();
+	void Move();
 
 	void Patrol();
 	void Chase();
@@ -28,7 +28,6 @@ public:
 	NPC_STATE n_state;
 
 	NPC_BEHAVIOR current_behavior;
-	NPC_BEHAVIOR next_behavior;
 	
 	int my_sector;
 

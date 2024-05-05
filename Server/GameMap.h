@@ -67,11 +67,12 @@ public:
 
     void StartGame();
     void EndGame() { InGame = false; }
+    void PlayGame() { InGame = true; }
     bool is_InGame() const { return InGame; }
 
     void printMap() const;
 
-    void Update();
+    void Update(int tick);
 
     CELL& GetCurrentCell(DirectX::XMFLOAT3 in_pos);
 
@@ -105,6 +106,7 @@ public:
     {
         DirectX::XMFLOAT3 next_pos;
 
+        int curr_sertor = getSector(pos);
         
         std::pair<int, int> index = CoordsToIndex(pos);
         while (true) {
@@ -119,6 +121,7 @@ public:
             default:
                 break;
             }
+            if (curr_sertor != getSector(next_pos)) continue;
             if (false == cells[x][y].isObstacle) {
                 next_pos = cells[x][y].center;
                 break;

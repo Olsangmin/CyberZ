@@ -52,7 +52,7 @@ void Server::Network()
 	std::thread timer_thread{ &Server::TimerThread, this };
 
 
-	using frame = std::chrono::duration<int32_t, std::ratio<1, MAX_FRAME>>;
+	using frame = std::chrono::duration<int, std::ratio<1, MAX_FRAME>>;
 	using ms = std::chrono::duration<float, std::milli>;
 	std::chrono::time_point<std::chrono::steady_clock> fps_timer{ std::chrono::steady_clock::now() };
 
@@ -68,10 +68,12 @@ void Server::Network()
 		fps = duration_cast<frame>(std::chrono::steady_clock::now() - fps_timer);
 
 		// 아직 1/60초가 안지났으면 패스
+		
 		if (fps.count() < 1) continue;
 
-
+		
 		// std::cout << frame_count.count() << std::endl;
+
 		/*if (frame_count.count() & 1) {
 			
 		}*/
@@ -91,15 +93,20 @@ void Server::Network()
 			}
 
 			for (int id : gMap.cl_ids) {
-				clients[id].do_send(&uPackets);
+				for (int i = 0; i < MAX_USER; ++i) {
+					if (clients[i].state != ST_INGAME) continue;
+					clients[id].do_send(&(uPackets[i]));
+				}
 			}
 		}*/
 
-		gMap.Update();
+
+		gMap.Update(frame_count.count());
 
 
 		frame_count = duration_cast<frame>(frame_count + fps);
 		if (frame_count.count() >= MAX_FRAME) {
+			// std::cout << num++ << "초" << std::endl;
 			frame_count = frame::zero();
 		}
 		else {
@@ -186,7 +193,7 @@ void Server::Worker_thread()
 			break;
 		}
 
-		case OP_NPC_MOVE: {
+		//case OP_NPC_MOVE: {
 			/*bool keep_alive = false;
 			auto& npc = gMap.npcs[key-100];
 			int sector = gMap.getSector(clients[npc.near_player].GetPos());
@@ -208,7 +215,7 @@ void Server::Worker_thread()
 			delete ex_over;*/
 			
 
-			bool keep_alive = false;
+			/*bool keep_alive = false;
 			auto& npc = gMap.npcs[key - 100];
 			auto ids = gMap.cl_ids;
 
@@ -226,12 +233,34 @@ void Server::Worker_thread()
 				std::queue<DirectX::XMFLOAT3> q{};
 				npc.n_path = q;
 				npc.is_active = false;
+			}*/
+
+			
+
+		//}
+
+		case OP_NPC_MOVE: {
+			auto& npc = gMap.npcs[key - 100];
+			npc.Move();
+
+			delete ex_over;
+		}
+					  break;
+
+		case OP_NPC_ATTACK: {
+			auto& npc = gMap.npcs[key - 100];
+
+			for (int id : gMap.cl_ids) {
+				SC_ATTACK_NPC_PACKET p;
+				p.size = sizeof(p);
+				p.type = SC_ATTACK_NPC;
+				p.n_id = npc.GetId();
+				p.p_id = npc.near_player;
+				clients[id].do_send(&p);
 			}
 
 			delete ex_over;
-
-		}
-					  break;
+		}break;
 
 		default:
 			break;
@@ -300,10 +329,14 @@ void Server::Process_packet(int c_id, char* packet)
 		gMap.cl_ids.erase(u, gMap.cl_ids.end());
 		std::cout << "방장[" << c_id << "] - " << std::endl;
 		gMap.StartGame();
-		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		break;
+	}
+
+	case CS_GAME_START: {
+		if (c_id != gMap.cl_ids[0]) break;
 
 		std::vector<int> players = gMap.cl_ids;
-
 		auto& npcs = gMap.npcs;
 		for (auto& pl : players) { // 012
 			for (auto& others : gMap.cl_ids) {
@@ -316,7 +349,8 @@ void Server::Process_packet(int c_id, char* packet)
 				std::cout << pl << " to " << npc.GetId() << std::endl;
 			}
 		}
-
+		gMap.PlayGame();
+		
 		break;
 	}
 	case CS_LOGOUT: {
@@ -428,8 +462,13 @@ void Server::TimerThread()
 				OVER_EXP* overE = new OVER_EXP;
 				overE->comp_type = OP_NPC_MOVE;
 				PostQueuedCompletionStatus(h_iocp, 1, ev.npc_id, &overE->over);
-				std::cout << "Event" << std::endl; 
+		
 				break;
+			}
+			case EV_NPC_ATTACK: {
+				OVER_EXP* overE = new OVER_EXP;
+				overE->comp_type = OP_NPC_ATTACK;
+				PostQueuedCompletionStatus(h_iocp, 1, ev.npc_id, &overE->over);
 			}
 			case EV_SEND_COUNT: {
 				//OVER_EXP* overE = new OVER_EXP;

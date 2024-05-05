@@ -129,7 +129,6 @@ void GameMap::StartGame()
 		// npcs[0].n_path.push(path);
 	}*/
 
-	InGame = true;
 }
 
 void GameMap::printMap() const
@@ -160,7 +159,7 @@ void GameMap::printMap() const
 	std::cout << "-----PrintMap------------------------\n";
 }
 
-void GameMap::Update()
+void GameMap::Update(int tick)
 {
 
 	if (!InGame) return;
@@ -181,56 +180,42 @@ void GameMap::Update()
 
 				
 				if (GetCurrentCell(npc.GetPos()) == GetCurrentCell(players[ids].GetPos())) {
-					npc.next_behavior = ATTACK;
 					std::queue<DirectX::XMFLOAT3> q{};
 					npc.n_path = q;
+					npc.is_active = true; // 공격중
+					npc.current_behavior = ATTACK;
 					break; // 같은 셀이면 공격과 경로 초기화
 				}
 				
 				if (npc.n_path.empty()) { // 경로가 비었으면 길찾기
-					npc.current_behavior = CHASE;
 					std::cout << "경로 탐색" << std::endl;
 					std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[ids].GetPos());
 					for (auto& p : path) {
 						npc.n_path.push(p);
 					}
-					npc.next_behavior = CHASE; break;
+					npc.current_behavior = CHASE;
+					break;
 				}
 
 				// npc.WakeUp(ids);
 			}
 			else {
-				// 같은 섹터가 아니면 서성이기
-				npc.next_behavior = PATROL;
+				// 같은 섹터가 아니면 큐를 비운 후 서성이기
+				std::queue<DirectX::XMFLOAT3> q{};
+				npc.n_path = q;
+				npc.is_active = false;
+				npc.current_behavior = PATROL;
+				if(npc.n_path.empty())
+					npc.n_path.push(GetRandomPos(npc.GetPos()));
 			}
 		}
 
-		npc.Update();
+		if (tick % 29 == 0) {
+			npc.DoWork();
+		}
+		
 	}
-
-	/*for (auto& npc : npcs) {
-		std::set<std::pair<int, float>> s;
-		for (auto& ids : cl_ids) {
-			float distance_x = abs(server.clients[ids].GetPos().x - npc.GetPos().x);
-			float distance_z = abs(server.clients[ids].GetPos().z - npc.GetPos().z);
-
-			if (distance_x < 300.f && distance_z < 300.f) {
-				s.insert({ ids, distance_x * distance_z });
-			}
-		}
-		if (s.size() == 0) continue;
-		std::cout << npc.GetId() << ", " << s.begin()->first << std::endl;
-
-		npc.near_player = s.begin()->first;
-
-		std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[npc.near_player].GetPos());
-		for (auto& p : path) {
-			npc.n_path.push(p);
-		}
-
-
-		npc.Update();
-	}*/
+	
 }
 
 
@@ -254,11 +239,6 @@ std::pair<int, int> GameMap::CoordsToIndex(const DirectX::XMFLOAT3& coords) cons
 void GameMap::InitializeNPC()
 {
 
-	/*std::vector<DirectX::XMFLOAT3> init_pos{ DirectX::XMFLOAT3(500.f, 0.f, 590.f),
-	DirectX::XMFLOAT3(900.f, 0.f, 970.f) ,
-	DirectX::XMFLOAT3(500.f, 0.f, 967.f) };*/
-
-
 	for (int i = 0; i < npcs.size(); ++i) {
 		npcs[i].n_state = NPC_INGAME;
 		npcs[i].SetId(i + 100);
@@ -269,9 +249,6 @@ void GameMap::InitializeNPC()
 		std::cout << "NPC[" << npcs[i].GetId() << "] goto " << std::endl;
 	}
 
-	/*TIMER_EVENT start;
-	start.wakeup_time = std::chrono::system_clock::now() + std::chrono::seconds(3);
-	timer_queue.push(start);*/
 }
 
 std::vector<DirectX::XMFLOAT3> GameMap::PathFind(const DirectX::XMFLOAT3& startPos, const DirectX::XMFLOAT3& targetPos) {

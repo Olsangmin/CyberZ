@@ -2,7 +2,7 @@
 #include <DirectXMath.h>
 #include <array>
 
-constexpr int PORT_NUM = 4000;
+constexpr int PORT_NUM = 9900;
 constexpr int MAX_USER = 3;
 constexpr int NUM_NPC = 3;
 
@@ -17,7 +17,7 @@ static std::array<DirectX::XMFLOAT3, MAX_USER> PlayerInitPos = {
 	XMFLOAT3(200.f, 0.f, 800.f) };
 
 static std::array<DirectX::XMFLOAT3, MAX_USER> NPCInitPos = {
-	XMFLOAT3(450.f, 0.f, 600.f), XMFLOAT3(200.f, 0.f, 220.f),
+	XMFLOAT3(500.f, 0.f, 500.f), XMFLOAT3(200.f, 0.f, 220.f),
 	XMFLOAT3(750.f, 0.f, 900.f) };
 
 enum NPC_BEHAVIOR { PATROL, CHASE, ATTACK };
@@ -44,6 +44,7 @@ constexpr char SC_CHANGE_CHARACTER = 5;
 constexpr char SC_GAME_START = 6;
 constexpr char SC_ADD_NPC = 7;
 constexpr char SC_MOVE_NPC = 8;
+constexpr char SC_ATTACK_NPC = 9;
 
 
 constexpr char SC_TEST = 200;
@@ -180,6 +181,13 @@ struct SC_MOVE_NPC_PACKET {
 	char	type;
 	int id;
 	DirectX::XMFLOAT3 next_pos;
+};
+
+struct SC_ATTACK_NPC_PACKET {
+	unsigned char size;
+	char	type;
+	int n_id;
+	int p_id;
 };
 
 struct SC_TEST_PACKET {

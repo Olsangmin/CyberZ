@@ -6,6 +6,13 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 {
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
 
+#ifdef USE_NETWORK
+	CS_GAMESTART_PACKET p;
+	p.size = sizeof(p);
+	p.type = CS_GAME_START;
+	send_packet(&p);
+#endif // USE_NETWORK
+
 	//===============================//
 	// SKY BOX (1)
 	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, L"SkyBox/SkyBox_sunset.dds");
@@ -113,12 +120,7 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	m_pMyPlayer = m_ppPlayer[playernum];
 	// m_pMyPlayer->SetPosition(XMFLOAT3(50.f, 0.f, 70.f));
 	m_pMyPlayer->SetPosition(PlayerInitPos[playernum]);
-//#ifdef USE_NETWORK
-//	CS_GAMESTART_PACKET p;
-//	p.size = sizeof(p);
-//	p.type = CS_GAME_START;
-//	
-//#endif // USE_NETWORK
+
 
 }
 
@@ -263,8 +265,20 @@ void PlayScene::ProcessPacket(char* p)
 	case SC_UPDATE_PLAYER:
 	{
 		SC_UPDATE_PLAYER_PACKET* packet = reinterpret_cast<SC_UPDATE_PLAYER_PACKET*>(p);
+		int id = packet->id;
+		if (id == my_id) break;
 
-		break;
+
+		auto it = idANDtype.find(id);
+		if (it == idANDtype.end()) break;
+		else {
+			Player_Character_Type type = it->second;
+			m_ppPlayer[type]->SetPosition(packet->position);
+			cout << "[" << type << "]" << endl;
+			// m_ppPlayer[type]->Rotate(0.f, packet->yaw - m_ppPlayer[type]->GetYaw(), 0.f);
+
+		}
+
 	} break;
 
 	case SC_CHANGE_ANIM: {
@@ -303,6 +317,11 @@ void PlayScene::ProcessPacket(char* p)
 		std::cout << packet->next_pos.x << "," << packet->next_pos.z << std::endl;
 	}
 					break;
+
+	case SC_ATTACK_NPC: {
+		SC_ATTACK_NPC_PACKET* packet = reinterpret_cast<SC_ATTACK_NPC_PACKET*>(p);
+		cout << "[" << packet->p_id << "] »ç¸Á" << endl;
+	}break;
 
 
 	default:
