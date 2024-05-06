@@ -105,7 +105,6 @@ void CUI::CreateDirect2DDevice(HWND m_hWnd, ID3D12Device* pd3dDevice, ID3D12Grap
 		m_pd2dDeviceContext->CreateBitmapFromDxgiSurface(pdxgiSurface, &d2dBitmapProperties, &m_ppd2dRenderTargets[i]);
 		if (pdxgiSurface) pdxgiSurface->Release();
 	}
-
 }
 
 void CUI::DrawUI(UINT m_nSwapChainBufferIndex)
@@ -120,7 +119,6 @@ void CUI::DrawUI(UINT m_nSwapChainBufferIndex)
 
 	m_pd2dDeviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
 
-
 	//-----------------------------
 
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
@@ -133,7 +131,6 @@ void CUI::DrawUI(UINT m_nSwapChainBufferIndex)
 	//-----------------------------
 
 	m_pd3d11On12Device->ReleaseWrappedResources(ppd3dResources, _countof(ppd3dResources));
-
 	m_pd3d11DeviceContext->Flush();
 
 }
@@ -144,11 +141,9 @@ void CUI::DrawUI(UINT m_nSwapChainBufferIndex)
 
 void CFirstSceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 {
-
 	m_pd2dDeviceContext->SetTarget(m_ppd2dRenderTargets[m_nSwapChainBufferIndex]);
 	ID3D11Resource* ppd3dResources[] = { m_ppd3d11WrappedBackBuffers[m_nSwapChainBufferIndex] };
 	m_pd3d11On12Device->AcquireWrappedResources(ppd3dResources, _countof(ppd3dResources));
-
 
 	m_pd2dDeviceContext->BeginDraw();
 	m_pd2dDeviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
@@ -156,17 +151,18 @@ void CFirstSceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 	//Direct2D Drawing
 	UISet(m_nSwapChainBufferIndex);
 
-
 	m_pd2dDeviceContext->EndDraw();
 	m_pd3d11On12Device->ReleaseWrappedResources(ppd3dResources, _countof(ppd3dResources));
 	m_pd3d11DeviceContext->Flush();
-
 }
 
 void CFirstSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 {
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
-
+	
+	WCHAR InfoText[] = L"Press 'R' To Ready";
+	D2D1_RECT_F rcUpperText = D2D1::RectF(0, 0, szRenderTarget.width, szRenderTarget.height * 0.25f);
+	m_pd2dDeviceContext->DrawTextW(InfoText, (UINT32)wcslen(InfoText), m_pdwFont, &rcUpperText, m_pd2dbrText);
 
 }
 
@@ -177,7 +173,6 @@ void CPlaySceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 	m_pd2dDeviceContext->SetTarget(m_ppd2dRenderTargets[m_nSwapChainBufferIndex]);
 	ID3D11Resource* ppd3dResources[] = { m_ppd3d11WrappedBackBuffers[m_nSwapChainBufferIndex] };
 	m_pd3d11On12Device->AcquireWrappedResources(ppd3dResources, _countof(ppd3dResources));
-
 
 	m_pd2dDeviceContext->BeginDraw();
 	m_pd2dDeviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
@@ -197,29 +192,43 @@ void CPlaySceneUI::UISet(UINT m_nSwapChainBufferIndex)
 
 	// 점령미션 바 상단 문구
 	D2D1_RECT_F rcUpperText = D2D1::RectF(30, 10, 200, 30);
-	m_pd2dDeviceContext->DrawTextW(L"점령진행도", (UINT32)wcslen(L"점령진행도"), m_pdwFont, &rcUpperText, m_pd2dbrText);
+	WCHAR MissionText[] = L"Progress";
+	m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
+
+	MissionProgressBar(0);
+	MissionProgressBar(1);
+	MissionProgressBar(2);
+	
+}
+
+void CPlaySceneUI::MissionProgressBar(int MissionNum)
+{
+	float gab = 12.5;
 
 	//게이지 바
 	D2D1_RECT_F* rcMissionBar;
 	rcMissionBar = new D2D1_RECT_F;
-	rcMissionBar->top = 30.5f;
+	rcMissionBar->top = 30.5f + (MissionNum * gab);
 	rcMissionBar->left = 30.f;
-	rcMissionBar->right = 30.f+ MissionGauge;
-	rcMissionBar->bottom = 39.5f;
+	rcMissionBar->right = 30.f + m_fMissionGauge[MissionNum];
+	rcMissionBar->bottom = 39.5f + (MissionNum * gab);
 
-	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::Blue, 0.6f));
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(0x00ff00, 0.6f));
 	m_pd2dDeviceContext->FillRectangle(rcMissionBar, m_pd2dbrBorder);
 
 	// 게이지 바 프레임
 	D2D1_RECT_F* rcMissionBarFrame;
 	rcMissionBarFrame = new D2D1_RECT_F;
-	rcMissionBarFrame->top = 30.f;
+	rcMissionBarFrame->top = 30.f + (MissionNum * gab);
 	rcMissionBarFrame->left = 30.0f;
 	rcMissionBarFrame->right = 200.f;
-	rcMissionBarFrame->bottom = 40.0f;
+	rcMissionBarFrame->bottom = 40.0f + (MissionNum * gab);
 
 	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
 	m_pd2dDeviceContext->DrawRectangle(rcMissionBarFrame, m_pd2dbrBorder);
+
+	delete rcMissionBar;
+	delete rcMissionBarFrame;
 
 }
 
