@@ -31,7 +31,7 @@ public:
 	,(DirectX::XMFLOAT3(950.f,0.f, 750.f))
 		,(DirectX::XMFLOAT3(523.f,0.f, 881.f)) };*/
 
-	std::vector<DirectX::XMFLOAT3> random_pos{ (DirectX::XMFLOAT3(300.f,0.f, 200.f))
+	std::vector<DirectX::XMFLOAT3> random_pos{ (DirectX::XMFLOAT3(700.f,0.f, 30.f))
 	,(DirectX::XMFLOAT3(950.f,0.f, 250.f))
 		,(DirectX::XMFLOAT3(100.f,0.f, 881.f)) };
 

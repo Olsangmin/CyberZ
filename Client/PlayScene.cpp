@@ -102,7 +102,7 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
 
 	for (int i = 0; i < m_nPlayer; ++i) {
-		CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
+		CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i], SHOULDER_VIEW_CAMERA);
 		m_ppPlayer[i] = pPlayer;
 		m_ppPlayer[i]->SetPlayerData(i);
 	}
@@ -139,14 +139,10 @@ bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBu
 
 	// Player unable
 	// m_ppPlayer[원하는 캐릭터]->m_bUnable = true 면은 ADD_OBJ(실제로 생성이 아닌 렌더&움직임 가능 상태)
-	if (pKeysBuffer['1'] & 0xF0) m_ppPlayer[FIRST_PLAYER]->m_bUnable = true;
-	if (pKeysBuffer['2'] & 0xF0) m_ppPlayer[SECOND_PLAYER]->m_bUnable = true;
-	if (pKeysBuffer['3'] & 0xF0) m_ppPlayer[THIRD_PLAYER]->m_bUnable = true;
+
 	if (pKeysBuffer['7'] & 0xF0) m_pMyPlayer->m_bUnable = true;
 
-	// Player disable
-	if (pKeysBuffer['4'] & 0xF0) m_ppPlayer[FIRST_PLAYER]->m_bUnable = false;
-	if (pKeysBuffer['5'] & 0xF0) m_ppPlayer[SECOND_PLAYER]->m_bUnable = false;
+
 
 	// Decide whether to blend
 	// 전에 입력한 키와 다르다면 블렌딩타임을 0으로 설정
@@ -191,9 +187,15 @@ bool PlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM w
 			break;
 		}
 		case 'H': {
-			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(0);
+			if(!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetSecurityKey())
+				reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(0);
 			break;
 		}
+		case '1':
+		case '2':
+		case '3': 
+			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->MissionCheck(wParam-49);
+			break;
 		}
 		break;
 	}

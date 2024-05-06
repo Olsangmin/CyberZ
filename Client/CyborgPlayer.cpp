@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "CyborgPlayer.h"
 
-CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, CLoadedModelInfo* pModel)
+CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, CLoadedModelInfo* pModel, DWORD dCamera)
 {
-	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+	m_pCamera = ChangeCamera(dCamera, 0.0f);
 
 	CLoadedModelInfo* pPlayerModel = pModel;
 
@@ -43,9 +43,32 @@ CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	SetPosition(XMFLOAT3(100.0f, pTerrain->GetHeight(310.0f, 590.0f), 300.0f));
 	SetScale(XMFLOAT3(10.0f, 10.0f, 10.0f));
 
-	CLoadedModelInfo* pMiddleContainer = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/ObjModel/MiddleContainer.bin", NULL);
-	m_pHierarchicalGameObjects = new Mission(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, pMiddleContainer);
-	m_pHierarchicalGameObjects->SetScale(0.5, 0.5, 0.5);
+	CLoadedModelInfo* pMiddleContainer = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Mission_1/MissionBox_1.bin", NULL);
+	m_pMissionBoxObject = new Mission(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, pMiddleContainer);
+	
+	m_nMissionObject = 8;
+	
+	char** FileName = new char* [m_nMissionObject];
+	FileName[0] = "Model/Mission_1/Mission1_1.bin";
+	FileName[1] = "Model/Mission_1/Mission1_2.bin";
+	FileName[2] = "Model/Mission_1/Mission1_3.bin";
+	FileName[3] = "Model/Mission_1/Mission1_4.bin";
+	FileName[4] = "Model/Mission_1/Mission1_5.bin";
+	FileName[5] = "Model/Mission_1/Mission1_6.bin";
+	FileName[6] = "Model/Mission_1/Mission1_7.bin";
+	FileName[7] = "Model/Mission_1/Mission1_8.bin";
+
+	m_ppMissionObjects = new CGameObject * [m_nMissionObject];
+	m_ppMissionAnswer = new CGameObject * [m_nMissionObject];
+
+	for (int i = 0; i < m_nMissionObject; ++i) {
+		CLoadedModelInfo* pMission = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, FileName[i], NULL);
+		m_ppMissionObjects[i] = new Mission(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, pMission);
+		
+		CLoadedModelInfo* pAnswer = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, FileName[i], NULL);
+		m_ppMissionAnswer[i] = new Mission(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, pAnswer);
+	}
+
 
 	if (pPlayerModel) delete pPlayerModel;
 }
@@ -189,13 +212,25 @@ void CyborgPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity
 void CyborgPlayer::Update(float fTimeElapsed)
 {
 	CPlayer::Update(fTimeElapsed);
-	if (m_pHierarchicalGameObjects)
+	if (m_pMissionBoxObject)
 	{
-		if (!m_pHierarchicalGameObjects->m_pSkinnedAnimationController) {
+		if (!m_pMissionBoxObject->m_pSkinnedAnimationController) {
 			
-			if (reinterpret_cast<Mission*>(m_pHierarchicalGameObjects)->GetUnable()) {
-				m_pHierarchicalGameObjects->SetPosition(Vector3::Add(Vector3::Add(GetPosition(), Vector3::ScalarProduct(GetLook(),15.0f)), XMFLOAT3(0.0f,10.f,0.0f)));
-				m_pHierarchicalGameObjects->Animate(fTimeElapsed);
+			if (reinterpret_cast<Mission*>(m_pMissionBoxObject)->GetUnable()) {
+				m_pMissionBoxObject->SetPosition(Vector3::Add(Vector3::Add(GetPosition(), Vector3::ScalarProduct(GetLook(),7.0f)), XMFLOAT3(0.0f,16.f,0.0f)));
+				float angle = Vector3::Angle(XMFLOAT3( - m_pMissionBoxObject->GetLook().x, m_pMissionBoxObject->GetLook().y, -m_pMissionBoxObject->GetLook().z),
+					Vector3::Minus(XMFLOAT3(GetPosition().x, m_pMissionBoxObject->GetPosition().y, GetPosition().z), m_pMissionBoxObject->GetPosition()));
+				if(angle>=0.1)
+					m_pMissionBoxObject->Rotate(0, angle/2, 0);
+				m_pMissionBoxObject->Animate(fTimeElapsed);
+				m_ppSelectMission[0]->SetPosition(Vector3::Add(Vector3::Add(m_pMissionBoxObject->GetPosition(),XMFLOAT3(0,1.7f,0)),m_pMissionBoxObject->GetRight(),-2.0f));
+				m_ppSelectMission[1]->SetPosition(Vector3::Add(m_pMissionBoxObject->GetPosition(),XMFLOAT3(0,1.7f,0)));
+				m_ppSelectMission[2]->SetPosition(Vector3::Add(Vector3::Add(m_pMissionBoxObject->GetPosition(), XMFLOAT3(0, 1.7f, 0)), m_pMissionBoxObject->GetRight(), 2.0f));
+				m_ppSelectMission[3]->SetPosition(Vector3::Add(m_pMissionBoxObject->GetPosition(),XMFLOAT3(0,4.2f,0)));
+				for (int i = 0; i < 4; ++i) {
+					i == 3 ? m_ppSelectMission[i]->Rotate(0.f, 0.3f, 0.f) : m_ppSelectMission[i]->Rotate(0.f, -0.3f, 0.f);
+					m_ppSelectMission[i]->Animate(fTimeElapsed);
+				}
 			}
 		}
 	}
@@ -249,32 +284,102 @@ void CyborgPlayer::AnimationBlending(Player_Animation_ST type1, Player_Animation
 
 }
 
+int CyborgPlayer::Random(int min, int max)
+{
+
+	uniform_int_distribution uid{ min, max };
+	return uid(m_m64RandomEngine);
+}
+
+int CyborgPlayer::DuplicationCheck(int num, int* target, int end)
+{
+	for (int i = 0; i < end; ++i)
+		if (num == target[i])return 0;
+	return 1;
+}
+
 void CyborgPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	CPlayer::Render(pd3dCommandList, pCamera);
-	if (reinterpret_cast<Mission*>(m_pHierarchicalGameObjects)->GetUnable())m_pHierarchicalGameObjects->Render(pd3dCommandList, pCamera);
+	if (reinterpret_cast<Mission*>(m_pMissionBoxObject)->GetUnable()) {
+		m_pMissionBoxObject->Render(pd3dCommandList, pCamera);
+		for (int i = 0; i < 4; ++i) {
+			m_ppSelectMission[i]->Render(pd3dCommandList, pCamera);
+		}
+	}
 }
 
 bool CyborgPlayer::StartKeyMission(int type)
 {
 	switch (type) {
 	case 0: {
-		if (!reinterpret_cast<Mission*>(m_pHierarchicalGameObjects)->GetUnable()) {
+		if (!reinterpret_cast<Mission*>(m_pMissionBoxObject)->GetUnable()) {
+			if (m_ppSelectMission)delete[] m_ppSelectMission;
 			ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
-			reinterpret_cast<Mission*>(m_pHierarchicalGameObjects)->SetUnable(true);
+			reinterpret_cast<Mission*>(m_pMissionBoxObject)->SetUnable(true);
+			int* k = new int[3];
+			for (int i = 0; i < 3; ++i) {
+				k[i] = Random(0, 7);
+				if (DuplicationCheck(k[i], k, i)==0)--i;
+			}
+			m_ppSelectMission = new CGameObject * [4];
+			for (int i = 0; i < 3; ++i) {
+				m_ppSelectMission[i] = m_ppMissionObjects[k[i]];
+			}
+			m_nAnswer = Random(0, 2);
+			m_ppSelectMission[3] = m_ppMissionAnswer[k[m_nAnswer]];
+			delete[] k;
+		}
+		break;
+	}
+	case 1: {
+			if (m_ppSelectMission)delete[] m_ppSelectMission;
+			ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
+			reinterpret_cast<Mission*>(m_pMissionBoxObject)->SetUnable(true);
+			int* k = new int[3];
+			for (int i = 0; i < 3; ++i) {
+				k[i] = Random(0, 7);
+				if (DuplicationCheck(k[i], k, i) == 0)--i;
+			}
+			m_ppSelectMission = new CGameObject * [4];
+			for (int i = 0; i < 3; ++i) {
+				m_ppSelectMission[i] = m_ppMissionObjects[k[i]];
+			}
+			m_nAnswer = Random(0, 2);
+			m_ppSelectMission[3] = m_ppMissionAnswer[k[m_nAnswer]];
+			delete[] k;
+		break;
+	}
+	case 2: {
+		if (reinterpret_cast<Mission*>(m_pMissionBoxObject)->GetUnable()) {
+			ChangeCamera(SHOULDER_VIEW_CAMERA, 0.0f);
+			reinterpret_cast<Mission*>(m_pMissionBoxObject)->SetUnable(false);
 		}
 		break;
 	}
 	default: {
-		if (reinterpret_cast<Mission*>(m_pHierarchicalGameObjects)->GetUnable()) {
+		if (reinterpret_cast<Mission*>(m_pMissionBoxObject)->GetUnable()) {
 			ChangeCamera(SHOULDER_VIEW_CAMERA, 0.0f);
-			reinterpret_cast<Mission*>(m_pHierarchicalGameObjects)->SetUnable(false);
+			reinterpret_cast<Mission*>(m_pMissionBoxObject)->SetUnable(false);
 		}
 		break;
 	}
 	}
 
 	return false;
+}
+
+void CyborgPlayer::MissionCheck(int num)
+{
+	if (reinterpret_cast<Mission*>(m_pMissionBoxObject)->GetUnable()) {
+		cout << m_nAnswer << ", " << num << endl;
+		if (m_nAnswer == num) {
+			++m_nAnswerCount;
+			m_nAnswerCount == 3 ? m_bSecurityKey = true, StartKeyMission(2) : StartKeyMission(1);
+		}
+		else
+			StartKeyMission(-1);
+	}
 }
 
 void CyborgPlayer::ExhaustionStaminer()
