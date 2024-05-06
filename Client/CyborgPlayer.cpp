@@ -144,7 +144,7 @@ CCamera* CyborgPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.05f);
 		m_pCamera->ChangeView(true);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 20.5f, -10.0f));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 19.5f, -17.0f));
 		m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -238,8 +238,8 @@ void CyborgPlayer::Update(float fTimeElapsed)
 	if (m_pSkinnedAnimationController)
 	{
 		AnimationBlending(m_pasCurrentAni, m_pasNextAni);
-		if (m_pasNextAni == RUN) SetMaxVelocityXZ(40.f);
-		else if (m_pasNextAni == WALK) SetMaxVelocityXZ(20.f);
+		if (m_pasNextAni == RUN) SetMaxVelocityXZ(30.f);
+		else if (m_pasNextAni == WALK) SetMaxVelocityXZ(15.f);
 		// ExhaustionStaminer();
 		// RestorationStaminer();
 		IsRun();
@@ -443,8 +443,8 @@ void CyborgPlayer::IsIdle()
 void CyborgPlayer::IsRun()
 {
 		if (m_pasCurrentAni != RUN && m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
-			SetMaxVelocityXZ(40.f);
-			m_fVelocitySpeed = 20.f;
+			SetMaxVelocityXZ(30.f);
+			m_fVelocitySpeed = 10.f;
 			m_pasNextAni = RUN;
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 			AnimationPacket(m_pasNextAni);
@@ -469,7 +469,7 @@ void CyborgPlayer::IsCrawl()
 void CyborgPlayer::IsWalk()
 {
 	if (m_pasCurrentAni != WALK && !m_bIsRun && !m_bIsCreep && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
-		SetMaxVelocityXZ(20.f);
+		SetMaxVelocityXZ(15.f);
 		m_pasNextAni = WALK;
 		m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 		AnimationPacket(m_pasNextAni);
