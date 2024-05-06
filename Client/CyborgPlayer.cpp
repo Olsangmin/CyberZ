@@ -314,6 +314,7 @@ bool CyborgPlayer::StartKeyMission(int type)
 	switch (type) {
 	case 0: {
 		if (!reinterpret_cast<Mission*>(m_pMissionBoxObject)->GetUnable()) {
+			m_nAnswerCount = 0;
 			if (m_ppSelectMission)delete[] m_ppSelectMission;
 			ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 			reinterpret_cast<Mission*>(m_pMissionBoxObject)->SetUnable(true);
