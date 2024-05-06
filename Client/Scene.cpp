@@ -34,14 +34,12 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_xmf4GlobalAmbient = XMFLOAT4(0.15f, 0.15f, 0.15f, 1.0f);
 
 	// ??
-	m_pLights[0].m_bEnable = false;
-	m_pLights[0].m_nType = POINT_LIGHT;
-	m_pLights[0].m_fRange = 300.0f;
-	m_pLights[0].m_xmf4Ambient = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
-	m_pLights[0].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f);
-	m_pLights[0].m_xmf4Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.0f);
-	m_pLights[0].m_xmf3Position = XMFLOAT3(230.0f, 330.0f, 480.0f);
-	m_pLights[0].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
+	m_pLights[2].m_bEnable = true;
+	m_pLights[2].m_nType = DIRECTIONAL_LIGHT;
+	m_pLights[2].m_xmf4Ambient = XMFLOAT4(0.9f, 1.0f, 0.9f, 1.0f);
+	m_pLights[2].m_xmf4Diffuse = XMFLOAT4(0.7f, 0.5f, 0.2f, 1.0f);
+	m_pLights[2].m_xmf4Specular = XMFLOAT4(0.6f, 0.6f, 0.6f, 0.0f);
+	m_pLights[2].m_xmf3Direction = XMFLOAT3(500.0f, 30.0f, 500.0f);
 
 	// Player Flash Light
 	m_pLights[1].m_bEnable = false;
@@ -60,9 +58,9 @@ void CScene::BuildDefaultLightsAndMaterials()
 	// Sun
 	m_pLights[2].m_bEnable = true;
 	m_pLights[2].m_nType = DIRECTIONAL_LIGHT;
-	m_pLights[2].m_xmf4Ambient = XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
-	m_pLights[2].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f);
-	m_pLights[2].m_xmf4Specular = XMFLOAT4(0.4f, 0.4f, 0.4f, 0.0f);
+	m_pLights[2].m_xmf4Ambient = XMFLOAT4(0.9f, 1.0f, 0.9f, 1.0f);
+	m_pLights[2].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.3f, 0.6f, 1.0f);
+	m_pLights[2].m_xmf4Specular = XMFLOAT4(0.7f, 0.6f, 0.5f, 0.0f);
 	m_pLights[2].m_xmf3Direction = XMFLOAT3(1.0f, -1.0f, 0.0f);
 
 	// ??
