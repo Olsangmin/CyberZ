@@ -240,10 +240,11 @@ void CyborgPlayer::Update(float fTimeElapsed)
 		AnimationBlending(m_pasCurrentAni, m_pasNextAni);
 		if (m_pasNextAni == RUN) SetMaxVelocityXZ(30.f);
 		else if (m_pasNextAni == WALK) SetMaxVelocityXZ(15.f);
-		// ExhaustionStaminer();
-		// RestorationStaminer();
+		else if (m_pasNextAni == CREEP) SetMaxVelocityXZ(7.f);
+		ExhaustionStaminer();
+		RestorationStaminer();
 		IsRun();
-		// IsCreep();
+		IsCreep();
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
 		if (::IsZero(fLength))
 		{
@@ -454,7 +455,7 @@ void CyborgPlayer::IsRun()
 void CyborgPlayer::IsCreep()
 {
 	if (m_pasCurrentAni != CREEP && m_bIsCreep && !m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
-		SetMaxVelocityXZ(10.f);
+		SetMaxVelocityXZ(7.f);
 		m_pasNextAni = CREEP;
 		m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 		AnimationPacket(m_pasNextAni);
