@@ -67,7 +67,7 @@ void NPC::Move()
 
 void NPC::Patrol()
 {
-	// std::cout << "Patrol" << std::endl;
+	std::cout << "Patrol" << std::endl;
 
 	if (n_path.empty()) {
 		return;
@@ -85,7 +85,7 @@ void NPC::Patrol()
 
 void NPC::Chase()
 {
-	// std::cout << "Chase" << std::endl;
+	std::cout << "Chase" << std::endl;
 	if (n_path.empty()) {
 		return;
 	}
