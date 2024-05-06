@@ -1232,7 +1232,7 @@ void CRobotObject::MoveToTarget()
 		m_pasNextAni = IDLE : RotateDirection(20.f), m_pasNextAni = WALK;
 	if (!Vector3::IsZero(m_xmf3Target))
 		Vector3::IsZero(Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()))) ?
-		m_pasNextAni = IDLE : MoveForward(0.3f), m_pasNextAni = WALK;
+		m_pasNextAni = IDLE : MoveForward(0.25f), m_pasNextAni = WALK;
 	else { m_pasNextAni = IDLE; }
 
 }

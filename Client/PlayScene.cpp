@@ -6,6 +6,13 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 {
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
 
+#ifdef USE_NETWORK
+	CS_GAMESTART_PACKET p;
+	p.size = sizeof(p);
+	p.type = CS_GAME_START;
+	send_packet(&p);
+#endif // USE_NETWORK
+
 	m_pUI = new CPlaySceneUI();
 
 	//===============================//
@@ -78,7 +85,7 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 		CLoadedModelInfo* pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot.bin", NULL);
 		m_ppEnemy[i] = new CRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 3);
 		m_ppEnemy[i]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-		m_ppEnemy[i]->SetPosition(100.0f, 0, 0.0f + i * 100);
+		m_ppEnemy[i]->SetPosition(NPCInitPos[i]);
 		m_ppEnemy[i]->SetScale(10.f, 10.f, 10.f);
 
 		if (pRobotModel) delete pRobotModel;
@@ -121,7 +128,7 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
 
 	for (int i = 0; i < m_nPlayer; ++i) {
-		CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
+		CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i], SHOULDER_VIEW_CAMERA);
 		m_ppPlayer[i] = pPlayer;
 		m_ppPlayer[i]->SetPlayerData(i);
 	}
@@ -130,7 +137,10 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	if (myPlayernum != 4) playernum = myPlayernum;
 
 	m_pMyPlayer = m_ppPlayer[playernum];
-	m_pMyPlayer->SetPosition(XMFLOAT3(300.f, 0.f, 600.f));
+	// m_pMyPlayer->SetPosition(XMFLOAT3(50.f, 0.f, 70.f));
+	m_pMyPlayer->SetPosition(PlayerInitPos[playernum]);
+
+
 }
 
 
@@ -159,14 +169,10 @@ bool CPlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysB
 
 	// Player unable
 	// m_ppPlayer[원하는 캐릭터]->m_bUnable = true 면은 ADD_OBJ(실제로 생성이 아닌 렌더&움직임 가능 상태)
-	if (pKeysBuffer['1'] & 0xF0) m_ppPlayer[FIRST_PLAYER]->m_bUnable = true;
-	if (pKeysBuffer['2'] & 0xF0) m_ppPlayer[SECOND_PLAYER]->m_bUnable = true;
-	if (pKeysBuffer['3'] & 0xF0) m_ppPlayer[THIRD_PLAYER]->m_bUnable = true;
+
 	if (pKeysBuffer['7'] & 0xF0) m_pMyPlayer->m_bUnable = true;
 
-	// Player disable
-	if (pKeysBuffer['4'] & 0xF0) m_ppPlayer[FIRST_PLAYER]->m_bUnable = false;
-	if (pKeysBuffer['5'] & 0xF0) m_ppPlayer[SECOND_PLAYER]->m_bUnable = false;
+
 
 	// Decide whether to blend
 	// 전에 입력한 키와 다르다면 블렌딩타임을 0으로 설정
@@ -184,8 +190,8 @@ bool CPlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysB
 
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) {
+			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(-1);
 			m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
-
 		}
 	}
 
@@ -210,6 +216,16 @@ bool CPlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 			if (m_pMyPlayer->GetStaminer())m_pMyPlayer->SetCreep();
 			break;
 		}
+		case 'H': {
+			if(!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetSecurityKey())
+				reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(0);
+			break;
+		}
+		case '1':
+		case '2':
+		case '3': 
+			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->MissionCheck(wParam-49);
+			break;
 		}
 		break;
 	}
@@ -222,7 +238,7 @@ bool CPlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 		}
 		case 'C': {
 			// m_pMyPlayer->SetCreepFlag();
-			reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->SetTarget(m_pMyPlayer->GetPosition());
+			
 			break;
 		}
 		}
@@ -302,12 +318,24 @@ void CPlayScene::ProcessPacket(char* p)
 		}
 
 	} break;
-
+		
 	case SC_UPDATE_PLAYER:
 	{
 		SC_UPDATE_PLAYER_PACKET* packet = reinterpret_cast<SC_UPDATE_PLAYER_PACKET*>(p);
+		int id = packet->id;
+		if (id == my_id) break;
 
-		break;
+
+		auto it = idANDtype.find(id);
+		if (it == idANDtype.end()) break;
+		else {
+			Player_Character_Type type = it->second;
+			m_ppPlayer[type]->SetPosition(packet->position);
+			cout << "[" << type << "]" << endl;
+			// m_ppPlayer[type]->Rotate(0.f, packet->yaw - m_ppPlayer[type]->GetYaw(), 0.f);
+
+		}
+
 	} break;
 
 	case SC_CHANGE_ANIM: {
@@ -333,19 +361,24 @@ void CPlayScene::ProcessPacket(char* p)
 		int n_id = packet->id - 100;
 		m_ppEnemy[n_id]->SetPosition(packet->position);
 		// reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(m_ppEnemy[n_id]->GetPosition());
-		
+
 	}
 				   break;
 
 	case SC_MOVE_NPC: {
 		SC_MOVE_NPC_PACKET* packet = reinterpret_cast<SC_MOVE_NPC_PACKET*>(p);
-		
+
 		int n_id = packet->id - 100;
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(packet->next_pos);
 		// std::cout << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << std::endl;
 		std::cout << packet->next_pos.x << "," << packet->next_pos.z << std::endl;
 	}
 					break;
+
+	case SC_ATTACK_NPC: {
+		SC_ATTACK_NPC_PACKET* packet = reinterpret_cast<SC_ATTACK_NPC_PACKET*>(p);
+		cout << "[" << packet->p_id << "] 사망" << endl;
+	}break;
 
 
 	default:
@@ -465,11 +498,6 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 	//	if (pKeysBuffer['1'] & 0xF0) select = Corzim;
 	//	if (pKeysBuffer['2'] & 0xF0)select = Evan;
 	//	if (pKeysBuffer['3'] & 0xF0)select = Uranya;
-	//	
-	//	// 클라에서 테스트 할거면 주석 처리 수정해줄것
-	//	// ChangeModel(0, select);
-
-	//	cout << 1 << endl;
 
 
 	//}
@@ -495,38 +523,39 @@ bool CPrepareRoomScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 		case 'R': {
 			CS_GAMESTART_PACKET p;
 			p.size = sizeof(p);
-			p.type = CS_GAME_START;
+			p.type = CS_ALLPLAYER_READY;
 #ifdef USE_NETWORK
-	send_packet(&p);
+			send_packet(&p);
 #else
-	m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
+			m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
 #endif // USE_NETWORK
 
 		}break;
 		case '1': {
 			select = Corzim;
-			//ChangeModel(0, select);
 
 		}break;
 		case '2': {
 			select = Evan;
-			//ChangeModel(0, select);
 		}break;
 		case '3': {
 			select = Uranya;
-			//ChangeModel(0, select);
 		}break;
 
 		}
+	default:
 		break;
 	}
 	}
+
 #ifdef USE_NETWORK
 	CS_CHANGE_CHARACTER_PACKET p;
 	p.size = sizeof(p);
 	p.type = CS_CHANGE_CHARACTER;
 	p.c_type = select;
 	send_packet(&p);
+#else
+	ChangeModel(0, select);
 #endif // USE_NETWORK
 	CScene::OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 	return false;

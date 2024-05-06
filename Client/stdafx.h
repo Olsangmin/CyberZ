@@ -24,6 +24,7 @@
 
 #include <fstream>
 #include <vector>
+#include <random>
 
 using namespace std;
 
@@ -63,7 +64,7 @@ using namespace std;
 #include "Network.h"
 
 // 주석하면 서버없이 가능@@@@@@@@@
-//#define USE_NETWORK 
+#define USE_NETWORK 
 
 // =================================================
 
@@ -76,8 +77,8 @@ extern HINSTANCE						ghAppInstance;
 
 //#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
-#define FRAME_BUFFER_WIDTH				640
-#define FRAME_BUFFER_HEIGHT				480
+#define FRAME_BUFFER_WIDTH				1920
+#define FRAME_BUFFER_HEIGHT				1080
 
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "d3d12.lib")

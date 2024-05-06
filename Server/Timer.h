@@ -1,7 +1,7 @@
 #pragma once
 #include <chrono>
 
-enum Timer_EVENT_TYPE { EV_NPC_MOVE, EV_SEND_COUNT };
+enum Timer_EVENT_TYPE { EV_NPC_MOVE, EV_NPC_ATTACK,  EV_SEND_COUNT };
 
 struct TIMER_EVENT
 {

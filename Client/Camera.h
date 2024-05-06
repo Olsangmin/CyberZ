@@ -99,7 +99,7 @@ public:
 	D3D12_VIEWPORT GetViewport() { return(m_d3dViewport); }
 	D3D12_RECT GetScissorRect() { return(m_d3dScissorRect); }
 
-	void ChangeView() { m_bShoulder = !m_bShoulder; }
+	void ChangeView(bool bShoulder) { m_bShoulder = bShoulder; }
 	bool GetViewType() { return m_bShoulder; }
 
 	virtual void Move(const XMFLOAT3& xmf3Shift) { m_xmf3Position.x += xmf3Shift.x; m_xmf3Position.y += xmf3Shift.y; m_xmf3Position.z += xmf3Shift.z; }

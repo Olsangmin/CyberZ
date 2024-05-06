@@ -55,6 +55,9 @@
     <Filter Include="11. GUI">
       <UniqueIdentifier>{b1f1e808-01a9-441e-a84d-a44c42b4be0b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="05. Object\05-01. Mission">
+      <UniqueIdentifier>{7560441b-f73c-47d6-889c-efeb8841f843}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CyberZ_Client.rc">
@@ -121,6 +124,9 @@
     <ClCompile Include="GUI.cpp">
       <Filter>11. GUI</Filter>
     </ClCompile>
+    <ClCompile Include="Mission.cpp">
+      <Filter>05. Object\05-01. Mission</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameFramework.h">
@@ -182,6 +188,9 @@
     </ClInclude>
     <ClInclude Include="GUI.h">
       <Filter>11. GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Mission.h">
+      <Filter>05. Object\05-01. Mission</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

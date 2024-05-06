@@ -1,10 +1,12 @@
 #include "NPC.h"
 #include "Server.h"
+#include "GameMap.h"
 
 NPC::NPC()
 {
 	id = -2;
 	n_state = NPC_FREE;
+	current_behavior = ATTACK;
 	near_player = -1;
 	my_sector = -1;
 }
@@ -19,62 +21,92 @@ void NPC::WakeUp(int p_id)
 		return;
 	std::cout << "NPC[" << id << "] WakeUp  By P[" << near_player << "] " << std::endl;
 	//TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::seconds(3), EV_NPC_MOVE };
+	
+	
 	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now(), EV_NPC_MOVE };
+	
+	
 	auto& server = Server::GetInstance();
 	server.timer_queue.push(ev);
-
-	/*auto& server = Server::GetInstance();
-	server.timer_queue.push(ev);*/
-	// timer_queue.push(ev);
 }
 
 
 
-void NPC::Update()
+void NPC::DoWork()
 {
 	if (n_state != NPC_INGAME) return;
 
-	int state = n_state;
-	switch (state)
+	switch (current_behavior)
 	{
-	case NPC_STAY: {
-		
-	} break;
-
-	case NPC_MOVE: {
-		
-	}
-	
-
-
-
+	case PATROL:
+		Patrol();
+		break;
+	case CHASE:
+		Chase();
+		break;
+	case ATTACK:
+		Attack();
+		break;
 
 	default:
 		break;
 	}
-
-	// std::cout << "NPC[" << id << "] - (" << GetPos().x << ", " << GetPos().z << "). " << std::endl;
-}
-
-DirectX::XMFLOAT3 NPC::Move()
-{
-	n_state = NPC_MOVE;
-
 	
-	if (n_path.empty())
-		return GetPos();
-
-	DirectX::XMFLOAT3 next = n_path.front();
-	std::cout << "NPC[" << id << "] Move " << next.x << ", " << next.z << std::endl;
-	SetPos(next);
-	n_path.pop();
-
-	return next;
 }
 
-bool NPC::NeedPath()
+void NPC::Move()
 {
-	if(n_state == NPC_STAY)
-	return false;
+	if (n_path.empty())
+		return;
+
+	SetPos(n_path.front());
+	n_path.pop();
+	// std::cout << "NPC[" << id << "] " << current_behavior<< " Move " << GetPos().x << ", " << GetPos().z << std::endl;
+
 }
+
+void NPC::Patrol()
+{
+	// std::cout << "Patrol" << std::endl;
+
+	if (n_path.empty()) {
+		return;
+	}
+	
+	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now()+std::chrono::milliseconds(500), EV_NPC_MOVE};
+	auto& server = Server::GetInstance();
+	server.timer_queue.push(ev);
+
+	for (auto cl : server.gMap.cl_ids) {
+		server.clients[cl].send_move_npc_packet(id, n_path.front());
+	}
+
+}
+
+void NPC::Chase()
+{
+	// std::cout << "Chase" << std::endl;
+	if (n_path.empty()) {
+		return;
+	}
+
+	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(250), EV_NPC_MOVE };
+	auto& server = Server::GetInstance();
+	server.timer_queue.push(ev);
+
+	for (auto cl : server.gMap.cl_ids) {
+		server.clients[cl].send_move_npc_packet(id, n_path.front());
+	}
+}
+
+void NPC::Attack()
+{
+	std::cout << "Attack½ÃÀÛ" << std::endl;
+	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(100), EV_NPC_ATTACK };
+	auto& server = Server::GetInstance();
+	server.timer_queue.push(ev);
+}
+
+
+
 

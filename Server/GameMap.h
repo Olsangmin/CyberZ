@@ -40,6 +40,13 @@ struct CELL
 
         return bb.Intersects(obj);
     }
+    bool operator==(const CELL& rhs) const
+    {
+        // return (x == other.x && z == other.z);
+        if (1.f < abs(center.x - rhs.center.x)) return false;
+        return abs(center.x - rhs.center.x) <= 1.f;
+
+    }
 };
 
 
@@ -60,11 +67,12 @@ public:
 
     void StartGame();
     void EndGame() { InGame = false; }
+    void PlayGame() { InGame = true; }
     bool is_InGame() const { return InGame; }
 
     void printMap() const;
 
-    void Update();
+    void Update(int tick);
 
     CELL& GetCurrentCell(DirectX::XMFLOAT3 in_pos);
 
@@ -81,6 +89,7 @@ public:
         int dz = nodeA.z - nodeB.z;
         return static_cast<int>(std::sqrt(dx * dx + dz * dz));
     }
+
     bool IsInOpenSet(Node* node, const std::priority_queue<Node*, std::vector<Node*>, CompareNodes>& openSet) {
         std::priority_queue<Node*, std::vector<Node*>, CompareNodes> tempOpenSet = openSet; // 복사본 생성
         while (!tempOpenSet.empty()) {
@@ -91,6 +100,35 @@ public:
             }
         }
         return false;
+    }
+
+    DirectX::XMFLOAT3 GetRandomPos(DirectX::XMFLOAT3 pos)
+    {
+        DirectX::XMFLOAT3 next_pos;
+
+        int curr_sertor = getSector(pos);
+        
+        std::pair<int, int> index = CoordsToIndex(pos);
+        while (true) {
+            int x = index.first, y = index.second;
+            switch (rand() % 4)
+            {
+            case 0: x++; break;
+            case 1: x--; break;
+            case 2: y++; break;
+            case 3: y--; break;
+
+            default:
+                break;
+            }
+            if (curr_sertor != getSector(next_pos)) continue;
+            if (false == cells[x][y].isObstacle) {
+                next_pos = cells[x][y].center;
+                break;
+            }
+        }
+
+        return next_pos;
     }
 
     std::vector<Node> GetNeighbors(const Node& node) const;
@@ -121,8 +159,8 @@ public:
     }
 
 
-private:
     std::vector<std::vector<CELL>> cells;
+private:
     float mapWidth, mapDepth;
     int cellWidth, cellDepth;
     bool InGame;
