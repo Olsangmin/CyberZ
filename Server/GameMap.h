@@ -121,9 +121,10 @@ public:
             default:
                 break;
             }
-            if (curr_sertor != getSector(next_pos)) continue;
+            
             if (false == cells[x][y].isObstacle) {
                 next_pos = cells[x][y].center;
+                if (curr_sertor != getSector(next_pos)) continue;
                 break;
             }
         }
