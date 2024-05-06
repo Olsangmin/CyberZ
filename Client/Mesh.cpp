@@ -766,7 +766,7 @@ void CSkinnedMesh::OnPreRender(ID3D12GraphicsCommandList *pd3dCommandList, void 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-CBoundingBoxMesh::CBoundingBoxMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList) : CMesh(pd3dDevice, pd3dCommandList)
+CBoundingBoxMesh::CBoundingBoxMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4 xm4Color) : CMesh(pd3dDevice, pd3dCommandList)
 {
 	m_nVertices = 12 * 2;
 
@@ -779,24 +779,43 @@ CBoundingBoxMesh::CBoundingBoxMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 	m_pd3dPositionBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, m_nStride * m_nVertices, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 	m_pd3dPositionBuffer->Map(0, NULL, (void**)&m_pcbMappedPositions);
 
-	m_nVertexBufferViews = 1;
+	m_nVertexBufferViews = 2;
 	m_pd3dVertexBufferViews = new D3D12_VERTEX_BUFFER_VIEW[m_nVertexBufferViews];
 
 	m_pd3dVertexBufferViews[0].BufferLocation = m_pd3dPositionBuffer->GetGPUVirtualAddress();
 	m_pd3dVertexBufferViews[0].StrideInBytes = sizeof(XMFLOAT3);
 	m_pd3dVertexBufferViews[0].SizeInBytes = sizeof(XMFLOAT3) * m_nVertices;
+
+
+	m_pxmf4Colors = new XMFLOAT4[m_nVertices];
+
+	for (size_t i = 0; i < m_nVertices; i++)
+	{
+		m_pxmf4Colors[i] = xm4Color;
+	}
+
+	m_pd3dColorBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_pxmf4Colors, sizeof(XMFLOAT4) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dColorUploadBuffer);
+	m_pd3dVertexBufferViews[1].BufferLocation = m_pd3dColorBuffer->GetGPUVirtualAddress();
+	m_pd3dVertexBufferViews[1].StrideInBytes = sizeof(XMFLOAT4);
+	m_pd3dVertexBufferViews[1].SizeInBytes = sizeof(XMFLOAT4) * m_nVertices;
 }
 
 CBoundingBoxMesh::~CBoundingBoxMesh()
 {
 	if (m_pd3dPositionBuffer) m_pd3dPositionBuffer->Unmap(0, NULL);
+
+	if (m_pd3dColorBuffer) m_pd3dColorBuffer->Release();
+	if (m_pxmf4Colors) delete[] m_pxmf4Colors;
+
+	if (m_pd3dColorUploadBuffer) m_pd3dColorUploadBuffer->Release();
+	m_pd3dColorUploadBuffer = NULL;
+
 }
 
 void CBoundingBoxMesh::UpdateVertexPosition(BoundingOrientedBox* pxmBoundingBox)
 {
 	XMFLOAT3 xmf3Corners[8];
 	pxmBoundingBox->GetCorners(xmf3Corners);
-
 
 	int i = 0;
 
@@ -836,6 +855,7 @@ void CBoundingBoxMesh::UpdateVertexPosition(BoundingOrientedBox* pxmBoundingBox)
 	m_pcbMappedPositions[i++] = xmf3Corners[3];
 	m_pcbMappedPositions[i++] = xmf3Corners[7];
 }
+
 
 void CBoundingBoxMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList)
 {	

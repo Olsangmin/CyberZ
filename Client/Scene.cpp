@@ -101,10 +101,18 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	BuildDefaultLightsAndMaterials();
 
+
 }
 
 void CScene::ReleaseObjects()
 {
+
+	if (m_pUI)
+	{
+		m_pUI->Release();
+		delete m_pUI;
+	}
+
 	if (m_pd3dGraphicsRootSignature) m_pd3dGraphicsRootSignature->Release();
 	if (m_pd3dCbvSrvDescriptorHeap) m_pd3dCbvSrvDescriptorHeap->Release();
 
@@ -126,6 +134,17 @@ void CScene::ReleaseObjects()
 
 	if (m_pTerrain) delete m_pTerrain;
 	if (m_pSkyBox) delete m_pSkyBox;
+
+
+	if (m_ppMissionObj)
+	{
+		for (int i = 0; i < m_nMissionObj; i++) if (m_ppMissionObj[i])
+		{
+			m_ppMissionObj[i]->ReleaseUploadBuffers();
+			m_ppMissionObj[i]->Release();
+		}
+		delete[] m_ppMissionObj;
+	}
 
 	if (m_ppHierarchicalGameObjects)
 	{
@@ -374,6 +393,7 @@ void CScene::ReleaseUploadBuffers()
 
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->ReleaseUploadBuffers();
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) m_ppHierarchicalGameObjects[i]->ReleaseUploadBuffers();
+	for (int i = 0; i < m_nMissionObj; i++) m_ppMissionObj[i]->ReleaseUploadBuffers();
 	for (int i = 0; i < m_nEnemy; i++) m_ppEnemy[i]->ReleaseUploadBuffers();
 
 }
@@ -457,20 +477,39 @@ void CScene::AnimateObjects(float fTimeElapsed)
 	for (int i = 0; i < m_nEnemy; i++) if (m_ppEnemy[i]) m_ppEnemy[i]->Animate(m_fElapsedTime);
 
 
+	Missionflag = false;
+	
 	for (int i = 0; i < m_nPlayer; i++) if (m_ppPlayer[i]) {
 
 		m_ppPlayer[i]->Animate(fTimeElapsed);
 		bool flag = false;
+		
+		// MAP Obj
 		for (int j = 0; j < m_nHierarchicalGameObjects; ++j) {
 			if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) {
 				flag = true;
 				break;
 			}
 		}
+
+		XMFLOAT3 look = m_pMyPlayer->GetLookVector();
+		XMFLOAT3 look2 = m_pMyPlayer->GetLook();
+
+		//Mission Obj
+		for (int j = 0; j < m_nMissionObj; ++j) {
+			if (CheckObjByObjCollition(m_ppPlayer[i], m_ppMissionObj[j])) {
+
+				flag = true;
+			}
+			if (CheckMissionBound(m_ppPlayer[i], m_ppMissionObj[j])) 
+			{
+				Missionflag = true;
+			}
+		}
 		m_ppPlayer[i]->m_bIntersects = flag;
 		m_ppPlayer[i]->Update(fTimeElapsed);
-
 	}
+
 
 	// 플레이어 플레쉬 라이트 사용 안하니까 일단 주석
 	/*
@@ -480,7 +519,7 @@ void CScene::AnimateObjects(float fTimeElapsed)
 		m_pLights[1].m_xmf3Direction = m_ppPlayer[FIRST_PLAYER]->GetLookVector();
 	}
 	*/
-
+	  
 }
 
 void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -513,6 +552,16 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 		}
 	}
 
+	for (int i = 0; i < m_nMissionObj; i++)
+	{
+		if (m_ppMissionObj[i])
+		{
+			if (!m_ppMissionObj[i]->m_pSkinnedAnimationController) m_ppMissionObj[i]->UpdateTransform(NULL);
+			m_ppMissionObj[i]->Animate(m_fElapsedTime);
+			m_ppMissionObj[i]->Render(pd3dCommandList, pCamera);
+		}
+	}
+
 	for (int i = 0; i < m_nEnemy; i++)
 	{
 		if (m_ppEnemy[i])
@@ -539,19 +588,28 @@ void CScene::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 	{
 		if (m_ppHierarchicalGameObjects[i])
 		{
-			m_ppHierarchicalGameObjects[i]->RenderBoundingBox(pd3dCommandList, pCamera);
+			m_ppHierarchicalGameObjects[i]->RenderBoundingBox(pd3dCommandList);
 		}
 	}
 
+	for (int i = 0; i < m_nMissionObj; i++)
+	{
+		if (m_ppMissionObj[i])
+		{
+			m_ppMissionObj[i]->RenderBoundingBox(pd3dCommandList);
+		}
+	}
+
+	
 	for (int i = 0; i < m_nEnemy; i++)
 	{
 		if (m_ppEnemy[i])
 		{
-			m_ppEnemy[i]->RenderBoundingBox(pd3dCommandList, pCamera);
+			m_ppEnemy[i]->RenderBoundingBox(pd3dCommandList);
 		}
 	}
-
-	for (int i = 0; i < m_nPlayer; i++)	m_ppPlayer[i]->RenderBoundingBox(pd3dCommandList, pCamera);
+	
+	for (int i = 0; i < m_nPlayer; i++)	m_ppPlayer[i]->RenderBoundingBox(pd3dCommandList);
 }
 
 bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget)
@@ -587,6 +645,12 @@ bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget)
 	if (pTarget->m_pChild && CheckObjByObjCollition(pBase, pTarget->m_pChild)) return(true);
 	if (pTarget->m_pSibling && CheckObjByObjCollition(pBase, pTarget->m_pSibling)) return(true);
 
+	else return false;
+}
+
+bool CScene::CheckMissionBound(CGameObject* pBase, CMissonOBJ* pTarget)
+{
+	if (pBase->m_xmBoundingBox.Intersects(pTarget->m_xmMissionRange)) return(true);
 	else return false;
 }
 

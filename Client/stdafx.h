@@ -38,6 +38,22 @@ using namespace std;
 
 #include <Mmsystem.h>
 
+//dxd2D
+#include <d2d1_3.h>
+#include <dwrite.h>
+#include <dwrite_1.h>
+#include <d3d11on12.h>
+#include <d2d1_1helper.h>
+
+#include <d2d1effects.h>
+#include <wincodec.h>
+
+#pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "dwrite.lib")
+#pragma comment(lib, "windowscodecs.lib")
+
+
 #ifdef _DEBUG
 #include <dxgidebug.h>
 #endif
@@ -48,7 +64,7 @@ using namespace std;
 #include "Network.h"
 
 // 주석하면 서버없이 가능@@@@@@@@@
-#define USE_NETWORK 
+//#define USE_NETWORK 
 
 // =================================================
 

@@ -261,10 +261,16 @@ public:
 class CBoundingBoxMesh : public CMesh
 {
 public:
-	CBoundingBoxMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	CBoundingBoxMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4 xm4Color);
 	virtual ~CBoundingBoxMesh();
 
 	XMFLOAT3* m_pcbMappedPositions = NULL;
+	XMFLOAT4* m_pxmf4Colors = NULL;
+
+	ID3D12Resource*					m_pd3dColorBuffer = NULL;
+	ID3D12Resource*					m_pd3dColorUploadBuffer = NULL;
+	D3D12_VERTEX_BUFFER_VIEW		m_d3dColorBufferView;
+
 
 	void UpdateVertexPosition(BoundingOrientedBox* pxmBoundingBox);
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList);

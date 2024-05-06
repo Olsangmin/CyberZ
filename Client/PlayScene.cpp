@@ -2,9 +2,18 @@
 #include "stdafx.h"
 #include "PlayScene.h"
 
-void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum)
+void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum)
 {
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
+
+#ifdef USE_NETWORK
+	CS_GAMESTART_PACKET p;
+	p.size = sizeof(p);
+	p.type = CS_GAME_START;
+	send_packet(&p);
+#endif // USE_NETWORK
+
+	m_pUI = new CPlaySceneUI();
 
 	//===============================//
 	// SKY BOX (1)
@@ -18,11 +27,17 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	m_pTerrain->SetPosition(XMFLOAT3(-2000.f, 0.f, -2000.f));
 
 	//===============================//
-	// OBJ (1)
+	// Map (4)
 	// [Present Setting]
-	// 1 - map				|| OBJ
+	// 1 - 울타리				|| OBJ
+	// 2 - 맵 1(우상단)			|| OBJ
+	// 3 - 맵 2(좌하단)			|| OBJ
 
-	m_nHierarchicalGameObjects = 4;
+	// 4 - 점령 미션용 obj		|| OBJ
+
+
+
+	m_nHierarchicalGameObjects = 3;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
 	// 1 - obj1
@@ -37,16 +52,23 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	CLoadedModelInfo* pMapModel2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/middle/MAP3_2.bin", NULL);
 	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel2);
 	if (pMapModel2) delete pMapModel2;
-	
-	CLoadedModelInfo* pMachine = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/MissionMachine.bin", NULL);
-	m_ppHierarchicalGameObjects[3] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine);
-	m_ppHierarchicalGameObjects[3]->SetPosition(50.f, 0.f, 50.f);
+
+
+	//===============================//
+	// Mission Obj(1)
+	m_nMissionObj = 2;
+	m_ppMissionObj = new CMissonOBJ * [m_nMissionObj];
+
+	CLoadedModelInfo* pMachine = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/Comm.bin", NULL);
+	XMFLOAT3 missionRange = XMFLOAT3(30.f, 30.f, 30.f);
+	m_ppMissionObj[0] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine, missionRange);
+	m_ppMissionObj[0]->SetPosition(300.f, 0.f, 700.f);
 	if (pMachine) delete pMachine;
 
-
-	//CLoadedModelInfo* pMapModle2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MiddleCheckMap.bin", NULL);
-	//m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModle2);
-
+	CLoadedModelInfo* pMachine2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/Comm.bin", NULL);
+	m_ppMissionObj[1] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine2, missionRange);
+	m_ppMissionObj[1]->SetPosition(100.f, 0.f, 700.f);
+	if (pMachine2) delete pMachine2;
 
 	//===============================//
 
@@ -59,7 +81,7 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		CLoadedModelInfo* pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot.bin", NULL);
 		m_ppEnemy[i] = new CRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 3);
 		m_ppEnemy[i]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-		m_ppEnemy[i]->SetPosition(100.0f, 0, 0.0f + i * 100);
+		m_ppEnemy[i]->SetPosition(NPCInitPos[i]);
 		m_ppEnemy[i]->SetScale(10.f, 10.f, 10.f);
 
 		if (pRobotModel) delete pRobotModel;
@@ -111,10 +133,14 @@ void PlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	if (myPlayernum != 4) playernum = myPlayernum;
 
 	m_pMyPlayer = m_ppPlayer[playernum];
-	m_pMyPlayer->SetPosition(XMFLOAT3(50.f, 0.f, 70.f));
+	// m_pMyPlayer->SetPosition(XMFLOAT3(50.f, 0.f, 70.f));
+	m_pMyPlayer->SetPosition(PlayerInitPos[playernum]);
+
+
 }
 
-bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
+
+bool CPlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
 {
 	CScene::ProcessInput(m_hWnd, m_ptOldCursorPos, pKeysBuffer);
 
@@ -170,7 +196,7 @@ bool PlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBu
 	return(false);
 }
 
-bool PlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+bool CPlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	CScene::OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 
@@ -208,7 +234,7 @@ bool PlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM w
 		}
 		case 'C': {
 			// m_pMyPlayer->SetCreepFlag();
-			reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->SetTarget(m_pMyPlayer->GetPosition());
+			
 			break;
 		}
 		}
@@ -220,7 +246,20 @@ bool PlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM w
 	return false;
 }
 
-void PlayScene::ProcessPacket(char* p)
+void CPlayScene::AnimateObjects(float fTimeElapsed)
+{
+	CScene::AnimateObjects(fTimeElapsed);
+
+	if (m_pUI->MissionGauge < 170)
+	{
+		if (Missionflag) m_pUI->MissionGauge += 0.5f;
+		else if (m_pUI->MissionGauge > 0) m_pUI->MissionGauge -= 0.5f;
+	}
+
+}
+
+
+void CPlayScene::ProcessPacket(char* p)
 {
 	switch (p[1])
 	{
@@ -261,8 +300,20 @@ void PlayScene::ProcessPacket(char* p)
 	case SC_UPDATE_PLAYER:
 	{
 		SC_UPDATE_PLAYER_PACKET* packet = reinterpret_cast<SC_UPDATE_PLAYER_PACKET*>(p);
+		int id = packet->id;
+		if (id == my_id) break;
 
-		break;
+
+		auto it = idANDtype.find(id);
+		if (it == idANDtype.end()) break;
+		else {
+			Player_Character_Type type = it->second;
+			m_ppPlayer[type]->SetPosition(packet->position);
+			cout << "[" << type << "]" << endl;
+			// m_ppPlayer[type]->Rotate(0.f, packet->yaw - m_ppPlayer[type]->GetYaw(), 0.f);
+
+		}
+
 	} break;
 
 	case SC_CHANGE_ANIM: {
@@ -288,13 +339,13 @@ void PlayScene::ProcessPacket(char* p)
 		int n_id = packet->id - 100;
 		m_ppEnemy[n_id]->SetPosition(packet->position);
 		// reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(m_ppEnemy[n_id]->GetPosition());
-		
+
 	}
 				   break;
 
 	case SC_MOVE_NPC: {
 		SC_MOVE_NPC_PACKET* packet = reinterpret_cast<SC_MOVE_NPC_PACKET*>(p);
-		
+
 		int n_id = packet->id - 100;
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(packet->next_pos);
 		// std::cout << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << std::endl;
@@ -302,22 +353,26 @@ void PlayScene::ProcessPacket(char* p)
 	}
 					break;
 
+	case SC_ATTACK_NPC: {
+		SC_ATTACK_NPC_PACKET* packet = reinterpret_cast<SC_ATTACK_NPC_PACKET*>(p);
+		cout << "[" << packet->p_id << "] 사망" << endl;
+	}break;
+
 
 	default:
 		printf("Scene[Stage1] - Unknown PACKET type [%d]\n", p[1]);
 	}
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum)
 {
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
 
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	m_pUI = new CFirstSceneUI();
 
-	pScened3dDevice = pd3dDevice;
-	pScened3dCommandList = pd3dCommandList;
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	//===============================//
 	// SKY BOX (1)
@@ -330,7 +385,6 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	XMFLOAT4 xmf4Color(0.0f, 0.0f, 0.0f, 0.0f);
 	m_pTerrain = new CHeightMapTerrain(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("Terrain/BaseTerrain.raw"), 257, 257, xmf3Scale, xmf4Color);
 	m_pTerrain->SetPosition(-1000.f, 0, -1000.f);
-
 
 	//===============================//
 	// OBG
@@ -408,7 +462,7 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 		cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
-
+	
 	if (pKeysBuffer['9'] & 0xF0) m_pMyPlayer->m_bUnable = true;
 	if (pKeysBuffer['0'] & 0xF0) m_pMyPlayer->m_bUnable = false;
 
@@ -422,11 +476,6 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 	//	if (pKeysBuffer['1'] & 0xF0) select = Corzim;
 	//	if (pKeysBuffer['2'] & 0xF0)select = Evan;
 	//	if (pKeysBuffer['3'] & 0xF0)select = Uranya;
-	//	
-	//	// 클라에서 테스트 할거면 주석 처리 수정해줄것
-	//	// ChangeModel(0, select);
-
-	//	cout << 1 << endl;
 
 
 	//}
@@ -452,38 +501,39 @@ bool CPrepareRoomScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 		case 'R': {
 			CS_GAMESTART_PACKET p;
 			p.size = sizeof(p);
-			p.type = CS_GAME_START;
+			p.type = CS_ALLPLAYER_READY;
 #ifdef USE_NETWORK
-	send_packet(&p);
+			send_packet(&p);
 #else
-	m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
+			m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
 #endif // USE_NETWORK
 
 		}break;
 		case '1': {
 			select = Corzim;
-			//ChangeModel(0, select);
 
 		}break;
 		case '2': {
 			select = Evan;
-			//ChangeModel(0, select);
 		}break;
 		case '3': {
 			select = Uranya;
-			//ChangeModel(0, select);
 		}break;
 
 		}
+	default:
 		break;
 	}
 	}
+
 #ifdef USE_NETWORK
 	CS_CHANGE_CHARACTER_PACKET p;
 	p.size = sizeof(p);
 	p.type = CS_CHANGE_CHARACTER;
 	p.c_type = select;
 	send_packet(&p);
+#else
+	ChangeModel(0, select);
 #endif // USE_NETWORK
 	CScene::OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 	return false;
