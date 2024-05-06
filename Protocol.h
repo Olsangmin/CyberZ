@@ -17,8 +17,20 @@ static std::array<DirectX::XMFLOAT3, MAX_USER> PlayerInitPos = {
 	XMFLOAT3(200.f, 0.f, 800.f) };
 
 static std::array<DirectX::XMFLOAT3, MAX_USER> NPCInitPos = {
-	XMFLOAT3(500.f, 0.f, 500.f), XMFLOAT3(200.f, 0.f, 220.f),
+	XMFLOAT3(450.f, 0.f, 650.f), XMFLOAT3(410.f, 0.f, 220.f),
 	XMFLOAT3(750.f, 0.f, 900.f) };
+
+static std::array<DirectX::XMFLOAT3, 3> MissionPos = {
+	XMFLOAT3(500.f, 0.f, 500.f), XMFLOAT3(150.f, 0.f, 850.f),
+	XMFLOAT3(850.f, 0.f, 150.f) };
+
+
+static std::array<DirectX::XMFLOAT3, 3> KeyBox = {
+	XMFLOAT3(450.f, 0.f, 650.f), XMFLOAT3(150.f, 0.f, 850.f),
+	XMFLOAT3(850.f, 0.f, 150.f) };
+
+
+
 
 enum NPC_BEHAVIOR { PATROL, CHASE, ATTACK };
 
