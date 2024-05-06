@@ -35,8 +35,6 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	// 4 - 점령 미션용 obj		|| OBJ
 
-
-
 	m_nHierarchicalGameObjects = 3;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
@@ -56,22 +54,28 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	//===============================//
 	// Mission Obj(1)
-	m_nMissionObj = 2;
+	m_nMissionObj = 3;
 	m_ppMissionObj = new CMissonOBJ * [m_nMissionObj];
 
+	// 점령 미션 범위
+	XMFLOAT3 OccMissionRange = XMFLOAT3(30.f, 30.f, 30.f);
+	
 	CLoadedModelInfo* pMachine = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/Comm.bin", NULL);
-	XMFLOAT3 missionRange = XMFLOAT3(30.f, 30.f, 30.f);
-	m_ppMissionObj[0] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine, missionRange);
+	m_ppMissionObj[0] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine, OccMissionRange);
 	m_ppMissionObj[0]->SetPosition(300.f, 0.f, 700.f);
 	if (pMachine) delete pMachine;
 
 	CLoadedModelInfo* pMachine2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/Comm.bin", NULL);
-	m_ppMissionObj[1] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine2, missionRange);
-	m_ppMissionObj[1]->SetPosition(100.f, 0.f, 700.f);
+	m_ppMissionObj[1] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine2, OccMissionRange);
+	m_ppMissionObj[1]->SetPosition(700.f, 0.f, 100.f);
 	if (pMachine2) delete pMachine2;
 
-	//===============================//
+	CLoadedModelInfo* pMachine3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/Comm.bin", NULL);
+	m_ppMissionObj[2] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine3, OccMissionRange);
+	m_ppMissionObj[2]->SetPosition(500.f, 0.f, 500.f);
+	if (pMachine3) delete pMachine3;
 
+	//===============================//
 	m_nEnemy = 3;
 	m_ppEnemy = new CGameObject * [m_nEnemy];
 
@@ -250,10 +254,28 @@ void CPlayScene::AnimateObjects(float fTimeElapsed)
 {
 	CScene::AnimateObjects(fTimeElapsed);
 
-	if (m_pUI->MissionGauge < 170)
+	for (int k = 0; k < m_nMissionObj; k++)
 	{
-		if (Missionflag) m_pUI->MissionGauge += 0.5f;
-		else if (m_pUI->MissionGauge > 0) m_pUI->MissionGauge -= 0.5f;
+		Missionflag = false;
+		for (int i = 0; i < m_nPlayer; i++) if(m_ppPlayer[i]){
+			if (CheckMissionBound(m_ppPlayer[i], m_ppMissionObj[k])){
+				Missionflag = true;
+				cout << "colli" << endl;
+			}
+			m_ppMissionObj[k]->m_bMissionflag = Missionflag;
+		}
+	}
+
+	for (int i = 0; i < m_nMissionObj; i++)
+	{
+		if (m_pUI->m_fMissionGauge[i] < 170)
+		{
+			if (m_ppMissionObj[i]->m_bMissionflag)
+			{
+				m_pUI->m_fMissionGauge[i] += 0.5f;
+			}
+			else if (m_pUI->m_fMissionGauge[i] > 0) m_pUI->m_fMissionGauge[i] -= 0.5f;
+		}
 	}
 
 }
@@ -410,7 +432,7 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 
 	//===============================//
-	// OBG
+	// PlayerSelecter
 
 	m_nPlayerSelecter = 3;
 	m_ppPlayerSelecter = new CSelectCharacterOBJ * [m_nPlayerSelecter];

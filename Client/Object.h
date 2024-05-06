@@ -401,6 +401,7 @@ public:
 	// 미션 종류
 	// 0 - 점령미션, 1 - 보안키 미션
 	int		m_nCategory = 0;
+	bool	m_bMissionflag = false;
 
 public:
 	void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList);

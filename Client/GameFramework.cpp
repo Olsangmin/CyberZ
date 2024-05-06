@@ -48,6 +48,8 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CreateSwapChain();
 	CreateDepthStencilView();
 
+	// 여기 주석처리하면 창모드
+	ChangeSwapChainState();
 	CoInitialize(NULL);
 
 	BuildObjects(0);

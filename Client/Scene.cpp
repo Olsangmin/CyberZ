@@ -475,7 +475,6 @@ void CScene::AnimateObjects(float fTimeElapsed)
 	for (int i = 0; i < m_nEnemy; i++) if (m_ppEnemy[i]) m_ppEnemy[i]->Animate(m_fElapsedTime);
 
 
-	Missionflag = false;
 	
 	for (int i = 0; i < m_nPlayer; i++) if (m_ppPlayer[i]) {
 
@@ -494,19 +493,16 @@ void CScene::AnimateObjects(float fTimeElapsed)
 		XMFLOAT3 look2 = m_pMyPlayer->GetLook();
 
 		//Mission Obj
-		for (int j = 0; j < m_nMissionObj; ++j) {
-			if (CheckObjByObjCollition(m_ppPlayer[i], m_ppMissionObj[j])) {
-
+		for (int k = 0; k < m_nMissionObj; ++k) if(m_ppMissionObj[k]) {
+			if (CheckObjByObjCollition(m_ppPlayer[i], m_ppMissionObj[k])) {
 				flag = true;
 			}
-			if (CheckMissionBound(m_ppPlayer[i], m_ppMissionObj[j])) 
-			{
-				Missionflag = true;
-			}
 		}
+
 		m_ppPlayer[i]->m_bIntersects = flag;
 		m_ppPlayer[i]->Update(fTimeElapsed);
 	}
+
 
 
 	// 플레이어 플레쉬 라이트 사용 안하니까 일단 주석
