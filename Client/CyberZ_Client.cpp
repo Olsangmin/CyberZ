@@ -14,6 +14,7 @@ TCHAR							szWindowClass[MAX_LOADSTRING];
 
 CGameFramework					gGameFramework;
 
+
 ATOM MyRegisterClass(HINSTANCE hInstance);
 BOOL InitInstance(HINSTANCE, int);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -26,6 +27,23 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 
 	MSG msg;
 	HACCEL hAccelTable;
+
+
+#ifdef USE_NETWORK
+	ifstream ip_file{ "../IPaddr.config" };
+	string s;
+	if (!ip_file) {
+		cout << "File Error" << endl;
+		exit(-1);
+	}
+	else {
+		while (ip_file >> s) {
+			ServerIP = s;
+		}
+	}
+#endif // USE_NETWORK
+
+	
 
 	::LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
 	::LoadString(hInstance, IDC_LABPROJECT0798, szWindowClass, MAX_LOADSTRING);
