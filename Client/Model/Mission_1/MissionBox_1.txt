@@ -1,5 +1,5 @@
 <Hierarchy>:
-	<Frame>: 0 1 MissionBox_1
+	<Frame>: 0 2 MissionBox_1
 		<Transform>: 0 0 0 0 0 89.9643 0.3 7 3 0 0 0.7068865 0.7073271  
 		<TransformMatrix>: 0.0001869142 0.3 0 0 -6.999999 0.004361331 0 0 0 0 3 0 0 0 0 1  
 		<Mesh>: 24 Cube
@@ -28,7 +28,7 @@
 				<DetailAlbedoMap>: null
 				<DetailNormalMap>: null
 		</Materials>
-		<Children>: 4
+		<Children>: 7
 			<Frame>: 1 0 Cube(2)
 				<Transform>: 8.833641 0.4787938 0 0 0 270.0357 0.04285712 16.66652 1 0 0 -0.7068865 0.7073271  
 				<TransformMatrix>: 2.670201E-05 -0.04285711 0 0 16.66651 0.01038403 0 0 0 0 1 0 8.833641 0.4787938 0 1  
@@ -152,6 +152,108 @@
 						<DetailNormalMap>: null
 				</Materials>
 				<Children>: 0
+			</Frame>
+			<Frame>: 5 0 20812_Number_2_Variant
+				<Transform>: 0.3566666 0 -0.4333333 359.9642 90.00952 89.99967 0.007142854 0.01666666 0.1666651 0.4998839 0.5001991 0.5001132 0.4998037  
+				<TransformMatrix>: -4.461832E-06 0.007142853 -3.95945E-08 0 2.767641E-06 9.338059E-08 0.01666666 0 0.1666651 0.0001041184 -2.767616E-05 0 0.3566666 0 -0.4333333 1  
+				<Children>: 1
+					<Frame>: 6 0 20812_Number_2_v1
+						<Transform>: 0 0 0 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1  
+						<Mesh>: 6557 20812_Number_2_v1
+							<Positions>: 0  
+							<Colors>: 0  
+							<TextureCoords0>: 0  
+							<TextureCoords1>: 0  
+							<Normals>: 0  
+							<SubMeshes>: 1
+								<SubMesh>: 0 0  
+						</Mesh>
+						<Materials>: 1
+							<Material>: 0
+								<AlbedoColor>: 1 1 1 1
+								<EmissiveColor>: 0 0 0 1
+								<Glossiness>: 0.5
+								<Metallic>: 1
+								<SpecularHighlight>: 1
+								<GlossyReflection>: 1
+								<AlbedoMap>: Magenta_Material
+								<MetallicMap>: null
+								<NormalMap>: null
+								<EmissionMap>: null
+								<DetailAlbedoMap>: null
+								<DetailNormalMap>: null
+						</Materials>
+						<Children>: 0
+					</Frame>
+			</Frame>
+			<Frame>: 7 0 20811_Number_1_Variant
+				<Transform>: 0.3519729 0.3228666 -0.4333333 359.9643 90.0131 90.00033 0.00714286 0.01666667 0.1666651 -0.4999028 -0.5002115 -0.5001001 -0.4997857  
+				<TransformMatrix>: -4.451617E-06 0.007142859 4.129752E-08 0 3.807744E-06 -9.536745E-08 0.01666667 0 0.1666651 0.0001038502 -3.810689E-05 0 0.3519729 0.3228666 -0.4333333 1  
+				<Children>: 1
+					<Frame>: 8 0 20811_Number_1_v1
+						<Transform>: -0.123 -0.0757 -0.0365 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -0.123 -0.0757 -0.0365 1  
+						<Mesh>: 6331 20811_Number_1_v1
+							<Positions>: 0  
+							<Colors>: 0  
+							<TextureCoords0>: 0  
+							<TextureCoords1>: 0  
+							<Normals>: 0  
+							<SubMeshes>: 1
+								<SubMesh>: 0 0  
+						</Mesh>
+						<Materials>: 1
+							<Material>: 0
+								<AlbedoColor>: 1 1 1 1
+								<EmissiveColor>: 0 0 0 1
+								<Glossiness>: 0.5
+								<Metallic>: 1
+								<SpecularHighlight>: 1
+								<GlossyReflection>: 1
+								<AlbedoMap>: @Magenta_Material
+								<MetallicMap>: null
+								<NormalMap>: null
+								<EmissionMap>: null
+								<DetailAlbedoMap>: null
+								<DetailNormalMap>: null
+						</Materials>
+						<Children>: 0
+					</Frame>
+			</Frame>
+			<Frame>: 9 0 20813_Number_3_Variant
+				<Transform>: 0.3613603 -0.3228475 -0.4333333 359.9643 90.00019 90.00034 0.007142861 0.01666667 0.1666652 -0.4998465 -0.5001551 -0.5001565 -0.4998419  
+				<TransformMatrix>: -4.451618E-06 0.007142861 4.300052E-08 0 5.46376E-08 -1.033147E-07 0.01666667 0 0.1666652 0.0001038453 -5.563052E-07 0 0.3613603 -0.3228475 -0.4333333 1  
+				<Children>: 1
+					<Frame>: 10 0 20813_Number_3_v1
+						<Transform>: 0 0 0 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1  
+						<Mesh>: 7473 20813_Number_3_v1
+							<Positions>: 0  
+							<Colors>: 0  
+							<TextureCoords0>: 0  
+							<TextureCoords1>: 0  
+							<Normals>: 0  
+							<SubMeshes>: 1
+								<SubMesh>: 0 0  
+						</Mesh>
+						<Materials>: 1
+							<Material>: 0
+								<AlbedoColor>: 1 1 1 1
+								<EmissiveColor>: 0 0 0 1
+								<Glossiness>: 0.5
+								<Metallic>: 1
+								<SpecularHighlight>: 1
+								<GlossyReflection>: 1
+								<AlbedoMap>: @Magenta_Material
+								<MetallicMap>: null
+								<NormalMap>: null
+								<EmissionMap>: null
+								<DetailAlbedoMap>: null
+								<DetailNormalMap>: null
+						</Materials>
+						<Children>: 0
+					</Frame>
 			</Frame>
 	</Frame>
 </Hierarchy>
