@@ -59,7 +59,7 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	// 미션 범위
 	XMFLOAT3 OccMissionRange = XMFLOAT3(30.f, 30.f, 30.f);
-	XMFLOAT3 MissionRange = XMFLOAT3(10.f, 30.f, 10.f);
+	XMFLOAT3 MissionRange = XMFLOAT3(10.f, 20.f, 10.f);
 	
 	// 점령미션
 	CLoadedModelInfo* pMachine = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/Occ_Machine.bin", NULL);
@@ -91,8 +91,8 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	
 	CLoadedModelInfo* pMssionMachine3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/MissionMachine.bin", NULL);
 	m_ppMissionObj[5] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine3, MissionRange, 1);
-	m_ppMissionObj[5]->Rotate(0.f, 180.f, 0.f);
-	m_ppMissionObj[5]->SetPosition(840.f, -5.f, 780.f);
+	m_ppMissionObj[5]->Rotate(0.f, 90.f, 0.f);
+	m_ppMissionObj[5]->SetPosition(853.f, -5.f, 780.f);
 	if (pMssionMachine3) delete pMssionMachine3;
 
 
