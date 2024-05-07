@@ -87,7 +87,7 @@ void CUI::CreateDirect2DDevice(HWND m_hWnd, ID3D12Device* pd3dDevice, ID3D12Grap
 	m_pd2dDeviceContext->CreateSolidColorBrush(D2D1::ColorF(0.3f, 0.0f, 0.0f, 0.5f), &m_pd2dbrBackground);
 	m_pd2dDeviceContext->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White, 1.0f), &m_pd2dbrBorder);
 
-	hResult = m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 15.0f, L"en-US", &m_pdwFont);
+	hResult = m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 35.0f, L"en-US", &m_pdwFont);
 	hResult = m_pdwFont->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 	hResult = m_pdwFont->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 	m_pd2dDeviceContext->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White, 1.0f), &m_pd2dbrText);
@@ -191,7 +191,7 @@ void CPlaySceneUI::UISet(UINT m_nSwapChainBufferIndex)
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 
 	// 점령미션 바 상단 문구
-	D2D1_RECT_F rcUpperText = D2D1::RectF(30, 10, 200, 30);
+	D2D1_RECT_F rcUpperText = D2D1::RectF(40, 20, 200, 40);
 	WCHAR MissionText[] = L"Progress";
 	m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
 
@@ -203,15 +203,18 @@ void CPlaySceneUI::UISet(UINT m_nSwapChainBufferIndex)
 
 void CPlaySceneUI::MissionProgressBar(int MissionNum)
 {
-	float gab = 12.5;
+	float gab = 35.5;
+
+	float width = 30.5;
+	float height = 30.f;
 
 	//게이지 바
 	D2D1_RECT_F* rcMissionBar;
 	rcMissionBar = new D2D1_RECT_F;
-	rcMissionBar->top = 30.5f + (MissionNum * gab);
+	rcMissionBar->top = 60.5f + (MissionNum * gab);
 	rcMissionBar->left = 30.f;
 	rcMissionBar->right = 30.f + m_fMissionGauge[MissionNum];
-	rcMissionBar->bottom = 39.5f + (MissionNum * gab);
+	rcMissionBar->bottom = 89.5f + (MissionNum * gab);
 
 	m_pd2dbrBorder->SetColor(D2D1::ColorF(0x00ff00, 0.6f));
 	m_pd2dDeviceContext->FillRectangle(rcMissionBar, m_pd2dbrBorder);
@@ -219,10 +222,10 @@ void CPlaySceneUI::MissionProgressBar(int MissionNum)
 	// 게이지 바 프레임
 	D2D1_RECT_F* rcMissionBarFrame;
 	rcMissionBarFrame = new D2D1_RECT_F;
-	rcMissionBarFrame->top = 30.f + (MissionNum * gab);
+	rcMissionBarFrame->top = 60.f + (MissionNum * gab);
 	rcMissionBarFrame->left = 30.0f;
-	rcMissionBarFrame->right = 200.f;
-	rcMissionBarFrame->bottom = 40.0f + (MissionNum * gab);
+	rcMissionBarFrame->right = 400.f;
+	rcMissionBarFrame->bottom = 90.0f + (MissionNum * gab);
 
 	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
 	m_pd2dDeviceContext->DrawRectangle(rcMissionBarFrame, m_pd2dbrBorder);

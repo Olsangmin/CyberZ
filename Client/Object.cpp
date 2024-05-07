@@ -1307,7 +1307,7 @@ CStandardOBJ::~CStandardOBJ()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-CMissonOBJ::CMissonOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, XMFLOAT3 f3MissionRange)
+CMissonOBJ::CMissonOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, XMFLOAT3 f3MissionRange, int nCategory)
 {
 	CLoadedModelInfo* pObjectModel = pModel;
 	if (!pObjectModel) pObjectModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/ObjModel/Barrel.bin", NULL);
@@ -1319,6 +1319,8 @@ CMissonOBJ::CMissonOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3d
 	XMFLOAT4 bbColor = XMFLOAT4(0.f, 0.f, 1.f, 1.f); // 미션 범위는 파랑
 	CBoundingBoxMesh* MissionRangeMesh = new CBoundingBoxMesh(pd3dDevice, pd3dCommandList, bbColor);
 	SetMissionRangeMesh(MissionRangeMesh);
+
+	m_nCategory = nCategory;
 
 }
 
