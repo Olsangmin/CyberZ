@@ -237,7 +237,7 @@ bool CPlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 			break;
 		}
 		case 'C': {
-			// m_pMyPlayer->SetCreepFlag();
+			m_pMyPlayer->SetCreepFlag();
 			
 			break;
 		}

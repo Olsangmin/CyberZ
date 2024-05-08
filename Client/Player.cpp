@@ -115,9 +115,6 @@ void CPlayer::Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity) // 3
 	if (bUpdateVelocity)
 	{
 		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Shift);
-		/*if (p_id == 1) {
-			cout << m_xmf3Velocity.x << ", " << m_xmf3Velocity.z << endl;
-		}*/
 	}
 	else
 	{

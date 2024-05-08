@@ -56,6 +56,8 @@ private:
 	int								m_nAnswer{ -1 };
 	int								m_nAnswerCount{ 0 };
 	bool							m_bSecurityKey{ false };
+
+	float							m_fKeyRotate{ 0.f };
 public:
 	bool GetSecurityKey() { return m_bSecurityKey; };
 	int Random(int min, int max);
