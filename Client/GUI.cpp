@@ -31,6 +31,14 @@ void CUI::Release()
 		if (m_ppd3d11WrappedBackBuffers[i]) m_ppd3d11WrappedBackBuffers[i]->Release();
 		if (m_ppd2dRenderTargets[i]) m_ppd2dRenderTargets[i]->Release();
 	}
+
+	//Image
+	if (m_pd2dfxBitmapSource) m_pd2dfxBitmapSource->Release();
+	if (m_pd2dfxGaussianBlur) m_pd2dfxGaussianBlur->Release();
+	if (m_pd2dfxEdgeDetection) m_pd2dfxEdgeDetection->Release();
+	if (m_pd2dsbDrawingState) m_pd2dsbDrawingState->Release();
+	if (m_pwicFormatConverter) m_pwicFormatConverter->Release();
+	if (m_pwicImagingFactory) m_pwicImagingFactory->Release();
 }
 
 void CUI::CreateDirect2DDevice(HWND m_hWnd, ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12CommandQueue* m_pd3dCommandQueue, ID3D12Resource* m_ppd3dSwapChainBackBuffers[m_nSwapChainBuffers])
@@ -87,7 +95,7 @@ void CUI::CreateDirect2DDevice(HWND m_hWnd, ID3D12Device* pd3dDevice, ID3D12Grap
 	m_pd2dDeviceContext->CreateSolidColorBrush(D2D1::ColorF(0.3f, 0.0f, 0.0f, 0.5f), &m_pd2dbrBackground);
 	m_pd2dDeviceContext->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White, 1.0f), &m_pd2dbrBorder);
 
-	hResult = m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 15.0f, L"en-US", &m_pdwFont);
+	hResult = m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 30.0f, L"en-US", &m_pdwFont);
 	hResult = m_pdwFont->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 	hResult = m_pdwFont->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 	m_pd2dDeviceContext->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::White, 1.0f), &m_pd2dbrText);
@@ -105,6 +113,40 @@ void CUI::CreateDirect2DDevice(HWND m_hWnd, ID3D12Device* pd3dDevice, ID3D12Grap
 		m_pd2dDeviceContext->CreateBitmapFromDxgiSurface(pdxgiSurface, &d2dBitmapProperties, &m_ppd2dRenderTargets[i]);
 		if (pdxgiSurface) pdxgiSurface->Release();
 	}
+
+
+
+	// Image Render
+	CoInitialize(NULL);
+	hResult = ::CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, __uuidof(IWICImagingFactory), (void**)&m_pwicImagingFactory);
+
+	hResult = m_pd2dFactory->CreateDrawingStateBlock(&m_pd2dsbDrawingState);
+	hResult = m_pd2dDeviceContext->CreateEffect(CLSID_D2D1BitmapSource, &m_pd2dfxBitmapSource);
+	hResult = m_pd2dDeviceContext->CreateEffect(CLSID_D2D1GaussianBlur, &m_pd2dfxGaussianBlur);
+	hResult = m_pd2dDeviceContext->CreateEffect(CLSID_D2D1EdgeDetection, &m_pd2dfxEdgeDetection);
+
+	IWICBitmapDecoder* pwicBitmapDecoder;
+	hResult = m_pwicImagingFactory->CreateDecoderFromFilename(L"Image/CardKey.png", NULL, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &pwicBitmapDecoder);
+	IWICBitmapFrameDecode* pwicFrameDecode;
+	pwicBitmapDecoder->GetFrame(0, &pwicFrameDecode);
+	m_pwicImagingFactory->CreateFormatConverter(&m_pwicFormatConverter);
+	m_pwicFormatConverter->Initialize(pwicFrameDecode, GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, NULL, 0.0f, WICBitmapPaletteTypeCustom);
+	m_pd2dfxBitmapSource->SetValue(D2D1_BITMAPSOURCE_PROP_WIC_BITMAP_SOURCE, m_pwicFormatConverter);
+
+	m_pd2dfxGaussianBlur->SetInputEffect(0, m_pd2dfxBitmapSource);
+
+	m_pd2dfxEdgeDetection->SetInputEffect(0, m_pd2dfxBitmapSource);
+	m_pd2dfxEdgeDetection->SetValue(D2D1_EDGEDETECTION_PROP_STRENGTH, 0.5f);
+	m_pd2dfxEdgeDetection->SetValue(D2D1_EDGEDETECTION_PROP_BLUR_RADIUS, 0.0f);
+	m_pd2dfxEdgeDetection->SetValue(D2D1_EDGEDETECTION_PROP_MODE, D2D1_EDGEDETECTION_MODE_SOBEL);
+	m_pd2dfxEdgeDetection->SetValue(D2D1_EDGEDETECTION_PROP_OVERLAY_EDGES, false);
+	m_pd2dfxEdgeDetection->SetValue(D2D1_EDGEDETECTION_PROP_ALPHA_MODE, D2D1_ALPHA_MODE_PREMULTIPLIED);
+
+	m_pd2dfxGaussianBlur->SetValue(D2D1_GAUSSIANBLUR_PROP_STANDARD_DEVIATION, 0.0f);
+	m_nDrawEffectImage = 0;
+
+	if (pwicBitmapDecoder) pwicBitmapDecoder->Release();
+	if (pwicFrameDecode) pwicFrameDecode->Release();
 }
 
 void CUI::DrawUI(UINT m_nSwapChainBufferIndex)
@@ -151,6 +193,7 @@ void CFirstSceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 	//Direct2D Drawing
 	UISet(m_nSwapChainBufferIndex);
 
+	
 	m_pd2dDeviceContext->EndDraw();
 	m_pd3d11On12Device->ReleaseWrappedResources(ppd3dResources, _countof(ppd3dResources));
 	m_pd3d11DeviceContext->Flush();
@@ -158,8 +201,8 @@ void CFirstSceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 
 void CFirstSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 {
-	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 	
+	//D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 	//WCHAR InfoText[] = L"Press 'R' To Ready";
 	//D2D1_RECT_F rcUpperText = D2D1::RectF(0, 0, szRenderTarget.width, szRenderTarget.height * 0.25f);
 	//m_pd2dDeviceContext->DrawTextW(InfoText, (UINT32)wcslen(InfoText), m_pdwFont, &rcUpperText, m_pd2dbrText);
@@ -191,19 +234,45 @@ void CPlaySceneUI::UISet(UINT m_nSwapChainBufferIndex)
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 
 	// 점령미션 바 상단 문구
-	D2D1_RECT_F rcUpperText = D2D1::RectF(30, 10, 200, 30);
-	WCHAR MissionText[] = L"Progress";
+	//D2D1_RECT_F rcUpperText = D2D1::RectF(40, 20, 200, 40);
+	//WCHAR MissionText[] = L"Progress";
+	//m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
+	//m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
+
+	MissionText();
+	for (int i = 0; i < 3; i++)	MissionProgressBar(i);
+	if (m_bStaminaBarOn) StaminaBarUI();
+	KeyCardUI();
+	
+}
+
+void CPlaySceneUI::MissionText()
+{
+	float gab = 35.5;
+
+	D2D1_RECT_F rcUpperText = D2D1::RectF(100.f, 30.f, 300.f, 60.f);
+	WCHAR MissionText[] = L"Area 1";
+	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
 	m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
 
-	MissionProgressBar(0);
-	MissionProgressBar(1);
-	MissionProgressBar(2);
-	
+	D2D1_RECT_F rcUpperText2 = D2D1::RectF(100.f, 30.f + (gab * 1), 300.f, 60.f + (gab * 1));
+	WCHAR MissionText1[] = L"Area 2";
+	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
+	m_pd2dDeviceContext->DrawTextW(MissionText1, (UINT32)wcslen(MissionText1), m_pdwFont, &rcUpperText2, m_pd2dbrText);
+
+	D2D1_RECT_F rcUpperText3 = D2D1::RectF(100.f, 30.f + (gab * 2), 300.f, 60.f + (gab * 2));
+	WCHAR MissionText2[] = L"Area 3";
+	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
+	m_pd2dDeviceContext->DrawTextW(MissionText2, (UINT32)wcslen(MissionText2), m_pdwFont, &rcUpperText3, m_pd2dbrText);
+
 }
 
 void CPlaySceneUI::MissionProgressBar(int MissionNum)
 {
-	float gab = 12.5;
+	float gab = 35.5;
+
+	float width = 30.5;
+	float height = 30.f;
 
 	//게이지 바
 	D2D1_RECT_F* rcMissionBar;
@@ -211,7 +280,7 @@ void CPlaySceneUI::MissionProgressBar(int MissionNum)
 	rcMissionBar->top = 30.5f + (MissionNum * gab);
 	rcMissionBar->left = 30.f;
 	rcMissionBar->right = 30.f + m_fMissionGauge[MissionNum];
-	rcMissionBar->bottom = 39.5f + (MissionNum * gab);
+	rcMissionBar->bottom = 59.5f + (MissionNum * gab);
 
 	m_pd2dbrBorder->SetColor(D2D1::ColorF(0x00ff00, 0.6f));
 	m_pd2dDeviceContext->FillRectangle(rcMissionBar, m_pd2dbrBorder);
@@ -221,14 +290,83 @@ void CPlaySceneUI::MissionProgressBar(int MissionNum)
 	rcMissionBarFrame = new D2D1_RECT_F;
 	rcMissionBarFrame->top = 30.f + (MissionNum * gab);
 	rcMissionBarFrame->left = 30.0f;
-	rcMissionBarFrame->right = 200.f;
-	rcMissionBarFrame->bottom = 40.0f + (MissionNum * gab);
+	rcMissionBarFrame->right = 400.f;
+	rcMissionBarFrame->bottom = 60.0f + (MissionNum * gab);
 
-	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::AliceBlue, 1.0f));
 	m_pd2dDeviceContext->DrawRectangle(rcMissionBarFrame, m_pd2dbrBorder);
 
 	delete rcMissionBar;
 	delete rcMissionBarFrame;
+
+
+}
+
+void CPlaySceneUI::KeyCardUI()
+{
+	D2D1_RECT_F* rcMissionBarFrame;
+	rcMissionBarFrame = new D2D1_RECT_F;
+	rcMissionBarFrame->top = FRAME_BUFFER_HEIGHT - 200.f;
+	rcMissionBarFrame->left = FRAME_BUFFER_WIDTH - 270.0f;
+	rcMissionBarFrame->right = FRAME_BUFFER_WIDTH - 50.f;
+	rcMissionBarFrame->bottom = FRAME_BUFFER_HEIGHT - 50.0f;
+
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
+	m_pd2dDeviceContext->DrawRectangle(rcMissionBarFrame, m_pd2dbrBorder);
+
+	delete rcMissionBarFrame;
+
+	float top = 1650.f;
+	float left = 850.f;
+	float gab = 100.f;
+
+	D2D1_RECT_F rcUpperText = D2D1::RectF(top, left, top+gab,left+gab);
+	WCHAR MissionText[] = L"ITEM";
+	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
+	m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
+
+	if (m_bcard)
+	{
+		// KeyCard Image
+		D2D_POINT_2F d2dPoint = { FRAME_BUFFER_WIDTH - 250.f, FRAME_BUFFER_HEIGHT - 180.f };
+		D2D_RECT_F d2dRect = { 0.0f, 0.0f, 200.0f, 130.0f };
+		m_pd2dDeviceContext->DrawImage((m_nDrawEffectImage == 0) ? m_pd2dfxGaussianBlur : m_pd2dfxEdgeDetection, &d2dPoint, &d2dRect);
+	}
+
+
+}
+
+void CPlaySceneUI::StaminaBarUI()
+{
+	//float Xmid = FRAME_BUFFER_WIDTH / 2;
+	//float Ymid = (FRAME_BUFFER_HEIGHT / 2) - 20;
+	float halfsize = m_fMaxStamina / 2;
+
+
+	//게이지 바
+	D2D1_RECT_F* rcStaminaBar;
+	rcStaminaBar = new D2D1_RECT_F;
+	rcStaminaBar->top = FRAME_BUFFER_HEIGHT - 230.f;
+	rcStaminaBar->left = FRAME_BUFFER_WIDTH - 270.0f;
+	rcStaminaBar->right = FRAME_BUFFER_WIDTH - 270.0f + m_fStaminaRange;
+	rcStaminaBar->bottom = FRAME_BUFFER_HEIGHT - 210.0f;
+
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::RoyalBlue, 1.0f));
+	m_pd2dDeviceContext->FillRectangle(rcStaminaBar, m_pd2dbrBorder);
+
+	// 게이지 바 프레임
+	D2D1_RECT_F* rcStaminaBarFrame;
+	rcStaminaBarFrame = new D2D1_RECT_F;
+	rcStaminaBarFrame->top = FRAME_BUFFER_HEIGHT - 230.f;
+	rcStaminaBarFrame->left = FRAME_BUFFER_WIDTH - 270.0f;
+	rcStaminaBarFrame->right = FRAME_BUFFER_WIDTH - 270.0f + m_fMaxStamina;
+	rcStaminaBarFrame->bottom = FRAME_BUFFER_HEIGHT - 210.0f;
+
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::AliceBlue, 1.0f));
+	m_pd2dDeviceContext->DrawRectangle(rcStaminaBarFrame, m_pd2dbrBorder);
+
+	delete rcStaminaBar;
+	delete rcStaminaBarFrame;
 
 }
 

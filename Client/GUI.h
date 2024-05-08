@@ -27,9 +27,21 @@ public:
 	IDWriteTextLayout* m_pdwTextLayout = NULL;
 	ID2D1SolidColorBrush* m_pd2dbrText = NULL;
 
+
+	//Image
+	IWICImagingFactory* m_pwicImagingFactory = NULL;
+	ID2D1Effect* m_pd2dfxBitmapSource = NULL;
+	ID2D1Effect* m_pd2dfxGaussianBlur = NULL;
+	ID2D1Effect* m_pd2dfxEdgeDetection = NULL;
+	ID2D1DrawingStateBlock1* m_pd2dsbDrawingState = NULL;
+	IWICFormatConverter* m_pwicFormatConverter = NULL;
+	int							m_nDrawEffectImage = 0;
+
 public:
 	int m_nMissions = 3;
 	float m_fMissionGauge[3] = { 0 };
+
+	bool m_bcard = false;
 
 public:
 	void CreateDirect2DDevice(HWND m_hWnd, ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12CommandQueue* m_pd3dCommandQueue, ID3D12Resource* m_ppd3dSwapChainBackBuffers[m_nSwapChainBuffers]);
@@ -57,8 +69,19 @@ public:
 	~CPlaySceneUI() {}
 
 public:
-	void MissionProgressBar(int MissionNum);
 
+	float		m_fStaminaRange = 100.f;
+	float		m_fMaxStamina = 100.f;
+	bool		m_bStaminaBarOn = false;
+
+	void MissionText();
+	void MissionProgressBar(int MissionNum);
+	void KeyCardUI();
+	void StaminaBarUI();
+
+	
+
+public:
 	void DrawUI(UINT m_nSwapChainBufferIndex);
 	void UISet(UINT m_nSwapChainBufferIndex);
 

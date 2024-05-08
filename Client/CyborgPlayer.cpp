@@ -305,7 +305,6 @@ void CyborgPlayer::AnimationBlending(Player_Animation_ST type1, Player_Animation
 
 int CyborgPlayer::Random(int min, int max)
 {
-
 	uniform_int_distribution uid{ min, max };
 	return uid(m_m64RandomEngine);
 }
