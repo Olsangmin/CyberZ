@@ -731,12 +731,15 @@ void CPrepareRoomScene::ProcessPacket(char* p)
 		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
 		my_id = packet->id;
 		cout << "My ID is " << my_id << " !" << endl;
+		reinterpret_cast<CFirstSceneUI*>(m_pUI)->m_bPlayerOn[my_id] = true;
+
 	} break;
 
 	case SC_CHANGE_CHARACTER: {
 		SC_CHANGE_CHARACTER_PACKET* packet = reinterpret_cast<SC_CHANGE_CHARACTER_PACKET*>(p);
 		cout << packet->id << " -> " << packet->c_type << endl;
 		ChangeModel(packet->id, packet->c_type);
+		reinterpret_cast<CFirstSceneUI*>(m_pUI)->m_bPlayerOn[packet->id] = true;
 
 	}break;
 

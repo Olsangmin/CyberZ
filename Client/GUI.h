@@ -60,6 +60,8 @@ public:
 	void DrawUI(UINT m_nSwapChainBufferIndex);
 	void UISet(UINT m_nSwapChainBufferIndex);
 
+	bool m_bPlayerOn[3] = {false};
+	void CheckEnter();
 };
 
 class CPlaySceneUI : public CUI
