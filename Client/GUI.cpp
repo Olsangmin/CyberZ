@@ -238,13 +238,10 @@ void CPlaySceneUI::UISet(UINT m_nSwapChainBufferIndex)
 	WCHAR MissionText[] = L"Progress";
 	m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
 
-	for (int i = 0; i < 3; i++)
-	{
-		MissionProgressBar(i);
-	}
-
+	for (int i = 0; i < 3; i++)	MissionProgressBar(i);
+	if (m_bStaminaBarOn) StaminaBarUI();
 	KeyCardUI();
-
+	
 }
 
 void CPlaySceneUI::MissionProgressBar(int MissionNum)
@@ -311,6 +308,35 @@ void CPlaySceneUI::KeyCardUI()
 		m_pd2dDeviceContext->DrawImage((m_nDrawEffectImage == 0) ? m_pd2dfxGaussianBlur : m_pd2dfxEdgeDetection, &d2dPoint, &d2dRect);
 	}
 
+
+}
+
+void CPlaySceneUI::StaminaBarUI()
+{
+	//게이지 바
+	D2D1_RECT_F* rcStaminaBar;
+	rcStaminaBar = new D2D1_RECT_F;
+	rcStaminaBar->top = 160.5f;
+	rcStaminaBar->left = 130.f;
+	rcStaminaBar->right = 130.f + m_fStaminaRange;
+	rcStaminaBar->bottom = 189.5f;
+
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::White, 0.6f));
+	m_pd2dDeviceContext->FillRectangle(rcStaminaBar, m_pd2dbrBorder);
+
+	// 게이지 바 프레임
+	D2D1_RECT_F* rcStaminaBarFrame;
+	rcStaminaBarFrame = new D2D1_RECT_F;
+	rcStaminaBarFrame->top = 160.f;
+	rcStaminaBarFrame->left = 130.0f;
+	rcStaminaBarFrame->right = 800.f;
+	rcStaminaBarFrame->bottom = 190.0f;
+
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
+	m_pd2dDeviceContext->DrawRectangle(rcStaminaBarFrame, m_pd2dbrBorder);
+
+	delete rcStaminaBar;
+	delete rcStaminaBarFrame;
 
 }
 

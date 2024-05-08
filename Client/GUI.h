@@ -69,10 +69,15 @@ public:
 	~CPlaySceneUI() {}
 
 public:
+
+	float		m_fStaminaRange = 100.f;
+	bool		m_bStaminaBarOn = false;
+
 	void MissionProgressBar(int MissionNum);
 	void KeyCardUI();
+	void StaminaBarUI();
 
-
+public:
 	void DrawUI(UINT m_nSwapChainBufferIndex);
 	void UISet(UINT m_nSwapChainBufferIndex);
 

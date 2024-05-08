@@ -64,17 +64,17 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	// 점령미션
 	CLoadedModelInfo* pMachine = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/Occ_Machine.bin", NULL);
 	m_ppMissionObj[0] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine, OccMissionRange, 0);
-	m_ppMissionObj[0]->SetPosition(300.f, -5.f, 700.f);
+	m_ppMissionObj[0]->SetPosition(300.f, 0.0f, 700.f);
 	if (pMachine) delete pMachine;
 
 	CLoadedModelInfo* pMachine2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/Occ_Machine.bin", NULL);
 	m_ppMissionObj[1] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine2, OccMissionRange, 0);
-	m_ppMissionObj[1]->SetPosition(700.f, -5.f, 100.f);
+	m_ppMissionObj[1]->SetPosition(700.f, 0.f, 100.f);
 	if (pMachine2) delete pMachine2;
 
 	CLoadedModelInfo* pMachine3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/Occ_Machine.bin", NULL);
 	m_ppMissionObj[2] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine3, OccMissionRange, 0);
-	m_ppMissionObj[2]->SetPosition(500.f, -5.f, 500.f);
+	m_ppMissionObj[2]->SetPosition(500.f, 0.f, 500.f);
 	if (pMachine3) delete pMachine3;
 
 	// 보안키 미션
@@ -319,6 +319,13 @@ void CPlayScene::AnimateObjects(float fTimeElapsed)
 
 	m_pUI->m_bcard = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetSecurityKey();
 	
+	//if (reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer < reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fMaxStaminer)
+	//{
+	//	reinterpret_cast<CPlaySceneUI*>(m_pUI)->m_bStaminaBarOn = true;
+	//	reinterpret_cast<CPlaySceneUI*>(m_pUI)->m_fStaminaRange = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer;
+	//}
+	//else reinterpret_cast<CPlaySceneUI*>(m_pUI)->m_bStaminaBarOn = false;
+
 }
 
 
