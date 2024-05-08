@@ -283,36 +283,46 @@ void CPlayScene::AnimateObjects(float fTimeElapsed)
 	for (int i = 0; i < m_nMissionObj; i++)
 	{
 		Missionflag = false;
-		for (int j = 0; j < m_nPlayer; j++) if(m_ppPlayer[j]){
-			
-			if (CheckMissionBound(m_ppPlayer[j], m_ppMissionObj[i]))
-			{
-				Missionflag = true;
-			}
-			m_ppMissionObj[i]->m_bMissionflag = Missionflag;
-		}
-	}
-
-	if (reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetSecurityKey())
-	{
-		for (int i = 0; i < m_nMissionObj; i++)
-		{
-			if (m_ppMissionObj[i]->m_nCategory == 0)	// 점령미션
-			{
-				if (m_pUI->m_fMissionGauge[i] < 370)
+		if (m_ppMissionObj[i]->m_nCategory == 0) {
+			for (int j = 0; j < m_nPlayer; j++) if (m_ppPlayer[j]) {
+				if (CheckMissionBound(m_ppPlayer[j], m_ppMissionObj[i]) && reinterpret_cast<CyborgPlayer*>(m_ppPlayer[i])->GetSecurityKey()) 
 				{
-					if (m_ppMissionObj[i]->m_bMissionflag)
-					{
-						m_pUI->m_fMissionGauge[i] += 0.5f;
-					}
-					else if (m_pUI->m_fMissionGauge[i] > 0) m_pUI->m_fMissionGauge[i] -= 1.0f;
+					Missionflag = true;
 				}
 			}
-			else
-			{
-				break;
+
+		}
+		else{
+			for (int j = 0; j < m_nPlayer; j++) if (m_ppPlayer[j]) {
+				if (CheckMissionBound(m_ppPlayer[j], m_ppMissionObj[i]))
+				{
+					Missionflag = true;
+				}
 			}
 
+		}
+
+
+		m_ppMissionObj[i]->m_bMissionflag = Missionflag;
+
+	}
+
+	for (int i = 0; i < m_nMissionObj; i++)
+	{
+		if (m_ppMissionObj[i]->m_nCategory == 0)	// 점령미션
+		{
+			if (m_pUI->m_fMissionGauge[i] < 370)
+			{
+				if (m_ppMissionObj[i]->m_bMissionflag)
+				{
+					m_pUI->m_fMissionGauge[i] += 0.5f;
+				}
+				else if (m_pUI->m_fMissionGauge[i] > 0) m_pUI->m_fMissionGauge[i] -= 1.0f;
+			}
+		}
+		else
+		{
+			break;
 		}
 
 	}
