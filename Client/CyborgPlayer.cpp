@@ -58,7 +58,7 @@ CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	FileName[6] = "Model/Mission_1/Mission1_7.bin";
 	FileName[7] = "Model/Mission_1/Mission1_8.bin";
 
-	m_ppMissionObjects = new CGameObject * [m_nMissionObject];
+	m_ppMissionObjects = new CGameObject * [m_nMissionObject+1];
 	m_ppMissionAnswer = new CGameObject * [m_nMissionObject];
 
 	for (int i = 0; i < m_nMissionObject; ++i) {
@@ -69,6 +69,9 @@ CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 		m_ppMissionAnswer[i] = new Mission(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, pAnswer);
 	}
 
+	CLoadedModelInfo* pMission = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Mission_1/CardKey.bin", NULL);
+	m_ppMissionObjects[8] = new Mission(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, pMission);
+	m_ppMissionObjects[8]->Rotate(0, 0, 70);
 
 	if (pPlayerModel) delete pPlayerModel;
 }
@@ -144,7 +147,7 @@ CCamera* CyborgPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.05f);
 		m_pCamera->ChangeView(true);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 20.5f, -10.0f));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 22.5f, -15.0f));
 		m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -204,6 +207,8 @@ void CyborgPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity
 	if (dwDirection)
 	{
 		IsWalk();
+		IsRun();
+		IsCreep();
 	}
 
 	CPlayer::Move(dwDirection, fDistance, bUpdateVelocity);
@@ -215,22 +220,36 @@ void CyborgPlayer::Update(float fTimeElapsed)
 	if (m_pMissionBoxObject)
 	{
 		if (!m_pMissionBoxObject->m_pSkinnedAnimationController) {
-			
+
 			if (reinterpret_cast<Mission*>(m_pMissionBoxObject)->GetUnable()) {
-				m_pMissionBoxObject->SetPosition(Vector3::Add(Vector3::Add(GetPosition(), Vector3::ScalarProduct(GetLook(),7.0f)), XMFLOAT3(0.0f,16.f,0.0f)));
-				float angle = Vector3::Angle(XMFLOAT3( - m_pMissionBoxObject->GetLook().x, m_pMissionBoxObject->GetLook().y, -m_pMissionBoxObject->GetLook().z),
-					Vector3::Minus(XMFLOAT3(GetPosition().x, m_pMissionBoxObject->GetPosition().y, GetPosition().z), m_pMissionBoxObject->GetPosition()));
-				if(angle>=0.1)
-					m_pMissionBoxObject->Rotate(0, angle/2, 0);
-				m_pMissionBoxObject->Animate(fTimeElapsed);
-				m_ppSelectMission[0]->SetPosition(Vector3::Add(Vector3::Add(m_pMissionBoxObject->GetPosition(),XMFLOAT3(0,1.7f,0)),m_pMissionBoxObject->GetRight(),-2.0f));
-				m_ppSelectMission[1]->SetPosition(Vector3::Add(m_pMissionBoxObject->GetPosition(),XMFLOAT3(0,1.7f,0)));
-				m_ppSelectMission[2]->SetPosition(Vector3::Add(Vector3::Add(m_pMissionBoxObject->GetPosition(), XMFLOAT3(0, 1.7f, 0)), m_pMissionBoxObject->GetRight(), 2.0f));
-				m_ppSelectMission[3]->SetPosition(Vector3::Add(m_pMissionBoxObject->GetPosition(),XMFLOAT3(0,4.2f,0)));
-				for (int i = 0; i < 4; ++i) {
-					i == 3 ? m_ppSelectMission[i]->Rotate(0.f, 0.3f, 0.f) : m_ppSelectMission[i]->Rotate(0.f, -0.3f, 0.f);
-					m_ppSelectMission[i]->Animate(fTimeElapsed);
+				XMFLOAT3 Height = { 0.f,16.f, 0.f };
+				m_bSecurityKey ? Height.y = 19.5 : Height.y = 16;
+				m_pMissionBoxObject->SetPosition(
+					Vector3::Add(Vector3::Add(GetPosition(), Vector3::ScalarProduct(GetLook(), 7.0f)), Height));
+				float angle = Vector3::Angle(
+					XMFLOAT3(-m_pMissionBoxObject->GetLook().x, m_pMissionBoxObject->GetLook().y, -m_pMissionBoxObject->GetLook().z),
+					Vector3::Minus(XMFLOAT3(GetPosition().x, m_pMissionBoxObject->GetPosition().y, GetPosition().z),
+						m_pMissionBoxObject->GetPosition()));
+
+				if (!m_bSecurityKey) {
+					if (angle >= 0.1)
+						m_pMissionBoxObject->Rotate(0, angle / 2, 0);
+					m_ppSelectMission[0]->SetPosition(Vector3::Add(Vector3::Add(m_pMissionBoxObject->GetPosition(), XMFLOAT3(0, 1.7f, 0)), m_pMissionBoxObject->GetRight(), -2.0f));
+					m_ppSelectMission[1]->SetPosition(Vector3::Add(m_pMissionBoxObject->GetPosition(), XMFLOAT3(0, 1.7f, 0)));
+					m_ppSelectMission[2]->SetPosition(Vector3::Add(Vector3::Add(m_pMissionBoxObject->GetPosition(), XMFLOAT3(0, 1.7f, 0)), m_pMissionBoxObject->GetRight(), 2.0f));
+					m_ppSelectMission[3]->SetPosition(Vector3::Add(m_pMissionBoxObject->GetPosition(), XMFLOAT3(0, 4.2f, 0)));
+					for (int i = 0; i < 4; ++i) {
+						i == 3 ? m_ppSelectMission[i]->Rotate(0.f, 0.3f, 0.f) : m_ppSelectMission[i]->Rotate(0.f, -0.3f, 0.f);
+						m_ppSelectMission[i]->Animate(fTimeElapsed);
+					}
 				}
+				else {
+					XMFLOAT3 Up = XMFLOAT3{ 0.7,0.3,0 };
+					m_pMissionBoxObject->Rotate(&Up,0.5f);
+					m_fKeyRotate >= 270 ? 
+						m_fKeyRotate = 0, reinterpret_cast<Mission*>(m_pMissionBoxObject)->SetUnable(false) : m_fKeyRotate += 0.5f;
+				}
+				m_pMissionBoxObject->Animate(fTimeElapsed);
 			}
 		}
 	}
@@ -240,11 +259,10 @@ void CyborgPlayer::Update(float fTimeElapsed)
 		AnimationBlending(m_pasCurrentAni, m_pasNextAni);
 		if (m_pasNextAni == RUN) SetMaxVelocityXZ(30.f);
 		else if (m_pasNextAni == WALK) SetMaxVelocityXZ(15.f);
-		else if (m_pasNextAni == CREEP) SetMaxVelocityXZ(7.f);
+		else if (m_pasNextAni == CREEP) SetMaxVelocityXZ(10.f);
 		ExhaustionStaminer();
 		RestorationStaminer();
-		IsRun();
-		IsCreep();
+
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
 		if (::IsZero(fLength))
 		{
@@ -304,8 +322,10 @@ void CyborgPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* p
 	CPlayer::Render(pd3dCommandList, pCamera);
 	if (reinterpret_cast<Mission*>(m_pMissionBoxObject)->GetUnable()) {
 		m_pMissionBoxObject->Render(pd3dCommandList, pCamera);
-		for (int i = 0; i < 4; ++i) {
-			m_ppSelectMission[i]->Render(pd3dCommandList, pCamera);
+		if (!m_bSecurityKey) {
+			for (int i = 0; i < 4; ++i) {
+				m_ppSelectMission[i]->Render(pd3dCommandList, pCamera);
+			}
 		}
 	}
 }
@@ -353,14 +373,17 @@ bool CyborgPlayer::StartKeyMission(int type)
 		break;
 	}
 	case 2: {
-		if (reinterpret_cast<Mission*>(m_pMissionBoxObject)->GetUnable()) {
+		//if (reinterpret_cast<Mission*>(m_pMissionBoxObject)->GetUnable()) {
 			ChangeCamera(SHOULDER_VIEW_CAMERA, 0.0f);
-			reinterpret_cast<Mission*>(m_pMissionBoxObject)->SetUnable(false);
-		}
+			if (m_pMissionBoxObject)delete m_pMissionBoxObject;
+			m_pMissionBoxObject = m_ppMissionObjects[8];
+			reinterpret_cast<Mission*>(m_pMissionBoxObject)->SetUnable(true);
+			//reinterpret_cast<Mission*>(m_pMissionBoxObject)->SetUnable(false);
+		//}
 		break;
 	}
 	default: {
-		if (reinterpret_cast<Mission*>(m_pMissionBoxObject)->GetUnable()) {
+		if (reinterpret_cast<Mission*>(m_pMissionBoxObject)->GetUnable()&&!m_bSecurityKey) {
 			ChangeCamera(SHOULDER_VIEW_CAMERA, 0.0f);
 			reinterpret_cast<Mission*>(m_pMissionBoxObject)->SetUnable(false);
 		}
@@ -445,7 +468,7 @@ void CyborgPlayer::IsRun()
 {
 		if (m_pasCurrentAni != RUN && m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
 			SetMaxVelocityXZ(40.f);
-			m_fVelocitySpeed = 20.f;
+			//m_fVelocitySpeed = 20.f;
 			m_pasNextAni = RUN;
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 			AnimationPacket(m_pasNextAni);
@@ -455,7 +478,7 @@ void CyborgPlayer::IsRun()
 void CyborgPlayer::IsCreep()
 {
 	if (m_pasCurrentAni != CREEP && m_bIsCreep && !m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
-		SetMaxVelocityXZ(7.f);
+		SetMaxVelocityXZ(10.f);
 		m_pasNextAni = CREEP;
 		m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 		AnimationPacket(m_pasNextAni);
@@ -485,7 +508,7 @@ void CyborgPlayer::SetPlayerData(int type)
 {
 	switch (type) {
 	case 0:
-		m_fVelocitySpeed = 4.5f;
+		m_fVelocitySpeed = 20.f;
 		m_fMaxStaminer = 100.f;
 		m_fStaminer = m_fMaxStaminer;
 		m_fRepairSpeed = 50.f;
@@ -493,7 +516,7 @@ void CyborgPlayer::SetPlayerData(int type)
 		m_nCharacter = type;
 		break;
 	case 1:
-		m_fVelocitySpeed = 4.5f;
+		m_fVelocitySpeed = 20.f;
 		m_fMaxStaminer = 110.f;
 		m_fStaminer = m_fMaxStaminer;
 		m_fRepairSpeed = 50.f;
@@ -501,7 +524,7 @@ void CyborgPlayer::SetPlayerData(int type)
 		m_nCharacter = type;
 		break;
 	case 2:
-		m_fVelocitySpeed = 4.5f;
+		m_fVelocitySpeed = 20.f;
 		m_fMaxStaminer = 90.f;
 		m_fStaminer = m_fMaxStaminer;
 		m_fRepairSpeed = 80.f;

@@ -1,0 +1,1618 @@
+<Hierarchy>:
+	<Frame>: 0 19 Second_section
+		<Transform>: 0 0 0 0 180 0 10 10 10 0 1 0 0  
+		<TransformMatrix>: -10 0 0 0 0 10 0 0 0 0 -10 0 0 0 0 1  
+		<Children>: 10
+			<Frame>: 1 0 Containers
+				<Transform>: 0 0 0 0 0 0 1 1 1 0 0 0 1  
+				<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1  
+				<Children>: 8
+					<Frame>: 2 0 Big_Container_low_17_(10)
+						<Transform>: -1.08 0 10 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 10 1  
+					<Bounds>: 10.8 13.04434 -100 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 3 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 4 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 5 0 Big_Container_low_17_(11)
+						<Transform>: -1.08 0 5.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 5.5 1  
+					<Bounds>: 10.8 13.04434 -55 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 6 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 7 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 8 0 Big_Container_low_17_(12)
+						<Transform>: -1.08 0 1 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 1 1  
+					<Bounds>: 10.8 13.04434 -10 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 9 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 10 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 11 0 Big_Container_low_17_(13)
+						<Transform>: -1.08 0 -3.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -3.5 1  
+					<Bounds>: 10.8 13.04434 35 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 12 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 13 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 14 0 Big_Container_low_17_(14)
+						<Transform>: -1.08 0 -8 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -8 1  
+					<Bounds>: 10.8 13.04434 80 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 15 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 16 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 17 0 Big_Container_low_17_(15)
+						<Transform>: -1.08 0 -12.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -12.5 1  
+					<Bounds>: 10.8 13.04434 125 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 18 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 19 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 20 0 Big_Container_low_17_(16)
+						<Transform>: -1.08 0 -17 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -17 1  
+					<Bounds>: 10.8 13.04434 170 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 21 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 22 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 23 0 Big_Container_low_17_(17)
+						<Transform>: -1.08 0 -21.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -21.5 1  
+					<Bounds>: 10.8 13.04434 215 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 24 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 25 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+			</Frame>
+			<Frame>: 26 0 Containers_(1)
+				<Transform>: -6.5 0 0 0 0 0 1 1 1 0 0 0 1  
+				<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -6.5 0 0 1  
+				<Children>: 9
+					<Frame>: 27 0 Big_Container_low_17_(10)
+						<Transform>: -1.08 0 10 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 10 1  
+					<Bounds>: 75.8 13.04434 -100 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 28 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 29 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 30 0 Big_Container_low_17_(11)
+						<Transform>: -1.08 0 5.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 5.5 1  
+					<Bounds>: 75.8 13.04434 -55 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 31 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 32 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 33 0 Big_Container_low_17_(12)
+						<Transform>: -1.08 0 1 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 1 1  
+					<Bounds>: 75.8 13.04434 -10 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 34 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 35 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 36 0 Big_Container_low_17_(13)
+						<Transform>: -0.29 0 -2.72 0 25.14427 0 1 1 1 0 0.2176686 0 0.9760228  
+						<TransformMatrix>: 0.9052408 0 -0.424899 0 0 1 0 0 0.424899 0 0.9052408 0 -0.29 0 -2.72 1  
+					<Bounds>: 67.9 13.04434 27.2 29.6146 13.14435 23.9972
+						<Children>: 2
+							<Frame>: 37 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 38 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 39 0 Big_Container_low_17_(14)
+						<Transform>: -1.08 0 -8 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -8 1  
+					<Bounds>: 75.8 13.04434 80 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 40 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 41 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 42 0 Big_Container_low_17_(15)
+						<Transform>: -1.08 0 -12.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -12.5 1  
+					<Bounds>: 75.8 13.04434 125 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 43 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 44 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 45 0 Big_Container_low_17_(16)
+						<Transform>: -1.08 0 -17 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -17 1  
+					<Bounds>: 75.8 13.04434 170 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 46 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 47 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 48 0 Big_Container_low_17_(17)
+						<Transform>: -1.08 0 -21.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -21.5 1  
+					<Bounds>: 75.8 13.04434 215 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 49 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 50 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 51 0 Big_Container_low_17_(18)
+						<Transform>: -1.08 0 -12.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -12.5 1  
+					<Bounds>: 75.8 13.04434 125 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 52 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 53 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+			</Frame>
+			<Frame>: 54 0 Containers_(2)
+				<Transform>: -13 0 0 0 0 0 1 1 1 0 0 0 1  
+				<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -13 0 0 1  
+				<Children>: 11
+					<Frame>: 55 0 Big_Container_low_17_(10)
+						<Transform>: -0.34 0 9.92 0 321.9714 0 1 1 1 0 -0.325804 0 0.9454374  
+						<TransformMatrix>: 0.7877035 0 0.6160545 0 0 1 0 0 -0.6160545 0 0.7877035 0 -0.34 0 9.92 1  
+					<Bounds>: 133.4 13.04434 -99.2 29.29319 13.14435 27.28583
+						<Children>: 2
+							<Frame>: 56 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 57 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 58 0 Big_Container_low_17_(11)
+						<Transform>: -1.08 0 5.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 5.5 1  
+					<Bounds>: 140.8 13.04434 -55 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 59 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 60 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 61 0 Big_Container_low_17_(12)
+						<Transform>: -1.08 0 1 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 1 1  
+					<Bounds>: 140.8 13.04434 -10 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 62 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 63 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 64 0 Big_Container_low_17_(13)
+						<Transform>: -1.08 0 -3.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -3.5 1  
+					<Bounds>: 140.8 13.04434 35 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 65 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 66 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 67 0 Big_Container_low_17_(14)
+						<Transform>: -1.08 0 -8 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -8 1  
+					<Bounds>: 140.8 13.04434 80 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 68 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 69 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 70 0 Big_Container_low_17_(15)
+						<Transform>: -1.08 0 -12.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -12.5 1  
+					<Bounds>: 140.8 13.04434 125 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 71 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 72 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 73 0 Big_Container_low_17_(16)
+						<Transform>: -1.08 0 -17 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -17 1  
+					<Bounds>: 140.8 13.04434 170 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 74 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 75 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 76 0 Big_Container_low_17_(17)
+						<Transform>: -1.08 0 -21.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -21.5 1  
+					<Bounds>: 140.8 13.04434 215 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 77 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 78 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 79 0 Big_Container_low_17_(18)
+						<Transform>: -1.08 2.03 -12.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 2.03 -12.5 1  
+					<Bounds>: 140.8 33.34434 125 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 80 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 81 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 82 0 Big_Container_low_17_(19)
+						<Transform>: -1.08 1.99 -8 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 1.99 -8 1  
+					<Bounds>: 140.8 32.94434 80 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 83 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 84 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 85 0 Big_Container_low_17_(20)
+						<Transform>: -1.09 2.45 -18.59 0 292.5004 0 1 1 1 0 -0.5555677 0 0.8314713  
+						<TransformMatrix>: 0.382689 0 0.9238773 0 0 1 0 0 -0.9238773 0 0.382689 0 -1.09 2.45 -18.59 1  
+					<Bounds>: 140.9 37.54434 185.9 23.16634 13.14435 29.49533
+						<Children>: 2
+							<Frame>: 86 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 87 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+			</Frame>
+			<Frame>: 88 0 Containers_(3)
+				<Transform>: -19.5 0 0 0 0 0 1 1 1 0 0 0 1  
+				<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -19.5 0 0 1  
+				<Children>: 9
+					<Frame>: 89 0 Big_Container_low_17_(10)
+						<Transform>: -1.08 0 10 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 10 1  
+					<Bounds>: 205.8 13.04434 -100 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 90 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 91 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 92 0 Big_Container_low_17_(11)
+						<Transform>: -1.08 0 5.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 5.5 1  
+					<Bounds>: 205.8 13.04434 -55 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 93 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 94 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 95 0 Big_Container_low_17_(12)
+						<Transform>: -1.08 0 1 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 1 1  
+					<Bounds>: 205.8 13.04434 -10 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 96 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 97 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 98 0 Big_Container_low_17_(13)
+						<Transform>: -1.08 0 -3.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -3.5 1  
+					<Bounds>: 205.8 13.04434 35 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 99 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 100 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 101 0 Big_Container_low_17_(14)
+						<Transform>: -1.08 0 -8 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -8 1  
+					<Bounds>: 205.8 13.04434 80 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 102 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 103 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 104 0 Big_Container_low_17_(15)
+						<Transform>: -1.08 0 -12.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -12.5 1  
+					<Bounds>: 205.8 13.04434 125 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 105 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 106 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 107 0 Big_Container_low_17_(16)
+						<Transform>: -1.08 0 -17 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -17 1  
+					<Bounds>: 205.8 13.04434 170 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 108 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 109 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 110 0 Big_Container_low_17_(17)
+						<Transform>: -1.08 0 -21.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -21.5 1  
+					<Bounds>: 205.8 13.04434 215 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 111 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 112 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 113 0 Big_Container_low_17_(18)
+						<Transform>: -1.08 2.07 -8 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 2.07 -8 1  
+					<Bounds>: 205.8 33.74434 80 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 114 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 115 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+			</Frame>
+			<Frame>: 116 0 Containers_(4)
+				<Transform>: -26 0 0 0 0 0 1 1 1 0 0 0 1  
+				<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -26 0 0 1  
+				<Children>: 7
+					<Frame>: 117 0 Big_Container_low_17_(10)
+						<Transform>: -1.08 0 10 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 10 1  
+					<Bounds>: 270.8 13.04434 -100 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 118 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 119 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 120 0 Big_Container_low_17_(11)
+						<Transform>: -1.08 0 5.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 5.5 1  
+					<Bounds>: 270.8 13.04434 -55 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 121 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 122 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 123 0 Big_Container_low_17_(12)
+						<Transform>: -1.14 0 1.18 0 282.295 0 1 1 1 0 -0.6273175 0 0.7787636  
+						<TransformMatrix>: 0.2129455 0 0.977064 0 0 1 0 0 -0.977064 0 0.2129455 0 -1.14 0 1.18 1  
+					<Bounds>: 271.4 13.04434 -11.8 19.51385 13.14434 28.44993
+						<Children>: 2
+							<Frame>: 124 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 125 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 126 0 Big_Container_low_17_(13)
+						<Transform>: -1.08 0 -3.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -3.5 1  
+					<Bounds>: 270.8 13.04434 35 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 127 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 128 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 129 0 Big_Container_low_17_(14)
+						<Transform>: -1.53 0 -10.14 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.53 0 -10.14 1  
+					<Bounds>: 275.3 13.04434 101.4 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 130 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 131 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 132 0 Big_Container_low_17_(16)
+						<Transform>: -1.2 0 -15.3 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.2 0 -15.3 1  
+					<Bounds>: 272 13.04434 153 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 133 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 134 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 135 0 Big_Container_low_17_(17)
+						<Transform>: -1.08 0 -21.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -21.5 1  
+					<Bounds>: 270.8 13.04434 215 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 136 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 137 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+			</Frame>
+			<Frame>: 138 0 Containers_(5)
+				<Transform>: -32.5 0 0 0 0 0 1 1 1 0 0 0 1  
+				<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -32.5 0 0 1  
+				<Children>: 4
+					<Frame>: 139 0 Big_Container_low_17_(10)
+						<Transform>: -1.08 0 10 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 10 1  
+					<Bounds>: 335.8 13.04434 -100 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 140 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 141 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 142 0 Big_Container_low_17_(11)
+						<Transform>: -1.08 0 5.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 5.5 1  
+					<Bounds>: 335.8 13.04434 -55 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 143 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 144 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 145 0 Big_Container_low_17_(12)
+						<Transform>: -1.08 0 1 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 1 1  
+					<Bounds>: 335.8 13.04434 -10 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 146 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 147 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 148 0 Big_Container_low_17_(13)
+						<Transform>: -1.08 0 -3.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -3.5 1  
+					<Bounds>: 335.8 13.04434 35 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 149 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 150 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+			</Frame>
+			<Frame>: 151 0 Containers_(6)
+				<Transform>: -39 0 0 0 0 0 1 1 1 0 0 0 1  
+				<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -39 0 0 1  
+				<Children>: 3
+					<Frame>: 152 0 Big_Container_low_17_(10)
+						<Transform>: -1.08 0 10 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 10 1  
+					<Bounds>: 400.8 13.04434 -100 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 153 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 154 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 155 0 Big_Container_low_17_(12)
+						<Transform>: -1.08 0 1 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 1 1  
+					<Bounds>: 400.8 13.04434 -10 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 156 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 157 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 158 0 Big_Container_low_17_(13)
+						<Transform>: -1.08 0 -3.5 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.08 0 -3.5 1  
+					<Bounds>: 400.8 13.04434 35 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 159 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 160 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+			</Frame>
+			<Frame>: 161 0 Containers_(7)
+				<Transform>: 0 0 0 0 0 0 1 1 1 0 0 0 1  
+				<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1  
+				<Children>: 7
+					<Frame>: 162 0 Big_Container_low_17_(14)
+						<Transform>: -51.57 0 8.54 0 306.6484 0 1 1 1 0 -0.4489418 0 0.8935611  
+						<TransformMatrix>: 0.5969026 0 0.8023137 0 0 1 0 0 -0.8023137 0 0.5969026 0 -51.57 0 8.54 1  
+					<Bounds>: 515.7 13.04434 -85.4 26.99689 13.14435 29.39908
+						<Children>: 2
+							<Frame>: 163 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 164 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 165 0 Big_Container_low_17_(14)
+						<Transform>: -46.42 0 10.18 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -46.42 0 10.18 1  
+					<Bounds>: 464.2 13.04434 -101.8 26 13.14434 14.30539
+						<Children>: 2
+							<Frame>: 166 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 167 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 168 0 Middle_Container_(17)
+						<Transform>: -47.98 0 8.13 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -47.98 0 8.13 1  
+					<Bounds>: 479.8 6.139352 -81.3 8.124054 6.154553 5.801025
+						<Children>: 0
+					</Frame>
+					<Frame>: 169 0 Middle_Container_(18)
+						<Transform>: -46.13 0 7.699999 2.504479E-06 35.88805 5.088888E-13 1 1 1 2.07926E-08 0.3080877 -6.73347E-09 0.951358  
+						<TransformMatrix>: 0.8101639 8.881784E-15 -0.5862034 0 2.562377E-08 1 3.541341E-08 0 0.5862034 -4.371141E-08 0.8101639 0 -46.13 0 7.699999 1  
+					<Bounds>: 461.3 6.139352 -76.99998 9.982391 6.154553 9.462128
+						<Children>: 0
+					</Frame>
+					<Frame>: 170 0 Big_Container_low_17_(15)
+						<Transform>: -47.85 0.61 5.189999 359.3058 272.4232 15.97516 1 1 1 -0.1004876 -0.6846632 0.09616111 0.715466  
+						<TransformMatrix>: 0.04397875 0.2752004 0.9603804 0 3.129244E-07 0.9613106 -0.2754669 0 -0.9990325 0.012115 0.0422771 0 -47.85 0.61 5.189999 1  
+					<Bounds>: 478.5 18.63966 -48.3067 15.435 19.96432 29.19551
+						<Children>: 2
+							<Frame>: 171 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 172 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 173 0 Big_Container_low_17_(16)
+						<Transform>: -47.93 2.48 10.16 0 352.4554 0 1 1 1 0 -0.06579201 0 0.9978334  
+						<TransformMatrix>: 0.9913428 0 0.1312989 0 0 1 0 0 -0.1312989 0 0.9913428 0 -47.93 2.48 10.16 1  
+					<Bounds>: 479.3 37.84434 -101.6 27.6532 13.14434 17.59531
+						<Children>: 2
+							<Frame>: 174 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 175 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 176 0 Middle_Container_(19)
+						<Transform>: -41.66 0 3.34 2.504479E-06 35.88805 5.088888E-13 1 1 1 2.07926E-08 0.3080877 -6.73347E-09 0.951358  
+						<TransformMatrix>: 0.8101639 8.881784E-15 -0.5862034 0 2.562377E-08 1 3.541341E-08 0 0.5862034 -4.371141E-08 0.8101639 0 -41.66 0 3.34 1  
+					<Bounds>: 416.6 6.139352 -33.4 9.982391 6.154553 9.462128
+						<Children>: 0
+					</Frame>
+			</Frame>
+			<Frame>: 177 0 Containers_(8)
+				<Transform>: 0 0 0 0 0 0 1 1 1 0 0 0 1  
+				<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1  
+				<Children>: 6
+					<Frame>: 178 0 Big_Container_low_17_(19)
+						<Transform>: -7.580002 2.66 3.360001 0 274.0663 0 1 1 1 0 -0.6815749 0 0.7317483  
+						<TransformMatrix>: 0.07091135 0 0.9974826 0 0 1 0 0 -0.9974826 0 0.07091135 0 -7.580002 2.66 3.360001 1  
+					<Bounds>: 75.80002 39.64434 -33.60001 16.11307 13.14434 26.94896
+						<Children>: 2
+							<Frame>: 179 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 180 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 181 0 Big_Container_low_17_(20)
+						<Transform>: -11.06 2.66 3.360001 0 268.2697 0 1 1 1 0 -0.7177027 0 0.6963497  
+						<TransformMatrix>: -0.03019452 0 0.9995441 0 0 1 0 0 -0.9995441 0 -0.03019452 0 -11.06 2.66 3.360001 1  
+					<Bounds>: 110.6 39.64434 -33.60001 15.08392 13.14435 26.42009
+						<Children>: 2
+							<Frame>: 182 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 183 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 184 0 Big_Container_low_17_(21)
+						<Transform>: -14.38 2.66 3.360001 0 268.2697 0 1 1 1 0 -0.7177027 0 0.6963497  
+						<TransformMatrix>: -0.03019452 0 0.9995441 0 0 1 0 0 -0.9995441 0 -0.03019452 0 -14.38 2.66 3.360001 1  
+					<Bounds>: 143.8 39.64434 -33.60001 15.08392 13.14435 26.42009
+						<Children>: 2
+							<Frame>: 185 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 186 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 187 0 Big_Container_low_17_(22)
+						<Transform>: -17.75 2.66 3.62 0 268.2697 0 1 1 1 0 -0.7177027 0 0.6963497  
+						<TransformMatrix>: -0.03019452 0 0.9995441 0 0 1 0 0 -0.9995441 0 -0.03019452 0 -17.75 2.66 3.62 1  
+					<Bounds>: 177.5 39.64434 -36.2 15.08392 13.14435 26.42009
+						<Children>: 2
+							<Frame>: 188 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 189 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 190 0 Big_Container_low_17_(23)
+						<Transform>: -21.18 2.66 3.5 0 253.7476 0 1 1 1 0 -0.7999591 0 0.6000546  
+						<TransformMatrix>: -0.279869 0 0.9600382 0 0 1 0 0 -0.9600382 0 -0.279869 0 -21.18 2.66 3.5 1  
+					<Bounds>: 211.8 39.64434 -35 21.01031 13.14434 28.96462
+						<Children>: 2
+							<Frame>: 191 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 192 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 193 0 Big_Container_low_17_(24)
+						<Transform>: -26.38 2.66 3.56 0 275.111 0 1 1 1 0 -0.674876 0 0.7379312  
+						<TransformMatrix>: 0.08908486 0 0.9960241 0 0 1 0 0 -0.9960241 0 0.08908486 0 -26.38 2.66 3.56 1  
+					<Bounds>: 263.8 39.64434 -35.6 16.56472 13.14434 27.17102
+						<Children>: 2
+							<Frame>: 194 0 Armature_low
+								<Transform>: 0 0 -2.640154E-07 2.504478E-06 89.99999 0 1 1 1 1.545431E-08 0.7071067 -1.545431E-08 0.7071068  
+								<TransformMatrix>: 1.788139E-07 0 -0.9999999 0 4.371139E-08 1 7.105427E-15 0 0.9999999 -4.371139E-08 1.788139E-07 0 0 0 -2.640154E-07 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 195 0 Big_Container_Low
+								<Transform>: 0 0 -2.257365E-10 0 0 0 0.001 0.001 0.001 0 0 0 1  
+								<TransformMatrix>: 0.001 0 0 0 0 0.001 0 0 0 0 0.001 0 0 0 -2.257365E-10 1  
+								<Children>: 0
+							</Frame>
+					</Frame>
+			</Frame>
+			<Frame>: 196 0 House
+				<Transform>: -4.5 4.09 -3.6 0 0 0 1 1 1 0 0 0 1  
+				<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -4.5 4.09 -3.6 1  
+				<Children>: 4
+					<Frame>: 197 0 TrapShield_2L_(2)
+						<Transform>: -35.60541 -4.159642 -20.62 -3.388373E-19 90.01363 2.102177E-19 1 1 1 -7.932662E-22 0.7071909 3.388132E-21 0.7070228  
+						<TransformMatrix>: -0.0002378225 3.668992E-21 -1 0 -5.912954E-21 1 3.670397E-21 0 1 5.913826E-21 -0.0002378225 0 -35.60541 -4.159642 -20.62 1  
+					<Bounds>: 388.5593 4.703724 267.9948 10.00238 10 10.00238
+						<Children>: 21
+							<Frame>: 198 0 TrapShield_1L_(2)
+								<Transform>: -6.943934E-06 -1.500562E-21 -2.426258 -3.88275E-19 -6.577233E-40 1.941256E-19 1 1 1 -3.388338E-21 0 1.694066E-21 1  
+								<TransformMatrix>: 1 3.388131E-21 -1.147944E-41 0 -3.388131E-21 1 -6.776676E-21 0 -1.147944E-41 6.776676E-21 1 0 -6.943934E-06 -1.500562E-21 -2.426258 1  
+							<Bounds>: 437.7815 4.703625 267.983 10.00238 10 10.00238
+								<Children>: 0
+							</Frame>
+							<Frame>: 199 0 TrapShield_Corner_L_(2)
+								<Transform>: 0 0 -4.16 -3.88275E-19 -6.577233E-40 1.941256E-19 1 1 1 -3.388338E-21 0 1.694066E-21 1  
+								<TransformMatrix>: 1 3.388131E-21 -1.147944E-41 0 -3.388131E-21 1 -6.776676E-21 0 -1.147944E-41 6.776676E-21 1 0 0 0 -4.16 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 200 0 TrapShield_Corner_R_(2)
+								<Transform>: -1.503156E-06 -1.001358E-05 -0.02576066 0 0 0 1 1 1 0 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.503156E-06 -1.001358E-05 -0.02576066 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 201 0 TrapShield_1L_(3)
+								<Transform>: -0.3204817 -1.001358E-05 0.3242455 1.612894E-17 270.0002 2.676742E-18 1 1 1 8.300922E-20 -0.7071058 1.160435E-19 0.7071079  
+								<TransformMatrix>: 2.920628E-06 4.671796E-20 1 0 -2.815032E-19 1 -4.671711E-20 0 -1 -2.81503E-19 2.920628E-06 0 -0.3204817 -1.001358E-05 0.3242455 1  
+							<Bounds>: 372.0221 4.703524 251.4609 10.00241 10 10.00242
+								<Children>: 0
+							</Frame>
+							<Frame>: 202 0 TrapShield_1L_(4)
+								<Transform>: -1.057975E-06 -1.164617E-21 0.03693189 -3.88275E-19 -6.577233E-40 1.941256E-19 1 1 1 -3.388338E-21 0 1.694066E-21 1  
+								<TransformMatrix>: 1 3.388131E-21 -1.147944E-41 0 -3.388131E-21 1 -6.776676E-21 0 -1.147944E-41 6.776676E-21 1 0 -1.057975E-06 -1.164617E-21 0.03693189 1  
+							<Bounds>: 413.1496 4.703625 267.9889 10.00238 10 10.00238
+								<Children>: 0
+							</Frame>
+							<Frame>: 203 0 TrapShield_1L_(7)
+								<Transform>: -0.32 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+								<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -0.32 0 -9.68 1  
+							<Bounds>: 472.0645 4.703625 251.4419 10.00241 10 10.00241
+								<Children>: 0
+							</Frame>
+							<Frame>: 204 0 TrapShield_1L_(8)
+								<Transform>: -2.78 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+								<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -2.78 0 -9.68 1  
+							<Bounds>: 472.0587 4.703625 226.8419 10.00241 10 10.00241
+								<Children>: 0
+							</Frame>
+							<Frame>: 205 0 TrapShield_1L_(9)
+								<Transform>: -5.25 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+								<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -5.25 0 -9.68 1  
+							<Bounds>: 472.0528 4.703625 202.1419 10.00241 10 10.00241
+								<Children>: 0
+							</Frame>
+							<Frame>: 206 0 TrapShield_1L_(10)
+								<Transform>: -7.71 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+								<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -7.71 0 -9.68 1  
+							<Bounds>: 472.0469 4.703625 177.5419 10.00241 10 10.00241
+								<Children>: 0
+							</Frame>
+							<Frame>: 207 0 TrapShield_1L_(11)
+								<Transform>: -10.17 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+								<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -10.17 0 -9.68 1  
+							<Bounds>: 472.0411 4.703625 152.9419 10.00241 10 10.00241
+								<Children>: 0
+							</Frame>
+							<Frame>: 208 0 TrapShield_1L_(12)
+								<Transform>: -12.64 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+								<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -12.64 0 -9.68 1  
+							<Bounds>: 472.0352 4.703625 128.2419 10.00241 10 10.00241
+								<Children>: 0
+							</Frame>
+							<Frame>: 209 0 TrapShield_Corner_L_(5)
+								<Transform>: -10.07 0 -4.51 5.490505E-19 90.00013 1.2862E-19 1 1 1 4.181679E-21 0.7071076 -2.594343E-21 0.7071061  
+								<TransformMatrix>: -2.384186E-06 2.244843E-21 -1 0 9.582744E-21 1 2.244822E-21 0 1 -9.58274E-21 -2.384186E-06 0 -10.07 0 -4.51 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 210 0 TrapShield_1L_(13)
+								<Transform>: -15.59 0 -4.19 -3.885866E-19 359.9133 1.936129E-19 1 1 1 -3.392336E-21 -0.0007567107 1.687025E-21 0.9999998  
+								<TransformMatrix>: 0.9999989 3.379183E-21 0.001513421 0 -3.368915E-21 1 -6.787223E-21 0 -0.001513421 6.782116E-21 0.9999989 0 -15.59 0 -4.19 1  
+							<Bounds>: 455.3428 4.703624 112.0977 10.01276 10 10.01276
+								<Children>: 0
+							</Frame>
+							<Frame>: 211 0 TrapShield_1L_(14)
+								<Transform>: -15.5938 -0.02000002 -2.422909 -3.885866E-19 359.9133 1.936129E-19 1 1 1 -3.392336E-21 -0.0007567107 1.687025E-21 0.9999998  
+								<TransformMatrix>: 0.9999989 3.379183E-21 0.001513421 0 -3.368915E-21 1 -6.787223E-21 0 -0.001513421 6.782116E-21 0.9999989 0 -15.5938 -0.02000002 -2.422909 1  
+							<Bounds>: 437.6719 4.503625 112.0639 10.01276 10 10.01276
+								<Children>: 0
+							</Frame>
+							<Frame>: 212 0 TrapShield_1L_(15)
+								<Transform>: -15.5938 -0.02000002 0.03709095 -3.885866E-19 359.9133 1.936129E-19 1 1 1 -3.392336E-21 -0.0007567107 1.687025E-21 0.9999998  
+								<TransformMatrix>: 0.9999989 3.379183E-21 0.001513421 0 -3.368915E-21 1 -6.787223E-21 0 -0.001513421 6.782116E-21 0.9999989 0 -15.5938 -0.02000002 0.03709095 1  
+							<Bounds>: 413.0719 4.503625 112.0697 10.01276 10 10.01275
+								<Children>: 0
+							</Frame>
+							<Frame>: 213 0 TrapShield_1L_(16)
+								<Transform>: -15.5938 -0.02000002 2.497091 -3.885866E-19 359.9133 1.936129E-19 1 1 1 -3.392336E-21 -0.0007567107 1.687025E-21 0.9999998  
+								<TransformMatrix>: 0.9999989 3.379183E-21 0.001513421 0 -3.368915E-21 1 -6.787223E-21 0 -0.001513421 6.782116E-21 0.9999989 0 -15.5938 -0.02000002 2.497091 1  
+							<Bounds>: 388.4719 4.503625 112.0756 10.01276 10 10.01276
+								<Children>: 0
+							</Frame>
+							<Frame>: 214 0 TrapShield_Corner_R_(3)
+								<Transform>: -10.0738 -0.02000002 0.2870909 -5.490522E-19 270.0001 -1.2862E-19 1 1 1 -2.594353E-21 -0.7071061 -4.181689E-21 0.7071076  
+								<TransformMatrix>: 2.086163E-06 -2.244843E-21 1 0 9.582774E-21 1 2.244821E-21 0 -1 9.582769E-21 2.086163E-06 0 -10.0738 -0.02000002 0.2870909 1  
+								<Children>: 0
+							</Frame>
+							<Frame>: 215 0 TrapShield_1L_(17)
+								<Transform>: -2.783673 -1.001358E-05 0.3242524 1.612894E-17 270.0002 2.676742E-18 1 1 1 8.300922E-20 -0.7071058 1.160435E-19 0.7071079  
+								<TransformMatrix>: 2.920628E-06 4.671796E-20 1 0 -2.815032E-19 1 -4.671711E-20 0 -1 -2.81503E-19 2.920628E-06 0 -2.783673 -1.001358E-05 0.3242524 1  
+							<Bounds>: 372.0161 4.703524 226.829 10.00241 10 10.00241
+								<Children>: 0
+							</Frame>
+							<Frame>: 216 0 TrapShield_1L_(18)
+								<Transform>: -5.24687 -1.001358E-05 0.324258 1.612894E-17 270.0002 2.676742E-18 1 1 1 8.300922E-20 -0.7071058 1.160435E-19 0.7071079  
+								<TransformMatrix>: 2.920628E-06 4.671796E-20 1 0 -2.815032E-19 1 -4.671711E-20 0 -1 -2.81503E-19 2.920628E-06 0 -5.24687 -1.001358E-05 0.324258 1  
+							<Bounds>: 372.0102 4.703524 202.197 10.00241 10 10.00241
+								<Children>: 0
+							</Frame>
+							<Frame>: 217 0 TrapShield_1L_(19)
+								<Transform>: -7.710067 -1.001358E-05 0.324263 1.612894E-17 270.0002 2.676742E-18 1 1 1 8.300922E-20 -0.7071058 1.160435E-19 0.7071079  
+								<TransformMatrix>: 2.920628E-06 4.671796E-20 1 0 -2.815032E-19 1 -4.671711E-20 0 -1 -2.81503E-19 2.920628E-06 0 -7.710067 -1.001358E-05 0.324263 1  
+							<Bounds>: 372.0043 4.703524 177.565 10.00241 10 10.00241
+								<Children>: 0
+							</Frame>
+							<Frame>: 218 0 TrapShield_1L_(20)
+								<Transform>: -10.17326 -1.001358E-05 0.3242681 1.612894E-17 270.0002 2.676742E-18 1 1 1 8.300922E-20 -0.7071058 1.160435E-19 0.7071079  
+								<TransformMatrix>: 2.920628E-06 4.671796E-20 1 0 -2.815032E-19 1 -4.671711E-20 0 -1 -2.81503E-19 2.920628E-06 0 -10.17326 -1.001358E-05 0.3242681 1  
+							<Bounds>: 371.9984 4.703524 152.9331 10.00241 10 10.00241
+								<Children>: 0
+							</Frame>
+					</Frame>
+					<Frame>: 219 0 House_(1)
+						<Transform>: 0 0.9789118 0 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 0 0.9789118 0 1  
+						<Children>: 1
+							<Frame>: 220 0 TrapShield_2L_(2)
+								<Transform>: -35.60541 -4.159642 -20.62 -3.388373E-19 90.01363 2.102177E-19 1 1 1 -7.932662E-22 0.7071909 3.388132E-21 0.7070228  
+								<TransformMatrix>: -0.0002378225 3.668992E-21 -1 0 -5.912954E-21 1 3.670397E-21 0 1 5.913826E-21 -0.0002378225 0 -35.60541 -4.159642 -20.62 1  
+							<Bounds>: 388.5593 14.49284 267.9948 10.00238 10 10.00238
+								<Children>: 21
+									<Frame>: 221 0 TrapShield_1L_(2)
+										<Transform>: -6.943934E-06 -1.500562E-21 -2.426258 -3.88275E-19 -6.577233E-40 1.941256E-19 1 1 1 -3.388338E-21 0 1.694066E-21 1  
+										<TransformMatrix>: 1 3.388131E-21 -1.147944E-41 0 -3.388131E-21 1 -6.776676E-21 0 -1.147944E-41 6.776676E-21 1 0 -6.943934E-06 -1.500562E-21 -2.426258 1  
+									<Bounds>: 437.7815 14.49274 267.983 10.00238 10 10.00238
+										<Children>: 0
+									</Frame>
+									<Frame>: 222 0 TrapShield_Corner_L_(2)
+										<Transform>: 0 0 -4.16 -3.88275E-19 -6.577233E-40 1.941256E-19 1 1 1 -3.388338E-21 0 1.694066E-21 1  
+										<TransformMatrix>: 1 3.388131E-21 -1.147944E-41 0 -3.388131E-21 1 -6.776676E-21 0 -1.147944E-41 6.776676E-21 1 0 0 0 -4.16 1  
+										<Children>: 0
+									</Frame>
+									<Frame>: 223 0 TrapShield_Corner_R_(2)
+										<Transform>: -1.503156E-06 -1.001358E-05 -0.02576066 0 0 0 1 1 1 0 0 0 1  
+										<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.503156E-06 -1.001358E-05 -0.02576066 1  
+										<Children>: 0
+									</Frame>
+									<Frame>: 224 0 TrapShield_1L_(3)
+										<Transform>: -0.3204817 -1.001358E-05 0.3242455 1.612894E-17 270.0002 2.676742E-18 1 1 1 8.300922E-20 -0.7071058 1.160435E-19 0.7071079  
+										<TransformMatrix>: 2.920628E-06 4.671796E-20 1 0 -2.815032E-19 1 -4.671711E-20 0 -1 -2.81503E-19 2.920628E-06 0 -0.3204817 -1.001358E-05 0.3242455 1  
+									<Bounds>: 372.0221 14.49264 251.4609 10.00241 10 10.00242
+										<Children>: 0
+									</Frame>
+									<Frame>: 225 0 TrapShield_1L_(4)
+										<Transform>: -1.057975E-06 -1.164617E-21 0.03693189 -3.88275E-19 -6.577233E-40 1.941256E-19 1 1 1 -3.388338E-21 0 1.694066E-21 1  
+										<TransformMatrix>: 1 3.388131E-21 -1.147944E-41 0 -3.388131E-21 1 -6.776676E-21 0 -1.147944E-41 6.776676E-21 1 0 -1.057975E-06 -1.164617E-21 0.03693189 1  
+									<Bounds>: 413.1496 14.49274 267.9889 10.00238 10 10.00238
+										<Children>: 0
+									</Frame>
+									<Frame>: 226 0 TrapShield_1L_(7)
+										<Transform>: -0.32 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+										<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -0.32 0 -9.68 1  
+									<Bounds>: 472.0645 14.49274 251.4419 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 227 0 TrapShield_1L_(8)
+										<Transform>: -2.78 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+										<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -2.78 0 -9.68 1  
+									<Bounds>: 472.0587 14.49274 226.8419 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 228 0 TrapShield_1L_(9)
+										<Transform>: -5.25 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+										<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -5.25 0 -9.68 1  
+									<Bounds>: 472.0528 14.49274 202.1419 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 229 0 TrapShield_1L_(10)
+										<Transform>: -7.71 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+										<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -7.71 0 -9.68 1  
+									<Bounds>: 472.0469 14.49274 177.5419 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 230 0 TrapShield_1L_(11)
+										<Transform>: -10.17 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+										<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -10.17 0 -9.68 1  
+									<Bounds>: 472.0411 14.49274 152.9419 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 231 0 TrapShield_1L_(12)
+										<Transform>: -12.64 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+										<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -12.64 0 -9.68 1  
+									<Bounds>: 472.0352 14.49274 128.2419 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 232 0 TrapShield_Corner_L_(5)
+										<Transform>: -10.07 0 -4.51 5.490505E-19 90.00013 1.2862E-19 1 1 1 4.181679E-21 0.7071076 -2.594343E-21 0.7071061  
+										<TransformMatrix>: -2.384186E-06 2.244843E-21 -1 0 9.582744E-21 1 2.244822E-21 0 1 -9.58274E-21 -2.384186E-06 0 -10.07 0 -4.51 1  
+										<Children>: 0
+									</Frame>
+									<Frame>: 233 0 TrapShield_1L_(13)
+										<Transform>: -15.59 0 -4.19 -3.885866E-19 359.9133 1.936129E-19 1 1 1 -3.392336E-21 -0.0007567107 1.687025E-21 0.9999998  
+										<TransformMatrix>: 0.9999989 3.379183E-21 0.001513421 0 -3.368915E-21 1 -6.787223E-21 0 -0.001513421 6.782116E-21 0.9999989 0 -15.59 0 -4.19 1  
+									<Bounds>: 455.3428 14.49274 112.0977 10.01276 10 10.01276
+										<Children>: 0
+									</Frame>
+									<Frame>: 234 0 TrapShield_1L_(14)
+										<Transform>: -15.5938 -0.02000002 -2.422909 -3.885866E-19 359.9133 1.936129E-19 1 1 1 -3.392336E-21 -0.0007567107 1.687025E-21 0.9999998  
+										<TransformMatrix>: 0.9999989 3.379183E-21 0.001513421 0 -3.368915E-21 1 -6.787223E-21 0 -0.001513421 6.782116E-21 0.9999989 0 -15.5938 -0.02000002 -2.422909 1  
+									<Bounds>: 437.6719 14.29274 112.0639 10.01276 10 10.01276
+										<Children>: 0
+									</Frame>
+									<Frame>: 235 0 TrapShield_1L_(15)
+										<Transform>: -15.5938 -0.02000002 0.03709095 -3.885866E-19 359.9133 1.936129E-19 1 1 1 -3.392336E-21 -0.0007567107 1.687025E-21 0.9999998  
+										<TransformMatrix>: 0.9999989 3.379183E-21 0.001513421 0 -3.368915E-21 1 -6.787223E-21 0 -0.001513421 6.782116E-21 0.9999989 0 -15.5938 -0.02000002 0.03709095 1  
+									<Bounds>: 413.0719 14.29274 112.0697 10.01276 10 10.01275
+										<Children>: 0
+									</Frame>
+									<Frame>: 236 0 TrapShield_1L_(16)
+										<Transform>: -15.5938 -0.02000002 2.497091 -3.885866E-19 359.9133 1.936129E-19 1 1 1 -3.392336E-21 -0.0007567107 1.687025E-21 0.9999998  
+										<TransformMatrix>: 0.9999989 3.379183E-21 0.001513421 0 -3.368915E-21 1 -6.787223E-21 0 -0.001513421 6.782116E-21 0.9999989 0 -15.5938 -0.02000002 2.497091 1  
+									<Bounds>: 388.4719 14.29274 112.0756 10.01276 10 10.01276
+										<Children>: 0
+									</Frame>
+									<Frame>: 237 0 TrapShield_Corner_R_(3)
+										<Transform>: -10.0738 -0.02000002 0.2870909 -5.490522E-19 270.0001 -1.2862E-19 1 1 1 -2.594353E-21 -0.7071061 -4.181689E-21 0.7071076  
+										<TransformMatrix>: 2.086163E-06 -2.244843E-21 1 0 9.582774E-21 1 2.244821E-21 0 -1 9.582769E-21 2.086163E-06 0 -10.0738 -0.02000002 0.2870909 1  
+										<Children>: 0
+									</Frame>
+									<Frame>: 238 0 TrapShield_1L_(17)
+										<Transform>: -2.783673 -1.001358E-05 0.3242524 1.612894E-17 270.0002 2.676742E-18 1 1 1 8.300922E-20 -0.7071058 1.160435E-19 0.7071079  
+										<TransformMatrix>: 2.920628E-06 4.671796E-20 1 0 -2.815032E-19 1 -4.671711E-20 0 -1 -2.81503E-19 2.920628E-06 0 -2.783673 -1.001358E-05 0.3242524 1  
+									<Bounds>: 372.0161 14.49264 226.829 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 239 0 TrapShield_1L_(18)
+										<Transform>: -5.24687 -1.001358E-05 0.324258 1.612894E-17 270.0002 2.676742E-18 1 1 1 8.300922E-20 -0.7071058 1.160435E-19 0.7071079  
+										<TransformMatrix>: 2.920628E-06 4.671796E-20 1 0 -2.815032E-19 1 -4.671711E-20 0 -1 -2.81503E-19 2.920628E-06 0 -5.24687 -1.001358E-05 0.324258 1  
+									<Bounds>: 372.0102 14.49264 202.197 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 240 0 TrapShield_1L_(19)
+										<Transform>: -7.710067 -1.001358E-05 0.324263 1.612894E-17 270.0002 2.676742E-18 1 1 1 8.300922E-20 -0.7071058 1.160435E-19 0.7071079  
+										<TransformMatrix>: 2.920628E-06 4.671796E-20 1 0 -2.815032E-19 1 -4.671711E-20 0 -1 -2.81503E-19 2.920628E-06 0 -7.710067 -1.001358E-05 0.324263 1  
+									<Bounds>: 372.0043 14.49264 177.565 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 241 0 TrapShield_1L_(20)
+										<Transform>: -10.17326 -1.001358E-05 0.3242681 1.612894E-17 270.0002 2.676742E-18 1 1 1 8.300922E-20 -0.7071058 1.160435E-19 0.7071079  
+										<TransformMatrix>: 2.920628E-06 4.671796E-20 1 0 -2.815032E-19 1 -4.671711E-20 0 -1 -2.81503E-19 2.920628E-06 0 -10.17326 -1.001358E-05 0.3242681 1  
+									<Bounds>: 371.9984 14.49264 152.9331 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+							</Frame>
+					</Frame>
+					<Frame>: 242 0 House_(2)
+						<Transform>: 0 1.960057 0 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 0 1.960057 0 1  
+						<Children>: 1
+							<Frame>: 243 0 TrapShield_2L_(2)
+								<Transform>: -35.60541 -4.159642 -20.62 -3.388373E-19 90.01363 2.102177E-19 1 1 1 -7.932662E-22 0.7071909 3.388132E-21 0.7070228  
+								<TransformMatrix>: -0.0002378225 3.668992E-21 -1 0 -5.912954E-21 1 3.670397E-21 0 1 5.913826E-21 -0.0002378225 0 -35.60541 -4.159642 -20.62 1  
+							<Bounds>: 388.5593 24.3043 267.9948 10.00238 10 10.00238
+								<Children>: 21
+									<Frame>: 244 0 TrapShield_1L_(2)
+										<Transform>: -6.943934E-06 -1.500562E-21 -2.426258 -3.88275E-19 -6.577233E-40 1.941256E-19 1 1 1 -3.388338E-21 0 1.694066E-21 1  
+										<TransformMatrix>: 1 3.388131E-21 -1.147944E-41 0 -3.388131E-21 1 -6.776676E-21 0 -1.147944E-41 6.776676E-21 1 0 -6.943934E-06 -1.500562E-21 -2.426258 1  
+									<Bounds>: 437.7815 24.3042 267.983 10.00238 10 10.00238
+										<Children>: 0
+									</Frame>
+									<Frame>: 245 0 TrapShield_Corner_L_(2)
+										<Transform>: 0 0 -4.16 -3.88275E-19 -6.577233E-40 1.941256E-19 1 1 1 -3.388338E-21 0 1.694066E-21 1  
+										<TransformMatrix>: 1 3.388131E-21 -1.147944E-41 0 -3.388131E-21 1 -6.776676E-21 0 -1.147944E-41 6.776676E-21 1 0 0 0 -4.16 1  
+										<Children>: 0
+									</Frame>
+									<Frame>: 246 0 TrapShield_Corner_R_(2)
+										<Transform>: -1.503156E-06 -1.001358E-05 -0.02576066 0 0 0 1 1 1 0 0 0 1  
+										<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 -1.503156E-06 -1.001358E-05 -0.02576066 1  
+										<Children>: 0
+									</Frame>
+									<Frame>: 247 0 TrapShield_1L_(3)
+										<Transform>: -0.3204817 -1.001358E-05 0.3242455 1.612894E-17 270.0002 2.676742E-18 1 1 1 8.300922E-20 -0.7071058 1.160435E-19 0.7071079  
+										<TransformMatrix>: 2.920628E-06 4.671796E-20 1 0 -2.815032E-19 1 -4.671711E-20 0 -1 -2.81503E-19 2.920628E-06 0 -0.3204817 -1.001358E-05 0.3242455 1  
+									<Bounds>: 372.0221 24.3041 251.4609 10.00241 10 10.00242
+										<Children>: 0
+									</Frame>
+									<Frame>: 248 0 TrapShield_1L_(4)
+										<Transform>: -1.057975E-06 -1.164617E-21 0.03693189 -3.88275E-19 -6.577233E-40 1.941256E-19 1 1 1 -3.388338E-21 0 1.694066E-21 1  
+										<TransformMatrix>: 1 3.388131E-21 -1.147944E-41 0 -3.388131E-21 1 -6.776676E-21 0 -1.147944E-41 6.776676E-21 1 0 -1.057975E-06 -1.164617E-21 0.03693189 1  
+									<Bounds>: 413.1496 24.3042 267.9889 10.00238 10 10.00238
+										<Children>: 0
+									</Frame>
+									<Frame>: 249 0 TrapShield_1L_(7)
+										<Transform>: -0.32 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+										<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -0.32 0 -9.68 1  
+									<Bounds>: 472.0645 24.3042 251.4419 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 250 0 TrapShield_1L_(8)
+										<Transform>: -2.78 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+										<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -2.78 0 -9.68 1  
+									<Bounds>: 472.0587 24.3042 226.8419 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 251 0 TrapShield_1L_(9)
+										<Transform>: -5.25 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+										<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -5.25 0 -9.68 1  
+									<Bounds>: 472.0528 24.3042 202.1419 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 252 0 TrapShield_1L_(10)
+										<Transform>: -7.71 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+										<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -7.71 0 -9.68 1  
+									<Bounds>: 472.0469 24.3042 177.5419 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 253 0 TrapShield_1L_(11)
+										<Transform>: -10.17 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+										<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -10.17 0 -9.68 1  
+									<Bounds>: 472.0411 24.3042 152.9419 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 254 0 TrapShield_1L_(12)
+										<Transform>: -12.64 0 -9.68 -9.373238E-19 270.0001 6.550585E-20 1 1 1 -6.188137E-21 -0.7071061 -5.379695E-21 0.7071076  
+										<TransformMatrix>: 2.086163E-06 1.143293E-21 1 0 1.635939E-20 1 -1.143328E-21 0 -1 1.635939E-20 2.086163E-06 0 -12.64 0 -9.68 1  
+									<Bounds>: 472.0352 24.3042 128.2419 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 255 0 TrapShield_Corner_L_(5)
+										<Transform>: -10.07 0 -4.51 5.490505E-19 90.00013 1.2862E-19 1 1 1 4.181679E-21 0.7071076 -2.594343E-21 0.7071061  
+										<TransformMatrix>: -2.384186E-06 2.244843E-21 -1 0 9.582744E-21 1 2.244822E-21 0 1 -9.58274E-21 -2.384186E-06 0 -10.07 0 -4.51 1  
+										<Children>: 0
+									</Frame>
+									<Frame>: 256 0 TrapShield_1L_(13)
+										<Transform>: -15.59 0 -4.19 -3.885866E-19 359.9133 1.936129E-19 1 1 1 -3.392336E-21 -0.0007567107 1.687025E-21 0.9999998  
+										<TransformMatrix>: 0.9999989 3.379183E-21 0.001513421 0 -3.368915E-21 1 -6.787223E-21 0 -0.001513421 6.782116E-21 0.9999989 0 -15.59 0 -4.19 1  
+									<Bounds>: 455.3428 24.3042 112.0977 10.01276 10 10.01276
+										<Children>: 0
+									</Frame>
+									<Frame>: 257 0 TrapShield_1L_(14)
+										<Transform>: -15.5938 -0.02000002 -2.422909 -3.885866E-19 359.9133 1.936129E-19 1 1 1 -3.392336E-21 -0.0007567107 1.687025E-21 0.9999998  
+										<TransformMatrix>: 0.9999989 3.379183E-21 0.001513421 0 -3.368915E-21 1 -6.787223E-21 0 -0.001513421 6.782116E-21 0.9999989 0 -15.5938 -0.02000002 -2.422909 1  
+									<Bounds>: 437.6719 24.1042 112.0639 10.01276 10 10.01276
+										<Children>: 0
+									</Frame>
+									<Frame>: 258 0 TrapShield_1L_(15)
+										<Transform>: -15.5938 -0.02000002 0.03709095 -3.885866E-19 359.9133 1.936129E-19 1 1 1 -3.392336E-21 -0.0007567107 1.687025E-21 0.9999998  
+										<TransformMatrix>: 0.9999989 3.379183E-21 0.001513421 0 -3.368915E-21 1 -6.787223E-21 0 -0.001513421 6.782116E-21 0.9999989 0 -15.5938 -0.02000002 0.03709095 1  
+									<Bounds>: 413.0719 24.1042 112.0697 10.01276 10 10.01275
+										<Children>: 0
+									</Frame>
+									<Frame>: 259 0 TrapShield_1L_(16)
+										<Transform>: -15.5938 -0.02000002 2.497091 -3.885866E-19 359.9133 1.936129E-19 1 1 1 -3.392336E-21 -0.0007567107 1.687025E-21 0.9999998  
+										<TransformMatrix>: 0.9999989 3.379183E-21 0.001513421 0 -3.368915E-21 1 -6.787223E-21 0 -0.001513421 6.782116E-21 0.9999989 0 -15.5938 -0.02000002 2.497091 1  
+									<Bounds>: 388.4719 24.1042 112.0756 10.01276 10 10.01276
+										<Children>: 0
+									</Frame>
+									<Frame>: 260 0 TrapShield_Corner_R_(3)
+										<Transform>: -10.0738 -0.02000002 0.2870909 -5.490522E-19 270.0001 -1.2862E-19 1 1 1 -2.594353E-21 -0.7071061 -4.181689E-21 0.7071076  
+										<TransformMatrix>: 2.086163E-06 -2.244843E-21 1 0 9.582774E-21 1 2.244821E-21 0 -1 9.582769E-21 2.086163E-06 0 -10.0738 -0.02000002 0.2870909 1  
+										<Children>: 0
+									</Frame>
+									<Frame>: 261 0 TrapShield_1L_(17)
+										<Transform>: -2.783673 -1.001358E-05 0.3242524 1.612894E-17 270.0002 2.676742E-18 1 1 1 8.300922E-20 -0.7071058 1.160435E-19 0.7071079  
+										<TransformMatrix>: 2.920628E-06 4.671796E-20 1 0 -2.815032E-19 1 -4.671711E-20 0 -1 -2.81503E-19 2.920628E-06 0 -2.783673 -1.001358E-05 0.3242524 1  
+									<Bounds>: 372.0161 24.3041 226.829 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 262 0 TrapShield_1L_(18)
+										<Transform>: -5.24687 -1.001358E-05 0.324258 1.612894E-17 270.0002 2.676742E-18 1 1 1 8.300922E-20 -0.7071058 1.160435E-19 0.7071079  
+										<TransformMatrix>: 2.920628E-06 4.671796E-20 1 0 -2.815032E-19 1 -4.671711E-20 0 -1 -2.81503E-19 2.920628E-06 0 -5.24687 -1.001358E-05 0.324258 1  
+									<Bounds>: 372.0102 24.3041 202.197 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 263 0 TrapShield_1L_(19)
+										<Transform>: -7.710067 -1.001358E-05 0.324263 1.612894E-17 270.0002 2.676742E-18 1 1 1 8.300922E-20 -0.7071058 1.160435E-19 0.7071079  
+										<TransformMatrix>: 2.920628E-06 4.671796E-20 1 0 -2.815032E-19 1 -4.671711E-20 0 -1 -2.81503E-19 2.920628E-06 0 -7.710067 -1.001358E-05 0.324263 1  
+									<Bounds>: 372.0043 24.3041 177.565 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+									<Frame>: 264 0 TrapShield_1L_(20)
+										<Transform>: -10.17326 -1.001358E-05 0.3242681 1.612894E-17 270.0002 2.676742E-18 1 1 1 8.300922E-20 -0.7071058 1.160435E-19 0.7071079  
+										<TransformMatrix>: 2.920628E-06 4.671796E-20 1 0 -2.815032E-19 1 -4.671711E-20 0 -1 -2.81503E-19 2.920628E-06 0 -10.17326 -1.001358E-05 0.3242681 1  
+									<Bounds>: 371.9984 24.3041 152.9331 10.00241 10 10.00241
+										<Children>: 0
+									</Frame>
+							</Frame>
+					</Frame>
+					<Frame>: 265 0 GameObject
+						<Transform>: 0 0.1617475 -1.01326 0 0 0 1 1 1 0 0 0 1  
+						<TransformMatrix>: 1 0 0 0 0 1 0 0 0 0 1 0 0 0.1617475 -1.01326 1  
+						<Children>: 28
+							<Frame>: 266 0 FloorPanel_base
+								<Transform>: -33.98 -1.3 -21.89 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -33.98 -1.3 -21.89 1  
+							<Bounds>: 384.8 29.12141 265.0326 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 267 0 FloorPanel_base_(1)
+								<Transform>: -36.5 -1.3 -21.89 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -36.5 -1.3 -21.89 1  
+							<Bounds>: 410 29.12141 265.0326 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 268 0 FloorPanel_base_(2)
+								<Transform>: -39.00446 -1.315547 -21.87445 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -39.00446 -1.315547 -21.87445 1  
+							<Bounds>: 435.0446 28.96594 264.8771 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 269 0 FloorPanel_base_(3)
+								<Transform>: -41.50891 -1.331095 -21.8589 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -41.50891 -1.331095 -21.8589 1  
+							<Bounds>: 460.0891 28.81047 264.7216 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 270 0 FloorPanel_base_(4)
+								<Transform>: -33.98 -1.3 -19.41 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -33.98 -1.3 -19.41 1  
+							<Bounds>: 384.8 29.12141 240.2326 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 271 0 FloorPanel_base_(5)
+								<Transform>: -36.5 -1.3 -19.41 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -36.5 -1.3 -19.41 1  
+							<Bounds>: 410 29.12141 240.2326 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 272 0 FloorPanel_base_(6)
+								<Transform>: -39.00446 -1.315547 -19.39445 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -39.00446 -1.315547 -19.39445 1  
+							<Bounds>: 435.0446 28.96594 240.0771 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 273 0 FloorPanel_base_(7)
+								<Transform>: -41.50891 -1.331095 -19.37891 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -41.50891 -1.331095 -19.37891 1  
+							<Bounds>: 460.0891 28.81047 239.9217 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 274 0 FloorPanel_base_(8)
+								<Transform>: -33.98 -1.3 -16.97 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -33.98 -1.3 -16.97 1  
+							<Bounds>: 384.8 29.12141 215.8326 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 275 0 FloorPanel_base_(9)
+								<Transform>: -36.5 -1.3 -16.97 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -36.5 -1.3 -16.97 1  
+							<Bounds>: 410 29.12141 215.8326 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 276 0 FloorPanel_base_(10)
+								<Transform>: -39.00446 -1.315547 -16.95445 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -39.00446 -1.315547 -16.95445 1  
+							<Bounds>: 435.0446 28.96594 215.6771 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 277 0 FloorPanel_base_(11)
+								<Transform>: -41.50891 -1.331095 -16.9389 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -41.50891 -1.331095 -16.9389 1  
+							<Bounds>: 460.0891 28.81047 215.5216 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 278 0 FloorPanel_base_(12)
+								<Transform>: -33.98 -1.3 -14.47 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -33.98 -1.3 -14.47 1  
+							<Bounds>: 384.8 29.12141 190.8326 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 279 0 FloorPanel_base_(13)
+								<Transform>: -36.5 -1.3 -14.47 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -36.5 -1.3 -14.47 1  
+							<Bounds>: 410 29.12141 190.8326 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 280 0 FloorPanel_base_(14)
+								<Transform>: -39.00446 -1.315547 -14.45445 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -39.00446 -1.315547 -14.45445 1  
+							<Bounds>: 435.0446 28.96594 190.6771 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 281 0 FloorPanel_base_(15)
+								<Transform>: -41.50891 -1.331095 -14.4389 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -41.50891 -1.331095 -14.4389 1  
+							<Bounds>: 460.0891 28.81047 190.5216 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 282 0 FloorPanel_base_(16)
+								<Transform>: -33.98 -1.3 -11.97 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -33.98 -1.3 -11.97 1  
+							<Bounds>: 384.8 29.12141 165.8326 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 283 0 FloorPanel_base_(17)
+								<Transform>: -36.5 -1.3 -11.97 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -36.5 -1.3 -11.97 1  
+							<Bounds>: 410 29.12141 165.8326 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 284 0 FloorPanel_base_(18)
+								<Transform>: -39.00446 -1.315547 -11.95445 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -39.00446 -1.315547 -11.95445 1  
+							<Bounds>: 435.0446 28.96594 165.6771 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 285 0 FloorPanel_base_(19)
+								<Transform>: -41.50891 -1.331095 -11.9389 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -41.50891 -1.331095 -11.9389 1  
+							<Bounds>: 460.0891 28.81047 165.5216 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 286 0 FloorPanel_base_(20)
+								<Transform>: -33.98 -1.3 -9.48 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -33.98 -1.3 -9.48 1  
+							<Bounds>: 384.8 29.12141 140.9326 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 287 0 FloorPanel_base_(21)
+								<Transform>: -36.5 -1.3 -9.48 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -36.5 -1.3 -9.48 1  
+							<Bounds>: 410 29.12141 140.9326 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 288 0 FloorPanel_base_(22)
+								<Transform>: -39.00446 -1.315547 -9.464455 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -39.00446 -1.315547 -9.464455 1  
+							<Bounds>: 435.0446 28.96594 140.7771 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 289 0 FloorPanel_base_(23)
+								<Transform>: -41.50891 -1.331095 -9.448906 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -41.50891 -1.331095 -9.448906 1  
+							<Bounds>: 460.0891 28.81047 140.6217 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 290 0 FloorPanel_base_(24)
+								<Transform>: -33.98 -1.3 -6.955547 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -33.98 -1.3 -6.955547 1  
+							<Bounds>: 384.8 29.12141 115.6881 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 291 0 FloorPanel_base_(25)
+								<Transform>: -36.5 -1.3 -6.955547 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -36.5 -1.3 -6.955547 1  
+							<Bounds>: 410 29.12141 115.6881 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+							<Frame>: 292 0 FloorPanel_base_(26)
+								<Transform>: -39.00446 -1.315547 -6.94 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -39.00446 -1.315547 -6.94 1  
+							<Bounds>: 435.0446 28.96594 115.5326 12.60001 0.613348 12.6
+								<Children>: 0
+							</Frame>
+							<Frame>: 293 0 FloorPanel_base_(27)
+								<Transform>: -41.50891 -1.331095 -6.924454 2.504478E-06 0 0 1 1 1 2.185569E-08 0 0 1  
+								<TransformMatrix>: 1 0 0 0 0 1 4.371139E-08 0 0 -4.371139E-08 1 0 -41.50891 -1.331095 -6.924454 1  
+							<Bounds>: 460.0891 28.81047 115.3771 12.60001 0.613348 12.60001
+								<Children>: 0
+							</Frame>
+					</Frame>
+			</Frame>
+	</Frame>
+</Hierarchy>
