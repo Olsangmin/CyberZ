@@ -215,7 +215,7 @@ void GameMap::Update(int tick)
 			}
 		}
 
-		if (tick % 29 == 0) {
+		if (tick == 0 || tick == 30) {
 			npc.DoWork();
 		}
 		

@@ -85,7 +85,7 @@ void NPC::Patrol()
 
 void NPC::Chase()
 {
-	std::cout << "[" << id << "] Chase [" <<near_player<< "] " << std::endl;
+	// std::cout << "[" << id << "] Chase [" <<near_player<< "] " << std::endl;
 	if (n_path.empty()) {
 		return;
 	}
