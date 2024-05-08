@@ -28,21 +28,10 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	MSG msg;
 	HACCEL hAccelTable;
 
-
-#ifdef USE_NETWORK
-	ifstream ip_file{ "../IPaddr.config" };
-	string s;
-	if (!ip_file) {
-		cout << "File Error" << endl;
-		exit(-1);
-	}
-	else {
-		while (ip_file >> s) {
-			// ServerIP = s;
-		}
-	}
-#endif // USE_NETWORK
-
+	/*ifstream ip_file{ "../IPaddr.config" };
+	if (ip_file) {
+		while (ip_file >> ServerIP);
+	}*/
 	
 
 	::LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);

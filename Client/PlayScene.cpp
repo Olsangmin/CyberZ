@@ -46,7 +46,7 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	CLoadedModelInfo* pMapModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/middle/MAP3_1.bin", NULL);
 	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel);
 	if (pMapModel) delete pMapModel;
-	
+
 	CLoadedModelInfo* pMapModel2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/middle/MAP3_2.bin", NULL);
 	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel2);
 	if (pMapModel2) delete pMapModel2;
@@ -59,7 +59,7 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	// 점령 미션 범위
 	XMFLOAT3 OccMissionRange = XMFLOAT3(30.f, 30.f, 30.f);
-	
+
 	CLoadedModelInfo* pMachine = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/Comm.bin", NULL);
 	m_ppMissionObj[0] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine, OccMissionRange);
 	m_ppMissionObj[0]->SetPosition(300.f, 0.f, 700.f);
@@ -217,14 +217,14 @@ bool CPlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 			break;
 		}
 		case 'H': {
-			if(!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetSecurityKey())
+			if (!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetSecurityKey())
 				reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(0);
 			break;
 		}
 		case '1':
 		case '2':
-		case '3': 
-			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->MissionCheck(wParam-49);
+		case '3':
+			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->MissionCheck(wParam - 49);
 			break;
 		}
 		break;
@@ -238,7 +238,7 @@ bool CPlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 		}
 		case 'C': {
 			// m_pMyPlayer->SetCreepFlag();
-			
+
 			break;
 		}
 		}
@@ -257,8 +257,8 @@ void CPlayScene::AnimateObjects(float fTimeElapsed)
 	for (int k = 0; k < m_nMissionObj; k++)
 	{
 		Missionflag = false;
-		for (int i = 0; i < m_nPlayer; i++) if(m_ppPlayer[i]){
-			if (CheckMissionBound(m_ppPlayer[i], m_ppMissionObj[k])){
+		for (int i = 0; i < m_nPlayer; i++) if (m_ppPlayer[i]) {
+			if (CheckMissionBound(m_ppPlayer[i], m_ppMissionObj[k])) {
 				Missionflag = true;
 				cout << "colli" << endl;
 			}
@@ -318,7 +318,7 @@ void CPlayScene::ProcessPacket(char* p)
 		}
 
 	} break;
-		
+
 	case SC_UPDATE_PLAYER:
 	{
 		SC_UPDATE_PLAYER_PACKET* packet = reinterpret_cast<SC_UPDATE_PLAYER_PACKET*>(p);
@@ -331,7 +331,6 @@ void CPlayScene::ProcessPacket(char* p)
 		else {
 			Player_Character_Type type = it->second;
 			m_ppPlayer[type]->SetPosition(packet->position);
-			cout << "[" << type << "]" << endl;
 			// m_ppPlayer[type]->Rotate(0.f, packet->yaw - m_ppPlayer[type]->GetYaw(), 0.f);
 
 		}
@@ -371,7 +370,7 @@ void CPlayScene::ProcessPacket(char* p)
 		int n_id = packet->id - 100;
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(packet->next_pos);
 		// std::cout << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << std::endl;
-		std::cout << packet->next_pos.x << "," << packet->next_pos.z << std::endl;
+		// std::cout << packet->next_pos.x << "," << packet->next_pos.z << std::endl;
 	}
 					break;
 
@@ -484,7 +483,7 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 		cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
-	
+
 	if (pKeysBuffer['9'] & 0xF0) m_pMyPlayer->m_bUnable = true;
 	if (pKeysBuffer['0'] & 0xF0) m_pMyPlayer->m_bUnable = false;
 
@@ -529,34 +528,58 @@ bool CPrepareRoomScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 #else
 			m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
 #endif // USE_NETWORK
-
-		}break;
+			break;
+		}
 		case '1': {
 			select = Corzim;
-
-		}break;
+#ifdef USE_NETWORK
+			CS_CHANGE_CHARACTER_PACKET p;
+			p.size = sizeof(p);
+			p.type = CS_CHANGE_CHARACTER;
+			p.c_type = select;
+			send_packet(&p);
+#else
+			ChangeModel(0, select);
+#endif // USE_NETWORK
+			break;
+		}
 		case '2': {
 			select = Evan;
-		}break;
+#ifdef USE_NETWORK
+			CS_CHANGE_CHARACTER_PACKET p;
+			p.size = sizeof(p);
+			p.type = CS_CHANGE_CHARACTER;
+			p.c_type = select;
+			send_packet(&p);
+#else
+			ChangeModel(0, select);
+#endif // USE_NETWORK
+			break;
+		}
 		case '3': {
 			select = Uranya;
-		}break;
+#ifdef USE_NETWORK
+			CS_CHANGE_CHARACTER_PACKET p;
+			p.size = sizeof(p);
+			p.type = CS_CHANGE_CHARACTER;
+			p.c_type = select;
+			send_packet(&p);
+#else
+			ChangeModel(0, select);
+#endif // USE_NETWORK
+			break;
+		}
+
+		default:
+			break;
+
 
 		}
-	default:
-		break;
+
 	}
 	}
 
-#ifdef USE_NETWORK
-	CS_CHANGE_CHARACTER_PACKET p;
-	p.size = sizeof(p);
-	p.type = CS_CHANGE_CHARACTER;
-	p.c_type = select;
-	send_packet(&p);
-#else
-	ChangeModel(0, select);
-#endif // USE_NETWORK
+
 	CScene::OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 	return false;
 }

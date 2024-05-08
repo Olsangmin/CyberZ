@@ -59,10 +59,10 @@ void Server::Network()
 	frame fps{}, frame_count{};
 
 	while (true) {
-		/*if (!gMap.is_InGame()) {
+		if (!gMap.is_InGame()) {
 			fps_timer = std::chrono::steady_clock::now();
 			continue;
-		}*/
+		}
 
 
 		fps = duration_cast<frame>(std::chrono::steady_clock::now() - fps_timer);
@@ -70,15 +70,6 @@ void Server::Network()
 		// 아직 1/60초가 안지났으면 패스
 		
 		if (fps.count() < 1) continue;
-
-		
-		// std::cout << frame_count.count() << std::endl;
-
-		/*if (frame_count.count() & 1) {
-			
-		}*/
-
-		// gMap.Update();
 
 
 		if (frame_count.count() & 1) {
@@ -193,52 +184,6 @@ void Server::Worker_thread()
 			break;
 		}
 
-		//case OP_NPC_MOVE: {
-			/*bool keep_alive = false;
-			auto& npc = gMap.npcs[key-100];
-			int sector = gMap.getSector(clients[npc.near_player].GetPos());
-			if (npc.my_sector == sector) keep_alive = true;
-			if (keep_alive) {
-				for (auto& cl : clients) {
-					if (cl.state != ST_INGAME) continue;
-					cl.send_move_npc_packet(key, npc.Move());
-				}
-				TIMER_EVENT ev{ key, key, std::chrono::system_clock::now() + std::chrono::milliseconds(250), EV_NPC_MOVE };
-				
-				timer_queue.push(ev); 
-			}
-			else {
-				std::queue<DirectX::XMFLOAT3> q{};
-				npc.n_path = q;
-				npc.is_active = false;
-			}
-			delete ex_over;*/
-			
-
-			/*bool keep_alive = false;
-			auto& npc = gMap.npcs[key - 100];
-			auto ids = gMap.cl_ids;
-
-			if (npc.current_behavior == CHASE) keep_alive = true;
-
-			if (keep_alive) {
-				npc.Move();
-				for (auto& id : ids) {
-					clients[id].send_move_npc_packet(key, npc.GetPos());
-				}
-				TIMER_EVENT ev{ key, key, std::chrono::system_clock::now() + std::chrono::milliseconds(250), EV_NPC_MOVE };
-				timer_queue.push(ev);
-			}
-			else {
-				std::queue<DirectX::XMFLOAT3> q{};
-				npc.n_path = q;
-				npc.is_active = false;
-			}*/
-
-			
-
-		//}
-
 		case OP_NPC_MOVE: {
 			auto& npc = gMap.npcs[key - 100];
 			npc.Move();
@@ -249,6 +194,8 @@ void Server::Worker_thread()
 
 		case OP_NPC_ATTACK: {
 			auto& npc = gMap.npcs[key - 100];
+
+			if (npc.current_behavior != ATTACK) break;
 
 			for (int id : gMap.cl_ids) {
 				SC_ATTACK_NPC_PACKET p;
@@ -284,20 +231,9 @@ void Server::Process_packet(int c_id, char* packet)
 		}
 		std::cout << "Client[" << c_id << "] Login.\n" << std::endl;
 		clients[c_id].send_login_info_packet();
-
-		gMap.cl_ids.push_back(c_id);
-
-		// clients[c_id].SetPos(random_pos[uid(rd)]);
-
-		/*for (auto& cl : clients) {
-			{
-				std::lock_guard<std::mutex> ll(cl.o_lock);
-				if (ST_LOBBY != cl.state) continue;
-			}
-			if (cl.GetId() == c_id) continue;
-			cl.send_add_player_packet(c_id, clients[c_id].GetPos(), clients[c_id].GetRotation());
-			clients[c_id].send_add_player_packet(cl.GetId(), cl.GetPos(), cl.GetRotation());
-		}*/
+		
+		if(gMap.cl_ids.size() <= 3)
+			gMap.cl_ids.push_back(c_id);
 
 		for (auto& cl : clients) {
 			{
@@ -312,7 +248,23 @@ void Server::Process_packet(int c_id, char* packet)
 				 break;
 
 	case CS_ALLPLAYER_READY: {
+		if (c_id != gMap.cl_ids[0]) break;
 		// GameMap& gmap = GameMap::GetInstance();
+
+		std::sort(gMap.cl_ids.begin(), gMap.cl_ids.end());
+		auto u = std::unique(gMap.cl_ids.begin(), gMap.cl_ids.end());
+		gMap.cl_ids.erase(u, gMap.cl_ids.end());
+		
+		std::set<int> types;
+		for (auto id : gMap.cl_ids)
+			types.insert(clients[id].GetType());
+
+		if (types.size() != gMap.cl_ids.size()) {
+			std::cout << "캐릭터 중복 " << std::endl;
+			break;
+		}
+		
+
 		for (auto& cl : clients) {
 			{
 				std::lock_guard<std::mutex> ll(cl.o_lock);
@@ -324,12 +276,9 @@ void Server::Process_packet(int c_id, char* packet)
 			}
 			// if (cl.GetId() == c_id) continue;
 		}
-		std::sort(gMap.cl_ids.begin(), gMap.cl_ids.end());
-		auto u = std::unique(gMap.cl_ids.begin(), gMap.cl_ids.end());
-		gMap.cl_ids.erase(u, gMap.cl_ids.end());
+		
 		std::cout << "방장[" << c_id << "] - " << std::endl;
 		gMap.StartGame();
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		break;
 	}
 
@@ -404,6 +353,12 @@ void Server::Process_packet(int c_id, char* packet)
 
 	case CS_CHANGE_CHARACTER: {
 		CS_CHANGE_CHARACTER_PACKET* p = reinterpret_cast<CS_CHANGE_CHARACTER_PACKET*>(packet);
+
+		/*for (auto id : gMap.cl_ids) {
+			if (id == c_id) continue;
+			if (clients[id].GetType() == p->c_type)
+				return;
+		}*/
 
 		clients[c_id].SetType(p->c_type);
 

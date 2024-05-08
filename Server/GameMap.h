@@ -67,7 +67,13 @@ public:
 
     void StartGame();
     void EndGame() { InGame = false; }
-    void PlayGame() { InGame = true; }
+    void PlayGame() { 
+        InGame = true; 
+        Start_time = std::chrono::steady_clock::now();
+        End_time = Start_time + std::chrono::seconds(10);
+
+        
+    }
     bool is_InGame() const { return InGame; }
 
     void printMap() const;
@@ -89,6 +95,8 @@ public:
         int dz = nodeA.z - nodeB.z;
         return static_cast<int>(std::sqrt(dx * dx + dz * dz));
     }
+
+    
 
     bool IsInOpenSet(Node* node, const std::priority_queue<Node*, std::vector<Node*>, CompareNodes>& openSet) {
         std::priority_queue<Node*, std::vector<Node*>, CompareNodes> tempOpenSet = openSet; // 복사본 생성
@@ -134,6 +142,44 @@ public:
 
     std::vector<Node> GetNeighbors(const Node& node) const;
 
+    std::vector<Node> GetNeighbors(const Node& node, const Node& targetNode) const {
+        std::vector<Node> neighbors;
+
+        int Cell_x = node.x;
+        int Cell_z = node.z;
+
+        for (int dz = -1; dz <= 1; ++dz) {
+            for (int dx = -1; dx <= 1; ++dx) {
+                if (dz == 0 && dx == 0) {
+                    continue;
+                }
+
+                int newX = Cell_x + dx;
+                int newZ = Cell_z + dz;
+
+                if (newX >= 0 && newX < cellWidth && newZ >= 0 && newZ < cellDepth &&
+                    !cells[newX][newZ].isObstacle) {
+                    float g = node.gCost + 1.0f; // 시작 노드로부터의 거리는 항상 1
+                    float h = CalculateHeuristic(newX, newZ, targetNode);
+                    neighbors.emplace_back(newX, newZ, g, h, nullptr);
+                }
+            }
+        }
+
+        return neighbors;
+    }
+
+    float CalculateHeuristic(int x, int z, const Node& targetNode) const {
+        // 맨해튼 거리를 사용하거나 유클리드 거리를 사용할 수 있음
+        return std::abs(x - targetNode.x) + std::abs(z - targetNode.z); // 맨해튼 거리
+        // return std::sqrt((x - targetNode.x) * (x - targetNode.x) + (z - targetNode.z) * (z - targetNode.z)); // 유클리드 거리
+    }
+
+    float Distance_float(DirectX::XMFLOAT3 n_pos, DirectX::XMFLOAT3 p_pos)
+    {
+        return std::abs(n_pos.x - p_pos.x) + std::abs(n_pos.z - p_pos.z);
+    }
+
     std::array<NPC, NUM_NPC> npcs;
 
     std::vector<int> cl_ids;
@@ -166,6 +212,12 @@ private:
     int cellWidth, cellDepth;
     bool InGame;
 
+
+    std::chrono::steady_clock::time_point Start_time;
+        
+    std::chrono::steady_clock::time_point End_time;
+
+    std::chrono::duration<double> Remain_time;
 };
 
 

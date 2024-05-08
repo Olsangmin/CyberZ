@@ -32,6 +32,8 @@ public:
 	int my_sector;
 
 	int near_player;
+	float distance_near;
+
 	std::atomic_bool is_active;
 	std::queue<DirectX::XMFLOAT3> n_path;
 };

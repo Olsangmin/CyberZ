@@ -13,6 +13,9 @@ struct Node
         return (x == other.x && z == other.z);
     }
 
+    bool operator<(const Node& other) const {
+        return (gCost + hCost) > (other.gCost + other.hCost);
+    }
     
 };
 
