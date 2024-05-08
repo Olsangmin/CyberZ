@@ -81,7 +81,7 @@ void Server::Network()
 		// gMap.Update();
 
 
-		/*if (frame_count.count() & 1) {
+		if (frame_count.count() & 1) {
 			SC_UPDATE_PLAYER_PACKET uPackets[MAX_USER];
 			for (int i = 0; auto id : gMap.cl_ids) {
 				uPackets[i].size = sizeof(SC_UPDATE_PLAYER_PACKET);
@@ -98,7 +98,7 @@ void Server::Network()
 					clients[id].do_send(&(uPackets[i]));
 				}
 			}
-		}*/
+		}
 
 
 		gMap.Update(frame_count.count());
@@ -469,6 +469,7 @@ void Server::TimerThread()
 				OVER_EXP* overE = new OVER_EXP;
 				overE->comp_type = OP_NPC_ATTACK;
 				PostQueuedCompletionStatus(h_iocp, 1, ev.npc_id, &overE->over);
+				break;
 			}
 			case EV_SEND_COUNT: {
 				//OVER_EXP* overE = new OVER_EXP;

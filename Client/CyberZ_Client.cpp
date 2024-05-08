@@ -38,7 +38,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	}
 	else {
 		while (ip_file >> s) {
-			// ServerIP = s;
+			 ServerIP = s;
 		}
 	}
 #endif // USE_NETWORK
