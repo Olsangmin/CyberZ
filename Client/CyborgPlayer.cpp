@@ -401,6 +401,19 @@ void CyborgPlayer::MissionCheck(int num)
 		if (m_nAnswer == num) {
 			++m_nAnswerCount;
 			m_nAnswerCount == 3 ? m_bSecurityKey = true, StartKeyMission(2) : StartKeyMission(1);
+		
+			/*if (m_nAnswerCount == 3) {
+				m_bSecurityKey = true;
+				StartKeyMission(2);
+				CS_GETKEY_PACKET packet;
+				packet.size = sizeof(packet);
+				packet.type = CS_GETKEY;
+				SetBuffer(&packet, packet.size);
+			}
+			else {
+				StartKeyMission(1);
+			}*/
+
 		}
 		else
 			StartKeyMission(-1);

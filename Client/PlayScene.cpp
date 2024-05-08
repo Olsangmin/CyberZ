@@ -346,7 +346,6 @@ void CPlayScene::ProcessPacket(char* p)
 	case SC_ADD_PLAYER:
 	{
 		SC_ADD_PLAYER_PACKET* packet = reinterpret_cast<SC_ADD_PLAYER_PACKET*>(p);
-		// m_ppPlayerSelecter[c_id]
 		Player_Character_Type type = packet->c_type;
 
 		idANDtype.insert({ packet->id, packet->c_type });
@@ -435,6 +434,21 @@ void CPlayScene::ProcessPacket(char* p)
 	case SC_ATTACK_NPC: {
 		SC_ATTACK_NPC_PACKET* packet = reinterpret_cast<SC_ATTACK_NPC_PACKET*>(p);
 		cout << "[" << packet->p_id << "] »ç¸Á" << endl;
+	}break;
+
+	case SC_GETKEY: {
+		SC_GETKEY_PACKET* packet = reinterpret_cast<SC_GETKEY_PACKET*>(p);
+		
+		int id = packet->p_id;
+		auto& it = idANDtype.find(id);
+	
+		if (it == idANDtype.end()) break;
+		else {
+
+			Player_Character_Type type = it->second;
+			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->ChangeKeyState(true);
+		}
+
 	}break;
 
 
