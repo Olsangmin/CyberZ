@@ -120,20 +120,11 @@ void GameMap::StartGame()
 
 	}
 
-	//cl_ids.push_back(0); // 임시
-	//cl_ids.push_back(1);// 임시
-	//cl_ids.push_back(2);// 임시
-
-	// std::vector<DirectX::XMFLOAT3> p = BFS(npcs[0].GetPos(), DirectX::XMFLOAT3(50.f, 0.f, 50.f));
-	/*for (auto& path : p) {
-		// npcs[0].n_path.push(path);
-	}*/
-
 }
 
 void GameMap::printMap() const
 {
-	// return;
+	return;
 	std::cout << "-----PrintMap------------------------\n";
 	for (int y = cellDepth - 1; y >= 0; --y) {
 		for (int x = 0; x < cellWidth; ++x) {
@@ -161,8 +152,21 @@ void GameMap::printMap() const
 
 void GameMap::Update(int tick)
 {
-
 	if (!InGame) return;
+
+	//Remain_time = End_time - std::chrono::steady_clock::now();
+
+	//if (Remain_time.count() < 0.f) {
+	//	std::cout << "게임 종료" << std::endl;
+	//	EndGame();
+	//	cl_ids.clear(); // 게임 리셋
+	//	return;
+	//}
+
+	//if(tick == 0)
+	//	std::cout << "남은시간 : " << Remain_time.count() << " 초" << std::endl;
+	
+	
 	Server& server = Server::GetInstance();
 
 	// npc가 이동해야 하면 깨우기
@@ -170,16 +174,17 @@ void GameMap::Update(int tick)
 	auto& players = server.clients;
 
 	for (auto& npc : npcs) {
-		
-		for (auto& ids : cl_ids) {
-			npc.near_player = ids;
+		npc.near_player = -1;
+		for (auto ids : cl_ids) {
 			// 같은 섹터
 			if (npc.my_sector == getSector(players[ids].GetPos())) {
+				npc.near_player = ids;
+				npc.distance_near = Distance_float(npc.GetPos(), players[npc.near_player].GetPos());
 				
 				if (false == npc.n_path.empty()) break; // 갈길이 남았으면 break;
-
 				
-				if (GetCurrentCell(npc.GetPos()) == GetCurrentCell(players[ids].GetPos())) {
+				if (GetCurrentCell(npc.GetPos()) == GetCurrentCell(players[npc.near_player].GetPos())) {
+					std::cout << "공격거리 : " << npc.distance_near << std::endl;
 					std::queue<DirectX::XMFLOAT3> q{};
 					npc.n_path = q;
 					npc.is_active = true; // 공격중
@@ -189,7 +194,9 @@ void GameMap::Update(int tick)
 				
 				if (npc.n_path.empty()) { // 경로가 비었으면 길찾기
 					std::cout << "경로 탐색" << std::endl;
-					std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[ids].GetPos());
+					std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[npc.near_player].GetPos());
+					
+					
 					for (auto& p : path) {
 						npc.n_path.push(p);
 					}
@@ -197,7 +204,6 @@ void GameMap::Update(int tick)
 					break;
 				}
 
-				// npc.WakeUp(ids);
 			}
 			else {
 				// 같은 섹터가 아니면 큐를 비운 후 서성이기
@@ -213,7 +219,8 @@ void GameMap::Update(int tick)
 		if (tick % 29 == 0) {
 			npc.DoWork();
 		}
-		
+		if(npc.near_player != -1)
+			std::cout << npc.GetId() << " near P" << npc.near_player << " paht"<<npc.n_path.size() << std::endl;
 	}
 	
 }
@@ -246,80 +253,85 @@ void GameMap::InitializeNPC()
 		npcs[i].my_sector = getSector(npcs[i].GetPos());
 		CELL& cell = GetCurrentCell(npcs[i].GetPos());
 		cell.cellType = CT_NPC;
-		std::cout << "NPC[" << npcs[i].GetId() << "] goto " << std::endl;
+		// std::cout << "NPC[" << npcs[i].GetId() << "] goto " << std::endl;
 	}
+
+	/*auto path = BFS(npcs[0].GetPos(), PlayerInitPos[0]);
+	for (auto& pos : path) {
+		npcs[0].n_path.push(pos);
+		std::cout << pos.x << ", " << pos.z << std::endl;
+	}
+	std::cout << "경로 크기 : " << npcs[0].n_path.size() << std::endl;*/
 
 }
 
 std::vector<DirectX::XMFLOAT3> GameMap::PathFind(const DirectX::XMFLOAT3& startPos, const DirectX::XMFLOAT3& targetPos) {
-	std::vector<DirectX::XMFLOAT3> path;
-
-	// 시작 위치와 목표 위치를 노드의 인덱스로 변환
 	std::pair<int, int> startIndex = CoordsToIndex(startPos);
 	std::pair<int, int> targetIndex = CoordsToIndex(targetPos);
 
-	// 시작 노드와 목표 노드를 생성합니다.
 	Node startNode(startIndex.first, startIndex.second, 0, 0, nullptr);
 	Node targetNode(targetIndex.first, targetIndex.second, 0, 0, nullptr);
 
 	std::vector<std::vector<bool>> visited(cellWidth, std::vector<bool>(cellDepth, false));
+	std::vector<DirectX::XMFLOAT3> path;
 
-	// 우선순위 큐를 생성합니다.
-	std::priority_queue<Node*, std::vector<Node*>, CompareNodes> openSet;
-
-	// 시작 노드를 우선순위 큐에 추가합니다.
-	openSet.push(new Node(startIndex.first, startIndex.second, 0, 0, nullptr));
-
+	std::priority_queue<Node*> openList;
+	openList.push(new Node(startIndex.first, startIndex.second, 0, 0, nullptr));
 	visited[startIndex.first][startIndex.second] = true;
-	// 열린 목록이 비어있을 때까지 반복합니다.
-	while (!openSet.empty()) {
-		// 열린 목록에서 현재 노드를 선택합니다.
-		Node* currentNode = openSet.top();
-		openSet.pop();
 
-		// 현재 노드가 목표 노드인지 확인합니다.
+	std::vector<Node*> closedList;
+
+	while (!openList.empty()) {
+		Node* currentNode = openList.top();
+		openList.pop();
+
 		if (*currentNode == targetNode) {
 			// 경로를 재구성합니다.
-
-			Node* current = currentNode;
-			while (current != nullptr) {
-				path.push_back(cells[current->x][current->z].center);
-				current = current->parent;
+			while (currentNode != nullptr) {
+				path.push_back(cells[currentNode->x][currentNode->z].center);
+				Node* temp = currentNode;
+				currentNode = currentNode->parent;
+				// 이미 방문한 노드의 리스트에서 제거합니다.
+				closedList.erase(std::remove(closedList.begin(), closedList.end(), temp), closedList.end());
+				delete temp; // 더 이상 필요하지 않은 노드를 해제합니다.
 			}
 			std::reverse(path.begin(), path.end());
-
-			// 메모리 해제
-			return path;
+			break;
 		}
 
+		std::vector<Node> neighbors = GetNeighbors(*currentNode, targetNode);
+		for (const Node& neighbor : neighbors) {
+			int x = neighbor.x;
+			int z = neighbor.z;
 
-		// 현재 노드의 이웃 노드를 가져옵니다.
-		std::vector<Node> neighbors = GetNeighbors(*currentNode);
-		for (Node& neighbor : neighbors) {
-			// 이웃 노드가 장애물이거나 이미 방문한 노드인지 확인합니다.
-			Node* cnode = &neighbor;
+			if (!visited[x][z]&&!cells[x][z].isObstacle) {
+				visited[x][z] = true;
 
-			if (!visited[neighbor.x][neighbor.z] && !cells[neighbor.x][neighbor.z].isObstacle) {
-				// 새로운 예상 비용을 계산합니다.
-				int newGCost = currentNode->gCost + 1; // 이동 비용은 1로 가정합니다.
-				// int newHCost = CalculateManhattanDistance(neighbor, targetNode);
-				// 이웃 노드가 이미 열린 목록에 있는지 확인합니다.
+				Node* newNode = nullptr;
+				for (Node* visitedNode : closedList) {
+					if (visitedNode->x == x && visitedNode->z == z) {
+						newNode = visitedNode;
+						break;
+					}
+				}
 
+				if (newNode == nullptr) {
+					// 새로운 노드를 생성하여 큐에 추가합니다.
+					newNode = new Node(x, z, neighbor.gCost, neighbor.hCost, currentNode);
+					closedList.push_back(newNode);
+				}
 
-				// 새로운 경로가 더 나은 경우 또는 이웃 노드가 아직 열린 목록에 없는 경우에만 업데이트합니다.
-
+				openList.push(newNode);
 			}
 		}
-		delete currentNode;
 	}
 
-	// 경로를 찾지 못한 경우, 빈 벡터 반환
+	for (Node* node : closedList) {
+		delete node;
+	}
 
-
-	// 메모리 해제
 	return path;
 }
-
 
 
 std::vector<Node> GameMap::GetNeighbors(const Node& node) const {
@@ -344,6 +356,7 @@ std::vector<Node> GameMap::GetNeighbors(const Node& node) const {
 			if ((abs(dx) + abs(dz) == 1) && newX >= 0 && newX < cellWidth && newZ >= 0 && newZ < cellDepth &&
 				!cells[newX][newZ].isObstacle) {
 				// 이웃 노드를 생성하여 이웃 목록에 추가
+
 				neighbors.emplace_back(newX, newZ, 0, 0, nullptr); // 부모 노드를 nullptr로 설정
 			}
 		}

@@ -6,10 +6,7 @@ constexpr int INGAME_USER = 3;
 constexpr int MAX_NPC = 10;
 
 extern SOCKET c_socket;
-//static string ServerIP = { "49.173.80.42" };
-static string ServerIP = {"127.0.0.1"};
-// static string ServerIP = {"192.168.219.162"};
-
+extern string ServerIP;
 extern int my_id;
 
 enum Obj_STATE{ FREE, INGAME };

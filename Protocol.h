@@ -60,6 +60,7 @@ constexpr char SC_ATTACK_NPC = 9;
 
 
 constexpr char SC_TEST = 200;
+constexpr char SC_MESSAGE = 255;
 
 enum Player_Animation_ST {
 	IDLE, WALK, RUN, CREEP, CRAWL,
@@ -200,6 +201,13 @@ struct SC_ATTACK_NPC_PACKET {
 	char	type;
 	int n_id;
 	int p_id;
+};
+
+struct SC_MESSAGE_PACKET {
+	unsigned char size;
+	char	type;
+	int id;
+	std::string message;
 };
 
 struct SC_TEST_PACKET {

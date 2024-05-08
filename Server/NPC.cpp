@@ -67,7 +67,7 @@ void NPC::Move()
 
 void NPC::Patrol()
 {
-	std::cout << "Patrol" << std::endl;
+	// std::cout << "[" << id << "] Patrol" << std::endl;
 
 	if (n_path.empty()) {
 		return;
@@ -85,14 +85,22 @@ void NPC::Patrol()
 
 void NPC::Chase()
 {
-	std::cout << "Chase" << std::endl;
+	std::cout << "[" << id << "] Chase [" <<near_player<< "] " << std::endl;
 	if (n_path.empty()) {
 		return;
 	}
 
-	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(250), EV_NPC_MOVE };
+	/*if (distance_near < 100.f) {
+		std::cout << "적 발견 경로 재탐색" << std::endl;
+		std::queue<DirectX::XMFLOAT3> q{};
+		n_path = q;
+	}*/
+	
+
+	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(500), EV_NPC_MOVE };
 	auto& server = Server::GetInstance();
 	server.timer_queue.push(ev);
+	
 
 	for (auto cl : server.gMap.cl_ids) {
 		server.clients[cl].send_move_npc_packet(id, n_path.front());
@@ -101,8 +109,8 @@ void NPC::Chase()
 
 void NPC::Attack()
 {
-	std::cout << "Attack시작" << std::endl;
-	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(100), EV_NPC_ATTACK };
+	std::cout << "[" << id << "] Attack시작 [" << near_player << "] " << std::endl;
+	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(500), EV_NPC_ATTACK };
 	auto& server = Server::GetInstance();
 	server.timer_queue.push(ev);
 }
