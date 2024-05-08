@@ -223,9 +223,10 @@ void CyborgPlayer::Update(float fTimeElapsed)
 
 			if (reinterpret_cast<Mission*>(m_pMissionBoxObject)->GetUnable()) {
 				XMFLOAT3 Height = { 0.f,16.f, 0.f };
-				m_bSecurityKey ? Height.y = 19.5 : Height.y = 16;
+				XMFLOAT3 Look = Vector3::ScalarProduct(GetLook(), 7.0);
+				m_bSecurityKey ? Height.y = 21.5, Look.x=0,Look.y=0,Look.z=0 : Height.y = 16;
 				m_pMissionBoxObject->SetPosition(
-					Vector3::Add(Vector3::Add(GetPosition(), Vector3::ScalarProduct(GetLook(), 7.0f)), Height));
+					Vector3::Add(Vector3::Add(GetPosition(), Look), Height));
 				float angle = Vector3::Angle(
 					XMFLOAT3(-m_pMissionBoxObject->GetLook().x, m_pMissionBoxObject->GetLook().y, -m_pMissionBoxObject->GetLook().z),
 					Vector3::Minus(XMFLOAT3(GetPosition().x, m_pMissionBoxObject->GetPosition().y, GetPosition().z),
