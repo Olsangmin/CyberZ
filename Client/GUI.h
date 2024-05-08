@@ -74,9 +74,12 @@ public:
 	float		m_fMaxStamina = 100.f;
 	bool		m_bStaminaBarOn = false;
 
+	void MissionText();
 	void MissionProgressBar(int MissionNum);
 	void KeyCardUI();
 	void StaminaBarUI();
+
+	
 
 public:
 	void DrawUI(UINT m_nSwapChainBufferIndex);
