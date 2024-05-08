@@ -236,6 +236,7 @@ void CPlaySceneUI::UISet(UINT m_nSwapChainBufferIndex)
 	// 점령미션 바 상단 문구
 	D2D1_RECT_F rcUpperText = D2D1::RectF(40, 20, 200, 40);
 	WCHAR MissionText[] = L"Progress";
+	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
 	m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
 
 	for (int i = 0; i < 3; i++)	MissionProgressBar(i);
@@ -287,7 +288,7 @@ void CPlaySceneUI::KeyCardUI()
 	rcMissionBarFrame->right = FRAME_BUFFER_WIDTH - 50.f;
 	rcMissionBarFrame->bottom = FRAME_BUFFER_HEIGHT - 50.0f;
 
-	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
 	m_pd2dDeviceContext->DrawRectangle(rcMissionBarFrame, m_pd2dbrBorder);
 
 	delete rcMissionBarFrame;
@@ -298,6 +299,7 @@ void CPlaySceneUI::KeyCardUI()
 
 	D2D1_RECT_F rcUpperText = D2D1::RectF(top, left, top+gab,left+gab);
 	WCHAR MissionText[] = L"ITEM";
+	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
 	m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
 
 	if (m_bcard)
@@ -313,26 +315,31 @@ void CPlaySceneUI::KeyCardUI()
 
 void CPlaySceneUI::StaminaBarUI()
 {
+	//float Xmid = FRAME_BUFFER_WIDTH / 2;
+	//float Ymid = (FRAME_BUFFER_HEIGHT / 2) - 20;
+	float halfsize = m_fMaxStamina / 2;
+
+
 	//게이지 바
 	D2D1_RECT_F* rcStaminaBar;
 	rcStaminaBar = new D2D1_RECT_F;
-	rcStaminaBar->top = 160.5f;
-	rcStaminaBar->left = 130.f;
-	rcStaminaBar->right = 130.f + m_fStaminaRange;
-	rcStaminaBar->bottom = 189.5f;
+	rcStaminaBar->top = FRAME_BUFFER_HEIGHT - 230.f;
+	rcStaminaBar->left = FRAME_BUFFER_WIDTH - 270.0f;
+	rcStaminaBar->right = FRAME_BUFFER_WIDTH - 270.0f + m_fStaminaRange;
+	rcStaminaBar->bottom = FRAME_BUFFER_HEIGHT - 210.0f;
 
-	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::White, 0.6f));
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::RoyalBlue, 1.0f));
 	m_pd2dDeviceContext->FillRectangle(rcStaminaBar, m_pd2dbrBorder);
 
 	// 게이지 바 프레임
 	D2D1_RECT_F* rcStaminaBarFrame;
 	rcStaminaBarFrame = new D2D1_RECT_F;
-	rcStaminaBarFrame->top = 160.f;
-	rcStaminaBarFrame->left = 130.0f;
-	rcStaminaBarFrame->right = 800.f;
-	rcStaminaBarFrame->bottom = 190.0f;
+	rcStaminaBarFrame->top = FRAME_BUFFER_HEIGHT - 230.f;
+	rcStaminaBarFrame->left = FRAME_BUFFER_WIDTH - 270.0f;
+	rcStaminaBarFrame->right = FRAME_BUFFER_WIDTH - 270.0f + m_fMaxStamina;
+	rcStaminaBarFrame->bottom = FRAME_BUFFER_HEIGHT - 210.0f;
 
-	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::AliceBlue, 1.0f));
 	m_pd2dDeviceContext->DrawRectangle(rcStaminaBarFrame, m_pd2dbrBorder);
 
 	delete rcStaminaBar;

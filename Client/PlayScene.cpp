@@ -161,7 +161,7 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	// m_pMyPlayer->SetPosition(XMFLOAT3(50.f, 0.f, 70.f));
 	m_pMyPlayer->SetPosition(PlayerInitPos[playernum]);
 
-
+	reinterpret_cast<CPlaySceneUI*>(m_pUI)->m_fMaxStamina = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fMaxStaminer;
 }
 
 
@@ -319,12 +319,12 @@ void CPlayScene::AnimateObjects(float fTimeElapsed)
 
 	m_pUI->m_bcard = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetSecurityKey();
 	
-	//if (reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer < reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fMaxStaminer)
-	//{
-	//	reinterpret_cast<CPlaySceneUI*>(m_pUI)->m_bStaminaBarOn = true;
-	//	reinterpret_cast<CPlaySceneUI*>(m_pUI)->m_fStaminaRange = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer;
-	//}
-	//else reinterpret_cast<CPlaySceneUI*>(m_pUI)->m_bStaminaBarOn = false;
+	if (reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer < reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fMaxStaminer)
+	{
+			reinterpret_cast<CPlaySceneUI*>(m_pUI)->m_bStaminaBarOn = true;
+			reinterpret_cast<CPlaySceneUI*>(m_pUI)->m_fStaminaRange = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer;
+	}
+	else reinterpret_cast<CPlaySceneUI*>(m_pUI)->m_bStaminaBarOn = false;
 
 }
 

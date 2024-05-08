@@ -71,6 +71,7 @@ public:
 public:
 
 	float		m_fStaminaRange = 100.f;
+	float		m_fMaxStamina = 100.f;
 	bool		m_bStaminaBarOn = false;
 
 	void MissionProgressBar(int MissionNum);
