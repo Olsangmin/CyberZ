@@ -203,19 +203,29 @@ void CFirstSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 {
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 
-	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20.0f, L"en-US", &m_pdwFont);
+	//m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20.0f, L"en-US", &m_pdwFont);
+	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 40.0f, L"en-US", &m_pdwFont);
+
 	
 	CheckEnter();
 }
 
 void CFirstSceneUI::CheckEnter()
 {
-
-	float top = FRAME_BUFFER_HEIGHT / 3 - 130;
+	/*
+	float top = FRAME_BUFFER_HEIGHT / 3 + 95;
 	float left = FRAME_BUFFER_WIDTH / 3 - 90;
 	float width = 80;
 	float height = 10;
-	float gab = 170;
+	float gab = 165;
+	*/
+
+	float top = FRAME_BUFFER_HEIGHT / 3 + 200;
+	float left = FRAME_BUFFER_WIDTH / 3 - 90;
+	float width = 180;
+	float height = 10;
+	float gab = 325;
+
 
 	if (m_bPlayerOn[0])
 	{

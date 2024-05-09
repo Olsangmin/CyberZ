@@ -1368,6 +1368,25 @@ void CMissonOBJ::SetPosition(float x, float y, float z)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+CFloorObj::CFloorObj(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel)
+{
+	CLoadedModelInfo* pObjectModel = pModel;
+	if (!pObjectModel) pObjectModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/test/Occ_Range.bin", NULL);
+
+	SetChild(pObjectModel->m_pModelRootObject, true);
+
+	XMFLOAT4 bbColor = XMFLOAT4(0.f, 0.f, 0.f, 0.f); //땅은 투명해요
+	CBoundingBoxMesh* MissionRangeMesh = new CBoundingBoxMesh(pd3dDevice, pd3dCommandList, bbColor);
+
+}
+
+CFloorObj::~CFloorObj()
+{
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 CSelectCharacterOBJ::CSelectCharacterOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nModel, int nAnimationTracks)
 {
 
@@ -1430,3 +1449,4 @@ CSelectCharacterOBJ::~CSelectCharacterOBJ()
 	this;
 
 }
+
