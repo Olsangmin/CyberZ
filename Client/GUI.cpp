@@ -201,11 +201,52 @@ void CFirstSceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 
 void CFirstSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 {
+	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
+
+	//m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20.0f, L"en-US", &m_pdwFont);
+	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 40.0f, L"en-US", &m_pdwFont);
+
 	
-	//D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
-	//WCHAR InfoText[] = L"Press 'R' To Ready";
-	//D2D1_RECT_F rcUpperText = D2D1::RectF(0, 0, szRenderTarget.width, szRenderTarget.height * 0.25f);
-	//m_pd2dDeviceContext->DrawTextW(InfoText, (UINT32)wcslen(InfoText), m_pdwFont, &rcUpperText, m_pd2dbrText);
+	CheckEnter();
+}
+
+void CFirstSceneUI::CheckEnter()
+{
+	/*
+	float top = FRAME_BUFFER_HEIGHT / 3 + 95;
+	float left = FRAME_BUFFER_WIDTH / 3 - 90;
+	float width = 80;
+	float height = 10;
+	float gab = 165;
+	*/
+
+	float top = FRAME_BUFFER_HEIGHT / 3 + 200;
+	float left = FRAME_BUFFER_WIDTH / 3 - 90;
+	float width = 180;
+	float height = 10;
+	float gab = 325;
+
+
+	if (m_bPlayerOn[0])
+	{
+		WCHAR InfoText[] = L"Player 1";
+		D2D1_RECT_F rcPlayer0 = D2D1::RectF(left, top, left + width, top + height);
+		m_pd2dDeviceContext->DrawTextW(InfoText, (UINT32)wcslen(InfoText), m_pdwFont, &rcPlayer0, m_pd2dbrText);
+	}
+
+	if (m_bPlayerOn[1])
+	{
+		WCHAR InfoText1[] = L"Player 2";
+		D2D1_RECT_F rcPlayer1 = D2D1::RectF(left + gab, top, left + width + gab, top + height);
+		m_pd2dDeviceContext->DrawTextW(InfoText1, (UINT32)wcslen(InfoText1), m_pdwFont, &rcPlayer1, m_pd2dbrText);
+	}
+
+	if (m_bPlayerOn[2])
+	{
+		WCHAR InfoText2[] = L"Player 3";
+		D2D1_RECT_F rcPlayer2 = D2D1::RectF(left + gab * 2, top, left + width + gab * 2, top + height);
+		m_pd2dDeviceContext->DrawTextW(InfoText2, (UINT32)wcslen(InfoText2), m_pdwFont, &rcPlayer2, m_pd2dbrText);
+	}
 
 }
 
@@ -232,12 +273,6 @@ void CPlaySceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 void CPlaySceneUI::UISet(UINT m_nSwapChainBufferIndex)
 {
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
-
-	// 점령미션 바 상단 문구
-	//D2D1_RECT_F rcUpperText = D2D1::RectF(40, 20, 200, 40);
-	//WCHAR MissionText[] = L"Progress";
-	//m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
-	//m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
 
 	MissionText();
 	for (int i = 0; i < 3; i++)	MissionProgressBar(i);

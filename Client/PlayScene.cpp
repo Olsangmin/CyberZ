@@ -51,6 +51,20 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel2);
 	if (pMapModel2) delete pMapModel2;
 
+	
+	m_nFloorObj = 3;
+	m_ppFloorObj = new CFloorObj * [m_nFloorObj];
+
+	CLoadedModelInfo* pFloormodel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/Occ_Range.bin", NULL);
+	m_ppFloorObj[0] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFloormodel);
+	m_ppFloorObj[0]->SetPosition(300.f, 0.0f, 700.f);
+
+	m_ppFloorObj[1] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFloormodel);
+	m_ppFloorObj[1]->SetPosition(700.f, 0.f, 100.f);
+
+	m_ppFloorObj[2] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFloormodel);
+	m_ppFloorObj[2]->SetPosition(500.f, 0.f, 500.f);
+	if (pFloormodel) delete pFloormodel;
 
 	//===============================//
 	// Mission Obj(1)
@@ -58,7 +72,7 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_ppMissionObj = new CMissonOBJ * [m_nMissionObj];
 
 	// 미션 범위
-	XMFLOAT3 OccMissionRange = XMFLOAT3(30.f, 30.f, 30.f);
+	XMFLOAT3 OccMissionRange = XMFLOAT3(37.f, 30.f, 37.f);
 	XMFLOAT3 MissionRange = XMFLOAT3(10.f, 20.f, 10.f);
 	
 	// 점령미션
@@ -162,6 +176,42 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_pMyPlayer->SetPosition(PlayerInitPos[playernum]);
 
 	reinterpret_cast<CPlaySceneUI*>(m_pUI)->m_fMaxStamina = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fMaxStaminer;
+}
+
+void CPlayScene::ReleaseObjects()
+{
+	if (m_ppFloorObj)
+	{
+		for (int i = 0; i < m_nFloorObj; i++) if (m_ppFloorObj[i])
+		{
+			m_ppFloorObj[i]->ReleaseUploadBuffers();
+			m_ppFloorObj[i]->Release();
+		}
+		delete[] m_ppFloorObj;
+	}
+	CScene::ReleaseObjects();
+}
+
+void CPlayScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	CScene::Render(pd3dCommandList, pCamera);
+	for (int i = 0; i < m_nFloorObj; i++)
+	{
+		if (m_ppFloorObj[i])
+		{
+			if (!m_ppFloorObj[i]->m_pSkinnedAnimationController) m_ppFloorObj[i]->UpdateTransform(NULL);
+			m_ppFloorObj[i]->Animate(m_fElapsedTime);
+			m_ppFloorObj[i]->Render(pd3dCommandList, pCamera);
+		}
+	}
+
+}
+
+void CPlayScene::ReleaseUploadBuffers()
+{
+	CScene::ReleaseUploadBuffers();
+	for (int i = 0; i < m_nFloorObj; i++) m_ppFloorObj[i]->ReleaseUploadBuffers();
+
 }
 
 
@@ -283,36 +333,46 @@ void CPlayScene::AnimateObjects(float fTimeElapsed)
 	for (int i = 0; i < m_nMissionObj; i++)
 	{
 		Missionflag = false;
-		for (int j = 0; j < m_nPlayer; j++) if(m_ppPlayer[j]){
-			
-			if (CheckMissionBound(m_ppPlayer[j], m_ppMissionObj[i]))
-			{
-				Missionflag = true;
-			}
-			m_ppMissionObj[i]->m_bMissionflag = Missionflag;
-		}
-	}
-
-	if (reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetSecurityKey())
-	{
-		for (int i = 0; i < m_nMissionObj; i++)
-		{
-			if (m_ppMissionObj[i]->m_nCategory == 0)	// 점령미션
-			{
-				if (m_pUI->m_fMissionGauge[i] < 370)
+		if (m_ppMissionObj[i]->m_nCategory == 0) {
+			for (int j = 0; j < m_nPlayer; j++) if (m_ppPlayer[j]) {
+				if (CheckMissionBound(m_ppPlayer[j], m_ppMissionObj[i]) && reinterpret_cast<CyborgPlayer*>(m_ppPlayer[j])->GetSecurityKey()) 
 				{
-					if (m_ppMissionObj[i]->m_bMissionflag)
-					{
-						m_pUI->m_fMissionGauge[i] += 0.5f;
-					}
-					else if (m_pUI->m_fMissionGauge[i] > 0) m_pUI->m_fMissionGauge[i] -= 1.0f;
+					Missionflag = true;
 				}
 			}
-			else
-			{
-				break;
+
+		}
+		else{
+			for (int j = 0; j < m_nPlayer; j++) if (m_ppPlayer[j]) {
+				if (CheckMissionBound(m_ppPlayer[j], m_ppMissionObj[i]))
+				{
+					Missionflag = true;
+				}
 			}
 
+		}
+
+
+		m_ppMissionObj[i]->m_bMissionflag = Missionflag;
+
+	}
+
+	for (int i = 0; i < m_nMissionObj; i++)
+	{
+		if (m_ppMissionObj[i]->m_nCategory == 0)	// 점령미션
+		{
+			if (m_pUI->m_fMissionGauge[i] < 370)
+			{
+				if (m_ppMissionObj[i]->m_bMissionflag)
+				{
+					m_pUI->m_fMissionGauge[i] += 0.5f;
+				}
+				else if (m_pUI->m_fMissionGauge[i] > 0) m_pUI->m_fMissionGauge[i] -= 1.0f;
+			}
+		}
+		else
+		{
+			break;
 		}
 
 	}
@@ -336,7 +396,6 @@ void CPlayScene::ProcessPacket(char* p)
 	case SC_ADD_PLAYER:
 	{
 		SC_ADD_PLAYER_PACKET* packet = reinterpret_cast<SC_ADD_PLAYER_PACKET*>(p);
-		// m_ppPlayerSelecter[c_id]
 		Player_Character_Type type = packet->c_type;
 
 		idANDtype.insert({ packet->id, packet->c_type });
@@ -427,6 +486,21 @@ void CPlayScene::ProcessPacket(char* p)
 		cout << "[" << packet->p_id << "] 사망" << endl;
 	}break;
 
+	case SC_GETKEY: {
+		SC_GETKEY_PACKET* packet = reinterpret_cast<SC_GETKEY_PACKET*>(p);
+		
+		int id = packet->p_id;
+		auto& it = idANDtype.find(id);
+	
+		if (it == idANDtype.end()) break;
+		else {
+
+			Player_Character_Type type = it->second;
+			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->ChangeKeyState(true);
+		}
+
+	}break;
+
 
 	default:
 		printf("Scene[Stage1] - Unknown PACKET type [%d]\n", p[1]);
@@ -476,6 +550,9 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMiddleContainer);
 	m_ppHierarchicalGameObjects[2]->SetPosition(40.f, 0.f, 5.f);
 	if (pMiddleContainer) delete pMiddleContainer;
+
+
+	
 
 	//===============================//
 	// PlayerSelecter
@@ -721,12 +798,15 @@ void CPrepareRoomScene::ProcessPacket(char* p)
 		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
 		my_id = packet->id;
 		cout << "My ID is " << my_id << " !" << endl;
+		reinterpret_cast<CFirstSceneUI*>(m_pUI)->m_bPlayerOn[my_id] = true;
+
 	} break;
 
 	case SC_CHANGE_CHARACTER: {
 		SC_CHANGE_CHARACTER_PACKET* packet = reinterpret_cast<SC_CHANGE_CHARACTER_PACKET*>(p);
 		cout << packet->id << " -> " << packet->c_type << endl;
 		ChangeModel(packet->id, packet->c_type);
+		reinterpret_cast<CFirstSceneUI*>(m_pUI)->m_bPlayerOn[packet->id] = true;
 
 	}break;
 

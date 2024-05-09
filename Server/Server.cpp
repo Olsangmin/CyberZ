@@ -369,6 +369,21 @@ void Server::Process_packet(int c_id, char* packet)
 	}
 							break;
 
+	case CS_GETKEY: {
+		// CS_GETKEY_PACKET* p = reinterpret_cast<CS_GETKEY_PACKET*>(packet);
+		std::cout << c_id << "키획득" << std::endl;
+		SC_GETKEY_PACKET keyPacket;
+		keyPacket.size = sizeof(keyPacket);
+		keyPacket.type = SC_GETKEY;
+		keyPacket.p_id = c_id;
+
+		for (auto id : gMap.cl_ids) {
+			if (id == c_id) continue;
+			clients[id].do_send(&keyPacket);
+		}
+
+	}break;
+
 	default: {
 		std::cout << "정의되지 않은 패킷 - " << packet[1] << "\n" << std::endl;
 		break;
