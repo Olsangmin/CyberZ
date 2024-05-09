@@ -75,13 +75,13 @@ using Microsoft::WRL::ComPtr;
 
 extern HINSTANCE						ghAppInstance;
 
-//#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
+// #define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
-//#define FRAME_BUFFER_WIDTH				1920
-//#define FRAME_BUFFER_HEIGHT				1080
+#define FRAME_BUFFER_WIDTH				1920
+#define FRAME_BUFFER_HEIGHT				1080
 
-#define FRAME_BUFFER_WIDTH				640
-#define FRAME_BUFFER_HEIGHT				480
+//#define FRAME_BUFFER_WIDTH				640
+//#define FRAME_BUFFER_HEIGHT				480
 
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "d3d12.lib")
