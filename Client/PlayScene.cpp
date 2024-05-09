@@ -285,7 +285,7 @@ void CPlayScene::AnimateObjects(float fTimeElapsed)
 		Missionflag = false;
 		if (m_ppMissionObj[i]->m_nCategory == 0) {
 			for (int j = 0; j < m_nPlayer; j++) if (m_ppPlayer[j]) {
-				if (CheckMissionBound(m_ppPlayer[j], m_ppMissionObj[i]) && reinterpret_cast<CyborgPlayer*>(m_ppPlayer[i])->GetSecurityKey()) 
+				if (CheckMissionBound(m_ppPlayer[j], m_ppMissionObj[i]) && reinterpret_cast<CyborgPlayer*>(m_ppPlayer[j])->GetSecurityKey()) 
 				{
 					Missionflag = true;
 				}
