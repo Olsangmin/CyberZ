@@ -44,6 +44,8 @@ constexpr char CS_CHANGE_CHARACTER = 5; // 캐릭터 변경
 constexpr char CS_ALLPLAYER_READY = 6; // 게임 시작(방장)
 constexpr char CS_GAME_START = 7; // 게임 시작(서버)
 
+constexpr char CS_GETKEY = 11;
+
 constexpr char CS_TEST = 200;
 
 // =======================
@@ -57,6 +59,9 @@ constexpr char SC_GAME_START = 6;
 constexpr char SC_ADD_NPC = 7;
 constexpr char SC_MOVE_NPC = 8;
 constexpr char SC_ATTACK_NPC = 9;
+
+
+constexpr char SC_GETKEY = 11;
 
 
 constexpr char SC_TEST = 200;
@@ -116,6 +121,11 @@ struct CS_GAMESTART_PACKET {
 };
 
 struct CS_ALLPLAYER_READY_PACKET {
+	unsigned char size;
+	char	type;
+};
+
+struct CS_GETKEY_PACKET {
 	unsigned char size;
 	char	type;
 };
@@ -200,6 +210,12 @@ struct SC_ATTACK_NPC_PACKET {
 	unsigned char size;
 	char	type;
 	int n_id;
+	int p_id;
+};
+
+struct SC_GETKEY_PACKET {
+	unsigned char size;
+	char	type;
 	int p_id;
 };
 

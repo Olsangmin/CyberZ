@@ -60,6 +60,8 @@ private:
 	float							m_fKeyRotate{ 0.f };
 public:
 	bool GetSecurityKey() { return m_bSecurityKey; };
+	void ChangeKeyState(bool state) { m_bSecurityKey = state; }
+
 	int Random(int min, int max);
 	int DuplicationCheck(int num, int* target, int end);
 

@@ -170,7 +170,6 @@ void GameMap::Update(int tick)
 	Server& server = Server::GetInstance();
 
 	// npc가 이동해야 하면 깨우기
-
 	auto& players = server.clients;
 
 	for (auto& npc : npcs) {
@@ -183,14 +182,14 @@ void GameMap::Update(int tick)
 				
 				if (false == npc.n_path.empty()) break; // 갈길이 남았으면 break;
 				
-				if (GetCurrentCell(npc.GetPos()) == GetCurrentCell(players[npc.near_player].GetPos())) {
-					std::cout << "공격거리 : " << npc.distance_near << std::endl;
-					std::queue<DirectX::XMFLOAT3> q{};
-					npc.n_path = q;
-					npc.is_active = true; // 공격중
-					npc.current_behavior = ATTACK;
-					break; // 같은 셀이면 공격과 경로 초기화
-				}
+				//if (GetCurrentCell(npc.GetPos()) == GetCurrentCell(players[npc.near_player].GetPos())) {
+				//	std::cout << "공격거리 : " << npc.distance_near << std::endl;
+				//	std::queue<DirectX::XMFLOAT3> q{};
+				//	npc.n_path = q;
+				//	npc.is_active = true; // 공격중
+				//	npc.current_behavior = ATTACK;
+				//	break; // 같은 셀이면 공격과 경로 초기화
+				//}
 				
 				if (npc.n_path.empty()) { // 경로가 비었으면 길찾기
 					std::cout << "경로 탐색" << std::endl;
@@ -216,11 +215,10 @@ void GameMap::Update(int tick)
 			}
 		}
 
-		if (tick % 29 == 0) {
+		if (tick == 0 || tick == 30) {
 			npc.DoWork();
 		}
-		if(npc.near_player != -1)
-			std::cout << npc.GetId() << " near P" << npc.near_player << " paht"<<npc.n_path.size() << std::endl;
+		
 	}
 	
 }
