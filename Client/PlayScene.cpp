@@ -453,7 +453,6 @@ void CPlayScene::ProcessPacket(char* p)
 		if (it == idANDtype.end()) break;
 		else {
 
-
 			Player_Character_Type type = it->second;
 			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->m_pasNextAni = packet->ani_st;

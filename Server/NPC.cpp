@@ -73,9 +73,9 @@ void NPC::Patrol()
 		return;
 	}
 
-	std::cout << "[" << id << "] Patrol" << std::endl;
+	// std::cout << "[" << id << "] Patrol" << std::endl;
 	
-	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now()+std::chrono::milliseconds(500), EV_NPC_MOVE};
+	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now()+std::chrono::milliseconds(250), EV_NPC_MOVE};
 	auto& server = Server::GetInstance();
 	server.timer_queue.push(ev);
 
@@ -93,7 +93,7 @@ void NPC::Chase()
 	}
 	std::cout << "[" << id << "] Chase [" << near_player << "] " << std::endl;
 
-	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(500), EV_NPC_MOVE };
+	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(250), EV_NPC_MOVE };
 	auto& server = Server::GetInstance();
 	server.timer_queue.push(ev);
 	
@@ -106,7 +106,7 @@ void NPC::Chase()
 void NPC::Attack()
 {
 	std::cout << "[" << id << "] Attack½ÃÀÛ [" << near_player << "] " << std::endl;
-	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(500), EV_NPC_ATTACK };
+	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(250), EV_NPC_ATTACK };
 	auto& server = Server::GetInstance();
 	server.timer_queue.push(ev);
 }
