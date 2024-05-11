@@ -337,8 +337,10 @@ void Server::Process_packet(int c_id, char* packet)
 
 	case CS_CHANGE_ANIM: {
 		CS_CHANGE_ANIMATION_PACKET* p = reinterpret_cast<CS_CHANGE_ANIMATION_PACKET*>(packet);
+		clients[c_id].anim = p->ani_st;
 		for (auto& cl : clients) {
 			if (cl.state != ST_INGAME) continue;
+			if (cl.GetId() == c_id) continue;
 			cl.send_changeAnimation_packet(c_id, p->ani_st);
 		}
 		// std::cout << "Client[" << c_id << "] Anim_Change. \n";
@@ -454,6 +456,6 @@ void Server::TimerThread()
 			continue;
 		}
 		// 비었을 때의 작업
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 }

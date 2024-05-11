@@ -71,5 +71,6 @@ private:
 public:
 	S_STATE state;
 	char name[NAME_SIZE];
+	Player_Animation_ST anim;
 };
 

@@ -177,7 +177,8 @@ public:
 
     float Distance_float(DirectX::XMFLOAT3 n_pos, DirectX::XMFLOAT3 p_pos)
     {
-        return std::abs(n_pos.x - p_pos.x) + std::abs(n_pos.z - p_pos.z);
+        // return std::abs(n_pos.x - p_pos.x) + std::abs(n_pos.z - p_pos.z);
+        return std::sqrt((n_pos.x - p_pos.x) * (n_pos.x - p_pos.x) + (n_pos.z - p_pos.z) * (n_pos.z - p_pos.z));
     }
 
     std::array<NPC, NUM_NPC> npcs;
