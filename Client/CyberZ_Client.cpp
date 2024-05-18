@@ -28,10 +28,10 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	MSG msg;
 	HACCEL hAccelTable;
 
-	//ifstream ip_file{ "../IPaddr.config" };
-	//if (ip_file) {
-	//	while (ip_file >> ServerIP);
-	//}
+	ifstream ip_file{ "../IPaddr.config" };
+	if (ip_file) {
+		while (ip_file >> ServerIP);
+	}
 	
 
 	::LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);

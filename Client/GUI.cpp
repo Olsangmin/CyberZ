@@ -122,8 +122,8 @@ void CUI::CreateDirect2DDevice(HWND m_hWnd, ID3D12Device* pd3dDevice, ID3D12Grap
 
 	hResult = m_pd2dFactory->CreateDrawingStateBlock(&m_pd2dsbDrawingState);
 	hResult = m_pd2dDeviceContext->CreateEffect(CLSID_D2D1BitmapSource, &m_pd2dfxBitmapSource);
-	hResult = m_pd2dDeviceContext->CreateEffect(CLSID_D2D1GaussianBlur, &m_pd2dfxGaussianBlur);
-	hResult = m_pd2dDeviceContext->CreateEffect(CLSID_D2D1EdgeDetection, &m_pd2dfxEdgeDetection);
+	//hResult = m_pd2dDeviceContext->CreateEffect(CLSID_D2D1GaussianBlur, &m_pd2dfxGaussianBlur);
+	//hResult = m_pd2dDeviceContext->CreateEffect(CLSID_D2D1EdgeDetection, &m_pd2dfxEdgeDetection);
 
 	IWICBitmapDecoder* pwicBitmapDecoder;
 	hResult = m_pwicImagingFactory->CreateDecoderFromFilename(L"Image/CardKey.png", NULL, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &pwicBitmapDecoder);
@@ -133,20 +133,46 @@ void CUI::CreateDirect2DDevice(HWND m_hWnd, ID3D12Device* pd3dDevice, ID3D12Grap
 	m_pwicFormatConverter->Initialize(pwicFrameDecode, GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, NULL, 0.0f, WICBitmapPaletteTypeCustom);
 	m_pd2dfxBitmapSource->SetValue(D2D1_BITMAPSOURCE_PROP_WIC_BITMAP_SOURCE, m_pwicFormatConverter);
 
-	m_pd2dfxGaussianBlur->SetInputEffect(0, m_pd2dfxBitmapSource);
+	//m_pd2dfxGaussianBlur->SetInputEffect(0, m_pd2dfxBitmapSource);
+	//
+	//m_pd2dfxEdgeDetection->SetInputEffect(0, m_pd2dfxBitmapSource);
+	//m_pd2dfxEdgeDetection->SetValue(D2D1_EDGEDETECTION_PROP_STRENGTH, 0.5f);
+	//m_pd2dfxEdgeDetection->SetValue(D2D1_EDGEDETECTION_PROP_BLUR_RADIUS, 0.0f);
+	//m_pd2dfxEdgeDetection->SetValue(D2D1_EDGEDETECTION_PROP_MODE, D2D1_EDGEDETECTION_MODE_SOBEL);
+	//m_pd2dfxEdgeDetection->SetValue(D2D1_EDGEDETECTION_PROP_OVERLAY_EDGES, false);
+	//m_pd2dfxEdgeDetection->SetValue(D2D1_EDGEDETECTION_PROP_ALPHA_MODE, D2D1_ALPHA_MODE_PREMULTIPLIED);
 
-	m_pd2dfxEdgeDetection->SetInputEffect(0, m_pd2dfxBitmapSource);
-	m_pd2dfxEdgeDetection->SetValue(D2D1_EDGEDETECTION_PROP_STRENGTH, 0.5f);
-	m_pd2dfxEdgeDetection->SetValue(D2D1_EDGEDETECTION_PROP_BLUR_RADIUS, 0.0f);
-	m_pd2dfxEdgeDetection->SetValue(D2D1_EDGEDETECTION_PROP_MODE, D2D1_EDGEDETECTION_MODE_SOBEL);
-	m_pd2dfxEdgeDetection->SetValue(D2D1_EDGEDETECTION_PROP_OVERLAY_EDGES, false);
-	m_pd2dfxEdgeDetection->SetValue(D2D1_EDGEDETECTION_PROP_ALPHA_MODE, D2D1_ALPHA_MODE_PREMULTIPLIED);
-
-	m_pd2dfxGaussianBlur->SetValue(D2D1_GAUSSIANBLUR_PROP_STANDARD_DEVIATION, 0.0f);
+	//m_pd2dfxGaussianBlur->SetValue(D2D1_GAUSSIANBLUR_PROP_STANDARD_DEVIATION, 0.0f);
 	m_nDrawEffectImage = 0;
 
 	if (pwicBitmapDecoder) pwicBitmapDecoder->Release();
 	if (pwicFrameDecode) pwicFrameDecode->Release();
+}
+
+void CUI::LoadUIImage(const wchar_t* filename, IWICImagingFactory* pwicImagingFactory, ID2D1Effect* pd2dfxBitmapSource)
+{
+	IWICBitmapDecoder* pwicBitmapDecoder;
+	HRESULT hResult = pwicImagingFactory->CreateDecoderFromFilename(filename, NULL, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &pwicBitmapDecoder);
+	if (FAILED(hResult)) return;  // 오류 처리 추가
+
+	IWICBitmapFrameDecode* pwicFrameDecode;
+	hResult = pwicBitmapDecoder->GetFrame(0, &pwicFrameDecode);
+	if (FAILED(hResult)) return;  // 오류 처리 추가
+
+	IWICFormatConverter* pwicFormatConverter;
+	hResult = pwicImagingFactory->CreateFormatConverter(&pwicFormatConverter);
+	if (FAILED(hResult)) return;  // 오류 처리 추가
+
+	hResult = pwicFormatConverter->Initialize(pwicFrameDecode, GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, NULL, 0.0f, WICBitmapPaletteTypeCustom);
+	if (FAILED(hResult)) return;  // 오류 처리 추가
+
+	// pd2dfxBitmapSource의 입력 비트맵을 새로운 이미지로 업데이트
+	pd2dfxBitmapSource->SetValue(D2D1_BITMAPSOURCE_PROP_WIC_BITMAP_SOURCE, pwicFormatConverter);
+
+	// 해제
+	pwicFormatConverter->Release();
+	pwicFrameDecode->Release();
+	pwicBitmapDecoder->Release();
 }
 
 void CUI::DrawUI(UINT m_nSwapChainBufferIndex)
@@ -203,30 +229,34 @@ void CFirstSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 {
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 
-	//m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20.0f, L"en-US", &m_pdwFont);
-	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 40.0f, L"en-US", &m_pdwFont);
-
-	
 	CheckEnter();
 }
 
 void CFirstSceneUI::CheckEnter()
 {
-	/*
-	float top = FRAME_BUFFER_HEIGHT / 3 + 95;
-	float left = FRAME_BUFFER_WIDTH / 3 - 90;
-	float width = 80;
-	float height = 10;
-	float gab = 165;
-	*/
+	
+#ifdef SMALL_WINDOW_SCREEN
+	//Small window
+	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20.0f, L"en-US", &m_pdwFont);
+	
+	top = FRAME_BUFFER_HEIGHT / 3 + 95;
+	left = FRAME_BUFFER_WIDTH / 3 - 90;
+	width = 80;
+	height = 10;
+	gab = 165;
 
-	float top = FRAME_BUFFER_HEIGHT / 3 + 200;
-	float left = FRAME_BUFFER_WIDTH / 3 - 90;
-	float width = 180;
-	float height = 10;
-	float gab = 325;
+#else
+	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 40.0f, L"en-US", &m_pdwFont);
 
+	top = FRAME_BUFFER_HEIGHT / 3 + 200;
+	left = FRAME_BUFFER_WIDTH / 3 - 90;
+	width = 180;
+	height = 10;
+	gab = 325;
 
+#endif // SMALL_WINDOW_SCREEN
+
+	
 	if (m_bPlayerOn[0])
 	{
 		WCHAR InfoText[] = L"Player 1";
@@ -302,6 +332,7 @@ void CPlaySceneUI::MissionText()
 
 }
 
+
 void CPlaySceneUI::MissionProgressBar(int MissionNum)
 {
 	float gab = 35.5;
@@ -363,20 +394,21 @@ void CPlaySceneUI::KeyCardUI()
 	if (m_bcard)
 	{
 		// KeyCard Image
+		LoadUIImage(L"Image/CardKey.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
 		D2D_POINT_2F d2dPoint = { FRAME_BUFFER_WIDTH - 250.f, FRAME_BUFFER_HEIGHT - 180.f };
 		D2D_RECT_F d2dRect = { 0.0f, 0.0f, 200.0f, 130.0f };
-		m_pd2dDeviceContext->DrawImage((m_nDrawEffectImage == 0) ? m_pd2dfxGaussianBlur : m_pd2dfxEdgeDetection, &d2dPoint, &d2dRect);
-	}
+		m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &d2dPoint, &d2dRect);
 
+		LoadUIImage(L"Image/test.jpg", m_pwicImagingFactory, m_pd2dfxBitmapSource);
+		D2D_POINT_2F d2dPoint2 = {0, 0};
+		m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &d2dPoint2, &d2dRect);
+	}
 
 }
 
 void CPlaySceneUI::StaminaBarUI()
 {
-	//float Xmid = FRAME_BUFFER_WIDTH / 2;
-	//float Ymid = (FRAME_BUFFER_HEIGHT / 2) - 20;
 	float halfsize = m_fMaxStamina / 2;
-
 
 	//게이지 바
 	D2D1_RECT_F* rcStaminaBar;

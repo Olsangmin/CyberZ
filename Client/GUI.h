@@ -30,9 +30,11 @@ public:
 
 	//Image
 	IWICImagingFactory* m_pwicImagingFactory = NULL;
+
 	ID2D1Effect* m_pd2dfxBitmapSource = NULL;
-	ID2D1Effect* m_pd2dfxGaussianBlur = NULL;
-	ID2D1Effect* m_pd2dfxEdgeDetection = NULL;
+	//ID2D1Effect* m_pd2dfxGaussianBlur = NULL;
+	//ID2D1Effect* m_pd2dfxEdgeDetection = NULL;
+	
 	ID2D1DrawingStateBlock1* m_pd2dsbDrawingState = NULL;
 	IWICFormatConverter* m_pwicFormatConverter = NULL;
 	int							m_nDrawEffectImage = 0;
@@ -45,6 +47,7 @@ public:
 
 public:
 	void CreateDirect2DDevice(HWND m_hWnd, ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12CommandQueue* m_pd3dCommandQueue, ID3D12Resource* m_ppd3dSwapChainBackBuffers[m_nSwapChainBuffers]);
+	void LoadUIImage(const wchar_t* filename, IWICImagingFactory* pwicImagingFactory, ID2D1Effect* pd2dfxBitmapSource);
 	virtual void DrawUI(UINT m_nSwapChainBufferIndex);
 };
 
@@ -57,6 +60,13 @@ public:
 	~CFirstSceneUI() {}
 
 public:
+
+	float	top = 0.f;
+	float	left = 0.f;
+	float	width = 0.f;
+	float	height = 0.f;
+	float	gab = 0.f;
+
 	void DrawUI(UINT m_nSwapChainBufferIndex);
 	void UISet(UINT m_nSwapChainBufferIndex);
 
@@ -80,8 +90,6 @@ public:
 	void MissionProgressBar(int MissionNum);
 	void KeyCardUI();
 	void StaminaBarUI();
-
-	
 
 public:
 	void DrawUI(UINT m_nSwapChainBufferIndex);
