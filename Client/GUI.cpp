@@ -34,8 +34,6 @@ void CUI::Release()
 
 	//Image
 	if (m_pd2dfxBitmapSource) m_pd2dfxBitmapSource->Release();
-	if (m_pd2dfxGaussianBlur) m_pd2dfxGaussianBlur->Release();
-	if (m_pd2dfxEdgeDetection) m_pd2dfxEdgeDetection->Release();
 	if (m_pd2dsbDrawingState) m_pd2dsbDrawingState->Release();
 	if (m_pwicFormatConverter) m_pwicFormatConverter->Release();
 	if (m_pwicImagingFactory) m_pwicImagingFactory->Release();
@@ -386,10 +384,6 @@ void CPlaySceneUI::KeyCardUI()
 		D2D_POINT_2F d2dPoint = { FRAME_BUFFER_WIDTH - 250.f, FRAME_BUFFER_HEIGHT - 180.f };
 		D2D_RECT_F d2dRect = { 0.0f, 0.0f, 200.0f, 130.0f };
 		m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &d2dPoint, &d2dRect);
-
-		LoadUIImage(L"Image/test.jpg", m_pwicImagingFactory, m_pd2dfxBitmapSource);
-		D2D_POINT_2F d2dPoint2 = {0, 0};
-		m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &d2dPoint2, &d2dRect);
 	}
 
 }
