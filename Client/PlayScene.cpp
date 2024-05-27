@@ -66,10 +66,10 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	CLoadedModelInfo* pFloormodel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/Occ_Range.bin", NULL);
 	m_ppFloorObj[0] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFloormodel);
-	m_ppFloorObj[0]->SetPosition(300.f, 0.0f, 700.f);
+	m_ppFloorObj[0]->SetPosition(100.f, 0.0f, 930.f);
 
 	m_ppFloorObj[1] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFloormodel);
-	m_ppFloorObj[1]->SetPosition(700.f, 0.f, 100.f);
+	m_ppFloorObj[1]->SetPosition(650.f, 0.f, 100.f);
 
 	m_ppFloorObj[2] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFloormodel);
 	m_ppFloorObj[2]->SetPosition(500.f, 0.f, 500.f);
@@ -87,12 +87,12 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	// 점령미션
 	CLoadedModelInfo* pMachine = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/Occ_Machine.bin", NULL);
 	m_ppMissionObj[0] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine, OccMissionRange, 0);
-	m_ppMissionObj[0]->SetPosition(300.f, 0.0f, 700.f);
+	m_ppMissionObj[0]->SetPosition(100.f, 0.0f, 930.f);
 	if (pMachine) delete pMachine;
 
 	CLoadedModelInfo* pMachine2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/Occ_Machine.bin", NULL);
 	m_ppMissionObj[1] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine2, OccMissionRange, 0);
-	m_ppMissionObj[1]->SetPosition(700.f, 0.f, 100.f);
+	m_ppMissionObj[1]->SetPosition(650.f, 0.f, 100.f);
 	if (pMachine2) delete pMachine2;
 
 	CLoadedModelInfo* pMachine3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/Occ_Machine.bin", NULL);
@@ -103,19 +103,20 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	// 보안키 미션
 	CLoadedModelInfo* pMssionMachine1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
 	m_ppMissionObj[3] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine1, MissionRange, 1);
-	m_ppMissionObj[3]->Rotate(0.f,180.f,0.f);
-	m_ppMissionObj[3]->SetPosition(450.f, -5.f, 700.f);
+	m_ppMissionObj[3]->Rotate(0.f,0.f,0.f);
+	m_ppMissionObj[3]->SetPosition(540.f, 0.f, 300.f);
 	if (pMssionMachine1) delete pMssionMachine1;
 
 	CLoadedModelInfo* pMssionMachine2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
 	m_ppMissionObj[4] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine2, MissionRange, 1);
-	m_ppMissionObj[4]->SetPosition(500.f, -5.f, 150.f);
+	m_ppMissionObj[4]->Rotate(0.f, -90.f, 0.f);
+	m_ppMissionObj[4]->SetPosition(780.f, 0.f, 750.f);
 	if (pMssionMachine2) delete pMssionMachine2;
 	
 	CLoadedModelInfo* pMssionMachine3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
 	m_ppMissionObj[5] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine3, MissionRange, 1);
-	m_ppMissionObj[5]->Rotate(0.f, 90.f, 0.f);
-	m_ppMissionObj[5]->SetPosition(853.f, -5.f, 780.f);
+	m_ppMissionObj[5]->Rotate(0.f, -90.f, 0.f);
+	m_ppMissionObj[5]->SetPosition(140.f, 0.f, 230.f);
 	if (pMssionMachine3) delete pMssionMachine3;
 
 
