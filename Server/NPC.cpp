@@ -6,8 +6,9 @@ NPC::NPC()
 {
 	id = -2;
 	n_state = NPC_FREE;
-	current_behavior = ATTACK;
+	current_behavior = PATROL;
 	near_player = -1;
+	distance_near = 100000.f;
 	my_sector = -1;
 }
 
@@ -59,21 +60,22 @@ void NPC::Move()
 	if (n_path.empty())
 		return;
 
+	// std::cout << "NPC[" << id << "] " << current_behavior<< " Move " << GetPos().x << ", " << GetPos().z << std::endl;
+	
 	SetPos(n_path.front());
 	n_path.pop();
-	// std::cout << "NPC[" << id << "] " << current_behavior<< " Move " << GetPos().x << ", " << GetPos().z << std::endl;
 
 }
 
 void NPC::Patrol()
 {
-	// std::cout << "[" << id << "] Patrol" << std::endl;
-
 	if (n_path.empty()) {
 		return;
 	}
+
+	// std::cout << "[" << id << "] Patrol" << std::endl;
 	
-	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now()+std::chrono::milliseconds(500), EV_NPC_MOVE};
+	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now()+std::chrono::milliseconds(250), EV_NPC_MOVE};
 	auto& server = Server::GetInstance();
 	server.timer_queue.push(ev);
 
@@ -85,19 +87,13 @@ void NPC::Patrol()
 
 void NPC::Chase()
 {
-	// std::cout << "[" << id << "] Chase [" <<near_player<< "] " << std::endl;
+	
 	if (n_path.empty()) {
 		return;
 	}
+	std::cout << "[" << id << "] Chase [" << near_player << "] " << std::endl;
 
-	/*if (distance_near < 100.f) {
-		std::cout << "적 발견 경로 재탐색" << std::endl;
-		std::queue<DirectX::XMFLOAT3> q{};
-		n_path = q;
-	}*/
-	
-
-	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(500), EV_NPC_MOVE };
+	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(250), EV_NPC_MOVE };
 	auto& server = Server::GetInstance();
 	server.timer_queue.push(ev);
 	
@@ -110,7 +106,7 @@ void NPC::Chase()
 void NPC::Attack()
 {
 	std::cout << "[" << id << "] Attack시작 [" << near_player << "] " << std::endl;
-	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(500), EV_NPC_ATTACK };
+	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(250), EV_NPC_ATTACK };
 	auto& server = Server::GetInstance();
 	server.timer_queue.push(ev);
 }

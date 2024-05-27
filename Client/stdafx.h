@@ -75,10 +75,28 @@ using Microsoft::WRL::ComPtr;
 
 extern HINSTANCE						ghAppInstance;
 
+<<<<<<< HEAD
 // #define _WITH_SWAPCHAIN_FULLSCREEN_STATE
+=======
+//#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
-#define FRAME_BUFFER_WIDTH				1920
-#define FRAME_BUFFER_HEIGHT				1080
+//#define SMALL_WINDOW_SCREEN
+
+#ifdef SMALL_WINDOW_SCREEN
+
+	#define FRAME_BUFFER_WIDTH				640
+	#define FRAME_BUFFER_HEIGHT				480
+
+#else
+
+	#define FRAME_BUFFER_WIDTH				1920
+	#define FRAME_BUFFER_HEIGHT				1080
+
+#endif // SMALL_WINDOW_SCREEN
+
+
+>>>>>>> main
+
 
 //#define FRAME_BUFFER_WIDTH				640
 //#define FRAME_BUFFER_HEIGHT				480

@@ -172,50 +172,55 @@ void GameMap::Update(int tick)
 	// npc가 이동해야 하면 깨우기
 	auto& players = server.clients;
 
-	for (auto& npc : npcs) {
-		npc.near_player = -1;
+	for (auto& npc : npcs) {		
+		bool patrol = true;
+		float current_dis = npc.distance_near;
+		
 		for (auto ids : cl_ids) {
 			// 같은 섹터
 			if (npc.my_sector == getSector(players[ids].GetPos())) {
-				npc.near_player = ids;
-				npc.distance_near = Distance_float(npc.GetPos(), players[npc.near_player].GetPos());
+				if (players[ids].anim == CREEP) continue;
+				npc.current_behavior = CHASE;
+				patrol = false;
+				float distance = Distance_float(npc.GetPos(), players[ids].GetPos());
 				
-				if (false == npc.n_path.empty()) break; // 갈길이 남았으면 break;
-				
-				//if (GetCurrentCell(npc.GetPos()) == GetCurrentCell(players[npc.near_player].GetPos())) {
-				//	std::cout << "공격거리 : " << npc.distance_near << std::endl;
-				//	std::queue<DirectX::XMFLOAT3> q{};
-				//	npc.n_path = q;
-				//	npc.is_active = true; // 공격중
-				//	npc.current_behavior = ATTACK;
-				//	break; // 같은 셀이면 공격과 경로 초기화
-				//}
-				
-				if (npc.n_path.empty()) { // 경로가 비었으면 길찾기
-					std::cout << "경로 탐색" << std::endl;
-					std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[npc.near_player].GetPos());
-					
-					
-					for (auto& p : path) {
-						npc.n_path.push(p);
+				if (npc.near_player == ids) { // 동일 아이디면 dis만 업데이트
+					npc.distance_near = distance;
+					if (npc.n_path.empty() == false) continue;
+				}
+				else {
+					if (current_dis > distance) { // 가까운 플레이어로 교체
+						npc.distance_near = distance;
+						npc.near_player = ids;
+						std::queue<DirectX::XMFLOAT3> q{};
+						npc.n_path = q;
 					}
-					npc.current_behavior = CHASE;
-					break;
+					else continue;
 				}
 
-			}
-			else {
-				// 같은 섹터가 아니면 큐를 비운 후 서성이기
-				std::queue<DirectX::XMFLOAT3> q{};
-				npc.n_path = q;
-				npc.is_active = false;
-				npc.current_behavior = PATROL;
-				if(npc.n_path.empty())
-					npc.n_path.push(GetRandomPos(npc.GetPos()));
+				std::cout << "가까운 플레이어로 교체" << std::endl;
+				std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[npc.near_player].GetPos());
+				for (auto& p : path) {
+					npc.n_path.push(p);
+				}
 			}
 		}
 
-		if (tick == 0 || tick == 30) {
+
+		if (patrol == true) {
+			std::queue<DirectX::XMFLOAT3> q{};
+			npc.n_path = q;
+			npc.current_behavior = PATROL;
+
+			if (npc.n_path.empty())
+				npc.n_path.push(GetRandomPos(npc.GetPos()));
+
+			npc.near_player = -1;
+			npc.distance_near = 100000.f;
+		}
+
+
+		if (tick == 0 || tick == 15 || tick == 30 || tick == 45) {
 			npc.DoWork();
 		}
 		

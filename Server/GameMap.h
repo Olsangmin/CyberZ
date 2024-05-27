@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <functional>
 #include <ranges>
+#include <random>
 
 enum CELL_TYPE { GROUND, CONT, PLAYER, CT_NPC };
 
@@ -119,7 +120,8 @@ public:
         std::pair<int, int> index = CoordsToIndex(pos);
         while (true) {
             int x = index.first, y = index.second;
-            switch (rand() % 4)
+            std::uniform_int_distribution uid{ 0, 3 };
+            switch (uid(m_m64RandomEngine))
             {
             case 0: x++; break;
             case 1: x--; break;
@@ -130,6 +132,8 @@ public:
                 break;
             }
             
+            if (x >= 100 || y >= 100) continue;
+
             if (false == cells[x][y].isObstacle) {
                 next_pos = cells[x][y].center;
                 if (curr_sertor != getSector(next_pos)) continue;
@@ -177,7 +181,8 @@ public:
 
     float Distance_float(DirectX::XMFLOAT3 n_pos, DirectX::XMFLOAT3 p_pos)
     {
-        return std::abs(n_pos.x - p_pos.x) + std::abs(n_pos.z - p_pos.z);
+        // return std::abs(n_pos.x - p_pos.x) + std::abs(n_pos.z - p_pos.z);
+        return std::sqrt((n_pos.x - p_pos.x) * (n_pos.x - p_pos.x) + (n_pos.z - p_pos.z) * (n_pos.z - p_pos.z));
     }
 
     std::array<NPC, NUM_NPC> npcs;
@@ -211,6 +216,9 @@ private:
     float mapWidth, mapDepth;
     int cellWidth, cellDepth;
     bool InGame;
+
+    std::random_device m_RandomDevice;
+    std::mt19937_64 m_m64RandomEngine{ m_RandomDevice() };
 
 
     std::chrono::steady_clock::time_point Start_time;
