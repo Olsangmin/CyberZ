@@ -75,9 +75,6 @@ using Microsoft::WRL::ComPtr;
 
 extern HINSTANCE						ghAppInstance;
 
-<<<<<<< HEAD
-// #define _WITH_SWAPCHAIN_FULLSCREEN_STATE
-=======
 //#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
 //#define SMALL_WINDOW_SCREEN
@@ -93,9 +90,6 @@ extern HINSTANCE						ghAppInstance;
 	#define FRAME_BUFFER_HEIGHT				1080
 
 #endif // SMALL_WINDOW_SCREEN
-
-
->>>>>>> main
 
 
 //#define FRAME_BUFFER_WIDTH				640

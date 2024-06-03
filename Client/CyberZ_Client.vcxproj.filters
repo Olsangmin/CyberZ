@@ -127,6 +127,9 @@
     <ClCompile Include="Mission.cpp">
       <Filter>05. Object\05-01. Mission</Filter>
     </ClCompile>
+    <ClCompile Include="Frustum.cpp">
+      <Filter>04. Mesh</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameFramework.h">
@@ -191,6 +194,9 @@
     </ClInclude>
     <ClInclude Include="Mission.h">
       <Filter>05. Object\05-01. Mission</Filter>
+    </ClInclude>
+    <ClInclude Include="Frustum.h">
+      <Filter>04. Mesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

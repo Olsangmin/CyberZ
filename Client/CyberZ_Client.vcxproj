@@ -144,6 +144,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CyborgPlayer.cpp" />
     <ClCompile Include="DDSTextureLoader12.cpp" />
+    <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="GameFramework.cpp" />
     <ClCompile Include="CyberZ_Client.cpp" />
     <ClCompile Include="GUI.cpp" />
@@ -166,6 +167,7 @@
     <ClInclude Include="CyborgPlayer.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DDSTextureLoader12.h" />
+    <ClInclude Include="Frustum.h" />
     <ClInclude Include="GameFramework.h" />
     <ClInclude Include="CyberZ_Client.h" />
     <ClInclude Include="GUI.h" />
