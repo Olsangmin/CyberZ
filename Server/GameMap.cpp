@@ -9,13 +9,14 @@ GameMap& GameMap::GetInstance()
 
 void GameMap::initializeMap()
 {
+	using namespace DirectX;
 	// `cellWidth`와 `cellDepth` 크기로 2D 배열을 생성합니다.
 	cells.resize(cellWidth, std::vector<CELL>(cellDepth));
 
 	std::unordered_map<std::string, DirectX::BoundingOrientedBox> data;
 
 
-	std::ifstream in{ "Resource/Map/MiddleMap_info.txt" };
+	std::ifstream in{ "Resource/Map/AllMap_M_info.txt" };
 	if (!in) {
 		std::cout << "File Error!" << std::endl;
 		exit(-1);
@@ -48,22 +49,54 @@ void GameMap::initializeMap()
 				}
 
 				// BoundingOrientedBox에 값 설정
-				DirectX::BoundingOrientedBox box;
+				DirectX::BoundingOrientedBox box{};
 				box.Center = DirectX::XMFLOAT3(values[0], values[1], values[2]);
 				box.Extents = DirectX::XMFLOAT3(values[3], values[4], values[5]);
 
 				// 데이터 저장
 				data[objName] = box;
+
 			}
+			else if (line.find("<Rotation>:") == 0) {
+				// <Rotation>: 뒤의 값을 추출
+				std::istringstream iss(line.substr(11));
+				char discard;
+				float rotX, rotY, rotZ;
+
+				if (!(iss >> discard >> rotX >> discard >> rotY >> discard >> rotZ >> discard)) {					
+					std::cerr << "회전 값 추출 오류 발생" << std::endl;
+					exit(-1);
+				}
+				
+				/*XMFLOAT4 q{};
+				XMVECTOR vec = DirectX::XMQuaternionRotationRollPitchYaw(rotX, rotY, rotZ);
+				DirectX::XMStoreFloat4(&q, vec);
+				data[objName].Orientation = XMFLOAT4{ q.x, q.y, q.z, q.w };*/
+
+				float angleX = XMConvertToRadians(rotX);
+				float angleY = XMConvertToRadians(rotY);
+				float angleZ = XMConvertToRadians(rotZ);
+				XMVECTOR quaternionX = DirectX::XMQuaternionRotationRollPitchYaw(angleX, 0.0f, 0.0f);
+				XMVECTOR quaternionY = DirectX::XMQuaternionRotationRollPitchYaw(0.0f, angleY, 0.0f);
+				XMVECTOR quaternionZ = DirectX::XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, angleZ);
+				
+				XMVECTOR quaternion = DirectX::XMQuaternionMultiply(quaternionX, DirectX::XMQuaternionMultiply(quaternionY, quaternionZ));
+
+				XMFLOAT4 orientation;
+				DirectX::XMStoreFloat4(&orientation, quaternion);
+
+				data[objName].Orientation = orientation;
+			}
+				
 		}
 
 
-		//for (const auto& pair : data) {
-		//	std::cout << "Object Name: " << pair.first << std::endl;
-		//	const DirectX::BoundingOrientedBox& box = pair.second;
-		//	std::cout << "Center: (" << box.Center.x << ", " << box.Center.y << ", " << box.Center.z << ")" << std::endl;
-		//	// std::cout << "Extents: (" << box.Extents.x << ", " << box.Extents.y << ", " << box.Extents.z << ")" << std::endl;
-		//}
+		for (const auto& pair : data) {
+			std::cout << "Object Name: " << pair.first << std::endl;
+			const DirectX::BoundingOrientedBox& box = pair.second;
+			std::cout << "Center: (" << box.Center.x << ", " << box.Center.y << ", " << box.Center.z << ")" << std::endl;
+			std::cout << "Orientation: (" << box.Orientation.x << ", " << box.Orientation.y << ", " << box.Orientation.z << ") - " << box.Orientation.w << std::endl;
+		}
 
 
 	}
@@ -124,7 +157,7 @@ void GameMap::StartGame()
 
 void GameMap::printMap() const
 {
-	return;
+	
 	std::cout << "-----PrintMap------------------------\n";
 	for (int y = cellDepth - 1; y >= 0; --y) {
 		for (int x = 0; x < cellWidth; ++x) {
@@ -133,11 +166,11 @@ void GameMap::printMap() const
 			{
 
 			case CONT:
-				std::cout << "X"; break;
+				std::cout << "X "; break;
 			case CT_NPC:
 				std::cout << "N"; break;
 			case GROUND:
-				std::cout << "."; break;
+				std::cout << ". "; break;
 			default:
 				break;
 			}
@@ -255,7 +288,7 @@ void GameMap::InitializeNPC()
 		npcs[i].SetPos(NPCInitPos[i]);
 		npcs[i].my_sector = getSector(npcs[i].GetPos());
 		CELL& cell = GetCurrentCell(npcs[i].GetPos());
-		cell.cellType = CT_NPC;
+		// cell.cellType = CT_NPC;
 		// std::cout << "NPC[" << npcs[i].GetId() << "] goto " << std::endl;
 	}
 
