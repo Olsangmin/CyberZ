@@ -32,11 +32,11 @@ struct CELL
     CELL() : center(DirectX::XMFLOAT3(0.f, 0.f, 0.f)), width(10), height(10),
         cellType(GROUND), isObstacle(false) {}
 
-    bool InCell(const DirectX::BoundingOrientedBox& obj)
+    bool InCell(const DirectX::BoundingOrientedBox& obj) const
     {
         DirectX::BoundingOrientedBox bb{};
         bb.Center = center;
-        DirectX::XMFLOAT3 extents{ static_cast<float>(width/2), 3.f, static_cast<float>(height/2) };
+        DirectX::XMFLOAT3 extents{ static_cast<float>(width/2), 1.5f, static_cast<float>(height/2) };
         bb.Extents = extents;
 
         return bb.Intersects(obj);

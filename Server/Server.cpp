@@ -45,8 +45,8 @@ void Server::Network()
 	std::cout << "Server Start" << std::endl;
 
 
-	// int num_threads = std::thread::hardware_concurrency();
 	int num_threads = 1;
+	// int num_threads = std::thread::hardware_concurrency();
 	for (int i = 0; i < num_threads; ++i)
 		worker_threads.emplace_back(&Server::Worker_thread, this);
 	std::thread timer_thread{ &Server::TimerThread, this };
