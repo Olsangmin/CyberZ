@@ -91,7 +91,7 @@ float4 PSStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 	if (gnTexturesMask & MATERIAL_EMISSION_MAP) cEmissionColor = gtxtEmissionTexture.Sample(gssWrap, input.uv);
 
 	float3 normalW;
-    float4 cColor = (cAlbedoColor) + (cSpecularColor * 1.0) + (cMetallicColor * 0.1) + (cEmissionColor * 10.0);
+    float4 cColor = (cAlbedoColor * 1.0)+ (cSpecularColor * 1.0) + (cMetallicColor * 0.1) + (cEmissionColor * 10.0);
     cColor.a *= cAlbedoColor.a;
 	
 	if (gnTexturesMask & MATERIAL_NORMAL_MAP)
@@ -105,7 +105,7 @@ float4 PSStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 		normalW = normalize(input.normalW);
 	}
 	
-	float4 cIllumination = Lighting(input.positionW, normalW);
+    float4 cIllumination = Lighting(input.positionW, normalW);
 	return(lerp(cColor, cIllumination, 0.5f));
 }
 
@@ -272,4 +272,130 @@ float4 PSBoundingBox(VS_BOUNDINGBOX_OUTPUT input) : SV_TARGET
 {
     return (input.color);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//
+float4 VSPostProcessing(uint nVertexID : SV_VertexID) : SV_POSITION
+{
+    if (nVertexID == 0)
+        return (float4(-1.0f, +1.0f, 0.0f, 1.0f));
+    if (nVertexID == 1)
+        return (float4(+1.0f, +1.0f, 0.0f, 1.0f));
+    if (nVertexID == 2)
+        return (float4(+1.0f, -1.0f, 0.0f, 1.0f));
+
+    if (nVertexID == 3)
+        return (float4(-1.0f, +1.0f, 0.0f, 1.0f));
+    if (nVertexID == 4)
+        return (float4(+1.0f, -1.0f, 0.0f, 1.0f));
+    if (nVertexID == 5)
+        return (float4(-1.0f, -1.0f, 0.0f, 1.0f));
+
+    return (float4(0, 0, 0, 0));
+}
+
+float4 PSPostProcessing(float4 position : SV_POSITION) : SV_Target
+{
+	
+    return (float4(0.0f, 0.0f, 0.0f, 1.0f));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+
+struct VS_SCREEN_RECT_TEXTURED_OUTPUT
+{
+    float4 position : SV_POSITION;
+    float3 positionW : POSITION;
+    float3 normalW : NORMAL;
+    float3 tangentW : TANGENT;
+    float3 bitangentW : BITANGENT;
+    float2 uv : TEXCOORD;
+};
+
+VS_SCREEN_RECT_TEXTURED_OUTPUT VSScreenRectSamplingTextured(uint nVertexID : SV_VertexID)
+{
+    VS_SCREEN_RECT_TEXTURED_OUTPUT output = (VS_STANDARD_OUTPUT) 0;
+
+    if (nVertexID == 0)
+    {
+        output.position = float4(-1.0f, +1.0f, 0.0f, 1.0f);
+        output.uv = float2(0.0f, 0.0f);
+    }
+    else if (nVertexID == 1)
+    {
+        output.position = float4(+1.0f, +1.0f, 0.0f, 1.0f);
+        output.uv = float2(1.0f, 0.0f);
+    }
+    else if (nVertexID == 2)
+    {
+        output.position = float4(+1.0f, -1.0f, 0.0f, 1.0f);
+        output.uv = float2(1.0f, 1.0f);
+    }
+    else if (nVertexID == 3)
+    {
+        output.position = float4(-1.0f, +1.0f, 0.0f, 1.0f);
+        output.uv = float2(0.0f, 0.0f);
+    }
+    else if (nVertexID == 4)
+    {
+        output.position = float4(+1.0f, -1.0f, 0.0f, 1.0f);
+        output.uv = float2(1.0f, 1.0f);
+    }
+    else if (nVertexID == 5)
+    {
+        output.position = float4(-1.0f, -1.0f, 0.0f, 1.0f);
+        output.uv = float2(0.0f, 1.0f);
+    }
+
+    return (output);
+}
+
+
+cbuffer cbDrawOptions : register(b5)
+{
+    int4 gvDrawOptions : packoffset(c0);
+};
+
+
+float4 PSScreenRectSamplingTextured(VS_STANDARD_OUTPUT input) : SV_Target
+{
+    float4 cColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
+
+	
+    switch (gvDrawOptions.x)
+    {
+        case 84: //'T'
+		{
+                cColor = gtxtAlbedoTexture.Sample(gssClamp, input.uv);
+                break;
+         }
+        //case 76: //'L'
+		//{
+        //        cColor = gtxtIlluminationTexture.Sample(gssWrap, input.uv);
+        //        break;
+        //    }
+        case 78: //'N'
+		{
+                cColor = gtxtNormalTexture.Sample(gssWrap, input.uv);
+                break;
+         }
+        //case 68: //'D'
+		//{
+        //        float fDepth = gtxtDepthTexture.Load(uint3((uint) input.position.x, (uint) input.position.y, 0));
+        //        cColor = fDepth;
+//		//		cColor = GetColorFromDepth(fDepth);
+        //        break;
+        //   }
+        //case 90: //'Z'
+		//{
+        //        float fzDepth = gtxtzDepthTexture.Load(uint3((uint) input.position.x, (uint) input.position.y, 0));
+        //        cColor = fzDepth;
+//		//	cColor = GetColorFromDepth(fDepth);
+        //        break;
+        //    }
+    }
+	return (cColor);
+}
+
 
