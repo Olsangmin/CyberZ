@@ -104,6 +104,7 @@ void CCamera::RegenerateViewMatrix()
 	m_xmf4x4View._41 = -Vector3::DotProduct(m_xmf3Position, m_xmf3Right);
 	m_xmf4x4View._42 = -Vector3::DotProduct(m_xmf3Position, m_xmf3Up);
 	m_xmf4x4View._43 = -Vector3::DotProduct(m_xmf3Position, m_xmf3Look);
+
 }
 
 void CCamera::CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList)
@@ -284,6 +285,7 @@ void CThirdPersonCamera::Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed)
 			m_xmf3Position = Vector3::Add(m_xmf3Position, xmf3Direction, fDistance);
 			SetLookAt(xmf3LookAt);
 		}
+		GenerateFrustum();
 	}
 }
 
@@ -326,3 +328,36 @@ void CThirdPersonCamera::Rotate(float x, float y, float z)
 	}
 }
 
+void CThirdPersonCamera::GenerateFrustum()
+{
+	//cout << "Camera View -	[" << m_xmf4x4View._41 << "][" << m_xmf4x4View._42 << "][" << m_xmf4x4View._43 << "]" << endl;
+	//cout << "		[" << m_xmf4x4View._21 << "][" << m_xmf4x4View._22 << "][" << m_xmf4x4View._23 << "]" << endl;
+	//cout << "		[" << m_xmf4x4View._31 << "][" << m_xmf4x4View._32 << "][" << m_xmf4x4View._33 << "]" << endl;
+	m_xmFrustum.CreateFromMatrix(m_xmFrustum, XMLoadFloat4x4(&m_xmf4x4Projection));
+	XMFLOAT4X4 View = m_xmf4x4View;
+	//View._41 = m_xmf4x4View._41 + 500;
+	//View._42 = m_xmf4x4View._42 + 0;
+	//View._43 = m_xmf4x4View._43 + 500;
+	//cout << Matrix4x4::Inverse(View)._41 << ", " << Matrix4x4::Inverse(View)._42 << ", " << Matrix4x4::Inverse(View)._43 << endl;
+	XMFLOAT4X4 InversView = Matrix4x4::Inverse(View);
+	//cout << m_pPlayer->GetPosition().x << endl;
+	//cout << m_pPlayer->GetPosition().z << endl;
+	//InversView._41 += m_pPlayer->GetPosition().x;
+	//InversView._42 += m_pPlayer->GetPosition().y;
+	//InversView._43 += m_pPlayer->GetPosition().z;
+	XMMATRIX xmmtxInversView = XMLoadFloat4x4(&InversView);
+	//XMMATRIX xmmtxInversView = XMMatrixInverse(NULL, XMLoadFloat4x4(&View));
+	m_xmFrustum.Transform(m_xmFrustum, xmmtxInversView);
+	XMFLOAT4X4 InverView{};
+	XMStoreFloat4x4(&InverView, xmmtxInversView);
+	//cout << InverView._41 << ", " << InverView._42 << ", " << InverView._43 << endl;
+	XMFLOAT3* corners = new XMFLOAT3[8];
+	m_xmFrustum.GetCorners(corners);
+	//cout << corners[0].x<<", "<<corners[0].z << endl;
+}
+
+bool CThirdPersonCamera::IsInFrustum(BoundingOrientedBox& xmBoundingBox)
+{
+	//cout << "Camera View -	[" << m_xmf4x4View._11 << "][" << m_xmf4x4View._12 << "][" << m_xmf4x4View._13 << "]" << endl;
+	return(m_xmFrustum.Intersects(xmBoundingBox));
+}

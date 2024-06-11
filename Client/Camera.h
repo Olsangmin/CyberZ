@@ -48,6 +48,8 @@ protected:
 	ID3D12Resource					*m_pd3dcbCamera = NULL;
 	VS_CB_CAMERA_INFO				*m_pcbMappedCamera = NULL;
 
+	BoundingFrustum					m_xmFrustum;
+
 public:
 	CCamera();
 	CCamera(CCamera *pCamera);
@@ -56,6 +58,9 @@ public:
 	virtual void CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void ReleaseShaderVariables();
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
+
+	//virtual void GenerateFrustum() {};
+	//virtual bool IsInFrustum(BoundingOrientedBox& xmBoundingBox) { return true; };
 
 	void GenerateViewMatrix();
 	void GenerateViewMatrix(XMFLOAT3 xmf3Position, XMFLOAT3 xmf3LookAt, XMFLOAT3 xmf3Up);
@@ -135,4 +140,6 @@ public:
 	virtual void Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed);
 	virtual void SetLookAt(XMFLOAT3& vLookAt);
 	virtual void Rotate(float x, float y, float z);
+	virtual void GenerateFrustum();
+	virtual bool IsInFrustum(BoundingOrientedBox& xmBoundingBox);
 };

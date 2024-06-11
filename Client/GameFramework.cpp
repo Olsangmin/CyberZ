@@ -591,6 +591,7 @@ void CGameFramework::FrameAdvance()
 	m_pd3dCommandList->ClearRenderTargetView(d3dRtvCPUDescriptorHandle, pfClearColor/*Colors::Azure*/, 0, NULL);
 
 	m_pd3dCommandList->OMSetRenderTargets(1, &d3dRtvCPUDescriptorHandle, TRUE, &d3dDsvCPUDescriptorHandle);
+	if (m_nSceneNum == PREPARE_ROOM_SCENE) m_pScene->SetChangedModel(m_pd3dDevice,m_pd3dCommandList);
 
 #endif // DEFERRED_RENDERING
 

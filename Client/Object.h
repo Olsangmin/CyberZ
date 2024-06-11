@@ -172,7 +172,7 @@ private:
 
 public:
 	void AddRef();
-	void Release();
+	virtual void Release();
 
 public:
 	CGameObject();
@@ -285,6 +285,9 @@ public:
 	static CLoadedModelInfo *LoadGeometryAndAnimationFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, char *pstrFileName, CShader *pShader);
 
 	static void PrintFrameInfo(CGameObject *pGameObject, CGameObject *pParent);
+
+	bool IsVisible(CCamera* pCamera = NULL);
+
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
