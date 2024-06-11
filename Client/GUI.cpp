@@ -113,7 +113,6 @@ void CUI::CreateDirect2DDevice(HWND m_hWnd, ID3D12Device* pd3dDevice, ID3D12Grap
 	}
 
 
-
 	// Image Render
 	CoInitialize(NULL);
 	hResult = ::CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, __uuidof(IWICImagingFactory), (void**)&m_pwicImagingFactory);
@@ -195,6 +194,7 @@ void CUI::DrawUI(UINT m_nSwapChainBufferIndex)
 
 void CFirstSceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 {
+
 	m_pd2dDeviceContext->SetTarget(m_ppd2dRenderTargets[m_nSwapChainBufferIndex]);
 	ID3D11Resource* ppd3dResources[] = { m_ppd3d11WrappedBackBuffers[m_nSwapChainBufferIndex] };
 	m_pd3d11On12Device->AcquireWrappedResources(ppd3dResources, _countof(ppd3dResources));
@@ -205,7 +205,6 @@ void CFirstSceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 	//Direct2D Drawing
 	UISet(m_nSwapChainBufferIndex);
 
-	
 	m_pd2dDeviceContext->EndDraw();
 	m_pd3d11On12Device->ReleaseWrappedResources(ppd3dResources, _countof(ppd3dResources));
 	m_pd3d11DeviceContext->Flush();
@@ -350,7 +349,6 @@ void CPlaySceneUI::MissionProgressBar(int MissionNum)
 
 	delete rcMissionBar;
 	delete rcMissionBarFrame;
-
 
 }
 
