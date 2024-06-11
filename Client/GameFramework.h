@@ -31,6 +31,8 @@ public:
 	void CreateCommandQueueAndList();
 
 	void CreateRtvAndDsvDescriptorHeaps();
+	void CreateSwapChainRenderTargetViews();
+
 
 	void CreateRenderTargetViews();
 	void CreateDepthStencilView();
@@ -69,11 +71,15 @@ private:
 	static const UINT			m_nSwapChainBuffers = 2;
 	UINT						m_nSwapChainBufferIndex;
 
-	ID3D12Resource*				m_ppd3dSwapChainBackBuffers[m_nSwapChainBuffers];
-	ID3D12DescriptorHeap*		m_pd3dRtvDescriptorHeap = NULL;
+	ID3D12DescriptorHeap*			m_pd3dRtvDescriptorHeap = NULL;
+	ID3D12Resource*					m_ppd3dSwapChainBackBuffers[m_nSwapChainBuffers];
+	D3D12_CPU_DESCRIPTOR_HANDLE		m_pd3dSwapChainBackBufferRTVCPUHandles[m_nSwapChainBuffers];
 
-	ID3D12Resource*				m_pd3dDepthStencilBuffer = NULL;
-	ID3D12DescriptorHeap*		m_pd3dDsvDescriptorHeap = NULL;
+
+	ID3D12Resource*					m_pd3dDepthStencilBuffer = NULL;
+	ID3D12DescriptorHeap*			m_pd3dDsvDescriptorHeap = NULL;
+	D3D12_CPU_DESCRIPTOR_HANDLE		m_d3dDsvDescriptorCPUHandle;
+
 
 	ID3D12CommandAllocator*		m_pd3dCommandAllocator = NULL;
 	ID3D12CommandQueue*			m_pd3dCommandQueue = NULL;
@@ -100,6 +106,8 @@ private:
 	_TCHAR						m_pszFrameRate[70];
 
 	int							m_nSceneNum = PREPARE_ROOM_SCENE;	// Ãâ·Â ¾À ¹øÈ£
+
+	CPostProcessingShader		*m_pPostProcessingShader = NULL;
 
 };
 

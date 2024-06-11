@@ -75,8 +75,6 @@ using Microsoft::WRL::ComPtr;
 
 extern HINSTANCE						ghAppInstance;
 
-//#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
-
 #define SMALL_WINDOW_SCREEN
 
 #ifdef SMALL_WINDOW_SCREEN
@@ -91,9 +89,9 @@ extern HINSTANCE						ghAppInstance;
 
 #endif // SMALL_WINDOW_SCREEN
 
+//디퍼드 렌더링
+#define DEFERRED_RENDERING
 
-//#define FRAME_BUFFER_WIDTH				640
-//#define FRAME_BUFFER_HEIGHT				480
 
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "d3d12.lib")
@@ -518,3 +516,4 @@ namespace Plane
 		return(xmf4Result);
 	}
 }
+
