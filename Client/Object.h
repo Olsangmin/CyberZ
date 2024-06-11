@@ -165,7 +165,7 @@ private:
 
 public:
 	void AddRef();
-	void Release();
+	virtual void Release();
 
 public:
 	CGameObject();

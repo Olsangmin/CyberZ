@@ -115,8 +115,11 @@ void CScene::ReleaseObjects()
 	if (m_pd3dCbvSrvDescriptorHeap) m_pd3dCbvSrvDescriptorHeap->Release();
 
 	if (m_ppPlayer) {
-		for (int i = 0; i < m_nPlayer; ++i)
+		for (int i = 0; i < m_nPlayer; ++i) {
 			m_ppPlayer[i]->Release();
+		}
+		delete[] m_ppPlayer;
+
 	}
 
 	if (m_ppShaders)
@@ -527,6 +530,11 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	pCamera->UpdateShaderVariables(pd3dCommandList);
 
 	UpdateShaderVariables(pd3dCommandList);
+
+	//Check
+	//cout<<"Scene - " << pCamera << endl;
+	//////////////////////////////////////////
+
 
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(2, d3dcbLightsGpuVirtualAddress); //Lights

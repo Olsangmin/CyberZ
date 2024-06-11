@@ -951,7 +951,7 @@ bool CGameObject::IsVisible(CCamera* pCamera)
 	OnPrepareRender();
 	bool bIsVisible = false;
 	BoundingOrientedBox xmBoundingBox = m_pMesh->m_xmBoundingBox;
-	if (pCamera) bIsVisible = pCamera->IsInFrustum(xmBoundingBox);
+	if (pCamera) bIsVisible = reinterpret_cast<CThirdPersonCamera*>(pCamera)->IsInFrustum(xmBoundingBox);
 	return(bIsVisible);
 }
 
@@ -1209,7 +1209,6 @@ CRobotObject::CRobotObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	m_pSkinnedAnimationController->SetAllTrackDisable();
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
 	m_pSkinnedAnimationController->SetTrackSpeed(0, 0.5f);
-
 }
 
 CRobotObject::~CRobotObject()
@@ -1238,10 +1237,10 @@ void CRobotObject::MoveToTarget()
 
 
 	Vector3::IsZero(m_xmf3Target) ?
-		m_pasNextAni = IDLE : RotateDirection(20.f), m_pasNextAni = WALK;
+		m_pasNextAni = IDLE : RotateDirection(20.f), m_pasNextAni = RUN;
 	if (!Vector3::IsZero(m_xmf3Target))
 		Vector3::IsZero(Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()))) ?
-		m_pasNextAni = IDLE : MoveForward(0.34f), m_pasNextAni = WALK;
+		m_pasNextAni = IDLE : MoveForward(0.34f), m_pasNextAni = RUN;
 	else { m_pasNextAni = IDLE; }
 
 }

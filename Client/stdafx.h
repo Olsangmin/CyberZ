@@ -9,7 +9,7 @@
 // Windows 헤더 파일:
 #include <windows.h>
 
-// #pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 
 // C의 런타임 헤더 파일입니다.
 #include <stdlib.h>
@@ -77,7 +77,7 @@ extern HINSTANCE						ghAppInstance;
 
 //#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
-//#define SMALL_WINDOW_SCREEN
+#define SMALL_WINDOW_SCREEN
 
 #ifdef SMALL_WINDOW_SCREEN
 

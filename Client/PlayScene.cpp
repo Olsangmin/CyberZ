@@ -32,7 +32,6 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	// 1 - 울타리				|| OBJ
 	// 2 - 맵 1(우상단)			|| OBJ
 	// 3 - 맵 2(좌하단)			|| OBJ
-
 	// 4 - 점령 미션용 obj		|| OBJ
 
 	m_nHierarchicalGameObjects = 3;
@@ -163,7 +162,7 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
 
 	for (int i = 0; i < m_nPlayer; ++i) {
-		CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i], SHOULDER_VIEW_CAMERA);
+		CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i], THIRD_PERSON_CAMERA);
 		m_ppPlayer[i] = pPlayer;
 		m_ppPlayer[i]->SetPlayerData(i);
 	}
@@ -174,6 +173,7 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_pMyPlayer = m_ppPlayer[playernum];
 	// m_pMyPlayer->SetPosition(XMFLOAT3(50.f, 0.f, 70.f));
 	m_pMyPlayer->SetPosition(PlayerInitPos[playernum]);
+	m_pMyPlayer->ChangeCamera(SHOULDER_VIEW_CAMERA, 0.0f);
 
 	reinterpret_cast<CPlaySceneUI*>(m_pUI)->m_fMaxStamina = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fMaxStaminer;
 }
@@ -255,7 +255,7 @@ bool CPlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysB
 	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f) || (dwDirection1 != 0))
 	{
 		if ((cxDelta || cyDelta) && m_pMyPlayer->m_bUnable)
-			m_pMyPlayer->CameraRotate(0.0f, cxDelta, 0.0f);
+			m_pMyPlayer->CameraRotate(cyDelta, cxDelta, 0.0f);
 
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) {
@@ -620,7 +620,11 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 	//	if (pKeysBuffer['1'] & 0xF0) select = Corzim;
 	//	if (pKeysBuffer['2'] & 0xF0)select = Evan;
 	//	if (pKeysBuffer['3'] & 0xF0)select = Uranya;
-
+	if ((cxDelta != 0.0f) || (cyDelta != 0.0f))
+	{
+		if ((cxDelta || cyDelta) && m_pMyPlayer->m_bUnable)
+			m_pMyPlayer->CameraRotate(cyDelta, cxDelta, 0.0f);
+	}
 
 	//}
 

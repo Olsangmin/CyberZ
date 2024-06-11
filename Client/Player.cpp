@@ -238,7 +238,7 @@ void CPlayer::Update(float fTimeElapsed)
 	UpdatePlayerPostion(fTimeElapsed);
 	UpdateCameraPosition(fTimeElapsed);
 	UpdateFriction(fTimeElapsed);
-
+	reinterpret_cast<CThirdPersonCamera*>(m_pCamera)->GenerateFrustum();
 
 #ifdef USE_NETWORK
 	SendPacket();
@@ -345,7 +345,7 @@ CCamera* CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
 		pNewCamera->SetPlayer(this);
 	}
 
-	if (m_pCamera) delete m_pCamera;
+	if (m_pCamera) delete[] m_pCamera;
 
 	return(pNewCamera);
 }
@@ -365,6 +365,11 @@ void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamer
 
 	DWORD nCameraMode = (pCamera) ? pCamera->GetMode() : 0x00;
 	if (nCameraMode == THIRD_PERSON_CAMERA|| nCameraMode == FIRST_PERSON_CAMERA) CGameObject::Render(pd3dCommandList, pCamera);
+}
+
+void CPlayer::Release()
+{
+	CGameObject::Release();
 }
 
 

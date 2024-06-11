@@ -59,8 +59,8 @@ public:
 	virtual void ReleaseShaderVariables();
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
 
-	void GenerateFrustum();
-	bool IsInFrustum(BoundingOrientedBox& xmBoundingBox);
+	//virtual void GenerateFrustum() {};
+	//virtual bool IsInFrustum(BoundingOrientedBox& xmBoundingBox) { return true; };
 
 	void GenerateViewMatrix();
 	void GenerateViewMatrix(XMFLOAT3 xmf3Position, XMFLOAT3 xmf3LookAt, XMFLOAT3 xmf3Up);
@@ -140,4 +140,6 @@ public:
 	virtual void Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed);
 	virtual void SetLookAt(XMFLOAT3& vLookAt);
 	virtual void Rotate(float x, float y, float z);
+	virtual void GenerateFrustum();
+	virtual bool IsInFrustum(BoundingOrientedBox& xmBoundingBox);
 };
