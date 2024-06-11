@@ -367,7 +367,7 @@ float4 PSScreenRectSamplingTextured(VS_STANDARD_OUTPUT input) : SV_Target
     {
         case 84: //'T'
 		{
-                cColor = gtxtAlbedoTexture.Sample(gssClamp, input.uv);
+                cColor = gtxtAlbedoTexture.Sample(gssWrap, input.uv);
                 break;
          }
         //case 76: //'L'
