@@ -148,7 +148,6 @@ public:
 	DWORD								m_dwLastDirection;
 
 public:
-	virtual void SetChangedModel(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList) {}
 	virtual bool AllPlayerReady() { return false; }
 	virtual int getModelInfo() { return 0; }
 };
