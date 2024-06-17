@@ -264,8 +264,10 @@ bool CPlayScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysB
 
 	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f) || (dwDirection1 != 0))
 	{
-		if ((cxDelta || cyDelta) && m_pMyPlayer->m_bUnable)
-			m_pMyPlayer->CameraRotate(cyDelta, cxDelta, 0.0f);
+		if ((cxDelta || cyDelta) && m_pMyPlayer->m_bUnable) {
+			m_pMyPlayer->CameraRotate(0.0f, cxDelta, 0.0f);
+			m_pMyPlayer->m_pCamera->RotatePitch(-cyDelta / 2.4);
+		}
 
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) {

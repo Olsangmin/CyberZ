@@ -32,6 +32,8 @@ protected:
 	DWORD							m_nMode;
 
 	bool							m_bShoulder{ false };
+	float							m_fCPitch{ 0.f };
+	float							m_fXRoate{ 35.f };
 
 	XMFLOAT3						m_xmf3LookAtWorld;
 	XMFLOAT3						m_xmf3Offset;
@@ -111,6 +113,7 @@ public:
 	virtual void Rotate(float fPitch = 0.0f, float fYaw = 0.0f, float fRoll = 0.0f) { }
 	virtual void Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed) { }
 	virtual void SetLookAt(XMFLOAT3& xmf3LookAt) { }
+	virtual void RotatePitch(float pitch) { m_fCPitch = pitch; }
 };
 
 class CSpaceShipCamera : public CCamera
