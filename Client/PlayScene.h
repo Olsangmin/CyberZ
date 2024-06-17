@@ -54,20 +54,17 @@ public:
 	void ReleaseUploadBuffers();
 
 	bool AllPlayerReady();
+	void SetPlayer();
 
-	void SetChangedModel(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 	void ChangeModel(int nPlayer, int nModel);
 	
 	void ProcessPacket(char* p);
 	int getModelInfo();
 
+	int m_nPlayerSet[3] = { 0 };
+
 public:
 
 	Player_Character_Type select{ Robot };
 
-	int								m_nPlayerSelecter = 0;
-	CSelectCharacterOBJ**			m_ppPlayerSelecter = NULL;
-
-public:	
-	CSelectCharacterOBJ**			m_ppOnPlayer = NULL;
 };

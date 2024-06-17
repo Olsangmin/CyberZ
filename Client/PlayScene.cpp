@@ -561,44 +561,35 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	if (pMiddleContainer) delete pMiddleContainer;
 
 
-	
-
-	//===============================//
-	// PlayerSelecter
-
-	m_nPlayerSelecter = 3;
-	m_ppPlayerSelecter = new CSelectCharacterOBJ * [m_nPlayerSelecter];
-
-	m_ppPlayerSelecter[0] = new CSelectCharacterOBJ(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), Robot, 3);
-	m_ppPlayerSelecter[0]->Rotate(0.f, 180.f, 0.f);
-	m_ppPlayerSelecter[0]->SetPosition(-15.0f, 0.0f, 0.0f);
-
-	m_ppPlayerSelecter[1] = new CSelectCharacterOBJ(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), Robot, 3);
-	m_ppPlayerSelecter[1]->Rotate(0.f, 180.f, 0.f);
-	m_ppPlayerSelecter[1]->SetPosition(0.0f, 0.0f, 0.0f);
-
-	m_ppPlayerSelecter[2] = new CSelectCharacterOBJ(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), Robot, 3);
-	m_ppPlayerSelecter[2]->Rotate(0.f, 180.f, 0.f);
-	m_ppPlayerSelecter[2]->SetPosition(15.0f, 0.0f, 0.0f);
-
 
 	//===============================//
 	// Player
-	m_nPlayer = 1;
+	m_nPlayer = 12;
 	m_ppPlayer = new CPlayer * [m_nPlayer];
 	m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer]; // Play Character
 
-	// ÀúÀåµÈ ¸ðµ¨ ¹Ù²Ü ¼ö ÀÖÀ½
-	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
-
-	for (int i = 0; i < m_nPlayer; ++i) {
-		CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i]);
-		m_ppPlayer[i] = pPlayer;
-		m_ppPlayer[i]->SetPlayerData(i);
+	for (int j = 0; j < 3; j++)
+	{
+		m_ppModelInfoPlayer[j*4] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
+		m_ppModelInfoPlayer[1+j*4] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
+		m_ppModelInfoPlayer[2+j*4] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
+		m_ppModelInfoPlayer[3+j*4] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Robot.bin", NULL);
+	}
+	
+	for (int j= 0; j < 3; j++)
+	{
+		for (int i = 0; i < 4; ++i) {
+			CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i+j*4]);
+			m_ppPlayer[i+j*4] = pPlayer;
+			m_ppPlayer[i+j*4]->SetPlayerData(i);
+			m_ppPlayer[i + j * 4]->Rotate(0.f, 180.f, 0.f);
+			m_ppPlayer[i+j*4]->m_bUnable = false;
+		}
 	}
 
-	m_pMyPlayer = m_ppPlayer[MY_PLAYER];
-	m_pMyPlayer->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	SetPlayer();
+
+	m_pMyPlayer = m_ppPlayer[4];
 	m_pMyPlayer->ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 }
 
@@ -723,40 +714,17 @@ bool CPrepareRoomScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 
 void CPrepareRoomScene::ReleaseObjects()
 {
-	if (m_ppPlayerSelecter)
-	{
-		for (int i = 0; i < m_nPlayerSelecter; i++)
-		{
-			m_ppPlayerSelecter[i]->ReleaseUploadBuffers();
-			m_ppPlayerSelecter[i]->Release();
-
-		}
-		delete[] m_ppPlayerSelecter;
-	}
-
 	CScene::ReleaseObjects();
 }
 
 void CPrepareRoomScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	CScene::Render(pd3dCommandList, pCamera);
-
-	for (int i = 0; i < m_nPlayerSelecter; i++)
-	{
-		if (m_ppPlayerSelecter[i])
-		{
-			if (!m_ppPlayerSelecter[i]->m_pSkinnedAnimationController) m_ppPlayerSelecter[i]->UpdateTransform(NULL);
-			m_ppPlayerSelecter[i]->Animate(m_fElapsedTime);
-			m_ppPlayerSelecter[i]->Render(pd3dCommandList, pCamera);
-		}
-	}
 }
 
 void CPrepareRoomScene::ReleaseUploadBuffers()
 {
 	CScene::ReleaseUploadBuffers();
-
-	for (int i = 0; i < m_nPlayerSelecter; i++) m_ppPlayerSelecter[i]->ReleaseUploadBuffers();
 
 }
 
@@ -766,31 +734,50 @@ bool CPrepareRoomScene::AllPlayerReady()
 	else return false;
 }
 
-void CPrepareRoomScene::SetChangedModel(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void CPrepareRoomScene::SetPlayer()
 {
-	for (int i = 0; i < m_nPlayerSelecter; i++)
+
+	for (int i = 0; i < 3; i++)
 	{
-		if (m_ppPlayerSelecter[i]->m_bChanged)
-		{
-			XMFLOAT3 beforeLoc = m_ppPlayerSelecter[i]->GetPosition();
-
-			CSelectCharacterOBJ* pTemp = new CSelectCharacterOBJ(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_ppPlayerSelecter[i]->m_nChangedModelNum, 1);
-
-			if (m_ppPlayerSelecter[i])
-				delete m_ppPlayerSelecter[i];
-
-			m_ppPlayerSelecter[i] = pTemp;
-			m_ppPlayerSelecter[i]->SetPosition(beforeLoc);
-			m_ppPlayerSelecter[i]->Rotate(0.f, 180.f, 0.f);
-			m_ppPlayerSelecter[i]->m_bChanged = false;
-		}
+		m_ppPlayer[0 + i*4]->SetPosition(XMFLOAT3(-15.f + i*15, 0.f, 0.f));
+		m_ppPlayer[1 + i*4]->SetPosition(XMFLOAT3(-15.f + i*15, 0.f, 0.f));
+		m_ppPlayer[2 + i*4]->SetPosition(XMFLOAT3(-15.f + i*15, 0.f, 0.f));
+		m_ppPlayer[3 + i*4]->SetPosition(XMFLOAT3(-15.f + i*15, 0.f, 0.f));
 	}
+
+	for (int i = 1; i < 4; i++)
+	{
+		m_ppPlayer[4 * i - 1]->m_bUnable = true;
+	}
+
+
 }
+
 
 void CPrepareRoomScene::ChangeModel(int nPlayer, int nModel)
 {
-	m_ppPlayerSelecter[nPlayer]->m_nChangedModelNum = nModel;
-	m_ppPlayerSelecter[nPlayer]->m_bChanged = true;
+
+	switch (nPlayer)
+	{
+	case 0:
+		m_nPlayerSet[0] = nModel;
+		m_ppPlayer[nModel]->m_bUnable = true;
+		for (int i = 0; i < 4; i++)	if (nModel != i) m_ppPlayer[i]->m_bUnable = false;
+		break;
+
+	case 1:
+		m_nPlayerSet[1] = nModel;
+		m_ppPlayer[nModel+4]->m_bUnable = true;
+		for (int i = 4; i < 8; i++)	if (nModel+4 != i) m_ppPlayer[i]->m_bUnable = false;
+		break;
+
+	case 2:
+		m_nPlayerSet[2] = nModel;
+		m_ppPlayer[nModel+8]->m_bUnable = true;
+		for (int i = 8; i < 12; i++) if (nModel+8 != i) m_ppPlayer[i]->m_bUnable = false;
+		break;
+	}
+
 }
 
 
@@ -798,7 +785,7 @@ int CPrepareRoomScene::getModelInfo()
 {
 	int playerId = 0;
 	if (my_id != -1) playerId = my_id;
-	return m_ppPlayerSelecter[playerId]->m_nModelNum;
+	return m_nPlayerSet[playerId];
 }
 
 
