@@ -99,7 +99,35 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-class CStandardShader : public CShader
+class CTexturedShader : public CShader
+{
+public:
+	CTexturedShader();
+	virtual ~CTexturedShader();
+
+	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout();
+
+	virtual D3D12_SHADER_BYTECODE CreateVertexShader();
+	virtual D3D12_SHADER_BYTECODE CreatePixelShader();
+};
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+class CIlluminatedTexturedShader : public CTexturedShader
+{
+public:
+	CIlluminatedTexturedShader();
+	virtual ~CIlluminatedTexturedShader();
+
+	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout();
+
+	virtual D3D12_SHADER_BYTECODE CreateVertexShader();
+	virtual D3D12_SHADER_BYTECODE CreatePixelShader();
+};
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+class CStandardShader : public CTexturedShader
 {
 public:
 	CStandardShader();
@@ -194,7 +222,6 @@ public:
 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 };
-
 
 
 

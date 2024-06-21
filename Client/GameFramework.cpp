@@ -605,12 +605,11 @@ void CGameFramework::FrameAdvance()
 	
 #endif // DEFERRED_RENDERING
 
-
 	// 타 타겟 화면출력
-	//int m_nDrawOption = 84;
-	//m_pd3dCommandList->OMSetRenderTargets(1, &m_pd3dSwapChainBackBufferRTVCPUHandles[m_nSwapChainBufferIndex], TRUE, NULL);
-	//
-	//m_pPostProcessingShader->Render(m_pd3dCommandList, m_pCamera, &m_nDrawOption);
+	int m_nDrawOption = 68;
+	m_pd3dCommandList->OMSetRenderTargets(1, &m_pd3dSwapChainBackBufferRTVCPUHandles[m_nSwapChainBufferIndex], TRUE, NULL);
+	
+	m_pPostProcessingShader->Render(m_pd3dCommandList, m_pCamera, &m_nDrawOption);
 
 	//End
 	hResult = m_pd3dCommandList->Close();
