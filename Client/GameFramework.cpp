@@ -192,7 +192,7 @@ void CGameFramework::CreateRtvAndDsvDescriptorHeaps()
 {
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
 	::ZeroMemory(&d3dDescriptorHeapDesc, sizeof(D3D12_DESCRIPTOR_HEAP_DESC));
-	d3dDescriptorHeapDesc.NumDescriptors = m_nSwapChainBuffers + 4; //여기
+	d3dDescriptorHeapDesc.NumDescriptors = m_nSwapChainBuffers + 5; //여기
 	d3dDescriptorHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 	d3dDescriptorHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 	d3dDescriptorHeapDesc.NodeMask = 0;
@@ -275,6 +275,21 @@ void CGameFramework::CreateDepthStencilView()
 	m_pd3dDevice->CreateDepthStencilView(m_pd3dDepthStencilBuffer, &d3dDepthStencilViewDesc, m_d3dDsvDescriptorCPUHandle);
 }
 
+void CGameFramework::CreatePostPrecessShader()
+{
+	m_pPostProcessingShader = new CTextureDeferdShader();
+	m_pPostProcessingShader->CreateShader(m_pd3dDevice, m_pScene->GetGraphicsRootSignature(), 1, NULL, DXGI_FORMAT_D32_FLOAT);
+
+
+	D3D12_CPU_DESCRIPTOR_HANDLE d3dRtvCPUDescriptorHandle = m_pd3dRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
+	d3dRtvCPUDescriptorHandle.ptr += (::gnRtvDescriptorIncrementSize * m_nSwapChainBuffers);
+
+	DXGI_FORMAT pdxgiRtvFormats[5] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_FLOAT };
+	m_pPostProcessingShader->CreateResourcesAndRtvsSrvs(m_pd3dDevice, m_pd3dCommandList, 5, pdxgiRtvFormats, d3dRtvCPUDescriptorHandle); //SRV to (Render Targets) + (Depth Buffer)
+
+
+}
+
 void CGameFramework::ChangeSwapChainState()
 {
 	WaitForGpuComplete();
@@ -303,6 +318,7 @@ void CGameFramework::ChangeSwapChainState()
 	m_nSwapChainBufferIndex = m_pdxgiSwapChain->GetCurrentBackBufferIndex();
 
 	CreateRenderTargetViews();
+	CreateSwapChainRenderTargetViews();
 }
 
 void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
@@ -358,18 +374,7 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 					m_bRenderBoundingBox = !m_bRenderBoundingBox;
 					break;
 
-				//======================
-				// Scene Change
-				case VK_F7:
-					ReleaseObjects();
-					m_nSceneNum = FIRST_ROUND_SCENE;
-					BuildObjects(0);
-					break;
-				case VK_F6:
-					ReleaseObjects();
-					m_nSceneNum = PREPARE_ROOM_SCENE;
-					BuildObjects(0);
-					break;
+	
 
 				default:
 					break;
@@ -446,45 +451,22 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
+	// Make Scene
+	m_pScene = new CPrepareRoomScene();
+	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
 
-	switch (m_nSceneNum)
-	{
-		case FIRST_ROUND_SCENE:
-		{
-			m_pScene = new CPlayScene();
-			if (m_pScene) {
-				m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
-			}
-			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
-			break;
-		}
-		case PREPARE_ROOM_SCENE:
-		{
-			m_pScene = new CPrepareRoomScene();
-			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
-			
-			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
+	m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 
 #ifdef USE_NETWORK
-			m_pScene->InitNetwork();
+	m_pScene->InitNetwork();
 #endif // USE_NETWORK
 
-
-			break;
-		}
-	}
+	// Make Scene UI
 	m_pScene->m_pUI->CreateDirect2DDevice(m_hWnd, m_pd3dDevice, m_pd3dCommandList, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers);
 
+
 #ifdef DEFERRED_RENDERING	
-
-	m_pPostProcessingShader = new CTextureDeferdShader();
-	m_pPostProcessingShader->CreateShader(m_pd3dDevice, m_pScene->GetGraphicsRootSignature(), 1, NULL, DXGI_FORMAT_D32_FLOAT);
-
-	D3D12_CPU_DESCRIPTOR_HANDLE d3dRtvCPUDescriptorHandle = m_pd3dRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	d3dRtvCPUDescriptorHandle.ptr += (::gnRtvDescriptorIncrementSize * m_nSwapChainBuffers);
-
-	DXGI_FORMAT pdxgiResourceFormats[4] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_FLOAT };
-	m_pPostProcessingShader->CreateResourcesAndRtvsSrvs(m_pd3dDevice, m_pd3dCommandList, 4, pdxgiResourceFormats, d3dRtvCPUDescriptorHandle); //SRV to (Render Targets) + (Depth Buffer)
+	CreatePostPrecessShader();
 #endif	
 
 	m_pd3dCommandList->Close();
@@ -509,6 +491,57 @@ void CGameFramework::ReleaseObjects()
 
 }
 
+void CGameFramework::ChangeScene(int nScene, int myPlayerNum)
+{
+	ReleaseObjects();
+	m_nSceneNum = nScene;
+
+	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
+
+	switch (nScene)
+	{
+		case START_SCENE:
+		{
+			m_pScene = new CStartScene();
+			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
+			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
+			break;
+		}
+		case FIRST_ROUND_SCENE:
+		{
+			m_pScene = new CPlayScene();
+			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
+			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
+			break;
+		}
+		case PREPARE_ROOM_SCENE:
+		{
+			m_pScene = new CPrepareRoomScene();
+			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
+	
+			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
+	
+	#ifdef USE_NETWORK
+			m_pScene->InitNetwork();
+	#endif // USE_NETWORK
+	
+			break;
+		}
+	}
+	m_pScene->m_pUI->CreateDirect2DDevice(m_hWnd, m_pd3dDevice, m_pd3dCommandList, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers);
+
+
+#ifdef DEFERRED_RENDERING	
+	CreatePostPrecessShader();
+#endif	
+
+	m_pd3dCommandList->Close();
+	ID3D12CommandList* ppd3dCommandLists[] = { m_pd3dCommandList};
+	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
+
+	WaitForGpuComplete();
+}
+
 void CGameFramework::ProcessInput()
 {
 	static UCHAR pKeysBuffer[256];
@@ -523,14 +556,13 @@ void CGameFramework::AnimateObjects()
 	if (m_pScene)
 	{
 		m_pScene->AnimateObjects(fTimeElapsed);
+
 		if (m_nSceneNum == PREPARE_ROOM_SCENE && m_pScene->AllPlayerReady())
 		{
 			int myPlayerNum = 0;
 			myPlayerNum = m_pScene->getModelInfo();
 			
-			ReleaseObjects();
-			m_nSceneNum = FIRST_ROUND_SCENE;
-			BuildObjects(myPlayerNum);
+			ChangeScene(FIRST_ROUND_SCENE, myPlayerNum);
 		}
 	}
 
@@ -591,7 +623,6 @@ void CGameFramework::FrameAdvance()
 	m_pd3dCommandList->ClearRenderTargetView(d3dRtvCPUDescriptorHandle, pfClearColor/*Colors::Azure*/, 0, NULL);
 
 	m_pd3dCommandList->OMSetRenderTargets(1, &d3dRtvCPUDescriptorHandle, TRUE, &d3dDsvCPUDescriptorHandle);
-	if (m_nSceneNum == PREPARE_ROOM_SCENE) m_pScene->SetChangedModel(m_pd3dDevice,m_pd3dCommandList);
 
 #endif // DEFERRED_RENDERING
 
@@ -605,11 +636,12 @@ void CGameFramework::FrameAdvance()
 	
 #endif // DEFERRED_RENDERING
 
-	// 타 타겟 화면출력
-	int m_nDrawOption = 68;
-	m_pd3dCommandList->OMSetRenderTargets(1, &m_pd3dSwapChainBackBufferRTVCPUHandles[m_nSwapChainBufferIndex], TRUE, NULL);
-	
+	 //타 타겟 화면출력
+	int m_nDrawOption = 84;
+	m_pd3dCommandList->OMSetRenderTargets(1, &m_pd3dSwapChainBackBufferRTVCPUHandles[m_nSwapChainBufferIndex], TRUE,  &d3dDsvCPUDescriptorHandle);
 	m_pPostProcessingShader->Render(m_pd3dCommandList, m_pCamera, &m_nDrawOption);
+
+	::SynchronizeResourceTransition(m_pd3dCommandList, m_ppd3dSwapChainBackBuffers[m_nSwapChainBufferIndex], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 
 	//End
 	hResult = m_pd3dCommandList->Close();

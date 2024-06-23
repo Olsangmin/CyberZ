@@ -134,7 +134,10 @@ public:
 
 	CSkyBox*							m_pSkyBox = NULL;
 	CHeightMapTerrain*					m_pTerrain = NULL;
+	
 	CUI*								m_pUI = NULL;
+	CUI*								m_pLoading = NULL;
+
 	bool								Missionflag = false;
 
 	LIGHT*								m_pLights = NULL;

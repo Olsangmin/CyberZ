@@ -16,6 +16,9 @@
 #include "Player.h"
 #include "Scene.h"
 #include "PlayScene.h"
+#include "StartScene.h"
+
+
 
 class CGameFramework
 {
@@ -33,22 +36,25 @@ public:
 	void CreateRtvAndDsvDescriptorHeaps();
 	void CreateSwapChainRenderTargetViews();
 
-
 	void CreateRenderTargetViews();
 	void CreateDepthStencilView();
+
+	void CreatePostPrecessShader();
 
 	void ChangeSwapChainState();
 
     void BuildObjects(int myPlayerNum);
     void ReleaseObjects();
+	void ChangeScene(int nScene, int myPlayerNum);
 
-    void ProcessInput();
     void AnimateObjects();
     void FrameAdvance();
 
 	void WaitForGpuComplete();
 	void MoveToNextFrame();
 
+	// 키 & 마우스 입력
+    void ProcessInput();
 	void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 	void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 	LRESULT CALLBACK OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);

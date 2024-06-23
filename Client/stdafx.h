@@ -152,8 +152,14 @@ inline void Swap(float *pfS, float *pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT
 #define TEMP_PLAYER						3	//캐릭터 선택 전
 
 // Scene 번호
-#define	FIRST_ROUND_SCENE				1
-#define PREPARE_ROOM_SCENE				2
+
+enum SCENENUM
+{
+	START_SCENE,
+	PREPARE_ROOM_SCENE,
+	FIRST_ROUND_SCENE,
+};
+
 
 namespace Vector3
 {

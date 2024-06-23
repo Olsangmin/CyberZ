@@ -74,6 +74,8 @@ public:
 	void CheckEnter();
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///
 class CPlaySceneUI : public CUI
 {
 public:
@@ -90,6 +92,36 @@ public:
 	void MissionProgressBar(int MissionNum);
 	void KeyCardUI();
 	void StaminaBarUI();
+
+public:
+	void DrawUI(UINT m_nSwapChainBufferIndex);
+	void UISet(UINT m_nSwapChainBufferIndex);
+
+};
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///
+
+class CStartSceneUI : public CUI
+{
+public:
+	CStartSceneUI() {}
+	~CStartSceneUI() {}
+
+public:
+	void DrawUI(UINT m_nSwapChainBufferIndex);
+	void UISet(UINT m_nSwapChainBufferIndex);
+
+
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///
+
+class CLoadingUI : public CUI
+{
+public: 
+	CLoadingUI() {}
+	~CLoadingUI() {}
 
 public:
 	void DrawUI(UINT m_nSwapChainBufferIndex);

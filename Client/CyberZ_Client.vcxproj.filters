@@ -58,6 +58,9 @@
     <Filter Include="05. Object\05-01. Mission">
       <UniqueIdentifier>{7560441b-f73c-47d6-889c-efeb8841f843}</UniqueIdentifier>
     </Filter>
+    <Filter Include="09. Scene\09-01. StartScene">
+      <UniqueIdentifier>{f9fe9b8c-d431-46bd-ad28-1fd7f9bf5549}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CyberZ_Client.rc">
@@ -130,6 +133,9 @@
     <ClCompile Include="Frustum.cpp">
       <Filter>04. Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="StartScene.cpp">
+      <Filter>09. Scene\09-01. StartScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameFramework.h">
@@ -197,6 +203,9 @@
     </ClInclude>
     <ClInclude Include="Frustum.h">
       <Filter>04. Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="StartScene.h">
+      <Filter>09. Scene\09-01. StartScene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

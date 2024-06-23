@@ -46,25 +46,26 @@ public:
 	~CPrepareRoomScene() {}
 
 	void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum);
-	bool ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer);
-	bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
+	
 
 	void ReleaseObjects();
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	void ReleaseUploadBuffers();
 
+	bool ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer);
+	bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
+	
 	bool AllPlayerReady();
 	void SetPlayer();
 
 	void ChangeModel(int nPlayer, int nModel);
-	
+
+public:
+
 	void ProcessPacket(char* p);
 	int getModelInfo();
 
 	int m_nPlayerSet[3] = { 0 };
-
-public:
-
 	Player_Character_Type select{ Robot };
 
 };

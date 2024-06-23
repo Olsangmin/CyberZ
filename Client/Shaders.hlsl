@@ -34,8 +34,6 @@ cbuffer cbGameObjectInfo : register(b2)
 #define MATERIAL_DETAIL_ALBEDO_MAP	0x20
 #define MATERIAL_DETAIL_NORMAL_MAP	0x40
 
-Texture2DArray gtxtTextureArray : register(t0);
-
 Texture2D gtxtAlbedoTexture : register(t6);
 Texture2D gtxtSpecularTexture : register(t7);
 Texture2D gtxtNormalTexture : register(t8);
@@ -274,48 +272,6 @@ float4 PSBoundingBox(VS_BOUNDINGBOX_OUTPUT input) : SV_TARGET
 {
     return (input.color);
 }
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-struct VS_TEXTURED_LIGHTING_INPUT
-{
-    float3 position : POSITION;
-    float3 normal : NORMAL;
-    float2 uv : TEXCOORD;
-};
-
-struct VS_TEXTURED_LIGHTING_OUTPUT
-{
-    float4 position : SV_POSITION;
-    float3 positionW : POSITION;
-    float3 normalW : NORMAL;
-    float2 uv : TEXCOORD;
-};
-
-VS_TEXTURED_LIGHTING_OUTPUT VSTexturedLighting(VS_TEXTURED_LIGHTING_INPUT input)
-{
-    VS_TEXTURED_LIGHTING_OUTPUT output;
-
-    output.normalW = mul(input.normal, (float3x3) gmtxGameObject);
-    output.positionW = (float3) mul(float4(input.position, 1.0f), gmtxGameObject);
-    output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
-    output.uv = input.uv;
-
-    return (output);
-}
-
-float4 PSTexturedLighting(VS_TEXTURED_LIGHTING_OUTPUT input, uint nPrimitiveID : SV_PrimitiveID) : SV_TARGET
-{
-    float3 uvw = float3(input.uv, nPrimitiveID / 2);
-    float4 cColor = gtxtTextureArray.Sample(gssWrap, uvw);
-    input.normalW = normalize(input.normalW);
-    float4 cIllumination = Lighting(input.positionW, input.normalW);
-
-    return (cColor * cIllumination);
-}
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 struct VS_TEXTURED_INPUT
@@ -329,24 +285,6 @@ struct VS_TEXTURED_OUTPUT
     float4 position : SV_POSITION;
     float2 uv : TEXCOORD;
 };
-
-VS_TEXTURED_OUTPUT VSTextured(VS_TEXTURED_INPUT input)
-{
-    VS_TEXTURED_OUTPUT output;
-
-    output.position = mul(mul(mul(float4(input.position, 1.0f), gmtxGameObject), gmtxView), gmtxProjection);
-    output.uv = input.uv;
-
-    return (output);
-}
-
-float4 PSTextured(VS_TEXTURED_OUTPUT input, uint nPrimitiveID : SV_PrimitiveID) : SV_TARGET
-{
-    float3 uvw = float3(input.uv, nPrimitiveID / 2);
-    float4 cColor = gtxtTextureArray.Sample(gssWrap, uvw);
-
-    return (cColor);
-}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -378,6 +316,13 @@ float4 PSPostProcessing(float4 position : SV_POSITION) : SV_Target
 ///////////////////////////////////////////////////////////////////////////////
 //
 
+Texture2D<float4> gtxtTextureTexture : register(t14);
+Texture2D<float4> gtxtIlluminationTexture : register(t15);
+Texture2D<float4> gtxtNormalTexture2 : register(t16);
+
+Texture2D<float> gtxtzDepthTexture : register(t17);
+Texture2D<float> gtxtDepthTexture : register(t18);
+
 struct VS_SCREEN_RECT_TEXTURED_OUTPUT
 {
     float4 position : SV_POSITION;
@@ -386,7 +331,7 @@ struct VS_SCREEN_RECT_TEXTURED_OUTPUT
 
 VS_SCREEN_RECT_TEXTURED_OUTPUT VSScreenRectSamplingTextured(uint nVertexID : SV_VertexID)
 {
-    VS_SCREEN_RECT_TEXTURED_OUTPUT output = (VS_TEXTURED_OUTPUT) 0;
+    VS_SCREEN_RECT_TEXTURED_OUTPUT output = (VS_SCREEN_RECT_TEXTURED_OUTPUT) 0;
 
     if (nVertexID == 0)
     {
@@ -429,7 +374,7 @@ cbuffer cbDrawOptions : register(b5)
 };
 
 
-float4 PSScreenRectSamplingTextured(VS_TEXTURED_OUTPUT input) : SV_Target
+float4 PSScreenRectSamplingTextured(VS_SCREEN_RECT_TEXTURED_OUTPUT input) : SV_Target
 {
     float4 cColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
 	
@@ -437,7 +382,7 @@ float4 PSScreenRectSamplingTextured(VS_TEXTURED_OUTPUT input) : SV_Target
     {
         case 84: //'T'
 		{
-                cColor = gtxtAlbedoTexture.Sample(gssWrap, input.uv);
+                cColor = gtxtTextureTexture.Sample(gssWrap, input.uv);
                 break;
         }
         case 78: //'N'
@@ -445,15 +390,15 @@ float4 PSScreenRectSamplingTextured(VS_TEXTURED_OUTPUT input) : SV_Target
                 cColor = gtxtNormalTexture.Sample(gssWrap, input.uv);
                 break;
             }
-        //case 68: //'D'
-		//{
-        //        float fDepth = gtxtDepthTexture.Load(uint3((uint) input.position.x, (uint) input.position.y, 0));
-        //        cColor = fDepth;
-//		//	cColor = GetColorFromDepth(fDepth);
-        //        break;
-        // }
+        case 68: //'D'
+		{
+                float fDepth = gtxtDepthTexture.Load(uint3((uint) input.position.x, (uint) input.position.y, 0));
+                cColor = fDepth;
+//			cColor = GetColorFromDepth(fDepth);
+                break;
+         }
     }
-    cColor.a = 0.7f;
+    cColor.a = 0.6f;
 	return (cColor);
 }
 
