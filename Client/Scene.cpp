@@ -675,7 +675,7 @@ bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget, XM
 			if (XMVectorGetX(XMVector3Dot(XMLoadFloat3(&vecP[i]), vecD)) > 0.001f) {
 				out = vecP[0];
 				// if (i == 3)out = vecP[1];
-				cout << "X - [" << i << "]" << endl;
+				//cout << "X - [" << i << "]" << endl;
 				break;
 			}
 			/*else if ((i == 1 || i == 3) && XMVectorGetZ(XMVector3Dot(XMLoadFloat3(&vecP[i]), vecD)) > 0.001f) {
