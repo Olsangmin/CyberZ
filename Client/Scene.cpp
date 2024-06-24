@@ -515,7 +515,7 @@ void CScene::AnimateObjects(float fTimeElapsed)
 		
 		// MAP Obj
 		for (int j = 0; j < m_nHierarchicalGameObjects; ++j) {
-			if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j])) {
+			if (CheckObjByObjCollition(m_ppPlayer[i], m_ppHierarchicalGameObjects[j], m_ppPlayer[i]->m_xmf3ContactNormal)) {
 				flag = true;
 				break;
 			}
@@ -526,7 +526,7 @@ void CScene::AnimateObjects(float fTimeElapsed)
 
 		//Mission Obj
 		for (int k = 0; k < m_nMissionObj; ++k) if(m_ppMissionObj[k]) {
-			if (CheckObjByObjCollition(m_ppPlayer[i], m_ppMissionObj[k])) {
+			if (CheckObjByObjCollition(m_ppPlayer[i], m_ppMissionObj[k], m_ppPlayer[i]->m_xmf3ContactNormal)) {
 				flag = true;
 			}
 		}
@@ -643,20 +643,39 @@ void CScene::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 	for (int i = 0; i < m_nPlayer; i++)	m_ppPlayer[i]->RenderBoundingBox(pd3dCommandList);
 }
 
-bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget)
+bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget, XMFLOAT3& out)
 {
 	//BoundingOrientedBox xmBoundingBox = pBase->m_xmBoundingBox;
 	//XMFLOAT3 zero(1, 1, 1);
 	//pBase->m_xmBoundingBox.Transform(xmBoundingBox, 1.f, XMLoadFloat3(&zero), XMLoadFloat3(&target));
 	if (pBase->m_xmBoundingBox.Intersects(pTarget->m_xmBoundingBox)) {
-		//XMFLOAT3 corner[8];
-		//pTarget->m_xmBoundingBox.GetCorners(corner);
-		//
+		XMFLOAT3 corner[8];
+		pTarget->m_xmBoundingBox.GetCorners(corner);
+
 		//XMFLOAT3 vecP0 = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[0], corner[1], corner[2], corner[3]));
 		//XMFLOAT3 vecP1 = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[1], corner[5], corner[6], corner[2]));
 		//XMFLOAT3 vecP2 = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[5], corner[4], corner[7], corner[6]));
 		//XMFLOAT3 vecP3 = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[4], corner[0], corner[3], corner[7]));
-		//XMVECTOR vecD = XMLoadFloat3(&Vector3::Minus(pTarget->m_xmBoundingBox.Center, pBase->GetPosition()));
+		XMFLOAT3* vecP = new XMFLOAT3[4];
+		vecP[0] = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[1], corner[5], corner[6], corner[2]));
+		vecP[1] = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[0], corner[1], corner[2], corner[3]));
+		vecP[2] = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[5], corner[4], corner[7], corner[6]));
+		vecP[3] = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[4], corner[0], corner[3], corner[7]));
+		XMVECTOR vecD = XMLoadFloat3(&Vector3::Minus(pTarget->GetPosition(), pBase->GetPosition()));
+		XMFLOAT3 vecN = { 0.f, 0.f, 0.f };
+		for (int i = 0; i < 4; ++i) {
+			if (XMVectorGetX(XMVector3Dot(XMLoadFloat3(&vecP[i]), vecD)) > 0.001f) {
+				out = vecP[0];
+				// if (i == 3)out = vecP[1];
+				cout << "X - [" << i << "]" << endl;
+				break;
+			}
+			/*else if ((i == 1 || i == 3) && XMVectorGetZ(XMVector3Dot(XMLoadFloat3(&vecP[i]), vecD)) > 0.001f) {
+				out = vecP[i];
+				cout << "Z - [" << i << "]" << endl;
+				break;
+			}*/
+		}
 		//if (XMVectorGetX(XMVector3Dot(XMLoadFloat3(&vecP0), vecD)) > 0.001f) {
 		//	XMFLOAT3 vecP = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[0], corner[1], corner[2], corner[3]));
 		//	cout << "[0]" << endl;
@@ -696,8 +715,8 @@ bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget)
 		}*/
 		return(true);
 	}
-	if (pTarget->m_pChild && CheckObjByObjCollition(pBase, pTarget->m_pChild)) return(true);
-	if (pTarget->m_pSibling && CheckObjByObjCollition(pBase, pTarget->m_pSibling)) return(true);
+	if (pTarget->m_pChild && CheckObjByObjCollition(pBase, pTarget->m_pChild, out)) return(true);
+	if (pTarget->m_pSibling && CheckObjByObjCollition(pBase, pTarget->m_pSibling, out)) return(true);
 
 	else return false;
 }

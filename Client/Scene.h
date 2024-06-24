@@ -64,7 +64,7 @@ public:
     virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
 
 	virtual void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
-	bool CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget);
+	bool CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget, XMFLOAT3& out);
 	bool CheckMissionBound(CGameObject* pBase, CMissonOBJ* pTarget);
 
 	virtual void ReleaseUploadBuffers();

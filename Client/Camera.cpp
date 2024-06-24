@@ -292,6 +292,7 @@ void CThirdPersonCamera::Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed)
 			m_xmf3Position = Vector3::Add(m_xmf3Position, xmf3Direction, fDistance);
 			SetLookAt(xmf3LookAt);
 		}
+		RegenerateViewMatrix();
 		GenerateFrustum();
 	}
 }
@@ -342,9 +343,10 @@ void CThirdPersonCamera::GenerateFrustum()
 	//cout << "		[" << m_xmf4x4View._31 << "][" << m_xmf4x4View._32 << "][" << m_xmf4x4View._33 << "]" << endl;
 	m_xmFrustum.CreateFromMatrix(m_xmFrustum, XMLoadFloat4x4(&m_xmf4x4Projection));
 	XMFLOAT4X4 View = m_xmf4x4View;
-	//View._41 = m_xmf4x4View._41 + 500;
-	//View._42 = m_xmf4x4View._42 + 0;
-	//View._43 = m_xmf4x4View._43 + 500;
+	//View._41 = m_xmf4x4View._41 - m_pPlayer->GetPosition().x;
+	//View._42 = m_xmf4x4View._42 - m_pPlayer->GetPosition().y;
+	//View._43 = m_xmf4x4View._43 - m_pPlayer->GetPosition().z;
+	//cout << m_pPlayer->GetPosition().x << endl;
 	//cout << Matrix4x4::Inverse(View)._41 << ", " << Matrix4x4::Inverse(View)._42 << ", " << Matrix4x4::Inverse(View)._43 << endl;
 	XMFLOAT4X4 InversView = Matrix4x4::Inverse(View);
 	//cout << m_pPlayer->GetPosition().x << endl;
@@ -356,10 +358,11 @@ void CThirdPersonCamera::GenerateFrustum()
 	//XMMATRIX xmmtxInversView = XMMatrixInverse(NULL, XMLoadFloat4x4(&View));
 	m_xmFrustum.Transform(m_xmFrustum, xmmtxInversView);
 	XMFLOAT4X4 InverView{};
+	//XMStoreFloat4(&m_xmFrustum.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmFrustum.Orientation)));
 	XMStoreFloat4x4(&InverView, xmmtxInversView);
 	//cout << InverView._41 << ", " << InverView._42 << ", " << InverView._43 << endl;
 	XMFLOAT3* corners = new XMFLOAT3[8];
-	m_xmFrustum.GetCorners(corners);
+	//cout << m_xmFrustum.Near << endl;
 	//cout << corners[0].x<<", "<<corners[0].z << endl;
 }
 
