@@ -46,6 +46,7 @@ protected:
 
 public:
 	bool						m_bIntersects = false;
+	XMFLOAT3					m_xmf3ContactNormal{ 0.f, 0.f, 0.f };
 	CCamera						*m_pCamera = NULL;
 	bool						m_bUnable = false;
 	bool						m_bReady = false;

@@ -630,10 +630,24 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 	//	if (pKeysBuffer['1'] & 0xF0) select = Corzim;
 	//	if (pKeysBuffer['2'] & 0xF0)select = Evan;
 	//	if (pKeysBuffer['3'] & 0xF0)select = Uranya;
-	if ((cxDelta != 0.0f) || (cyDelta != 0.0f))
+
+	DWORD dwDirection = 0;
+	DWORD dwDirection1 = 0;
+
+	if (pKeysBuffer['W'] & 0xF0) dwDirection1 |= DIR_FORWARD;
+	if (pKeysBuffer['S'] & 0xF0) dwDirection1 |= DIR_BACKWARD;
+	if (pKeysBuffer['A'] & 0xF0) dwDirection1 |= DIR_LEFT;
+	if (pKeysBuffer['D'] & 0xF0) dwDirection1 |= DIR_RIGHT;
+
+	if ((cxDelta != 0.0f) || (cyDelta != 0.0f) || (dwDirection1 != 0))
 	{
 		if ((cxDelta || cyDelta) && m_pMyPlayer->m_bUnable)
 			m_pMyPlayer->CameraRotate(cyDelta, cxDelta, 0.0f);
+
+		if (dwDirection1 && m_pMyPlayer->m_bUnable) {
+			// reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(-1);
+			m_pMyPlayer->Move(dwDirection1, 4.f, false);
+		}
 	}
 
 	//}

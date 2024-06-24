@@ -642,6 +642,7 @@ void CGameFramework::FrameAdvance()
 #endif // DEFERRED_RENDERING
 
 	// Render Scene
+	 m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 	if (m_pScene) m_pScene->Render(m_pd3dCommandList, m_pCamera);
 	if (m_bRenderBoundingBox) m_pScene->RenderBoundingBox(m_pd3dCommandList, m_pCamera);
 

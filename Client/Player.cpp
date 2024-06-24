@@ -284,6 +284,11 @@ void CPlayer::UpdatePlayerPostion(float fTimeElapsed)
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
 	m_xmf3NextPos = xmf3Velocity;
 	if(!m_bIntersects)Move(xmf3Velocity, false);
+	else {
+		XMFLOAT3 slidingVec = Vector3::XMVectorToFloat3(XMLoadFloat3(&xmf3Velocity) - 
+			XMVector3Dot(XMLoadFloat3(&xmf3Velocity), XMLoadFloat3(&m_xmf3ContactNormal)) * XMLoadFloat3(&m_xmf3ContactNormal));
+		Move(slidingVec, false);
+	}
 	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
 }
 
