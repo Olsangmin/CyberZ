@@ -111,9 +111,10 @@ private:
 
 	_TCHAR						m_pszFrameRate[70];
 
-	int							m_nSceneNum = PREPARE_ROOM_SCENE;	// 출력 씬 번호
+	int							m_nSceneNum = START_SCENE;	// 출력 씬 번호
 
+	int							m_nDrawOption = 84;
 	CPostProcessingShader		*m_pPostProcessingShader = NULL;
-
+	bool						m_bProstShader = false;
 };
 

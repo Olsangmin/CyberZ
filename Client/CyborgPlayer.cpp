@@ -40,7 +40,7 @@ CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	SetCameraUpdatedContext(pContext);
 
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)pContext;
-	SetPosition(XMFLOAT3(100.0f, pTerrain->GetHeight(310.0f, 590.0f), 300.0f));
+	if(pContext)SetPosition(XMFLOAT3(100.0f, pTerrain->GetHeight(310.0f, 590.0f), 300.0f));
 	SetScale(XMFLOAT3(10.0f, 10.0f, 10.0f));
 
 	CLoadedModelInfo* pMiddleContainer = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Mission_1/MissionBox_1.bin", NULL);
@@ -164,18 +164,20 @@ CCamera* CyborgPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 void CyborgPlayer::OnPlayerUpdateCallback(float fTimeElapsed)
 {
 	CHeightMapTerrain* pTerrain = (CHeightMapTerrain*)m_pPlayerUpdatedContext;
-	XMFLOAT3 xmf3Scale = pTerrain->GetScale();
-	XMFLOAT3 xmf3PlayerPosition = GetPosition();
-	int z = (int)(xmf3PlayerPosition.z / xmf3Scale.z);
-	bool bReverseQuad = ((z % 2) != 0);
-	float fHeight = pTerrain->GetHeight(xmf3PlayerPosition.x, xmf3PlayerPosition.z, bReverseQuad) + 0.0f;
-	if (xmf3PlayerPosition.y < fHeight)
-	{
-		XMFLOAT3 xmf3PlayerVelocity = GetVelocity();
-		xmf3PlayerVelocity.y = 0.0f;
-		SetVelocity(xmf3PlayerVelocity);
-		xmf3PlayerPosition.y = fHeight;
-		SetPosition(xmf3PlayerPosition);
+	if (m_pPlayerUpdatedContext) {
+		XMFLOAT3 xmf3Scale = pTerrain->GetScale();
+		XMFLOAT3 xmf3PlayerPosition = GetPosition();
+		int z = (int)(xmf3PlayerPosition.z / xmf3Scale.z);
+		bool bReverseQuad = ((z % 2) != 0);
+		float fHeight = pTerrain->GetHeight(xmf3PlayerPosition.x, xmf3PlayerPosition.z, bReverseQuad) + 0.0f;
+		if (xmf3PlayerPosition.y < fHeight)
+		{
+			XMFLOAT3 xmf3PlayerVelocity = GetVelocity();
+			xmf3PlayerVelocity.y = 0.0f;
+			SetVelocity(xmf3PlayerVelocity);
+			xmf3PlayerPosition.y = fHeight;
+			SetPosition(xmf3PlayerPosition);
+		}
 	}
 }
 

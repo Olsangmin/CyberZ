@@ -45,6 +45,7 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CreateDirect3DDevice();
 	CreateCommandQueueAndList();
 	CreateRtvAndDsvDescriptorHeaps();
+	
 	CreateSwapChain();
 
 	CreateSwapChainRenderTargetViews();
@@ -115,6 +116,7 @@ void CGameFramework::CreateSwapChain()
 	hResult = m_pdxgiFactory->MakeWindowAssociation(m_hWnd, DXGI_MWA_NO_ALT_ENTER);
 
 	CreateRenderTargetViews();
+
 }
 
 void CGameFramework::CreateDirect3DDevice()
@@ -279,15 +281,13 @@ void CGameFramework::CreatePostPrecessShader()
 {
 	m_pPostProcessingShader = new CTextureDeferdShader();
 	m_pPostProcessingShader->CreateShader(m_pd3dDevice, m_pScene->GetGraphicsRootSignature(), 1, NULL, DXGI_FORMAT_D32_FLOAT);
-
+	m_pPostProcessingShader->CreateShaderVariables(m_pd3dDevice, m_pd3dCommandList);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE d3dRtvCPUDescriptorHandle = m_pd3dRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	d3dRtvCPUDescriptorHandle.ptr += (::gnRtvDescriptorIncrementSize * m_nSwapChainBuffers);
 
-	DXGI_FORMAT pdxgiRtvFormats[5] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_FLOAT };
-	m_pPostProcessingShader->CreateResourcesAndRtvsSrvs(m_pd3dDevice, m_pd3dCommandList, 5, pdxgiRtvFormats, d3dRtvCPUDescriptorHandle); //SRV to (Render Targets) + (Depth Buffer)
-
-
+	DXGI_FORMAT pdxgiRtvFormats[4] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_FLOAT };
+	m_pPostProcessingShader->CreateResourcesAndRtvsSrvs(m_pd3dDevice, m_pd3dCommandList, 4, pdxgiRtvFormats, d3dRtvCPUDescriptorHandle); //SRV to (Render Targets) + (Depth Buffer)
 }
 
 void CGameFramework::ChangeSwapChainState()
@@ -369,13 +369,20 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 					m_bRenderBoundingBox = !m_bRenderBoundingBox;
 					break;
 
-
 				case 'T':
 					m_bRenderBoundingBox = !m_bRenderBoundingBox;
 					break;
 
-	
-
+				case 'P':
+					m_nDrawOption = 78;
+					break;
+				case 'O':
+					m_nDrawOption = 84;
+					break;
+				case '8':
+					m_bProstShader = !m_bProstShader;
+					break;
+					
 				default:
 					break;
 			}
@@ -452,14 +459,11 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
 	// Make Scene
-	m_pScene = new CPrepareRoomScene();
+	m_nSceneNum = START_SCENE;
+	m_pScene = new CStartScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
 
 	m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
-
-#ifdef USE_NETWORK
-	m_pScene->InitNetwork();
-#endif // USE_NETWORK
 
 	// Make Scene UI
 	m_pScene->m_pUI->CreateDirect2DDevice(m_hWnd, m_pd3dDevice, m_pd3dCommandList, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers);
@@ -467,6 +471,7 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 
 #ifdef DEFERRED_RENDERING	
 	CreatePostPrecessShader();
+	//m_pScene->CreateShaderResourceView(m_pd3dDevice, m_pd3dDepthStencilBuffer, DXGI_FORMAT_R32_FLOAT);
 #endif	
 
 	m_pd3dCommandList->Close();
@@ -507,24 +512,23 @@ void CGameFramework::ChangeScene(int nScene, int myPlayerNum)
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			break;
 		}
-		case FIRST_ROUND_SCENE:
-		{
-			m_pScene = new CPlayScene();
-			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
-			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
-			break;
-		}
 		case PREPARE_ROOM_SCENE:
 		{
 			m_pScene = new CPrepareRoomScene();
-			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
+			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
 	
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 	
 	#ifdef USE_NETWORK
 			m_pScene->InitNetwork();
 	#endif // USE_NETWORK
-	
+			break;
+		}
+		case FIRST_ROUND_SCENE:
+		{
+			m_pScene = new CPlayScene();
+			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
+			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			break;
 		}
 	}
@@ -546,6 +550,8 @@ void CGameFramework::ProcessInput()
 {
 	static UCHAR pKeysBuffer[256];
 	bool bProcessedByScene = false;
+
+
 	if (GetKeyboardState(pKeysBuffer) && m_pScene) bProcessedByScene = m_pScene->ProcessInput(m_hWnd, m_ptOldCursorPos, pKeysBuffer);
 }
 
@@ -557,13 +563,22 @@ void CGameFramework::AnimateObjects()
 	{
 		m_pScene->AnimateObjects(fTimeElapsed);
 
+
 		if (m_nSceneNum == PREPARE_ROOM_SCENE && m_pScene->AllPlayerReady())
 		{
 			int myPlayerNum = 0;
 			myPlayerNum = m_pScene->getModelInfo();
-			
+
 			ChangeScene(FIRST_ROUND_SCENE, myPlayerNum);
 		}
+		if (m_pScene->m_bChangeScene)
+		{
+			if (m_nSceneNum == START_SCENE)
+			{
+				ChangeScene(PREPARE_ROOM_SCENE, 4);
+			}
+		}
+
 	}
 
 }	
@@ -611,7 +626,7 @@ void CGameFramework::FrameAdvance()
 	d3dRtvCPUDescriptorHandle.ptr += (m_nSwapChainBufferIndex * ::gnRtvDescriptorIncrementSize);
 	D3D12_CPU_DESCRIPTOR_HANDLE d3dDsvCPUDescriptorHandle = m_pd3dDsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 
-	m_pd3dCommandList->ClearDepthStencilView(d3dDsvCPUDescriptorHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
+	m_pd3dCommandList->ClearDepthStencilView(m_d3dDsvDescriptorCPUHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 
 #ifdef DEFERRED_RENDERING	
 
@@ -636,11 +651,12 @@ void CGameFramework::FrameAdvance()
 	
 #endif // DEFERRED_RENDERING
 
-	 //타 타겟 화면출력
-	int m_nDrawOption = 84;
-	m_pd3dCommandList->OMSetRenderTargets(1, &m_pd3dSwapChainBackBufferRTVCPUHandles[m_nSwapChainBufferIndex], TRUE,  &d3dDsvCPUDescriptorHandle);
-	m_pPostProcessingShader->Render(m_pd3dCommandList, m_pCamera, &m_nDrawOption);
 
+	if (m_bProstShader)
+	{ //타 타겟 화면출력  84 78
+		m_pd3dCommandList->OMSetRenderTargets(1, &m_pd3dSwapChainBackBufferRTVCPUHandles[m_nSwapChainBufferIndex], TRUE, &m_d3dDsvDescriptorCPUHandle);
+		m_pPostProcessingShader->Render(m_pd3dCommandList, m_pCamera, &m_nDrawOption);
+	}
 	::SynchronizeResourceTransition(m_pd3dCommandList, m_ppd3dSwapChainBackBuffers[m_nSwapChainBufferIndex], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 
 	//End

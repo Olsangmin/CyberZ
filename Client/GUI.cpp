@@ -441,14 +441,41 @@ void CStartSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 {
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 
-	float top = 1650.f;
-	float left = 750.f;
-	float gab = 150.f;
 
-	D2D1_RECT_F rcUpperText = D2D1::RectF(top, left, top + gab, left + gab);
-	WCHAR MissionText[] = L"StartScene Test";
+	// temp Image
+	LoadUIImage(L"Image/test.jpg", m_pwicImagingFactory, m_pd2dfxBitmapSource);
+	D2D_POINT_2F d2dPoint = { 0.f, 0.f };
+	D2D_RECT_F d2dRect = { 0.0f, 0.0f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT };
+	m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &d2dPoint, &d2dRect);
+
+
+
+	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 40.0f, L"en-US", &m_pdwFont);
+	
+	float top = 10.f;
+	float left = 10.f;
+	float width = 200.f;
+	float height = 200.f;
+
+	D2D1_RECT_F rcUpperText = D2D1::RectF(top, left, top + height, left + width);
+	WCHAR TitleText[] = L"CyberZ Test Title";
 	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
-	m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
+	m_pd2dDeviceContext->DrawTextW(TitleText, (UINT32)wcslen(TitleText), m_pdwFont, &rcUpperText, m_pd2dbrText);
+
+
+
+
+	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20.0f, L"en-US", &m_pdwFont);
+
+	top = FRAME_BUFFER_HEIGHT - (FRAME_BUFFER_HEIGHT/2);
+	left = FRAME_BUFFER_WIDTH - (FRAME_BUFFER_WIDTH/2);
+	width = 200.f;
+	height = 200.f;
+
+	D2D1_RECT_F rcPressText = D2D1::RectF(top, left, top + height, left + width);
+	WCHAR PressA[] = L"Press 'A' to Start";
+	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
+	m_pd2dDeviceContext->DrawTextW(PressA, (UINT32)wcslen(PressA), m_pdwFont, &rcPressText, m_pd2dbrText);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

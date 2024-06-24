@@ -523,9 +523,13 @@ void CPlayScene::ProcessPacket(char* p)
 void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum)
 {
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
+	
 
 	m_pUI = new CFirstSceneUI();
 
+	int p = 0;
+	
+	std::cout << p++ << endl;
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	//===============================//
@@ -552,6 +556,7 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppHierarchicalGameObjects[0]->Rotate(0.f, 90.f, 0.f);
 	m_ppHierarchicalGameObjects[0]->SetPosition(-80.f, 0.f, 40.f);
 	if (pContainerModel) delete pContainerModel;
+	std::cout << p++ << endl;
 
 
 	CLoadedModelInfo* pMiddleContainer = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/MiddleContainer.bin", NULL);
@@ -577,7 +582,8 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 		m_ppModelInfoPlayer[2+j*4] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
 		m_ppModelInfoPlayer[3+j*4] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Robot.bin", NULL);
 	}
-	
+	std::cout << p++ << endl;
+
 	for (int j= 0; j < 3; j++)
 	{
 		for (int i = 0; i < 4; ++i) {
@@ -590,6 +596,7 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	}
 
 	SetPlayer();
+	std::cout << p++ << endl;
 
 	m_pMyPlayer = m_ppPlayer[4];
 	m_pMyPlayer->ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
@@ -657,6 +664,7 @@ bool CPrepareRoomScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 			send_packet(&p);
 #else
 			m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
+			m_bChangeScene = true;
 #endif // USE_NETWORK
 			break;
 		}

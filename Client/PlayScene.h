@@ -11,7 +11,7 @@
 class CPlayScene :public CScene
 {
 public:
-	CPlayScene(){}
+	CPlayScene() { m_bChangeScene = false; }
 	~CPlayScene() {}
 
 	void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum = 4);
@@ -42,11 +42,10 @@ public:
 class CPrepareRoomScene : public CScene
 {
 public:
-	CPrepareRoomScene() {}
+	CPrepareRoomScene() { m_bChangeScene = false; }
 	~CPrepareRoomScene() {}
 
 	void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum);
-	
 
 	void ReleaseObjects();
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
@@ -61,7 +60,6 @@ public:
 	void ChangeModel(int nPlayer, int nModel);
 
 public:
-
 	void ProcessPacket(char* p);
 	int getModelInfo();
 
