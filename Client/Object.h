@@ -54,8 +54,8 @@ private:
 	int* m_pnBufferElements = NULL;
 
 	int								m_nRootParameters = 0;
-	UINT* m_pnRootParameterIndices = NULL;
-	D3D12_GPU_DESCRIPTOR_HANDLE* m_pd3dSrvGpuDescriptorHandles = NULL;
+	int								*m_pnRootParameterIndices = NULL;
+	D3D12_GPU_DESCRIPTOR_HANDLE		*m_pd3dSrvGpuDescriptorHandles = NULL;
 
 	int								m_nSamplers = 0;
 	D3D12_GPU_DESCRIPTOR_HANDLE* m_pd3dSamplerGpuDescriptorHandles = NULL;
@@ -182,11 +182,13 @@ public:
 public:
 	char							m_pstrFrameName[64];
 
+	D3D12_GPU_DESCRIPTOR_HANDLE		m_d3dCbvGPUDescriptorHandle;
+
 	CMesh							*m_pMesh = NULL;
 
 	int								m_nMaterials = 0;
 	CMaterial						**m_ppMaterials = NULL;
-
+	
 	XMFLOAT4X4						m_xmf4x4ToParent;
 	XMFLOAT4X4						m_xmf4x4World;
 
@@ -205,6 +207,10 @@ public:
 	void UpdateBoundingBox(XMFLOAT3 xmf3NextPos);
 	virtual void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList);
 	void MoveBBToParent(CGameObject* pTargetLv);
+
+	void SetCbvGPUDescriptorHandle(D3D12_GPU_DESCRIPTOR_HANDLE d3dCbvGPUDescriptorHandle) { m_d3dCbvGPUDescriptorHandle = d3dCbvGPUDescriptorHandle; }
+	void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr) { m_d3dCbvGPUDescriptorHandle.ptr = nCbvGPUDescriptorHandlePtr; }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetCbvGPUDescriptorHandle() { return(m_d3dCbvGPUDescriptorHandle); }
 
 
 	void SetMesh(CMesh *pMesh);
@@ -281,7 +287,6 @@ public:
 
 	static void LoadAnimationFromFile(FILE *pInFile, CLoadedModelInfo *pLoadedModel);
 	static CGameObject *LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CGameObject *pParent, FILE *pInFile, CShader *pShader, int *pnSkinnedMeshes);
-
 	static CLoadedModelInfo *LoadGeometryAndAnimationFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, char *pstrFileName, CShader *pShader);
 
 	static void PrintFrameInfo(CGameObject *pGameObject, CGameObject *pParent);
@@ -434,32 +439,6 @@ public:
 
 	BoundingOrientedBox				m_xmMissionRange = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	CBoundingBoxMesh* m_pMissionRangeMesh = NULL;
-
-};
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-
-class CSelectCharacterOBJ : public CGameObject
-{
-public:
-	CSelectCharacterOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nModel, int nAnimationTracks);
-	~CSelectCharacterOBJ();
-
-	//CLoadedModelInfo** pptempModel = NULL;
-	int m_nModelNum = Robot;
-	int m_nChangedModelNum = NULL;
-
-	bool m_bChanged = false;
-
-public:
-	char modelFile[50] = "";
-
-	char nP1[50] = "Model/Player_1.bin";
-	char nP2[50] = "Model/Player_2.bin";
-	char nP3[50] = "Model/Player_3.bin";
-	char nP4[50] = "Model/Robot.bin";
 
 };
 

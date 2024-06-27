@@ -274,6 +274,17 @@ float4 PSBoundingBox(VS_BOUNDINGBOX_OUTPUT input) : SV_TARGET
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+
+
+
+Texture2D<float4> gtxtTextureTexture : register(t14);
+Texture2D<float4> gtxtIlluminationTexture : register(t15);
+Texture2D<float4> gtxtNormalTexture2 : register(t16);
+
+Texture2D<float> gtxtzDepthTexture : register(t17);
+Texture2D<float> gtxtDepthTexture : register(t18);
+
+
 struct VS_TEXTURED_INPUT
 {
     float3 position : POSITION;
@@ -285,7 +296,6 @@ struct VS_TEXTURED_OUTPUT
     float4 position : SV_POSITION;
     float2 uv : TEXCOORD;
 };
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -315,13 +325,6 @@ float4 PSPostProcessing(float4 position : SV_POSITION) : SV_Target
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-
-Texture2D<float4> gtxtTextureTexture : register(t14);
-Texture2D<float4> gtxtIlluminationTexture : register(t15);
-Texture2D<float4> gtxtNormalTexture2 : register(t16);
-
-Texture2D<float> gtxtzDepthTexture : register(t17);
-Texture2D<float> gtxtDepthTexture : register(t18);
 
 struct VS_SCREEN_RECT_TEXTURED_OUTPUT
 {

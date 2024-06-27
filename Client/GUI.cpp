@@ -442,14 +442,14 @@ void CStartSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 
 
-	// temp Image
+	// Background Image
 	LoadUIImage(L"Image/test.jpg", m_pwicImagingFactory, m_pd2dfxBitmapSource);
 	D2D_POINT_2F d2dPoint = { 0.f, 0.f };
 	D2D_RECT_F d2dRect = { 0.0f, 0.0f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT };
 	m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &d2dPoint, &d2dRect);
 
 
-
+	// Tiltle
 	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 40.0f, L"en-US", &m_pdwFont);
 	
 	float top = 10.f;
@@ -464,7 +464,7 @@ void CStartSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 
 
 
-
+	// Explane text
 	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20.0f, L"en-US", &m_pdwFont);
 
 	top = FRAME_BUFFER_HEIGHT - (FRAME_BUFFER_HEIGHT/2);

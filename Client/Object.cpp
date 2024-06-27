@@ -37,7 +37,8 @@ CTexture::CTexture(int nTextures, UINT nTextureType, int nSamplers, int nRootPar
 
 	}
 	m_nRootParameters = nRootParameters;
-	if (nRootParameters > 0) m_pnRootParameterIndices = new UINT[nRootParameters];
+	if (nRootParameters > 0) m_pnRootParameterIndices = new int[nRootParameters];
+	for (int i = 0; i < m_nRootParameters; i++)m_pnRootParameterIndices[i] = -1;
 
 
 	m_nSamplers = nSamplers;
@@ -248,7 +249,7 @@ void CMaterial::PrepareShaders(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 	m_pSkinnedAnimationShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	m_pBoundingBoxShader = new CBoundingBoxShader();
-	m_pBoundingBoxShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	m_pBoundingBoxShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_R8G8B8A8_UNORM);
 
 }
 
@@ -530,31 +531,33 @@ void CGameObject::Animate(float fTimeElapsed)
 	if (m_pChild) m_pChild->Animate(fTimeElapsed);
 }
 
+
 void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->UpdateShaderVariables(pd3dCommandList);
 
-		if (m_pMesh/*&&IsVisible(pCamera)*/)
+	if (m_pMesh/*&&IsVisible(pCamera)*/)
+	{
+		UpdateShaderVariable(pd3dCommandList, &m_xmf4x4World);
+
+		if (m_nMaterials > 0)
 		{
-			UpdateShaderVariable(pd3dCommandList, &m_xmf4x4World);
-
-			if (m_nMaterials > 0)
+			for (int i = 0; i < m_nMaterials; i++)
 			{
-				for (int i = 0; i < m_nMaterials; i++)
+				if (m_ppMaterials[i])
 				{
-					if (m_ppMaterials[i])
-					{
-						if (m_ppMaterials[i]->m_pShader) m_ppMaterials[i]->m_pShader->Render(pd3dCommandList, pCamera);
-						m_ppMaterials[i]->UpdateShaderVariable(pd3dCommandList);
-					}
-
-					m_pMesh->Render(pd3dCommandList, i);
+					if (m_ppMaterials[i]->m_pShader) m_ppMaterials[i]->m_pShader->Render(pd3dCommandList, pCamera);
+					m_ppMaterials[i]->UpdateShaderVariable(pd3dCommandList);
 				}
+
+				m_pMesh->Render(pd3dCommandList, i);
 			}
 		}
+	}
 
 	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera);
 	if (m_pChild) m_pChild->Render(pd3dCommandList, pCamera);
+
 }
 
 void CGameObject::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
@@ -1114,7 +1117,7 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	pTerrainDetailTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Terrain/Detail_Texture_8.dds", RESOURCE_TEXTURE2D, 0);
 
 	CTerrainShader* pTerrainShader = new CTerrainShader();
-	pTerrainShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	pTerrainShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_R8G8B8A8_UNORM);
 	pTerrainShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	CScene::CreateShaderResourceViews(pd3dDevice, pTerrainBaseTexture, 0, 13);
@@ -1146,7 +1149,7 @@ CSkyBox::CSkyBox(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	pSkyBoxTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, pszFileName, RESOURCE_TEXTURE_CUBE, 0);
 
 	CSkyBoxShader* pSkyBoxShader = new CSkyBoxShader();
-	pSkyBoxShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	pSkyBoxShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_R8G8B8A8_UNORM);
 	pSkyBoxShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	CScene::CreateShaderResourceViews(pd3dDevice, pSkyBoxTexture, 0, 10);
@@ -1317,6 +1320,8 @@ CStandardOBJ::CStandardOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 
 	SetChild(pObjectModel->m_pModelRootObject, true);
 
+
+
 }
 
 CStandardOBJ::~CStandardOBJ()
@@ -1393,7 +1398,7 @@ CFloorObj::CFloorObj(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 
 	SetChild(pObjectModel->m_pModelRootObject, true);
 
-	XMFLOAT4 bbColor = XMFLOAT4(0.f, 0.f, 0.f, 0.f); //땅은 투명해요
+	XMFLOAT4 bbColor = XMFLOAT4(0.f, 0.f, 0.f, 0.f); //땅 바운딩 박스는 투명
 	CBoundingBoxMesh* MissionRangeMesh = new CBoundingBoxMesh(pd3dDevice, pd3dCommandList, bbColor);
 
 }
@@ -1401,70 +1406,3 @@ CFloorObj::CFloorObj(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 CFloorObj::~CFloorObj()
 {
 }
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-CSelectCharacterOBJ::CSelectCharacterOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nModel, int nAnimationTracks)
-{
-
-	switch (nModel)
-	{
-	case Corzim:
-		strcpy_s(modelFile, nP1);
-		break;
-	case Evan:
-		strcpy_s(modelFile, nP2);
-		break;
-	case Uranya:
-		strcpy_s(modelFile, nP3);
-		break;
-	case Robot:
-		strcpy_s(modelFile, nP4);
-		break;
-	}
-
-	CLoadedModelInfo* pptempModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, modelFile, NULL);
-
-	SetChild(pptempModel->m_pModelRootObject, true);
-	SetScale(10.f, 10.f, 10.f);
-	m_nModelNum = nModel;
-
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pptempModel);
-
-	for (int i = 0; i < nAnimationTracks; ++i)
-		m_pSkinnedAnimationController->SetTrackAnimationSet(i, i);
-
-	// Default animation setting
-	m_pSkinnedAnimationController->SetAllTrackDisable();
-	m_pSkinnedAnimationController->SetTrackEnable(IDLE, true);
-	m_pSkinnedAnimationController->SetTrackSpeed(0, 0.5f);
-
-	if (pptempModel) delete pptempModel;
-
-}
-
-CSelectCharacterOBJ::~CSelectCharacterOBJ()
-{
-
-	ReleaseShaderVariables();
-
-	if (m_pMesh) m_pMesh->Release();
-
-	if (m_nMaterials > 0)
-	{
-		for (int i = 0; i < m_nMaterials; i++)
-		{
-			if (m_ppMaterials[i]) m_ppMaterials[i]->Release();
-		}
-	}
-	if (m_ppMaterials) delete[] m_ppMaterials;
-
-	if (m_bChanged && m_pChild)
-	{
-		m_pChild->Release();
-	}
-	this;
-
-}
-
