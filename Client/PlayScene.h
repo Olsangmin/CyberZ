@@ -7,6 +7,7 @@
 #include "Object.h"
 #include <unordered_map>
 #include <algorithm>
+#include <wincrypt.h>
 
 class CPlayScene :public CScene
 {
@@ -61,7 +62,8 @@ public:
 
 public:
 	void ProcessPacket(char* p);
-	int getModelInfo();
+	int	GetModelInfo();
+	int GetPlayerModelInfo(int num) { return m_nPlayerSet[num]; }
 
 	int m_nPlayerSet[3] = { 0 };
 	Player_Character_Type select{ Robot };

@@ -1,18 +1,19 @@
 
 #include "stdafx.h"
-#include "StartScene.h"
+#include "LoadingScene.h"
 
-void CStartScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum)
+
+void CLoadingScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum)
 {
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	m_pUI = new CStartSceneUI();
+	m_pUI = new CLoadingUI();
 
 
 	//===============================//
 	// SKY BOX (1)
-	m_pSkyBox = NULL;
+	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, L"SkyBox/SkyBox_0.dds");
 
 
 	//===============================//
@@ -58,33 +59,27 @@ void CStartScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 	m_pMyPlayer->m_bUnable = false;
 }
 
-bool CStartScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
+bool CLoadingScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
 {
 	CScene::ProcessInput(m_hWnd, m_ptOldCursorPos, pKeysBuffer);
 	return(false);
 
 }
 
-bool CStartScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+bool CLoadingScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	switch (nMessageID)
 	{
 	case WM_KEYDOWN: {
 		switch (wParam) {
 
-		
+
 		default:
 			break;
 		}
-
-	
 	}
 	case WM_KEYUP: {
 		switch (wParam) {
-		case 'A':
-			std::cout << "Change Scene" << endl;
-			m_bChangeScene = true;
-			break;
 
 		default:
 			break;
@@ -94,4 +89,15 @@ bool CStartScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 	CScene::OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 	return(false);
 
+}
+
+void CLoadingScene::SetModelInfo()
+{
+}
+
+int CLoadingScene::GetModelInfo()
+{
+	int playerId = 0;
+	if (my_id != -1) playerId = my_id;
+	return m_nPlayerSet[playerId];
 }

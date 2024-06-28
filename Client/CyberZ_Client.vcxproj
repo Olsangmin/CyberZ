@@ -148,6 +148,7 @@
     <ClCompile Include="GameFramework.cpp" />
     <ClCompile Include="CyberZ_Client.cpp" />
     <ClCompile Include="GUI.cpp" />
+    <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Mission.cpp" />
     <ClCompile Include="Network.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="GameFramework.h" />
     <ClInclude Include="CyberZ_Client.h" />
     <ClInclude Include="GUI.h" />
+    <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Mission.h" />
     <ClInclude Include="Network.h" />

@@ -466,7 +466,6 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 	// Make Scene UI
 	m_pScene->m_pUI->CreateDirect2DDevice(m_hWnd, m_pd3dDevice, m_pd3dCommandList, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers);
 
-
 #ifdef DEFERRED_RENDERING	
 	CreatePostPrecessShader();
 	//m_pScene->CreateShaderResourceView(m_pd3dDevice, m_pd3dDepthStencilBuffer, DXGI_FORMAT_R32_FLOAT);
@@ -479,7 +478,7 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 	WaitForGpuComplete();
 
 	if (m_pScene) m_pScene->ReleaseUploadBuffers();
-	
+
 	m_GameTimer.Reset();
 }
 
@@ -494,10 +493,10 @@ void CGameFramework::ReleaseObjects()
 
 }
 
+
 void CGameFramework::ChangeScene(int nScene, int myPlayerNum)
 {
 	ReleaseObjects();
-	m_nSceneNum = nScene;
 
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
@@ -505,18 +504,29 @@ void CGameFramework::ChangeScene(int nScene, int myPlayerNum)
 	{
 		case START_SCENE:
 		{
+			m_nSceneNum = nScene;
 			m_pScene = new CStartScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
+			m_bLoading = true;
+			break;
+		}
+		case LOADING_SCENE:
+		{
+			m_pScene = new CLoadingScene();
+			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
+			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
+			m_bLoading = false;
 			break;
 		}
 		case PREPARE_ROOM_SCENE:
 		{
+			m_nSceneNum = nScene;
 			m_pScene = new CPrepareRoomScene();
-			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
-	
+			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);	
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
-	
+			m_bLoading = true;
+
 	#ifdef USE_NETWORK
 			m_pScene->InitNetwork();
 	#endif // USE_NETWORK
@@ -524,11 +534,14 @@ void CGameFramework::ChangeScene(int nScene, int myPlayerNum)
 		}
 		case FIRST_ROUND_SCENE:
 		{
+			m_nSceneNum = nScene;
 			m_pScene = new CPlayScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
+			m_bLoading = true;
 			break;
 		}
+
 	}
 	m_pScene->m_pUI->CreateDirect2DDevice(m_hWnd, m_pd3dDevice, m_pd3dCommandList, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers);
 
@@ -544,11 +557,53 @@ void CGameFramework::ChangeScene(int nScene, int myPlayerNum)
 	WaitForGpuComplete();
 }
 
+void CGameFramework::LoadingCHK()
+{
+	if (m_pScene->m_bChangeScene)
+	{
+		if (m_bLoading)
+		{
+			int PlayerInfo[MAX_PLAYER];
+			int myPlayerNum = 0;
+			myPlayerNum = m_pScene->GetModelInfo();
+
+			// 플레이어 모델 정보 전체 받아오기...
+			if (m_nSceneNum == PREPARE_ROOM_SCENE)
+			{
+				for (int i = 0; i < MAX_PLAYER; i++)
+				{
+					PlayerInfo[i] = (reinterpret_cast<CPrepareRoomScene*>(m_pScene)->GetPlayerModelInfo(i));
+				}
+			}
+
+			ChangeScene(LOADING_SCENE, myPlayerNum);
+
+			for (int i = 0; i < MAX_PLAYER; i++)
+			{
+				(reinterpret_cast<CLoadingScene*>(m_pScene)->m_nPlayerSet[i]) = PlayerInfo[i];
+			}
+
+			return;
+		}
+		if (m_nSceneNum == START_SCENE)
+		{
+			ChangeScene(PREPARE_ROOM_SCENE, 4);
+		}
+		if (m_nSceneNum == PREPARE_ROOM_SCENE && m_pScene->AllPlayerReady())
+		{
+			int myPlayerNum = 0;
+			myPlayerNum = m_pScene->GetModelInfo();
+
+			ChangeScene(FIRST_ROUND_SCENE, myPlayerNum);
+		}
+
+	}
+}
+
 void CGameFramework::ProcessInput()
 {
 	static UCHAR pKeysBuffer[256];
 	bool bProcessedByScene = false;
-
 
 	if (GetKeyboardState(pKeysBuffer) && m_pScene) bProcessedByScene = m_pScene->ProcessInput(m_hWnd, m_ptOldCursorPos, pKeysBuffer);
 }
@@ -559,24 +614,7 @@ void CGameFramework::AnimateObjects()
 
 	if (m_pScene)
 	{
-		m_pScene->AnimateObjects(fTimeElapsed);
-
-
-		if (m_nSceneNum == PREPARE_ROOM_SCENE && m_pScene->AllPlayerReady())
-		{
-			int myPlayerNum = 0;
-			myPlayerNum = m_pScene->getModelInfo();
-
-			ChangeScene(FIRST_ROUND_SCENE, myPlayerNum);
-		}
-		if (m_pScene->m_bChangeScene)
-		{
-			if (m_nSceneNum == START_SCENE)
-			{
-				ChangeScene(PREPARE_ROOM_SCENE, 4);
-			}
-		}
-
+		m_pScene->AnimateObjects(fTimeElapsed);	
 	}
 
 }	
@@ -615,6 +653,8 @@ void CGameFramework::FrameAdvance()
 
     AnimateObjects();
 
+	LoadingCHK();
+
 	HRESULT hResult = m_pd3dCommandAllocator->Reset();
 	hResult = m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
@@ -635,10 +675,10 @@ void CGameFramework::FrameAdvance()
 
 #endif // DEFERRED_RENDERING
 
-	// Render Scene
-	 m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
+	m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 	if (m_pScene) m_pScene->Render(m_pd3dCommandList, m_pCamera);
 	if (m_bRenderBoundingBox) m_pScene->RenderBoundingBox(m_pd3dCommandList, m_pCamera);
+
 
 #ifdef DEFERRED_RENDERING
 	
@@ -660,7 +700,7 @@ void CGameFramework::FrameAdvance()
 	
 	// Draw UI
 	m_pScene->m_pUI->DrawUI(m_nSwapChainBufferIndex);
-	
+
 	WaitForGpuComplete();
 
 #ifdef _WITH_PRESENT_PARAMETERS

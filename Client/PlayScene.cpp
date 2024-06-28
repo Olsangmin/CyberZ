@@ -749,7 +749,10 @@ void CPrepareRoomScene::ReleaseUploadBuffers()
 
 bool CPrepareRoomScene::AllPlayerReady()
 {
-	if (m_pMyPlayer->m_bReady) return true;
+	if (m_pMyPlayer->m_bReady)
+	{
+		return true;
+	}
 	else return false;
 }
 
@@ -800,7 +803,7 @@ void CPrepareRoomScene::ChangeModel(int nPlayer, int nModel)
 }
 
 
-int CPrepareRoomScene::getModelInfo()
+int CPrepareRoomScene::GetModelInfo()
 {
 	int playerId = 0;
 	if (my_id != -1) playerId = my_id;
@@ -831,6 +834,7 @@ void CPrepareRoomScene::ProcessPacket(char* p)
 
 	case SC_GAME_START: {
 		m_pMyPlayer->m_bReady = !m_pMyPlayer->m_bReady;
+		m_bChangeScene = true;
 		// 플레이게임으로 씬전환
 		break;
 	}

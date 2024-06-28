@@ -155,6 +155,6 @@ public:
 
 public:
 	virtual bool AllPlayerReady() { return false; }
-	virtual int getModelInfo() { return 0; }
+	virtual int GetModelInfo() { return 0; }
 };
 

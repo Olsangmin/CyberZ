@@ -61,6 +61,9 @@
     <Filter Include="09. Scene\09-01. StartScene">
       <UniqueIdentifier>{f9fe9b8c-d431-46bd-ad28-1fd7f9bf5549}</UniqueIdentifier>
     </Filter>
+    <Filter Include="09. Scene\09-02. LoadingScene">
+      <UniqueIdentifier>{6df48786-8da1-4996-9652-aae7ef4ebfba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CyberZ_Client.rc">
@@ -136,6 +139,9 @@
     <ClCompile Include="StartScene.cpp">
       <Filter>09. Scene\09-01. StartScene</Filter>
     </ClCompile>
+    <ClCompile Include="LoadingScene.cpp">
+      <Filter>09. Scene\09-02. LoadingScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameFramework.h">
@@ -206,6 +212,9 @@
     </ClInclude>
     <ClInclude Include="StartScene.h">
       <Filter>09. Scene\09-01. StartScene</Filter>
+    </ClInclude>
+    <ClInclude Include="LoadingScene.h">
+      <Filter>09. Scene\09-02. LoadingScene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

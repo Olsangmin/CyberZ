@@ -502,12 +502,22 @@ void CLoadingUI::UISet(UINT m_nSwapChainBufferIndex)
 {
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 
-	float top = 1650.f;
-	float left = 750.f;
-	float gab = 150.f;
+	// Background Image
+	LoadUIImage(L"Image/Black.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
+	D2D_POINT_2F d2dPoint = { 0.f, 0.f };
+	D2D_RECT_F d2dRect = { 0.0f, 0.0f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT };
+	m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &d2dPoint, &d2dRect);
 
-	D2D1_RECT_F rcUpperText = D2D1::RectF(top, left, top + gab, left + gab);
-	WCHAR MissionText[] = L"Loading Test";
-	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
-	m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
+
+	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20.0f, L"en-US", &m_pdwFont);
+
+	float top = FRAME_BUFFER_HEIGHT - (FRAME_BUFFER_HEIGHT / 2);
+	float left = FRAME_BUFFER_WIDTH - (FRAME_BUFFER_WIDTH / 2);
+	float width = 200.f;
+	float height = 200.f;
+
+	D2D1_RECT_F rcPressText = D2D1::RectF(top, left, top + height, left + width);
+	WCHAR PressA[] = L"Now Loading...";
+	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
+	m_pd2dDeviceContext->DrawTextW(PressA, (UINT32)wcslen(PressA), m_pdwFont, &rcPressText, m_pd2dbrText);
 }
