@@ -118,6 +118,6 @@ private:
 
 	int							m_nDrawOption = 84;
 	CPostProcessingShader		*m_pPostProcessingShader = NULL;
-	bool						m_bProstShader = false;
+	bool						m_bPostShader = false;
 };
 

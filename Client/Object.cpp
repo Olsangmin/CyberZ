@@ -17,32 +17,29 @@ CTexture::CTexture(int nTextures, UINT nTextureType, int nSamplers, int nRootPar
 	m_nTextures = nTextures;
 	if (m_nTextures > 0)
 	{
-		m_ppd3dTextureUploadBuffers = new ID3D12Resource * [m_nTextures];
 		m_ppd3dTextures = new ID3D12Resource * [m_nTextures];
-		for (int i = 0; i < m_nTextures; i++) m_ppd3dTextureUploadBuffers[i] = m_ppd3dTextures[i] = NULL;
+		for (int i = 0; i < m_nTextures; i++)m_ppd3dTextures[i] = NULL;
 
+		m_ppd3dTextureUploadBuffers = new ID3D12Resource * [m_nTextures];
+		for (int i = 0; i < m_nTextures; i++)m_ppd3dTextureUploadBuffers[i] = NULL;
 
 		m_pd3dSrvGpuDescriptorHandles = new D3D12_GPU_DESCRIPTOR_HANDLE[m_nTextures];
 		for (int i = 0; i < m_nTextures; i++)m_pd3dSrvGpuDescriptorHandles[i].ptr = NULL;
-
 
 		m_pnResourceTypes = new UINT[m_nTextures];
 		for (int i = 0; i < m_nTextures; i++)m_pnResourceTypes[i] = 0;
 
 		m_pdxgiBufferFormats = new DXGI_FORMAT[m_nTextures];
 		for (int i = 0; i < m_nTextures; i++)m_pnResourceTypes[i] = DXGI_FORMAT_UNKNOWN;
-
 		m_pnBufferElements = new int[m_nTextures];
 		for (int i = 0; i < m_nTextures; i++)m_pnBufferElements[i] = 0;
-
 	}
 	m_nRootParameters = nRootParameters;
-	if (nRootParameters > 0) m_pnRootParameterIndices = new int[nRootParameters];
+	if (nRootParameters > 0)m_pnRootParameterIndices = new int[nRootParameters];
 	for (int i = 0; i < m_nRootParameters; i++)m_pnRootParameterIndices[i] = -1;
 
-
 	m_nSamplers = nSamplers;
-	if (m_nSamplers > 0) m_pd3dSamplerGpuDescriptorHandles = new D3D12_GPU_DESCRIPTOR_HANDLE[m_nSamplers];
+	if (m_nSamplers > 0)m_pd3dSamplerGpuDescriptorHandles = new D3D12_GPU_DESCRIPTOR_HANDLE[m_nSamplers];
 }
 
 CTexture::~CTexture()
@@ -1319,9 +1316,6 @@ CStandardOBJ::CStandardOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	if (!pObjectModel) pObjectModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/BigContainer.bin", NULL);
 
 	SetChild(pObjectModel->m_pModelRootObject, true);
-
-
-
 }
 
 CStandardOBJ::~CStandardOBJ()

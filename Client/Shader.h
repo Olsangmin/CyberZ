@@ -142,6 +142,8 @@ public:
 
 	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout();
 	virtual D3D12_SHADER_BYTECODE CreateVertexShader();
+	//virtual D3D12_SHADER_BYTECODE CreatePixelShader();
+
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -197,6 +199,7 @@ public:
 
 
 
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 class CPostProcessingShader : public CShader
@@ -220,8 +223,8 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamerat, void* pContext);
 
 protected:
-	CTexture* m_pTexture = NULL;
 
+	CTexture* m_pTexture = NULL;
 	D3D12_CPU_DESCRIPTOR_HANDLE* m_pd3dRtvCPUDescriptorHandles = NULL;
 
 public:
