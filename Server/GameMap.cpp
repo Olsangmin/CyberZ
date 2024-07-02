@@ -61,7 +61,7 @@ void GameMap::initializeMap()
 				// <Rotation>: 뒤의 값을 추출
 				std::istringstream iss(line.substr(11));
 				char discard;
-				float rotX, rotY, rotZ;
+				float rotX, rotY, rotZ{};
 
 				if (!(iss >> discard >> rotX >> discard >> rotY >> discard >> rotZ >> discard)) {					
 					std::cerr << "회전 값 추출 오류 발생" << std::endl;
@@ -74,15 +74,15 @@ void GameMap::initializeMap()
 				data[objName].Orientation = XMFLOAT4{ q.x, q.y, q.z, q.w };*/
 
 				float angleX = XMConvertToRadians(rotX);
-				float angleY = XMConvertToRadians(rotY);
+				float angleY = XMConvertToDegrees(rotY);
 				float angleZ = XMConvertToRadians(rotZ);
 				XMVECTOR quaternionX = DirectX::XMQuaternionRotationRollPitchYaw(angleX, 0.0f, 0.0f);
 				XMVECTOR quaternionY = DirectX::XMQuaternionRotationRollPitchYaw(0.0f, angleY, 0.0f);
 				XMVECTOR quaternionZ = DirectX::XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, angleZ);
 				
 				XMVECTOR quaternion = DirectX::XMQuaternionMultiply(quaternionX, DirectX::XMQuaternionMultiply(quaternionY, quaternionZ));
-
-				XMFLOAT4 orientation;
+				
+				XMFLOAT4 orientation{};
 				DirectX::XMStoreFloat4(&orientation, quaternion);
 
 				data[objName].Orientation = orientation;
@@ -91,12 +91,12 @@ void GameMap::initializeMap()
 		}
 
 
-		for (const auto& pair : data) {
+		/*for (const auto& pair : data) {
 			std::cout << "Object Name: " << pair.first << std::endl;
 			const DirectX::BoundingOrientedBox& box = pair.second;
 			std::cout << "Center: (" << box.Center.x << ", " << box.Center.y << ", " << box.Center.z << ")" << std::endl;
 			std::cout << "Orientation: (" << box.Orientation.x << ", " << box.Orientation.y << ", " << box.Orientation.z << ") - " << box.Orientation.w << std::endl;
-		}
+		}*/
 
 
 	}
@@ -121,12 +121,20 @@ void GameMap::initializeMap()
 	for (int x = 0; x < cellWidth; ++x) {
 		for (int y = 0; y < cellDepth; ++y) {
 			for (auto& datas : data) {
-				/*if (cells[x][y].InCell(datas.second.Center)) {
-					cells[x][y].isObstacle = true;
-				}*/
 				if (cells[x][y].InCell(datas.second)) {
+					/*if (x >= 40 && x <= 55 && y >= 30 && y < 60) {
+						cells[x][y].cellType = CONT;
+						cells[x][y].isObstacle = true;
+						std::cout << "[" << x << "," << y << "] ";
+						std::cout << "Center: (" << datas.second.Center.x << ", " << datas.second.Center.y << ", " << datas.second.Center.z << ")" << std::endl;
+						std::cout << "Extexts: (" << datas.second.Extents.x << ", " << datas.second.Extents.y << ", " << datas.second.Extents.z << ")" << std::endl;
+						
+						std::cout << "Orientation: (" << datas.second.Orientation.x << ", " << datas.second.Orientation.y << ", " << datas.second.Orientation.z << ") - " << datas.second.Orientation.w << std::endl << std::endl;
+						break;
+					}*/
 					cells[x][y].cellType = CONT;
 					cells[x][y].isObstacle = true;
+					break;
 				}
 			}
 
@@ -205,6 +213,11 @@ void GameMap::Update(int tick)
 	// npc가 이동해야 하면 깨우기
 	auto& players = server.clients;
 
+	if (tick == 0 || tick == 15 || tick == 30 || tick == 45) {
+
+	}
+	else return;
+
 	for (auto& npc : npcs) {		
 		bool patrol = true;
 		float current_dis = npc.distance_near;
@@ -222,11 +235,13 @@ void GameMap::Update(int tick)
 					if (npc.n_path.empty() == false) continue;
 				}
 				else {
-					if (current_dis > distance) { // 가까운 플레이어로 교체
+					if (current_dis > distance) { 
+						// 다른 플레이어로 교체
 						npc.distance_near = distance;
 						npc.near_player = ids;
 						std::queue<DirectX::XMFLOAT3> q{};
-						npc.n_path = q;
+						npc.n_path = q;  
+                        
 					}
 					else continue;
 				}
@@ -253,10 +268,8 @@ void GameMap::Update(int tick)
 		}
 
 
-		if (tick == 0 || tick == 15 || tick == 30 || tick == 45) {
-			npc.DoWork();
-		}
 		
+		npc.DoWork();
 	}
 	
 }
