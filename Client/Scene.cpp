@@ -660,67 +660,35 @@ bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget, XM
 		XMFLOAT3 corner[8];
 		pTarget->m_xmBoundingBox.GetCorners(corner);
 
-		//XMFLOAT3 vecP0 = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[0], corner[1], corner[2], corner[3]));
-		//XMFLOAT3 vecP1 = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[1], corner[5], corner[6], corner[2]));
-		//XMFLOAT3 vecP2 = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[5], corner[4], corner[7], corner[6]));
-		//XMFLOAT3 vecP3 = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[4], corner[0], corner[3], corner[7]));
-		XMFLOAT3* vecP = new XMFLOAT3[4];
-		vecP[0] = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[1], corner[5], corner[6], corner[2]));
-		vecP[1] = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[0], corner[1], corner[2], corner[3]));
-		vecP[2] = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[5], corner[4], corner[7], corner[6]));
-		vecP[3] = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[4], corner[0], corner[3], corner[7]));
-		XMVECTOR vecD = XMLoadFloat3(&Vector3::Minus(pTarget->GetPosition(), pBase->GetPosition()));
-		XMFLOAT3 vecN = { 0.f, 0.f, 0.f };
-		for (int i = 0; i < 4; ++i) {
-			if (XMVectorGetX(XMVector3Dot(XMLoadFloat3(&vecP[i]), vecD)) > 0.001f) {
-				out = vecP[0];
-				// if (i == 3)out = vecP[1];
-				//cout << "X - [" << i << "]" << endl;
-				break;
-			}
-			/*else if ((i == 1 || i == 3) && XMVectorGetZ(XMVector3Dot(XMLoadFloat3(&vecP[i]), vecD)) > 0.001f) {
-				out = vecP[i];
-				cout << "Z - [" << i << "]" << endl;
-				break;
-			}*/
+		XMVECTOR* co = new XMVECTOR[8];
+		for (int i = 0; i < 8; ++i)
+			co[i] = XMLoadFloat3(&corner[i]);
+
+		if (pBase->m_xmBoundingBox.Intersects(co[0], co[1], co[2])) {
+				out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[1] - co[0], co[2] - co[0])));
 		}
-		//if (XMVectorGetX(XMVector3Dot(XMLoadFloat3(&vecP0), vecD)) > 0.001f) {
-		//	XMFLOAT3 vecP = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[0], corner[1], corner[2], corner[3]));
-		//	cout << "[0]" << endl;
-		//	cout << vecP.x << "	" << vecP.y << "	" << vecP.z << endl;
-		//}
-		//if (XMVectorGetX(XMVector3Dot(XMLoadFloat3(&vecP1), vecD)) > 0.001f) {
-		//	XMFLOAT3 vecP = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[1], corner[5], corner[6], corner[2]));
-		//	cout << "[1]" << endl;
-		//	cout << vecP.x << "	" << vecP.y << "	" << vecP.z << endl;
-		//}
-		//if (XMVectorGetX(XMVector3Dot(XMLoadFloat3(&vecP2), vecD)) > 0.001f) {
-		//	XMFLOAT3 vecP = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[5], corner[4], corner[7], corner[6]));
-		//	cout << "[2]" << endl;
-		//	cout << vecP.x << "	" << vecP.y << "	" << vecP.z << endl;
-		//}
-		//if (XMVectorGetX(XMVector3Dot(XMLoadFloat3(&vecP3), vecD)) > 0.001f) {
-		//	XMFLOAT3 vecP = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[4], corner[0], corner[3], corner[7]));
-		//	cout << "[3]" << endl;
-		//	cout << vecP.x << "	" << vecP.y << "	" << vecP.z << endl;
-		//}
-		/*XMFLOAT3 xmfVecD = Vector3::XMVectorToFloat3(vecD);
-		if (Vector3::PlaneIntersectsOBB(corner[0], corner[1], corner[2], corner[3], pTarget->m_xmBoundingBox.Center, pBase->GetPosition())) {
-			XMFLOAT3 vecP = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[0], corner[1], corner[2], corner[3]));
-			cout << vecP.x << "	" << vecP.y << "	" << vecP.z << endl;
-		}*/
-		/*if (Vector3::PlaneIntersectsOBB(corner[1], corner[5], corner[6], corner[2], pTarget->m_xmBoundingBox.Center, pBase->GetPosition())) {
-			XMFLOAT3 vecP = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[1], corner[5], corner[6], corner[2]));
-			cout << vecP.x << "	" << vecP.y << "	" << vecP.z << endl;
+		if (pBase->m_xmBoundingBox.Intersects(co[0], co[2], co[3])) {
+			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[2] - co[0], co[3] - co[0])));
 		}
-		if (Vector3::PlaneIntersectsOBB(corner[5], corner[4], corner[7], corner[6], pTarget->m_xmBoundingBox.Center, pBase->GetPosition())) {
-			XMFLOAT3 vecP = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[5], corner[4], corner[7], corner[6]));
-			cout << vecP.x << "	" << vecP.y << "	" << vecP.z << endl;
+		if (pBase->m_xmBoundingBox.Intersects(co[4], co[0], co[3])) {
+			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[0] - co[4], co[3] - co[4])));
 		}
-		if (Vector3::PlaneIntersectsOBB(corner[4], corner[0], corner[3], corner[7], pTarget->m_xmBoundingBox.Center, pBase->GetPosition())) {
-			XMFLOAT3 vecP = Vector3::XMVectorToFloat3(Vector3::NormalFromPlane(corner[4], corner[0], corner[3], corner[7]));
-			cout << vecP.x << "	" << vecP.y << "	" << vecP.z << endl;
-		}*/
+		if (pBase->m_xmBoundingBox.Intersects(co[4], co[3], co[7])) {
+			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[3] - co[4], co[7] - co[4])));
+		}
+		if (pBase->m_xmBoundingBox.Intersects(co[5], co[4], co[7])) {
+			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[4] - co[5], co[7] - co[5])));
+		}
+		if (pBase->m_xmBoundingBox.Intersects(co[5], co[7], co[6])) {
+			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[7] - co[5], co[6] - co[5])));
+		}
+		if (pBase->m_xmBoundingBox.Intersects(co[1], co[5], co[6])) {
+			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[5] - co[1], co[6] - co[1])));
+		}
+		if (pBase->m_xmBoundingBox.Intersects(co[1], co[6], co[2])) {
+			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[6] - co[1], co[2] - co[1])));
+		}
+	
 		return(true);
 	}
 	if (pTarget->m_pChild && CheckObjByObjCollition(pBase, pTarget->m_pChild, out)) return(true);
