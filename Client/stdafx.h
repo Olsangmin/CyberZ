@@ -64,7 +64,7 @@ using namespace std;
 #include "Network.h"
 
 // 주석하면 서버없이 가능@@@@@@@@@
- #define USE_NETWORK 
+#define USE_NETWORK 
 
 // =================================================
 
@@ -156,6 +156,7 @@ inline void Swap(float *pfS, float *pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT
 enum SCENENUM
 {
 	START_SCENE,
+	LOADING_SCENE,
 	PREPARE_ROOM_SCENE,
 	FIRST_ROUND_SCENE,
 };

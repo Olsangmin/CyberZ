@@ -20,6 +20,7 @@ cbuffer cbGameObjectInfo : register(b2)
 	uint					gnTexturesMask : packoffset(c8);
 };
 
+
 #include "Light.hlsl"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,6 +108,7 @@ float4 PSStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 	
     float4 cIllumination = Lighting(input.positionW, normalW);
 	return(lerp(cColor, cIllumination, 0.5f));
+	
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -274,6 +276,44 @@ float4 PSBoundingBox(VS_BOUNDINGBOX_OUTPUT input) : SV_TARGET
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+
+struct PS_MULTIPLE_RENDER_TARGETS_OUTPUT
+{
+    float4 color : SV_TARGET0;
+
+    float4 cTexture : SV_TARGET1;
+    float4 cIllumination : SV_TARGET2;
+    float4 normal : SV_TARGET3;
+    float zDepth : SV_TARGET4;
+};
+
+PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTexturedLightingToMultipleRTs(VS_SKINNED_STANDARD_INPUT input, uint nPrimitiveID : SV_PrimitiveID)
+{
+    PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
+
+    float2 uv = float2(input.uv);
+    output.cTexture = gtxtAlbedoTexture.Sample(gssWrap, uv);
+
+    output.cIllumination = Lighting(input.position, input.normal);
+
+    output.color = output.cIllumination * output.cTexture;
+
+    output.normal = float4(input.normal.xyz * 0.5f + 0.5f, 1.0f);
+
+    output.zDepth = input.position.z;
+
+    return (output);
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//
+Texture2D<float4> gtxtTextureTexture : register(t14);
+Texture2D<float4> gtxtIlluminationTexture : register(t15);
+Texture2D<float4> gtxtNormalTexture2 : register(t16);
+
+Texture2D<float> gtxtzDepthTexture : register(t17);
+Texture2D<float> gtxtDepthTexture : register(t18);
+
+
 struct VS_TEXTURED_INPUT
 {
     float3 position : POSITION;
@@ -285,7 +325,6 @@ struct VS_TEXTURED_OUTPUT
     float4 position : SV_POSITION;
     float2 uv : TEXCOORD;
 };
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -315,13 +354,6 @@ float4 PSPostProcessing(float4 position : SV_POSITION) : SV_Target
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-
-Texture2D<float4> gtxtTextureTexture : register(t14);
-Texture2D<float4> gtxtIlluminationTexture : register(t15);
-Texture2D<float4> gtxtNormalTexture2 : register(t16);
-
-Texture2D<float> gtxtzDepthTexture : register(t17);
-Texture2D<float> gtxtDepthTexture : register(t18);
 
 struct VS_SCREEN_RECT_TEXTURED_OUTPUT
 {

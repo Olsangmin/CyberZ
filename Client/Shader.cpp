@@ -178,7 +178,7 @@ D3D12_BLEND_DESC CShader::CreateBlendState()
 
 	return(d3dBlendDesc);
 }
-
+/*
 void CShader::CreateShader(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature)
 {
 	::ZeroMemory(&m_d3dPipelineStateDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
@@ -206,6 +206,7 @@ void CShader::CreateShader(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *
 }
 
 
+*/
 void CShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3dPrimitiveTopologyType)
 {
 	::ZeroMemory(&m_d3dPipelineStateDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
@@ -260,7 +261,6 @@ void CShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGr
 	if (m_d3dPipelineStateDesc.InputLayout.pInputElementDescs) delete[] m_d3dPipelineStateDesc.InputLayout.pInputElementDescs;
 
 }
-
 
 void CShader::OnPrepareRender(ID3D12GraphicsCommandList *pd3dCommandList, int nPipelineState)
 {
@@ -443,6 +443,8 @@ D3D12_SHADER_BYTECODE CSkinnedAnimationStandardShader::CreateVertexShader()
 {
 	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSSkinnedAnimationStandard", "vs_5_1", &m_pd3dVertexShaderBlob));
 }
+
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -673,7 +675,6 @@ void CBoundingBoxShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCam
 	CShader::Render(pd3dCommandList, pCamera);
 }
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 CPostProcessingShader::CPostProcessingShader()
@@ -741,7 +742,7 @@ void CPostProcessingShader::CreateResourcesAndRtvsSrvs(ID3D12Device* pd3dDevice,
 {
 	m_pTexture = new CTexture(nRenderTargets, RESOURCE_TEXTURE2D, 0, 1);
 
-	D3D12_CLEAR_VALUE d3dClearValue = { DXGI_FORMAT_R8G8B8A8_UNORM, { 1.0f, 1.0f, 1.0f, 1.0f } };
+	D3D12_CLEAR_VALUE d3dClearValue = { DXGI_FORMAT_R8G8B8A8_UNORM, { 1.0f, 0.0f, 1.0f, 1.0f } };
 	for (UINT i = 0; i < nRenderTargets; i++)
 	{
 		d3dClearValue.Format = pdxgiFormats[i];
@@ -753,7 +754,6 @@ void CPostProcessingShader::CreateResourcesAndRtvsSrvs(ID3D12Device* pd3dDevice,
 	CScene::CreateShaderResourceViews(pd3dDevice, m_pTexture, 0, 16);
 
 	D3D12_RENDER_TARGET_VIEW_DESC d3dRenderTargetViewDesc;
-	d3dRenderTargetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	d3dRenderTargetViewDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
 	d3dRenderTargetViewDesc.Texture2D.MipSlice = 0;
 	d3dRenderTargetViewDesc.Texture2D.PlaneSlice = 0;
@@ -775,11 +775,11 @@ void CPostProcessingShader::OnPrepareRenderTarget(ID3D12GraphicsCommandList* pd3
 	int nResources = m_pTexture->GetTextures();
 	D3D12_CPU_DESCRIPTOR_HANDLE* pd3dAllRtvCPUHandles = new D3D12_CPU_DESCRIPTOR_HANDLE[nRenderTargets + nResources];
 
-
 	for (int i = 0; i < nRenderTargets; i++)
 	{
 		pd3dAllRtvCPUHandles[i] = pd3dRtvCPUHandles[i];
 		pd3dCommandList->ClearRenderTargetView(pd3dRtvCPUHandles[i], Colors::White, 0, NULL);
+
 	}
 
 	for (int i = 0; i < nResources; i++)
@@ -787,7 +787,7 @@ void CPostProcessingShader::OnPrepareRenderTarget(ID3D12GraphicsCommandList* pd3
 		::SynchronizeResourceTransition(pd3dCommandList, GetTextureResource(i), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 		D3D12_CPU_DESCRIPTOR_HANDLE d3dRtvCPUDescriptorHandle = GetRtvCPUDescriptorHandle(i);
-		pd3dCommandList->ClearRenderTargetView(d3dRtvCPUDescriptorHandle, Colors::Blue, 0, NULL);
+		pd3dCommandList->ClearRenderTargetView(d3dRtvCPUDescriptorHandle, Colors::White, 0, NULL);
 		pd3dAllRtvCPUHandles[nRenderTargets + i] = d3dRtvCPUDescriptorHandle;
 	}
 	pd3dCommandList->OMSetRenderTargets(nRenderTargets + nResources, pd3dAllRtvCPUHandles, FALSE, pd3dDsvCPUHandle);
@@ -853,6 +853,7 @@ void CTextureDeferdShader::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3d
 	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbDrawOptions->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(15, d3dGpuVirtualAddress);
 
+	CPostProcessingShader::UpdateShaderVariables(pd3dCommandList, pContext);
 }
 
 void CTextureDeferdShader::ReleaseShaderVariables()
@@ -865,5 +866,6 @@ void CTextureDeferdShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CC
 	CPostProcessingShader::Render(pd3dCommandList, pCamera, pContext);
 
 }
+
 
 

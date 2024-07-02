@@ -14,10 +14,11 @@
 
 #include "Timer.h"
 #include "Player.h"
+
 #include "Scene.h"
 #include "PlayScene.h"
 #include "StartScene.h"
-
+#include "LoadingScene.h"
 
 
 class CGameFramework
@@ -44,8 +45,9 @@ public:
 	void ChangeSwapChainState();
 
     void BuildObjects(int myPlayerNum);
-    void ReleaseObjects();
+	void ReleaseObjects();
 	void ChangeScene(int nScene, int myPlayerNum);
+	void LoadingCHK();
 
     void AnimateObjects();
     void FrameAdvance();
@@ -102,6 +104,7 @@ private:
 	CGameTimer					m_GameTimer;
 
 	CScene*						m_pScene = NULL;
+	bool						m_bLoading = true;
 
 	CCamera*					m_pCamera = NULL;
 
@@ -115,6 +118,6 @@ private:
 
 	int							m_nDrawOption = 84;
 	CPostProcessingShader		*m_pPostProcessingShader = NULL;
-	bool						m_bProstShader = false;
+	bool						m_bPostShader = false;
 };
 
