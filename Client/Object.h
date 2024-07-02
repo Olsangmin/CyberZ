@@ -367,6 +367,7 @@ class CRobotObject : public CGameObject
 private:
 
 	XMFLOAT3				m_xmf3Target{ 0.0f, 0.0f, 0.0f };
+	bool					m_bAttackStatus = false;
 
 public:
 	CRobotObject(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CLoadedModelInfo *pModel, int nAnimationTracks);
@@ -374,6 +375,7 @@ public:
 
 	virtual void Update(float fTimeElapsed);
 
+	void SetAttackStatus(bool status) { m_bAttackStatus = status; }
 	void MoveToTarget();
 	void RotateDirection(float fAngle);
 
@@ -382,7 +384,7 @@ public:
 	void SetTarget(XMFLOAT3 xmf3Target) { m_xmf3Target = xmf3Target; }
 	virtual void IsMove(Player_Animation_ST CheckAni);
 	virtual void IsIdle();
-	virtual void IsAttack();
+	bool IsAttackP();
 
 	Player_Animation_ST m_pasCurrentAni;
 	Player_Animation_ST m_pasNextAni;

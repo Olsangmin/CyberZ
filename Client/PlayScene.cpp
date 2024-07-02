@@ -297,6 +297,12 @@ bool CPlayScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 			if (m_pMyPlayer->GetStaminer())m_pMyPlayer->SetCreep();
 			break;
 		}
+		case 'L': {
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->SetAttackStatus(true);
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[1])->SetAttackStatus(true);
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[2])->SetAttackStatus(true);
+			break;
+		}
 		case 'F': {
 			for (int i = 3; i < m_nMissionObj; i++)
 			{

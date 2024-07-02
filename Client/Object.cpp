@@ -1230,8 +1230,7 @@ void CRobotObject::Update(float fTimeElapsed)
 	CGameObject::Update(fTimeElapsed);
 	if (m_pSkinnedAnimationController) {
 		AnimationBlending(m_pasCurrentAni, m_pasNextAni);
-		MoveToTarget();
-		IsMove(m_pasNextAni);
+		IsAttackP() ? 0 : MoveToTarget(), IsMove(m_pasNextAni);
 
 	}
 }
@@ -1247,10 +1246,10 @@ void CRobotObject::MoveToTarget()
 
 
 	Vector3::IsZero(m_xmf3Target) ?
-		m_pasNextAni = IDLE : RotateDirection(20.f), m_pasNextAni = RUN;
+		m_pasNextAni = IDLE : RotateDirection(20.f), m_pasNextAni = WALK;
 	if (!Vector3::IsZero(m_xmf3Target))
 		Vector3::IsZero(Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()))) ?
-		m_pasNextAni = IDLE : MoveForward(0.34f), m_pasNextAni = RUN;
+		m_pasNextAni = IDLE : MoveForward(0.34f), m_pasNextAni = WALK;
 	else { m_pasNextAni = IDLE; }
 
 }
@@ -1304,8 +1303,29 @@ void CRobotObject::IsIdle()
 {
 }
 
-void CRobotObject::IsAttack()
+bool CRobotObject::IsAttackP()
 {
+	if (m_bAttackStatus == true) {
+		if (m_pasCurrentAni != RUN && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+			m_pasNextAni = RUN;
+			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			m_pSkinnedAnimationController->SetTrackType(RUN, ANIMATION_TYPE_ONCE);
+			m_pSkinnedAnimationController->SetTrackSpeed(0, 0.3f);
+		}
+		CAnimationTrack AnimationTrack = m_pSkinnedAnimationController->m_pAnimationTracks[RUN];
+		CAnimationSet* pAnimationSet = m_pSkinnedAnimationController->m_pAnimationSets->m_pAnimationSets[AnimationTrack.m_nAnimationSet];
+		float fTrackPosition = AnimationTrack.m_fPosition;
+		float fTrackLength = pAnimationSet->m_fLength;
+		if (fTrackPosition >= fTrackLength) {
+			m_pSkinnedAnimationController->m_pAnimationTracks[RUN].m_fPosition = 0;
+			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			m_pasNextAni = IDLE;
+			m_bAttackStatus = false;
+			return false;
+		}
+		return true;
+	}
+	return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
