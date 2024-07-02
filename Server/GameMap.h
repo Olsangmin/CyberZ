@@ -37,6 +37,7 @@ struct CELL
         DirectX::BoundingOrientedBox bb{};
         bb.Center = center;
         DirectX::XMFLOAT3 extents{ static_cast<float>(width/2), 1.5f, static_cast<float>(height/2) };
+        
         bb.Extents = extents;
 
         return bb.Intersects(obj);
