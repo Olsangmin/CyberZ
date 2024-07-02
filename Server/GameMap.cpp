@@ -68,13 +68,9 @@ void GameMap::initializeMap()
 					exit(-1);
 				}
 				
-				/*XMFLOAT4 q{};
-				XMVECTOR vec = DirectX::XMQuaternionRotationRollPitchYaw(rotX, rotY, rotZ);
-				DirectX::XMStoreFloat4(&q, vec);
-				data[objName].Orientation = XMFLOAT4{ q.x, q.y, q.z, q.w };*/
 
 				float angleX = XMConvertToRadians(rotX);
-				float angleY = XMConvertToDegrees(rotY);
+				float angleY = XMConvertToRadians(rotY);
 				float angleZ = XMConvertToRadians(rotZ);
 				XMVECTOR quaternionX = DirectX::XMQuaternionRotationRollPitchYaw(angleX, 0.0f, 0.0f);
 				XMVECTOR quaternionY = DirectX::XMQuaternionRotationRollPitchYaw(0.0f, angleY, 0.0f);
@@ -86,6 +82,20 @@ void GameMap::initializeMap()
 				DirectX::XMStoreFloat4(&orientation, quaternion);
 
 				data[objName].Orientation = orientation;
+
+				XMVECTOR rotatedExtents = XMVectorSet(data[objName].Extents.x, data[objName].Extents.y, data[objName].Extents.z, 0.f);
+				XMVECTOR orientationQuat = XMVectorSet(orientation.x, orientation.y, orientation.z, orientation.w);
+				
+				XMMATRIX rotationMatrix = XMMatrixRotationQuaternion(orientationQuat);
+				XMMATRIX inverseRotationMatrix = XMMatrixInverse(nullptr, rotationMatrix);
+				XMVECTOR originalExtents = XMVector3Transform(rotatedExtents, inverseRotationMatrix);
+				
+				originalExtents = XMVectorAbs(originalExtents);
+
+				XMFLOAT3 originalExtentsFloat;
+				XMStoreFloat3(&originalExtentsFloat, originalExtents);
+				
+				data[objName].Extents = originalExtentsFloat;
 			}
 				
 		}
@@ -176,7 +186,7 @@ void GameMap::printMap() const
 			case CONT:
 				std::cout << "X "; break;
 			case CT_NPC:
-				std::cout << "N"; break;
+				std::cout << "N "; break;
 			case GROUND:
 				std::cout << ". "; break;
 			default:
