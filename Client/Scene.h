@@ -139,7 +139,7 @@ public:
 	CHeightMapTerrain*					m_pTerrain = NULL;
 	
 	CUI*								m_pUI = NULL;
-	CUI*								m_pLoading = NULL;
+	bool								m_bUIOn = true;
 
 	bool								m_bChangeScene = false;
 	bool								Missionflag = false;

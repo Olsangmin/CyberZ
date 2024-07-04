@@ -76,11 +76,11 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///
-class CPlaySceneUI : public CUI
+class CFirstRoundSceneUI : public CUI
 {
 public:
-	CPlaySceneUI() {}
-	~CPlaySceneUI() {}
+	CFirstRoundSceneUI() {}
+	~CFirstRoundSceneUI() {}
 
 public:
 
@@ -90,7 +90,30 @@ public:
 
 	void MissionText();
 	void MissionProgressBar(int MissionNum);
-	void KeyCardUI();
+	void ItemUI();
+	void StaminaBarUI();
+
+public:
+	void DrawUI(UINT m_nSwapChainBufferIndex);
+	void UISet(UINT m_nSwapChainBufferIndex);
+
+};
+
+class CSecondRoundSceneUI : public CUI
+{
+public:
+	CSecondRoundSceneUI() {}
+	~CSecondRoundSceneUI() {}
+
+public:
+
+	float		m_fStaminaRange = 100.f;
+	float		m_fMaxStamina = 100.f;
+	bool		m_bStaminaBarOn = false;
+
+	//void MissionText();
+	//void MissionProgressBar(int MissionNum);
+	void ItemUI();
 	void StaminaBarUI();
 
 public:

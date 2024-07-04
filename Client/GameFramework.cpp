@@ -461,8 +461,8 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 
 	// Make Scene
 	// 처음 씬 빌드
-	m_nSceneNum = START_SCENE;
-	m_pScene = new CStartScene();
+	m_nSceneNum = SECOND_ROUND_SCENE;
+	m_pScene = new CSecondRoundScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
 
 	m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
@@ -506,7 +506,7 @@ void CGameFramework::ReleaseObjects()
 }
 
 
-void CGameFramework::ChangeScene(int nScene, int myPlayerNum)
+void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 {
 	ReleaseObjects();
 
@@ -547,7 +547,16 @@ void CGameFramework::ChangeScene(int nScene, int myPlayerNum)
 		case FIRST_ROUND_SCENE:
 		{
 			m_nSceneNum = nScene;
-			m_pScene = new CPlayScene();
+			m_pScene = new CFirstRoundScene();
+			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
+			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
+			m_bLoading = true;
+			break;
+		}
+		case SECOND_ROUND_SCENE:
+		{
+			m_nSceneNum = nScene;
+			m_pScene = new CSecondRoundScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
@@ -580,32 +589,40 @@ void CGameFramework::ChangeScene(int nScene, int myPlayerNum)
 	WaitForGpuComplete();
 }
 
+void CGameFramework::GetSceneInfo()
+{
+	// 플레이어 모델 정보 전체 받아오기...
+	if (m_nSceneNum == PREPARE_ROOM_SCENE)
+	{
+		for (int i = 0; i < MAX_PLAYER; i++)
+		{
+			PlayerInfo[i] = (reinterpret_cast<CPrepareRoomScene*>(m_pScene)->GetPlayerModelInfo(i));
+		}
+	}
+}
+
+void CGameFramework::SetSceneInfo()
+{
+	// 받아온 정보 덮어 쓰기
+	for (int i = 0; i < MAX_PLAYER; i++)
+	{
+		(reinterpret_cast<CLoadingScene*>(m_pScene)->m_nPlayerSet[i]) = PlayerInfo[i];
+	}
+
+}
+
 void CGameFramework::LoadingCHK()
 {
 	if (m_pScene->m_bChangeScene)
 	{
 		if (m_bLoading)
 		{
-			int PlayerInfo[MAX_PLAYER];
 			int myPlayerNum = 0;
 			myPlayerNum = m_pScene->GetModelInfo();
-
-			// 플레이어 모델 정보 전체 받아오기...
-			if (m_nSceneNum == PREPARE_ROOM_SCENE)
-			{
-				for (int i = 0; i < MAX_PLAYER; i++)
-				{
-					PlayerInfo[i] = (reinterpret_cast<CPrepareRoomScene*>(m_pScene)->GetPlayerModelInfo(i));
-				}
-			}
-
+			
+			GetSceneInfo();
 			ChangeScene(LOADING_SCENE, myPlayerNum);
-
-			// 받아온 정보 덮어 쓰기
-			for (int i = 0; i < MAX_PLAYER; i++)
-			{
-				(reinterpret_cast<CLoadingScene*>(m_pScene)->m_nPlayerSet[i]) = PlayerInfo[i];
-			}
+			SetSceneInfo();
 
 			return;
 		}
@@ -726,7 +743,7 @@ void CGameFramework::FrameAdvance()
 	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
 	
 	// Draw UI
-	m_pScene->m_pUI->DrawUI(m_nSwapChainBufferIndex); 
+	if(m_pScene->m_bUIOn) m_pScene->m_pUI->DrawUI(m_nSwapChainBufferIndex); 
 
 	WaitForGpuComplete();
 

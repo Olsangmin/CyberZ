@@ -266,8 +266,10 @@ void CFirstSceneUI::CheckEnter()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//========================================================================================//
+// First Round
 
-void CPlaySceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
+void CFirstRoundSceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 {
 	m_pd2dDeviceContext->SetTarget(m_ppd2dRenderTargets[m_nSwapChainBufferIndex]);
 	ID3D11Resource* ppd3dResources[] = { m_ppd3d11WrappedBackBuffers[m_nSwapChainBufferIndex] };
@@ -285,18 +287,18 @@ void CPlaySceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 
 }
 
-void CPlaySceneUI::UISet(UINT m_nSwapChainBufferIndex)
+void CFirstRoundSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 {
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 
 	MissionText();
 	for (int i = 0; i < 3; i++)	MissionProgressBar(i);
 	if (m_bStaminaBarOn) StaminaBarUI();
-	KeyCardUI();
+	ItemUI();
 	
 }
 
-void CPlaySceneUI::MissionText()
+void CFirstRoundSceneUI::MissionText()
 {
 	float gab = 35.5;
 
@@ -318,7 +320,7 @@ void CPlaySceneUI::MissionText()
 }
 
 
-void CPlaySceneUI::MissionProgressBar(int MissionNum)
+void CFirstRoundSceneUI::MissionProgressBar(int MissionNum)
 {
 	float gab = 35.5;
 
@@ -352,7 +354,7 @@ void CPlaySceneUI::MissionProgressBar(int MissionNum)
 
 }
 
-void CPlaySceneUI::KeyCardUI()
+void CFirstRoundSceneUI::ItemUI()
 {
 	D2D1_RECT_F* rcMissionBarFrame;
 	rcMissionBarFrame = new D2D1_RECT_F;
@@ -386,7 +388,7 @@ void CPlaySceneUI::KeyCardUI()
 
 }
 
-void CPlaySceneUI::StaminaBarUI()
+void CFirstRoundSceneUI::StaminaBarUI()
 {
 	float halfsize = m_fMaxStamina / 2;
 
@@ -417,6 +419,99 @@ void CPlaySceneUI::StaminaBarUI()
 
 }
 
+
+//========================================================================================//
+// Second Round
+
+void CSecondRoundSceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
+{
+	m_pd2dDeviceContext->SetTarget(m_ppd2dRenderTargets[m_nSwapChainBufferIndex]);
+	ID3D11Resource* ppd3dResources[] = { m_ppd3d11WrappedBackBuffers[m_nSwapChainBufferIndex] };
+	m_pd3d11On12Device->AcquireWrappedResources(ppd3dResources, _countof(ppd3dResources));
+
+	m_pd2dDeviceContext->BeginDraw();
+	m_pd2dDeviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
+
+	//Direct2D Drawing
+	UISet(m_nSwapChainBufferIndex);
+
+	m_pd2dDeviceContext->EndDraw();
+	m_pd3d11On12Device->ReleaseWrappedResources(ppd3dResources, _countof(ppd3dResources));
+	m_pd3d11DeviceContext->Flush();
+}
+
+void CSecondRoundSceneUI::UISet(UINT m_nSwapChainBufferIndex)
+{
+	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
+
+	if (m_bStaminaBarOn) StaminaBarUI();
+	ItemUI();
+}
+
+
+void CSecondRoundSceneUI::ItemUI()
+{
+	D2D1_RECT_F* rcMissionBarFrame;
+	rcMissionBarFrame = new D2D1_RECT_F;
+	rcMissionBarFrame->top = FRAME_BUFFER_HEIGHT - 200.f;
+	rcMissionBarFrame->left = FRAME_BUFFER_WIDTH - 270.0f;
+	rcMissionBarFrame->right = FRAME_BUFFER_WIDTH - 50.f;
+	rcMissionBarFrame->bottom = FRAME_BUFFER_HEIGHT - 50.0f;
+
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
+	m_pd2dDeviceContext->DrawRectangle(rcMissionBarFrame, m_pd2dbrBorder);
+
+	delete rcMissionBarFrame;
+
+	float top = 1650.f;
+	float left = 850.f;
+	float gab = 100.f;
+
+	D2D1_RECT_F rcUpperText = D2D1::RectF(top, left, top + gab, left + gab);
+	WCHAR MissionText[] = L"ITEM";
+	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
+	m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
+
+	if (m_bcard)
+	{
+		// KeyCard Image
+		LoadUIImage(L"Image/CardKey.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
+		D2D_POINT_2F d2dPoint = { FRAME_BUFFER_WIDTH - 250.f, FRAME_BUFFER_HEIGHT - 180.f };
+		D2D_RECT_F d2dRect = { 0.0f, 0.0f, 200.0f, 130.0f };
+		m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &d2dPoint, &d2dRect);
+	}
+
+}
+
+void CSecondRoundSceneUI::StaminaBarUI()
+{
+	float halfsize = m_fMaxStamina / 2;
+
+	//게이지 바
+	D2D1_RECT_F* rcStaminaBar;
+	rcStaminaBar = new D2D1_RECT_F;
+	rcStaminaBar->top = FRAME_BUFFER_HEIGHT - 230.f;
+	rcStaminaBar->left = FRAME_BUFFER_WIDTH - 270.0f;
+	rcStaminaBar->right = FRAME_BUFFER_WIDTH - 270.0f + m_fStaminaRange;
+	rcStaminaBar->bottom = FRAME_BUFFER_HEIGHT - 210.0f;
+
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::RoyalBlue, 1.0f));
+	m_pd2dDeviceContext->FillRectangle(rcStaminaBar, m_pd2dbrBorder);
+
+	// 게이지 바 프레임
+	D2D1_RECT_F* rcStaminaBarFrame;
+	rcStaminaBarFrame = new D2D1_RECT_F;
+	rcStaminaBarFrame->top = FRAME_BUFFER_HEIGHT - 230.f;
+	rcStaminaBarFrame->left = FRAME_BUFFER_WIDTH - 270.0f;
+	rcStaminaBarFrame->right = FRAME_BUFFER_WIDTH - 270.0f + m_fMaxStamina;
+	rcStaminaBarFrame->bottom = FRAME_BUFFER_HEIGHT - 210.0f;
+
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::AliceBlue, 1.0f));
+	m_pd2dDeviceContext->DrawRectangle(rcStaminaBarFrame, m_pd2dbrBorder);
+
+	delete rcStaminaBar;
+	delete rcStaminaBarFrame;
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///
 
@@ -521,3 +616,4 @@ void CLoadingUI::UISet(UINT m_nSwapChainBufferIndex)
 	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
 	m_pd2dDeviceContext->DrawTextW(PressA, (UINT32)wcslen(PressA), m_pdwFont, &rcPressText, m_pd2dbrText);
 }
+
