@@ -361,17 +361,21 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 					m_bRenderBoundingBox = !m_bRenderBoundingBox;
 					break;
 
+
+				case 'Y':
+					m_nDrawOption = 84;
+					break;
 				case 'U':
-					m_nDrawOption = 78;
+					m_nDrawOption = 76;
 					break;
 				case 'I':
-					m_nDrawOption = 84;
+					m_nDrawOption = 78;
 					break;
 				case 'O':
 					m_nDrawOption = 68;
 					break;
 				case 'P':
-					m_nDrawOption = 76;
+					m_nDrawOption = 90;
 					break;
 				case '8':
 					m_bPostShader = !m_bPostShader;
@@ -454,8 +458,8 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 
 	// Make Scene
 	// Ã³À½ ¾À ºôµå
-	m_nSceneNum = SECOND_ROUND_SCENE;
-	m_pScene = new CSecondRoundScene();
+	m_nSceneNum = PREPARE_ROOM_SCENE;
+	m_pScene = new CPrepareRoomScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
 
 	m_pCamera = m_pScene->m_pMyPlayer->GetCamera();

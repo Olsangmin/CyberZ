@@ -287,18 +287,18 @@ struct PS_MULTIPLE_RENDER_TARGETS_OUTPUT
     float zDepth : SV_TARGET4;
 };
 
-PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTexturedLightingToMultipleRTs(VS_SKINNED_STANDARD_INPUT input, uint nPrimitiveID : SV_PrimitiveID)
+PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTexturedLightingToMultipleRTs(VS_STANDARD_OUTPUT input, uint nPrimitiveID : SV_PrimitiveID)
 {
     PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 
     float2 uv = float2(input.uv);
     output.cTexture = gtxtAlbedoTexture.Sample(gssWrap, uv);
 
-    output.cIllumination = Lighting(input.position, input.normal);
+    output.cIllumination = Lighting(input.positionW, input.normalW);
 
     output.color = output.cIllumination * output.cTexture;
 
-    output.normal = float4(input.normal.xyz * 0.5f + 0.5f, 1.0f);
+    output.normal = float4(input.normalW.xyz * 0.5f + 0.5f, 1.0f);
 
     output.zDepth = input.position.z;
 
@@ -417,9 +417,14 @@ float4 PSScreenRectSamplingTextured(VS_SCREEN_RECT_TEXTURED_OUTPUT input) : SV_T
                 cColor = gtxtTextureTexture.Sample(gssWrap, input.uv);
                 break;
         }
+        case 76: //'L'
+		{
+                cColor = gtxtIlluminationTexture.Sample(gssWrap, input.uv);
+                break;
+        }
         case 78: //'N'
 		{
-                cColor = gtxtNormalTexture.Sample(gssWrap, input.uv);
+                cColor = gtxtNormalTexture2.Sample(gssWrap, input.uv);
                 break;
             }
         case 68: //'D'
@@ -429,8 +434,15 @@ float4 PSScreenRectSamplingTextured(VS_SCREEN_RECT_TEXTURED_OUTPUT input) : SV_T
 //			cColor = GetColorFromDepth(fDepth);
                 break;
          }
+        case 90: //'Z'
+		{
+                float fzDepth = gtxtzDepthTexture.Load(uint3((uint) input.position.x, (uint) input.position.y, 0));
+                cColor = fzDepth;
+//			cColor = GetColorFromDepth(fDepth);
+                break;
+         }
     }
-    cColor.a = 0.6f;
+    cColor.a = 1.0f;
 	return (cColor);
 }
 
