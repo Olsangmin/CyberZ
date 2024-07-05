@@ -116,7 +116,7 @@ void CGameFramework::CreateSwapChain()
 	hResult = m_pdxgiFactory->MakeWindowAssociation(m_hWnd, DXGI_MWA_NO_ALT_ENTER);
 	m_nSwapChainBufferIndex = m_pdxgiSwapChain->GetCurrentBackBufferIndex();
 
-	//CreateRenderTargetViews();
+	CreateRenderTargetViews();
 
 }
 
@@ -279,19 +279,6 @@ void CGameFramework::CreateDepthStencilView()
 	m_pd3dDevice->CreateDepthStencilView(m_pd3dDepthStencilBuffer, &d3dDepthStencilViewDesc, m_d3dDsvDescriptorCPUHandle);
 }
 
-void CGameFramework::CreatePostPrecessShader()
-{
-	m_pPostProcessingShader = new CTextureDeferdShader();
-	m_pPostProcessingShader->CreateShader(m_pd3dDevice, m_pScene->GetGraphicsRootSignature(), 1, NULL, DXGI_FORMAT_D32_FLOAT);
-	m_pPostProcessingShader->CreateShaderVariables(m_pd3dDevice, m_pd3dCommandList);
-
-	D3D12_CPU_DESCRIPTOR_HANDLE d3dRtvCPUDescriptorHandle = m_pd3dRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	d3dRtvCPUDescriptorHandle.ptr += (::gnRtvDescriptorIncrementSize * m_nSwapChainBuffers);
-
-	DXGI_FORMAT pdxgiRtvFormats[4] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_FLOAT };
-	m_pPostProcessingShader->CreateResourcesAndRtvsSrvs(m_pd3dDevice, m_pd3dCommandList, 4, pdxgiRtvFormats, d3dRtvCPUDescriptorHandle); //SRV to (Render Targets) + (Depth Buffer)
-}
-
 void CGameFramework::ChangeSwapChainState()
 {
 	WaitForGpuComplete();
@@ -374,11 +361,17 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 					m_bRenderBoundingBox = !m_bRenderBoundingBox;
 					break;
 
-				case 'P':
+				case 'U':
 					m_nDrawOption = 78;
 					break;
-				case 'O':
+				case 'I':
 					m_nDrawOption = 84;
+					break;
+				case 'O':
+					m_nDrawOption = 68;
+					break;
+				case 'P':
+					m_nDrawOption = 76;
 					break;
 				case '8':
 					m_bPostShader = !m_bPostShader;
@@ -719,10 +712,10 @@ void CGameFramework::FrameAdvance()
 
 #endif // DEFERRED_RENDERING
 
+
 	m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 	if (m_pScene) m_pScene->Render(m_pd3dCommandList, m_pCamera);
 	if (m_bRenderBoundingBox) m_pScene->RenderBoundingBox(m_pd3dCommandList, m_pCamera);
-
 
 #ifdef DEFERRED_RENDERING
 	
@@ -736,6 +729,7 @@ void CGameFramework::FrameAdvance()
 		m_pPostProcessingShader->Render(m_pd3dCommandList, m_pCamera, &m_nDrawOption);
 	}
 	::SynchronizeResourceTransition(m_pd3dCommandList, m_ppd3dSwapChainBackBuffers[m_nSwapChainBufferIndex], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+
 
 	//End
 	hResult = m_pd3dCommandList->Close();

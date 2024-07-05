@@ -768,6 +768,8 @@ void CPostProcessingShader::CreateResourcesAndRtvsSrvs(ID3D12Device* pd3dDevice,
 		m_pd3dRtvCPUDescriptorHandles[i] = d3dRtvCPUDescriptorHandle;
 		d3dRtvCPUDescriptorHandle.ptr += ::gnRtvDescriptorIncrementSize;
 	}
+
+
 }
 
 void CPostProcessingShader::OnPrepareRenderTarget(ID3D12GraphicsCommandList* pd3dCommandList, int nRenderTargets, D3D12_CPU_DESCRIPTOR_HANDLE* pd3dRtvCPUHandles, D3D12_CPU_DESCRIPTOR_HANDLE* pd3dDsvCPUHandle)

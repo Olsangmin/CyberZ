@@ -40,7 +40,7 @@ public:
 class CSecondRoundScene : public CScene
 {
 public:
-	CSecondRoundScene() { m_bChangeScene = false; m_bUIOn = true; }
+	CSecondRoundScene() { m_bChangeScene = false; }
 	~CSecondRoundScene() {}
 
 

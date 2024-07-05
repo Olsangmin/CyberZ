@@ -186,6 +186,9 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_pMyPlayer->ChangeCamera(SHOULDER_VIEW_CAMERA, 0.0f);
 
 	reinterpret_cast<CFirstRoundSceneUI*>(m_pUI)->m_fMaxStamina = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fMaxStaminer;
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
 }
 
 void CFirstRoundScene::ReleaseObjects()
@@ -642,6 +645,8 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_pMyPlayer->m_bUnable = true;
 
 	reinterpret_cast<CFirstRoundSceneUI*>(m_pUI)->m_fMaxStamina = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fMaxStaminer;
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 }
 

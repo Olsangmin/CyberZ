@@ -256,7 +256,6 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dRootParameters[1].Constants.RegisterSpace = 0;
 	pd3dRootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
-
 	pd3dRootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	pd3dRootParameters[2].Descriptor.ShaderRegister = 4; //b4 Lights
 	pd3dRootParameters[2].Descriptor.RegisterSpace = 0;
@@ -332,6 +331,11 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dRootParameters[16].DescriptorTable.pDescriptorRanges = &(pd3dDescriptorRanges[10]); //Texture2D
 	pd3dRootParameters[16].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
+	//pd3dRootParameters[17].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	//pd3dRootParameters[17].Descriptor.ShaderRegister = 3; //Materials
+	//pd3dRootParameters[17].Descriptor.RegisterSpace = 0;
+	//pd3dRootParameters[17].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+
 
 	D3D12_STATIC_SAMPLER_DESC pd3dSamplerDescs[2];
 
@@ -386,6 +390,11 @@ void CScene::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 	m_pd3dcbLights = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 
 	m_pd3dcbLights->Map(0, NULL, (void**)&m_pcbMappedLights);
+
+	//UINT ncbMaterialBytes = ((sizeof(MATERIALS) + 255) & ~255); //256ÀÇ ¹è¼ö
+	//m_pd3dcbMaterials = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbMaterialBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	//
+	//m_pd3dcbMaterials->Map(0, NULL, (void**)&m_pcbMappedMaterials);
 }
 
 void CScene::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
@@ -402,6 +411,11 @@ void CScene::ReleaseShaderVariables()
 		m_pd3dcbLights->Unmap(0, NULL);
 		m_pd3dcbLights->Release();
 	}
+	//if (m_pd3dcbMaterials)
+	//{
+	//	m_pd3dcbMaterials->Unmap(0, NULL);
+	//	m_pd3dcbMaterials->Release();
+	//}
 }
 
 void CScene::ReleaseUploadBuffers()
@@ -590,6 +604,9 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(2, d3dcbLightsGpuVirtualAddress); //Lights
+
+	//D3D12_GPU_VIRTUAL_ADDRESS d3dcbMaterialsGpuVirtualAddress = m_pd3dcbMaterials->GetGPUVirtualAddress();
+	//pd3dCommandList->SetGraphicsRootConstantBufferView(17, d3dcbMaterialsGpuVirtualAddress); //Materials
 
 	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);

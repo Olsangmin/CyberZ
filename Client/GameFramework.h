@@ -41,8 +41,6 @@ public:
 	void CreateRenderTargetViews();
 	void CreateDepthStencilView();
 
-	void CreatePostPrecessShader();
-
 	void ChangeSwapChainState();
 
     void BuildObjects(int myPlayerNum);
