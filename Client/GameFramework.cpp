@@ -361,25 +361,6 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 					m_bRenderBoundingBox = !m_bRenderBoundingBox;
 					break;
 
-
-				case 'Y':
-					m_nDrawOption = 84;
-					break;
-				case 'U':
-					m_nDrawOption = 76;
-					break;
-				case 'I':
-					m_nDrawOption = 78;
-					break;
-				case 'O':
-					m_nDrawOption = 68;
-					break;
-				case 'P':
-					m_nDrawOption = 90;
-					break;
-				case '8':
-					m_bPostShader = !m_bPostShader;
-					break;
 					
 				default:
 					break;
@@ -458,8 +439,8 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 
 	// Make Scene
 	// Ã³À½ ¾À ºôµå
-	m_nSceneNum = PREPARE_ROOM_SCENE;
-	m_pScene = new CPrepareRoomScene();
+	m_nSceneNum = START_SCENE;
+	m_pScene = new CStartScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
 
 	m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
@@ -727,11 +708,10 @@ void CGameFramework::FrameAdvance()
 	
 #endif // DEFERRED_RENDERING
 
-	if (m_bPostShader)
-	{ //Å¸ Å¸°Ù È­¸éÃâ·Â
-		m_pd3dCommandList->OMSetRenderTargets(1, &m_pd3dSwapChainBackBufferRTVCPUHandles[m_nSwapChainBufferIndex], TRUE, NULL);
-		m_pPostProcessingShader->Render(m_pd3dCommandList, m_pCamera, &m_nDrawOption);
-	}
+
+	//m_pd3dCommandList->OMSetRenderTargets(1, &m_pd3dSwapChainBackBufferRTVCPUHandles[m_nSwapChainBufferIndex], TRUE, NULL);
+	//m_pPostProcessingShader->Render(m_pd3dCommandList, m_pCamera, &m_nDrawOption);
+	
 	::SynchronizeResourceTransition(m_pd3dCommandList, m_ppd3dSwapChainBackBuffers[m_nSwapChainBufferIndex], D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
 
 
