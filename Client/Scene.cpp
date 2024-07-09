@@ -164,6 +164,11 @@ void CScene::ReleaseObjects()
 		delete[] m_ppEnemy;
 	}
 
+	if (m_pBoss) {
+		m_pBoss->Release();
+		delete m_pBoss;
+	}
+
 	ReleaseShaderVariables();
 	if (m_pLights) delete[] m_pLights;
 
@@ -415,6 +420,7 @@ void CScene::ReleaseUploadBuffers()
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) m_ppHierarchicalGameObjects[i]->ReleaseUploadBuffers();
 	for (int i = 0; i < m_nMissionObj; i++) m_ppMissionObj[i]->ReleaseUploadBuffers();
 	for (int i = 0; i < m_nEnemy; i++) m_ppEnemy[i]->ReleaseUploadBuffers();
+	if (m_pBoss) m_pBoss->ReleaseUploadBuffers();
 
 }
 
@@ -529,6 +535,7 @@ void CScene::AnimateObjects(float fTimeElapsed)
 
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) if (m_ppHierarchicalGameObjects[i])	m_ppHierarchicalGameObjects[i]->Animate(m_fElapsedTime);
 	for (int i = 0; i < m_nEnemy; i++) if (m_ppEnemy[i]) m_ppEnemy[i]->Animate(m_fElapsedTime);
+	if(m_pBoss)m_pBoss->Animate(m_fElapsedTime);
 
 
 	
@@ -625,6 +632,11 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 			m_ppEnemy[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
+	if (m_pBoss) {
+		if (!m_pBoss->m_pSkinnedAnimationController)m_pBoss->UpdateTransform(NULL);
+		m_pBoss->Animate(m_fElapsedTime);
+		m_pBoss->Render(pd3dCommandList, pCamera);
+	}
 
 	if (m_ppPlayer) {
 		for (int i = 0; i < m_nPlayer; ++i) {
@@ -662,6 +674,8 @@ void CScene::RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 			m_ppEnemy[i]->RenderBoundingBox(pd3dCommandList);
 		}
 	}
+
+	if(m_pBoss)m_pBoss->RenderBoundingBox(pd3dCommandList);
 	
 	for (int i = 0; i < m_nPlayer; i++)	m_ppPlayer[i]->RenderBoundingBox(pd3dCommandList);
 }

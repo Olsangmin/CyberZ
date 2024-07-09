@@ -1420,3 +1420,122 @@ CFloorObj::CFloorObj(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 CFloorObj::~CFloorObj()
 {
 }
+
+CBossRobotObject::CBossRobotObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks)
+{
+	CLoadedModelInfo* pRobotModel = pModel;
+	if (!pRobotModel) pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Robot2.bin", NULL);
+
+	SetChild(pRobotModel->m_pModelRootObject, true);
+
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pRobotModel);
+
+	for (int i = 0; i < 7; ++i)
+		m_pSkinnedAnimationController->SetTrackAnimationSet(i, i);
+
+	// Default animation setting
+	m_pSkinnedAnimationController->SetAllTrackDisable();
+	m_pSkinnedAnimationController->SetTrackEnable(0, true);
+}
+
+CBossRobotObject::~CBossRobotObject()
+{
+}
+
+void CBossRobotObject::Update(float fTimeElapsed)
+{
+	CGameObject::Update(fTimeElapsed);
+	if (m_pSkinnedAnimationController) {
+		AnimationBlending(m_pasCurrentAni, m_pasNextAni);
+		IsAttackP() ? 0 : MoveToTarget(), IsMove(m_pasNextAni);
+
+	}
+}
+
+void CBossRobotObject::MoveToTarget()
+{
+	XMFLOAT3 xmfVel = Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()));
+	float fLength = xmfVel.x * xmfVel.x + xmfVel.z * xmfVel.z;
+
+	if (fLength < 1.0f)
+		m_xmf3Target = XMFLOAT3(0, 0, 0);
+
+
+
+	Vector3::IsZero(m_xmf3Target) ?
+		m_pasNextAni = IDLE : RotateDirection(20.f), m_pasNextAni = WALK;
+	if (!Vector3::IsZero(m_xmf3Target))
+		Vector3::IsZero(Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()))) ?
+		m_pasNextAni = IDLE : MoveForward(0.34f), m_pasNextAni = WALK;
+	else { m_pasNextAni = IDLE; }
+}
+
+void CBossRobotObject::RotateDirection(float fAngle)
+{
+	XMFLOAT3 xmfVel = Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()));
+	if (Vector3::IsZero(xmfVel))m_xmf3Target = XMFLOAT3(0.f, 0.f, 0.f);
+
+	float fCurrentAngle = Vector3::Angle(Vector3::Normalize(xmfVel), GetLook());
+
+	if (fCurrentAngle > 0) {
+
+		XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&GetUp()), XMConvertToRadians(fAngle));
+		XMFLOAT3 xmf3Look = Vector3::TransformNormal(GetLook(), xmmtxRotate);
+
+		float fNextAngle = Vector3::Angle(Vector3::Normalize(xmfVel), xmf3Look);
+
+		fCurrentAngle >= fNextAngle ? Rotate(0.0f, (fCurrentAngle - fNextAngle) / 1.5, 0.0f) : Rotate(0.0f, -(fNextAngle - fCurrentAngle) / 1.5, 0.0f);
+	}
+}
+
+void CBossRobotObject::AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2)
+{
+	if (m_pSkinnedAnimationController->m_fBlendingTime <= 1.0f && type2 != NONE) {
+		// If need to blending
+		// 체인지 애니메이션(섞인거) 
+		m_pSkinnedAnimationController->m_fBlendingWeight = 2.0f;
+		m_pSkinnedAnimationController->SetAnimationBlending(true); // 블렌딩을 할지 말지
+		m_pSkinnedAnimationController->SetTrackBlending(m_pasCurrentAni, type2); // 몇번째랑 몇번째
+	}
+	else { // 무조건 WALK
+		if (type2 != NONE)m_pasCurrentAni = type2;
+		m_pSkinnedAnimationController->SetTrackEnable(m_pasCurrentAni, true);
+		m_pSkinnedAnimationController->SetAnimationBlending(false);
+		m_pasNextAni = NONE;
+	}
+}
+
+void CBossRobotObject::IsMove(Player_Animation_ST CheckAni)
+{
+	if (m_pasCurrentAni != CheckAni && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+		m_pasNextAni = CheckAni;
+		m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+		m_pSkinnedAnimationController->SetTrackSpeed(0, 0.3f);
+		// AnimationPacket(m_pasNextAni);
+	}
+}
+
+bool CBossRobotObject::IsAttackP()
+{
+	if (m_bAttackStatus == true) {
+		if (m_pasCurrentAni != RUN && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+			m_pasNextAni = RUN;
+			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			m_pSkinnedAnimationController->SetTrackType(RUN, ANIMATION_TYPE_ONCE);
+			m_pSkinnedAnimationController->SetTrackSpeed(0, 0.3f);
+		}
+		CAnimationTrack AnimationTrack = m_pSkinnedAnimationController->m_pAnimationTracks[RUN];
+		CAnimationSet* pAnimationSet = m_pSkinnedAnimationController->m_pAnimationSets->m_pAnimationSets[AnimationTrack.m_nAnimationSet];
+		float fTrackPosition = AnimationTrack.m_fPosition;
+		float fTrackLength = pAnimationSet->m_fLength;
+		if (fTrackPosition >= fTrackLength) {
+			m_pSkinnedAnimationController->m_pAnimationTracks[RUN].m_fPosition = 0;
+			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			m_pasNextAni = IDLE;
+			m_bAttackStatus = false;
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
