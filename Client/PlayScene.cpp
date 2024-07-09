@@ -119,15 +119,14 @@ void CPlayScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	if (pMssionMachine3) delete pMssionMachine3;
 
 	//===============================//
-	//m_pBoss = new CGameObject;	
 
-	CLoadedModelInfo* pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot2.bin", NULL);
-	m_pBoss = new CBossRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 7);
-	m_pBoss->m_pSkinnedAnimationController->SetTrackAnimationSet(1, 1);
-	m_pBoss->SetPosition(311, 0, 145);
-	m_pBoss->SetScale(8.0f, 8.0f, 8.0f);
+	//CLoadedModelInfo* pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot2.bin", NULL);
+	//m_pBoss = new CBossRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 7);
+	//m_pBoss->m_pSkinnedAnimationController->SetTrackAnimationSet(1, 1);
+	//m_pBoss->SetPosition(311, 0, 145);
+	//m_pBoss->SetScale(8.0f, 8.0f, 8.0f);
 
-	if (pRobotModel) delete pRobotModel;
+	//if (pRobotModel) delete pRobotModel;
 
 	//===============================//
 	m_nEnemy = 3;
