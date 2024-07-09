@@ -72,7 +72,7 @@ void NPC::Patrol()
 	if (n_path.empty()) {
 		return;
 	}
-
+	DirectX::XMFLOAT3 next = n_path.front();
 	// std::cout << "[" << id << "] Patrol" << std::endl;
 	
 	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now()+std::chrono::milliseconds(250), EV_NPC_MOVE};
@@ -80,7 +80,7 @@ void NPC::Patrol()
 	server.timer_queue.push(ev);
 
 	for (auto cl : server.gMap.cl_ids) {
-		server.clients[cl].send_move_npc_packet(id, n_path.front());
+		server.clients[cl].send_move_npc_packet(id, next);
 	}
 
 }
@@ -91,6 +91,7 @@ void NPC::Chase()
 	if (n_path.empty()) {
 		return;
 	}
+	DirectX::XMFLOAT3 next = n_path.front();
 	std::cout << "[" << id << "] Chase [" << near_player << "] " << std::endl;
 
 	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(250), EV_NPC_MOVE };
@@ -99,7 +100,7 @@ void NPC::Chase()
 	
 
 	for (auto cl : server.gMap.cl_ids) {
-		server.clients[cl].send_move_npc_packet(id, n_path.front());
+		server.clients[cl].send_move_npc_packet(id,next);
 	}
 }
 

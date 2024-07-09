@@ -284,25 +284,57 @@ struct PS_MULTIPLE_RENDER_TARGETS_OUTPUT
     float4 cTexture : SV_TARGET1;
     float4 cIllumination : SV_TARGET2;
     float4 normal : SV_TARGET3;
-    float zDepth : SV_TARGET4;
+    float depth : SV_TARGET4;
 };
 
-PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTexturedLightingToMultipleRTs(VS_SKINNED_STANDARD_INPUT input, uint nPrimitiveID : SV_PrimitiveID)
+PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTexturedLightingToMultipleRTs(VS_STANDARD_OUTPUT input, uint nPrimitiveID : SV_PrimitiveID)
 {
     PS_MULTIPLE_RENDER_TARGETS_OUTPUT output;
 
     float2 uv = float2(input.uv);
-    output.cTexture = gtxtAlbedoTexture.Sample(gssWrap, uv);
 
-    output.cIllumination = Lighting(input.position, input.normal);
+    float4 cAlbedoColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
+    if (gnTexturesMask & MATERIAL_ALBEDO_MAP) cAlbedoColor = gtxtAlbedoTexture.Sample(gssWrap, input.uv);
+    
+    float4 cSpecularColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
+    if (gnTexturesMask & MATERIAL_SPECULAR_MAP) cSpecularColor = gtxtSpecularTexture.Sample(gssWrap, input.uv);
+    
+    float4 cNormalColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
+    if (gnTexturesMask & MATERIAL_NORMAL_MAP) cNormalColor = gtxtNormalTexture.Sample(gssWrap, input.uv);
+    
+    float4 cMetallicColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
+    if (gnTexturesMask & MATERIAL_METALLIC_MAP) cMetallicColor = gtxtMetallicTexture.Sample(gssWrap, input.uv);
+    
+    float4 cEmissionColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
+    if (gnTexturesMask & MATERIAL_EMISSION_MAP) cEmissionColor = gtxtEmissionTexture.Sample(gssWrap, input.uv);
 
-    output.color = output.cIllumination * output.cTexture;
+    float4 cColor = (cAlbedoColor * 1.0) + (cSpecularColor * 1.0) + (cMetallicColor * 0.1) + (cEmissionColor * 10.0);
+    cColor.a *= cAlbedoColor.a;
+    output.color = cColor;
 
-    output.normal = float4(input.normal.xyz * 0.5f + 0.5f, 1.0f);
+    output.cTexture = cColor;
+    
+    
+    float3 normalW;
 
-    output.zDepth = input.position.z;
+    if (gnTexturesMask & MATERIAL_NORMAL_MAP)
+    {
+        float3x3 TBN = float3x3(normalize(input.tangentW), normalize(input.bitangentW), normalize(input.normalW));
+        float3 vNormal = normalize(cNormalColor.rgb * 2.0f - 1.0f); //[0, 1] ¡æ [-1, 1]
+        normalW = normalize(mul(vNormal, TBN));
+    }
+    else
+    {
+        normalW = normalize(input.normalW);
+    }
 
-    return (output);
+    output.normal = float4(normalW * 0.5f + 0.5f, 1.0f); // Convert to [0, 1]
+    output.cIllumination = Lighting(input.positionW, normalW);
+    output.depth = input.position.z;
+
+    output.color = cColor;
+    
+    return output;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -405,33 +437,62 @@ cbuffer cbDrawOptions : register(b5)
     int4 gvDrawOptions : packoffset(c0);
 };
 
+float3 ReconstructPosition(float2 uv, float depth)
+{
+    float4 clipSpacePosition;
+    clipSpacePosition.xy = uv * 2.0 - 1.0; // NDC
+    clipSpacePosition.z = depth;
+    clipSpacePosition.w = 1.0;
+
+    float4 viewSpacePosition = mul((gmtxProjection), clipSpacePosition);
+    viewSpacePosition /= viewSpacePosition.w;
+
+    return viewSpacePosition.xyz;
+}
+
 
 float4 PSScreenRectSamplingTextured(VS_SCREEN_RECT_TEXTURED_OUTPUT input) : SV_Target
 {
-    float4 cColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
-	
-    switch (gvDrawOptions.x)
-    {
-        case 84: //'T'
-		{
-                cColor = gtxtTextureTexture.Sample(gssWrap, input.uv);
-                break;
-        }
-        case 78: //'N'
-		{
-                cColor = gtxtNormalTexture.Sample(gssWrap, input.uv);
-                break;
-            }
-        case 68: //'D'
-		{
-                float fDepth = gtxtDepthTexture.Load(uint3((uint) input.position.x, (uint) input.position.y, 0));
-                cColor = fDepth;
-//			cColor = GetColorFromDepth(fDepth);
-                break;
-         }
-    }
-    cColor.a = 0.6f;
-	return (cColor);
+
+    //float2 uv = input.uv;
+    //
+    //// Sample G-Buffer
+    //float4 color = gtxtTextureTexture.Sample(gssWrap, uv);
+    //float4 normalData = gtxtNormalTexture2.Sample(gssWrap, uv);
+    //float depth = gtxtzDepthTexture.Sample(gssWrap, uv).r;
+    //
+    //// Convert normal from [0, 1] to [-1, 1]
+    //float3 normal = normalize(normalData.rgb * 2.0 - 1.0);
+    //
+    //// Calculate lighting
+    //float4 light = gtxtIlluminationTexture.Sample(gssWrap,uv);
+    //
+    //// Combine albedo and light
+    //float4 Outcolor = lerp(color, light, 0.5f);
+    //
+    //return Outcolor;
+    float2 uv = input.uv;
+
+    // Sample G-Buffer
+    float4 albedo = gtxtTextureTexture.Sample(gssWrap, uv);
+    float4 normalData = gtxtNormalTexture.Sample(gssWrap, uv);
+    float4 specular = gtxtSpecularTexture.Sample(gssWrap, uv);
+    float depth = gtxtDepthTexture.Sample(gssWrap, uv).r;
+
+    // Reconstruct position from depth
+    float3 position = ReconstructPosition(uv, depth);
+
+    // Convert normal from [0, 1] to [-1, 1]
+    float3 normal = normalize(normalData.rgb * 2.0 - 1.0);
+
+    // Calculate lighting
+    float4 light = gtxtIlluminationTexture.Sample(gssWrap, uv);
+
+    // Combine albedo and light
+    float4 color = lerp(albedo, light, 0.5f);
+
+    return color;
+
 }
 
 

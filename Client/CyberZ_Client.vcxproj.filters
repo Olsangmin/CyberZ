@@ -142,6 +142,9 @@
     <ClCompile Include="LoadingScene.cpp">
       <Filter>09. Scene\09-02. LoadingScene</Filter>
     </ClCompile>
+    <ClCompile Include="PrepareScene.cpp">
+      <Filter>09. Scene\09-00. PlayScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameFramework.h">
@@ -215,6 +218,9 @@
     </ClInclude>
     <ClInclude Include="LoadingScene.h">
       <Filter>09. Scene\09-02. LoadingScene</Filter>
+    </ClInclude>
+    <ClInclude Include="PrepareScene.h">
+      <Filter>09. Scene\09-00. PlayScene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

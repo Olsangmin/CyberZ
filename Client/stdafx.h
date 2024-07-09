@@ -64,7 +64,7 @@ using namespace std;
 #include "Network.h"
 
 // 주석하면 서버없이 가능@@@@@@@@@
-#define USE_NETWORK 
+//#define USE_NETWORK 
 
 // =================================================
 
@@ -159,6 +159,7 @@ enum SCENENUM
 	LOADING_SCENE,
 	PREPARE_ROOM_SCENE,
 	FIRST_ROUND_SCENE,
+	SECOND_ROUND_SCENE,
 };
 
 

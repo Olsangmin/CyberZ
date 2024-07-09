@@ -17,6 +17,7 @@
 
 #include "Scene.h"
 #include "PlayScene.h"
+#include "PrepareScene.h"
 #include "StartScene.h"
 #include "LoadingScene.h"
 
@@ -40,13 +41,15 @@ public:
 	void CreateRenderTargetViews();
 	void CreateDepthStencilView();
 
-	void CreatePostPrecessShader();
-
 	void ChangeSwapChainState();
 
     void BuildObjects(int myPlayerNum);
 	void ReleaseObjects();
-	void ChangeScene(int nScene, int myPlayerNum);
+	
+	
+	void ChangeScene(SCENENUM nScene, int myPlayerNum);
+	void GetSceneInfo();
+	void SetSceneInfo();
 	void LoadingCHK();
 
     void AnimateObjects();
@@ -114,10 +117,10 @@ private:
 
 	_TCHAR						m_pszFrameRate[70];
 
-	int							m_nSceneNum = START_SCENE;	// 출력 씬 번호
+	SCENENUM					m_nSceneNum = START_SCENE;	// 출력 씬 번호
+	int							PlayerInfo[MAX_PLAYER];
 
 	int							m_nDrawOption = 84;
 	CPostProcessingShader		*m_pPostProcessingShader = NULL;
-	bool						m_bPostShader = false;
 };
 
