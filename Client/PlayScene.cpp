@@ -507,7 +507,9 @@ void CFirstRoundScene::ProcessPacket(char* p)
 
 	case SC_ATTACK_NPC: {
 		SC_ATTACK_NPC_PACKET* packet = reinterpret_cast<SC_ATTACK_NPC_PACKET*>(p);
-		cout << "[" << packet->p_id << "] »ç¸Á" << endl;
+		int n_id = packet->n_id - 100;
+		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetAttackStatus(true);
+		cout << "[" << packet->p_id << "] °ø°Ý" << endl;
 	}break;
 
 	case SC_GETKEY: {
