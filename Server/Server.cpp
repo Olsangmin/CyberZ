@@ -194,18 +194,10 @@ void Server::Worker_thread()
 
 		case OP_NPC_ATTACK: {
 			auto& npc = gMap.npcs[key - 100];
-
-			if (npc.current_behavior != ATTACK) break;
-
-			for (int id : gMap.cl_ids) {
-				SC_ATTACK_NPC_PACKET p;
-				p.size = sizeof(p);
-				p.type = SC_ATTACK_NPC;
-				p.n_id = npc.GetId();
-				p.p_id = npc.near_player;
-				clients[id].do_send(&p);
+			if (npc.current_behavior == ATTACK) {
+				std::cout << npc.near_player << "»ç¸Á" << std::endl;
 			}
-
+			npc.IsAttack = false;
 			delete ex_over;
 		}break;
 

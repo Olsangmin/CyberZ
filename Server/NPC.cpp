@@ -106,10 +106,27 @@ void NPC::Chase()
 
 void NPC::Attack()
 {
+	if (IsAttack == true) return;
+
+	IsAttack = true;
 	std::cout << "[" << id << "] Attack½ÃÀÛ [" << near_player << "] " << std::endl;
-	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(250), EV_NPC_ATTACK };
 	auto& server = Server::GetInstance();
+	for (int id : server.gMap.cl_ids) {
+		SC_ATTACK_NPC_PACKET p;
+		p.size = sizeof(p);
+		p.type = SC_ATTACK_NPC;
+		p.n_id = GetId();
+		p.p_id = near_player;
+		server.clients[id].do_send(&p);
+	}
+	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(1000), EV_NPC_ATTACK };
 	server.timer_queue.push(ev);
+}
+
+void NPC::PathClear()
+{
+	std::queue<DirectX::XMFLOAT3> q;
+	n_path = q;
 }
 
 

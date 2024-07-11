@@ -22,7 +22,7 @@ public:
 	void Chase();
 	void Attack();
 
-	
+	void PathClear();
 
 public:
 	NPC_STATE n_state;
@@ -35,6 +35,8 @@ public:
 	float distance_near;
 
 	std::atomic_bool is_active;
+
+	bool IsAttack = false;
 	std::queue<DirectX::XMFLOAT3> n_path;
 };
 

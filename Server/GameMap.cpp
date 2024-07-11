@@ -233,31 +233,38 @@ void GameMap::Update(int tick)
 		float current_dis = npc.distance_near;
 		
 		for (auto ids : cl_ids) {
+			if (players[ids].anim == CREEP) continue;
 			// 같은 섹터
 			if (npc.my_sector == getSector(players[ids].GetPos())) {
-				if (players[ids].anim == CREEP) continue;
-				npc.current_behavior = CHASE;
 				patrol = false;
+				
 				float distance = Distance_float(npc.GetPos(), players[ids].GetPos());
+				if ((npc.current_behavior == ATTACK) && (distance < 5.f) && (npc.near_player == ids))
+					break;
+				
 				
 				if (npc.near_player == ids) { // 동일 아이디면 dis만 업데이트
 					npc.distance_near = distance;
+					npc.current_behavior = CHASE;
 					if (npc.n_path.empty() == false) continue;
 				}
 				else {
 					if (current_dis > distance) { 
 						// 다른 플레이어로 교체
 						npc.distance_near = distance;
+						npc.current_behavior = CHASE;
 						npc.near_player = ids;
-						std::queue<DirectX::XMFLOAT3> q{};
-						npc.n_path = q;  
-                        
+						npc.PathClear();
 					}
 					else continue;
 				}
 
 				std::cout << "가까운 플레이어로 교체" << std::endl;
 				std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[npc.near_player].GetPos());
+				if ((path.size() == 0) && (npc.IsAttack == false)) {
+					npc.current_behavior = ATTACK;
+					break;
+				}
 				for (auto& p : path) {
 					npc.n_path.push(p);
 				}
@@ -281,6 +288,10 @@ void GameMap::Update(int tick)
 		
 		npc.DoWork();
 	}
+
+	
+
+	
 	
 }
 
@@ -429,15 +440,19 @@ std::vector<DirectX::XMFLOAT3> GameMap::BFS(const DirectX::XMFLOAT3& startPos, c
 	std::pair<int, int> startIndex = CoordsToIndex(startPos);
 	std::pair<int, int> targetIndex = CoordsToIndex(targetPos);
 
+	std::vector<DirectX::XMFLOAT3> path{};
+
 	// 시작 노드와 목표 노드를 생성합니다.
 	Node startNode(startIndex.first, startIndex.second, 0, 0, nullptr);
 	Node targetNode(targetIndex.first, targetIndex.second, 0, 0, nullptr);
+	if (startNode == targetNode)
+		return path;
 
 	// 방문 여부를 나타내는 2차원 배열을 초기화합니다.
 	std::vector<std::vector<bool>> visited(cellWidth, std::vector<bool>(cellDepth, false));
 
 	// 경로를 저장할 벡터를 생성합니다.
-	std::vector<DirectX::XMFLOAT3> path;
+	
 
 	// 너비 우선 탐색을 위한 큐를 생성하고 시작 노드를 추가합니다.
 	std::queue<Node*> queue;
