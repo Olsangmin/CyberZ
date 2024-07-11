@@ -601,8 +601,8 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	CLoadedModelInfo* pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot2.bin", NULL);
 	m_pBoss = new CBossRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 7);
-	m_pBoss->m_pSkinnedAnimationController->SetTrackAnimationSet(1, 1);
-	m_pBoss->SetPosition(311, 0, 145);
+	m_pBoss->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_pBoss->SetPosition(XMFLOAT3(400.f, 0.f, 650.f));
 	m_pBoss->SetScale(8.0f, 8.0f, 8.0f);
 
 	if (pRobotModel) delete pRobotModel;

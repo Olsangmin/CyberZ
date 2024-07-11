@@ -439,8 +439,8 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 
 	// Make Scene
 	// Ã³À½ ¾À ºôµå
-	m_nSceneNum = START_SCENE;
-	m_pScene = new CStartScene();
+	m_nSceneNum = SECOND_ROUND_SCENE;
+	m_pScene = new CSecondRoundScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
 
 	m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
