@@ -238,17 +238,21 @@ void GameMap::Update(int tick)
 			if (npc.my_sector == getSector(players[ids].GetPos())) {
 				patrol = false;
 				
-				npc.current_behavior = CHASE;
 				float distance = Distance_float(npc.GetPos(), players[ids].GetPos());
+				if ((npc.current_behavior == ATTACK) && (distance < 5.f) && (npc.near_player == ids))
+					break;
+				
 				
 				if (npc.near_player == ids) { // 동일 아이디면 dis만 업데이트
 					npc.distance_near = distance;
+					npc.current_behavior = CHASE;
 					if (npc.n_path.empty() == false) continue;
 				}
 				else {
 					if (current_dis > distance) { 
 						// 다른 플레이어로 교체
 						npc.distance_near = distance;
+						npc.current_behavior = CHASE;
 						npc.near_player = ids;
 						npc.PathClear();
 					}
