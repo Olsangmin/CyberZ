@@ -671,7 +671,7 @@ void CGameFramework::FrameAdvance()
 
     AnimateObjects();
 
-	LoadingCHK();
+ 	LoadingCHK();
 
 	HRESULT hResult = m_pd3dCommandAllocator->Reset();
 	hResult = m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
