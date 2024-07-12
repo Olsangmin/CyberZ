@@ -569,25 +569,40 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	// 3 - ¸Ê 2(ÁÂÇÏ´Ü)			|| OBJ
 	// 4 - Á¡·É ¹Ì¼Ç¿ë obj		|| OBJ
 
-	m_nHierarchicalGameObjects = 2;
+	m_nHierarchicalGameObjects = 3;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
 	// 1 - obj1
-	CLoadedModelInfo* pfenceModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2InsideObj.bin", NULL);
-	m_ppHierarchicalGameObjects[0] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pfenceModel);
+	CLoadedModelInfo* pInsideModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2InsideObj.bin", NULL);
+	m_ppHierarchicalGameObjects[0] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pInsideModel);
 	m_ppHierarchicalGameObjects[0]->SetScale(10, 10, 10);
-	m_ppHierarchicalGameObjects[0]->SetPosition(250, 0, 250);
-	if (pfenceModel) delete pfenceModel;
+	m_ppHierarchicalGameObjects[0]->SetPosition(165, 0, 320);
+	if (pInsideModel) delete pInsideModel;
 
-	CLoadedModelInfo* pMapModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2Test.bin", NULL);
-	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel);
-	m_ppHierarchicalGameObjects[1]->SetPosition(250, 0, 250);
-	if (pMapModel) delete pMapModel;
+	CLoadedModelInfo* pOutlineBBModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2OutBB.bin", NULL);
+	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pOutlineBBModel);
+	m_ppHierarchicalGameObjects[1]->SetScale(10, 10, 10);
+	m_ppHierarchicalGameObjects[1]->SetPosition(165, 0, 320);
+	if (pOutlineBBModel) delete pOutlineBBModel;
+	
+	CLoadedModelInfo* pMainModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2.bin", NULL);
+	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMainModel);
+	m_ppHierarchicalGameObjects[2]->SetScale(10, 10, 10);
+	m_ppHierarchicalGameObjects[2]->SetPosition(129, 0, 296);
+	if (pMainModel) delete pMainModel;
 
-	m_nFloorObj = 0;
+	m_nFloorObj = 2;
 	m_ppFloorObj = new CFloorObj * [m_nFloorObj];
 
-
+	CLoadedModelInfo* pFloormodel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2Ground.bin", NULL);
+	m_ppFloorObj[0] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFloormodel);
+	m_ppFloorObj[0]->SetPosition(0, 0.5, 0);
+	if (pFloormodel) delete pFloormodel;
+	
+	CLoadedModelInfo* pOutmodel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2OutLine.bin", NULL);
+	m_ppFloorObj[1] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pOutmodel);
+	if (pOutmodel) delete pOutmodel;
+	
 	//===============================//
 	// Mission Obj(1)
 	m_nMissionObj = 0;
@@ -662,8 +677,8 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	if (myPlayernum != 4) playernum = myPlayernum;
 
 	m_pMyPlayer = m_ppPlayer[playernum];
-	// m_pMyPlayer->SetPosition(XMFLOAT3(50.f, 0.f, 70.f));
 	m_pMyPlayer->SetPosition(PlayerInitPos[playernum]);
+	m_pMyPlayer->SetPosition(XMFLOAT3(300.f, 0.f, 100.f));
 	m_pMyPlayer->ChangeCamera(SHOULDER_VIEW_CAMERA, 0.0f);
 	m_pMyPlayer->m_bUnable = true;
 
