@@ -141,31 +141,16 @@ VS_STANDARD_OUTPUT VSSkinnedAnimationStandard(VS_SKINNED_STANDARD_INPUT input)
 {
 	VS_STANDARD_OUTPUT output;
 
-	//output.positionW = float3(0.0f, 0.0f, 0.0f);
-	//output.normalW = float3(0.0f, 0.0f, 0.0f);
-	//output.tangentW = float3(0.0f, 0.0f, 0.0f);
-	//output.bitangentW = float3(0.0f, 0.0f, 0.0f);
-	//matrix mtxVertexToBoneWorld;
-	//for (int i = 0; i < MAX_VERTEX_INFLUENCES; i++)
-	//{
-	//	mtxVertexToBoneWorld = mul(gpmtxBoneOffsets[input.indices[i]], gpmtxBoneTransforms[input.indices[i]]);
-	//	output.positionW += input.weights[i] * mul(float4(input.position, 1.0f), mtxVertexToBoneWorld).xyz;
-	//	output.normalW += input.weights[i] * mul(input.normal, (float3x3)mtxVertexToBoneWorld);
-	//	output.tangentW += input.weights[i] * mul(input.tangent, (float3x3)mtxVertexToBoneWorld);
-	//	output.bitangentW += input.weights[i] * mul(input.bitangent, (float3x3)mtxVertexToBoneWorld);
-	//}
+
 	float4x4 mtxVertexToBoneWorld = (float4x4)0.0f;
 	for (int i = 0; i < MAX_VERTEX_INFLUENCES; i++)
 	{
-//		mtxVertexToBoneWorld += input.weights[i] * gpmtxBoneTransforms[input.indices[i]];
 		mtxVertexToBoneWorld += input.weights[i] * mul(gpmtxBoneOffsets[input.indices[i]], gpmtxBoneTransforms[input.indices[i]]);
 	}
 	output.positionW = mul(float4(input.position, 1.0f), mtxVertexToBoneWorld).xyz;
 	output.normalW = mul(input.normal, (float3x3)mtxVertexToBoneWorld).xyz;
 	output.tangentW = mul(input.tangent, (float3x3)mtxVertexToBoneWorld).xyz;
 	output.bitangentW = mul(input.bitangent, (float3x3)mtxVertexToBoneWorld).xyz;
-
-//	output.positionW = mul(float4(input.position, 1.0f), gmtxGameObject).xyz;
 
 	output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
 	output.uv = input.uv;
@@ -308,7 +293,7 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTexturedLightingToMultipleRTs(VS_STANDARD_OU
     float4 cEmissionColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
     if (gnTexturesMask & MATERIAL_EMISSION_MAP) cEmissionColor = gtxtEmissionTexture.Sample(gssWrap, input.uv);
 
-    float4 cColor = (cAlbedoColor * 1.0) + (cSpecularColor * 1.0) + (cMetallicColor * 0.1) + (cEmissionColor * 10.0);
+    float4 cColor = (cAlbedoColor * 1.0) + (cSpecularColor * 0.3) + (cMetallicColor * 0.1) + (cEmissionColor * 1.0);
     cColor.a *= cAlbedoColor.a;
     output.color = cColor;
 
@@ -321,7 +306,7 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTexturedLightingToMultipleRTs(VS_STANDARD_OU
     {
         float3x3 TBN = float3x3(normalize(input.tangentW), normalize(input.bitangentW), normalize(input.normalW));
         float3 vNormal = normalize(cNormalColor.rgb * 2.0f - 1.0f); //[0, 1] ¡æ [-1, 1]
-        normalW = normalize(mul(vNormal, TBN));
+        normalW = normalize(vNormal);
     }
     else
     {
@@ -454,28 +439,11 @@ float3 ReconstructPosition(float2 uv, float depth)
 float4 PSScreenRectSamplingTextured(VS_SCREEN_RECT_TEXTURED_OUTPUT input) : SV_Target
 {
 
-    //float2 uv = input.uv;
-    //
-    //// Sample G-Buffer
-    //float4 color = gtxtTextureTexture.Sample(gssWrap, uv);
-    //float4 normalData = gtxtNormalTexture2.Sample(gssWrap, uv);
-    //float depth = gtxtzDepthTexture.Sample(gssWrap, uv).r;
-    //
-    //// Convert normal from [0, 1] to [-1, 1]
-    //float3 normal = normalize(normalData.rgb * 2.0 - 1.0);
-    //
-    //// Calculate lighting
-    //float4 light = gtxtIlluminationTexture.Sample(gssWrap,uv);
-    //
-    //// Combine albedo and light
-    //float4 Outcolor = lerp(color, light, 0.5f);
-    //
-    //return Outcolor;
     float2 uv = input.uv;
 
     // Sample G-Buffer
-    float4 albedo = gtxtTextureTexture.Sample(gssWrap, uv);
-    float4 normalData = gtxtNormalTexture.Sample(gssWrap, uv);
+    float4 color = gtxtTextureTexture.Sample(gssWrap, uv);
+    float4 normalData = gtxtNormalTexture2.Sample(gssWrap, uv);
     float4 specular = gtxtSpecularTexture.Sample(gssWrap, uv);
     float depth = gtxtDepthTexture.Sample(gssWrap, uv).r;
 
@@ -489,9 +457,9 @@ float4 PSScreenRectSamplingTextured(VS_SCREEN_RECT_TEXTURED_OUTPUT input) : SV_T
     float4 light = gtxtIlluminationTexture.Sample(gssWrap, uv);
 
     // Combine albedo and light
-    float4 color = lerp(albedo, light, 0.5f);
+    float4 outcolor = lerp(color, light, 0.5f);
 
-    return color;
+    return outcolor;
 
 }
 
