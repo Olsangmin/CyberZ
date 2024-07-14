@@ -710,28 +710,36 @@ bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget, XM
 			co[i] = XMLoadFloat3(&corner[i]);
 
 		if (pBase->m_xmBoundingBox.Intersects(co[0], co[1], co[2])) {
-				out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[1] - co[0], co[2] - co[0])));
+			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[1] - co[0], co[2] - co[0])));
+			return(true);
 		}
 		if (pBase->m_xmBoundingBox.Intersects(co[0], co[2], co[3])) {
 			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[2] - co[0], co[3] - co[0])));
+			return(true);
 		}
 		if (pBase->m_xmBoundingBox.Intersects(co[4], co[0], co[3])) {
 			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[0] - co[4], co[3] - co[4])));
+			return(true);
 		}
 		if (pBase->m_xmBoundingBox.Intersects(co[4], co[3], co[7])) {
 			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[3] - co[4], co[7] - co[4])));
+			return(true);
 		}
 		if (pBase->m_xmBoundingBox.Intersects(co[5], co[4], co[7])) {
 			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[4] - co[5], co[7] - co[5])));
+			return(true);
 		}
 		if (pBase->m_xmBoundingBox.Intersects(co[5], co[7], co[6])) {
 			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[7] - co[5], co[6] - co[5])));
+			return(true);
 		}
 		if (pBase->m_xmBoundingBox.Intersects(co[1], co[5], co[6])) {
 			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[5] - co[1], co[6] - co[1])));
+			return(true);
 		}
 		if (pBase->m_xmBoundingBox.Intersects(co[1], co[6], co[2])) {
 			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[6] - co[1], co[2] - co[1])));
+			return(true);
 		}
 	
 		return(true);

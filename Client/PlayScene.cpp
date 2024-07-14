@@ -303,9 +303,10 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 			break;
 		}
 		case 'L': {
-			reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->SetAttackStatus(true);
+			/*reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->SetAttackStatus(true);
 			reinterpret_cast<CRobotObject*>(m_ppEnemy[1])->SetAttackStatus(true);
-			reinterpret_cast<CRobotObject*>(m_ppEnemy[2])->SetAttackStatus(true);
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[2])->SetAttackStatus(true);*/
+			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[0])->SetCrawl(true);
 			break;
 		}
 		case 'F': {
