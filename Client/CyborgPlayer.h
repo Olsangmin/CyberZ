@@ -42,6 +42,7 @@ public:
 	bool							m_bIsCreep{ false };
 	bool							m_bIsCreep_flag{ false };
 	bool							m_bIsJump{ false };
+	bool							m_bIsCrawl{ false };
 
 	bool							m_bHasStaminer{ true };
 
@@ -81,6 +82,7 @@ public:
 	virtual void SetCreep();
 	virtual void SetCreepFlag();
 	virtual void SetJump();
+	virtual void SetCrawl(bool IsCrawl) { m_bIsCrawl = IsCrawl; }
 
 	virtual void IsIdle();
 	virtual void IsRun();

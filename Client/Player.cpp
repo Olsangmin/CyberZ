@@ -238,7 +238,6 @@ void CPlayer::Update(float fTimeElapsed)
 	UpdatePlayerPostion(fTimeElapsed);
 	UpdateCameraPosition(fTimeElapsed);
 	UpdateFriction(fTimeElapsed);
-	reinterpret_cast<CThirdPersonCamera*>(m_pCamera)->GenerateFrustum();
 
 #ifdef USE_NETWORK
 	SendPacket();

@@ -328,9 +328,10 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 			break;
 		}
 		case 'L': {
-			reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->SetAttackStatus(true);
+			/*reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->SetAttackStatus(true);
 			reinterpret_cast<CRobotObject*>(m_ppEnemy[1])->SetAttackStatus(true);
-			reinterpret_cast<CRobotObject*>(m_ppEnemy[2])->SetAttackStatus(true);
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[2])->SetAttackStatus(true);*/
+			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[0])->SetCrawl(true);
 			break;
 		}
 		case 'F': {
@@ -532,6 +533,18 @@ void CFirstRoundScene::ProcessPacket(char* p)
 		SC_ATTACK_NPC_PACKET* packet = reinterpret_cast<SC_ATTACK_NPC_PACKET*>(p);
 		int n_id = packet->n_id - 100;
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetAttackStatus(true);
+		//------------------------
+		int id = packet->p_id;
+		auto& it = idANDtype.find(id);
+		if (id == my_id) break;
+
+		if (it == idANDtype.end()) break;
+		else {
+			Player_Character_Type type = it->second;
+			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->GetPosition();
+		}
+		//------------------------
+		
 		cout << "[" << packet->p_id << "] АјАн" << endl;
 	}break;
 
@@ -640,7 +653,7 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CLoadedModelInfo* pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot2.bin", NULL);
 	m_pBoss = new CBossRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 7);
 	m_pBoss->m_pSkinnedAnimationController->SetTrackAnimationSet(1, 1);
-	m_pBoss->SetPosition(311, 0, 145);
+	m_pBoss->SetPosition(NPCInitPos[1]);
 	m_pBoss->SetScale(8.0f, 8.0f, 8.0f);
 
 	if (pRobotModel) delete pRobotModel;
