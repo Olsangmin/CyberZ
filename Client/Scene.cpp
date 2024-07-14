@@ -166,7 +166,6 @@ void CScene::ReleaseObjects()
 
 	if (m_pBoss) {
 		m_pBoss->Release();
-		delete m_pBoss;
 	}
 
 	ReleaseShaderVariables();
