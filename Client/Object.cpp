@@ -1246,7 +1246,7 @@ void CRobotObject::MoveToTarget()
 
 
 	Vector3::IsZero(m_xmf3Target) ?
-		m_pasNextAni = IDLE : RotateDirection(20.f), m_pasNextAni = WALK;
+		m_pasNextAni = IDLE : RotateDirection(20.f, m_xmf3Target), m_pasNextAni = WALK;
 	if (!Vector3::IsZero(m_xmf3Target))
 		Vector3::IsZero(Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()))) ?
 		m_pasNextAni = IDLE : MoveForward(0.34f), m_pasNextAni = WALK;
@@ -1254,14 +1254,13 @@ void CRobotObject::MoveToTarget()
 
 }
 
-void CRobotObject::RotateDirection(float fAngle)
+bool CRobotObject::RotateDirection(float fAngle, XMFLOAT3& xmf3Target)
 {
-	XMFLOAT3 xmfVel = Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()));
-	if (Vector3::IsZero(xmfVel))m_xmf3Target = XMFLOAT3(0.f, 0.f, 0.f);
+	XMFLOAT3 xmfVel = Vector3::XMVectorToFloat3(XMLoadFloat3(&xmf3Target) - XMLoadFloat3(&GetPosition()));
+	if (Vector3::IsZero(xmfVel))xmf3Target = XMFLOAT3(0.f, 0.f, 0.f);
 
 	float fCurrentAngle = Vector3::Angle(Vector3::Normalize(xmfVel), GetLook());
-
-	if (fCurrentAngle > 0) {
+	if (fCurrentAngle > 1) {
 
 		XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&GetUp()), XMConvertToRadians(fAngle));
 		XMFLOAT3 xmf3Look = Vector3::TransformNormal(GetLook(), xmmtxRotate);
@@ -1269,7 +1268,9 @@ void CRobotObject::RotateDirection(float fAngle)
 		float fNextAngle = Vector3::Angle(Vector3::Normalize(xmfVel), xmf3Look);
 
 		fCurrentAngle >= fNextAngle ? Rotate(0.0f, (fCurrentAngle - fNextAngle) / 1.5, 0.0f) : Rotate(0.0f, -(fNextAngle - fCurrentAngle) / 1.5, 0.0f);
+		return 0;
 	}
+	else return 1;
 }
 
 void CRobotObject::AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2)
@@ -1311,6 +1312,19 @@ bool CRobotObject::IsAttackP()
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 			m_pSkinnedAnimationController->SetTrackType(RUN, ANIMATION_TYPE_ONCE);
 			m_pSkinnedAnimationController->SetTrackSpeed(0, 0.3f);
+		}
+		XMFLOAT3 xmfVel = Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()));
+		if (Vector3::IsZero(xmfVel))m_xmf3Target = XMFLOAT3(0.f, 0.f, 0.f);
+
+		float fCurrentAngle = Vector3::Angle(Vector3::Normalize(xmfVel), GetLook());
+		if (fCurrentAngle > 1) {
+
+			XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&GetUp()), XMConvertToRadians(fCurrentAngle));
+			XMFLOAT3 xmf3Look = Vector3::TransformNormal(GetLook(), xmmtxRotate);
+
+			float fNextAngle = Vector3::Angle(Vector3::Normalize(xmfVel), xmf3Look);
+
+			fCurrentAngle >= fNextAngle ? Rotate(0.0f, (fCurrentAngle - fNextAngle), 0.0f) : Rotate(0.0f, -(fNextAngle - fCurrentAngle), 0.0f);
 		}
 		CAnimationTrack AnimationTrack = m_pSkinnedAnimationController->m_pAnimationTracks[RUN];
 		CAnimationSet* pAnimationSet = m_pSkinnedAnimationController->m_pAnimationSets->m_pAnimationSets[AnimationTrack.m_nAnimationSet];

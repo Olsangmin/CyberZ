@@ -275,7 +275,8 @@ bool CFirstRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* 
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) {
 			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(-1);
-			m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
+			if(!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCrawl)
+				m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
 		}
 	}
 
@@ -306,7 +307,7 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 			/*reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->SetAttackStatus(true);
 			reinterpret_cast<CRobotObject*>(m_ppEnemy[1])->SetAttackStatus(true);
 			reinterpret_cast<CRobotObject*>(m_ppEnemy[2])->SetAttackStatus(true);*/
-			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[0])->SetCrawl(true);
+			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->SetCrawl(true);
 			break;
 		}
 		case 'F': {
@@ -508,19 +509,20 @@ void CFirstRoundScene::ProcessPacket(char* p)
 
 	case SC_ATTACK_NPC: {
 		SC_ATTACK_NPC_PACKET* packet = reinterpret_cast<SC_ATTACK_NPC_PACKET*>(p);
-		int n_id = packet->n_id - 100;
-		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetAttackStatus(true);
 		//------------------------
 		int id = packet->p_id;
 		auto& it = idANDtype.find(id);
-		if (id == my_id) break;
-
+		XMFLOAT3 xmf3{};
 		if (it == idANDtype.end()) break;
 		else {
 			Player_Character_Type type = it->second;
-			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->GetPosition();
+			xmf3 = reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->GetPosition();
 		}
 		//------------------------
+		int n_id = packet->n_id - 100;
+		//
+		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(xmf3);
+		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetAttackStatus(true);
 		
 		cout << "[" << packet->p_id << "] АјАн" << endl;
 	}break;

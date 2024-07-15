@@ -269,7 +269,8 @@ void CyborgPlayer::Update(float fTimeElapsed)
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
 		if (::IsZero(fLength))
 		{
-			IsIdle();
+			if(!m_bIsCrawl)IsIdle();
+			else { IsCrawl(); }
 		}
 	}
 
@@ -502,7 +503,14 @@ void CyborgPlayer::IsCreep()
 
 void CyborgPlayer::IsCrawl()
 {
-
+	if (m_pasCurrentAni != CRAWL && m_bIsCrawl && !m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+		SetVelocity(XMFLOAT3(0.f, 0.f, 0.f));
+		m_bIsCreep = false;
+		m_bIsRun = false;
+		m_pasNextAni = CRAWL;
+		m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+		AnimationPacket(m_pasNextAni);
+	}
 }
 
 void CyborgPlayer::IsWalk()

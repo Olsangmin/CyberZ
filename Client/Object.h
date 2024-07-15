@@ -376,7 +376,7 @@ public:
 
 	void SetAttackStatus(bool status) { m_bAttackStatus = status; }
 	void MoveToTarget();
-	void RotateDirection(float fAngle);
+	bool RotateDirection(float fAngle, XMFLOAT3& xmf3Target);
 
 	void AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2);
 
