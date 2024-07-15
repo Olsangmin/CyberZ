@@ -46,6 +46,15 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	if (pMiddleContainer) delete pMiddleContainer;
 
 
+	// Floor
+	m_nFloorObj = 1;
+	m_ppFloorObj = new CFloorObj * [m_nFloorObj];
+
+	CLoadedModelInfo* pFloormodel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/StandardFloor.bin", NULL);
+	m_ppFloorObj[0] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFloormodel);
+	m_ppFloorObj[0]->SetScale(3.f, 0.f, 3.f);
+	m_ppFloorObj[0]->SetPosition(-30, 0.2, -10);
+	if (pFloormodel) delete pFloormodel;
 
 	//===============================//
 	// Player
@@ -201,31 +210,47 @@ bool CPrepareRoomScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 
 		default:
 			break;
-
-
 		}
 
 	}
 	}
-
-
 	CScene::OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 	return false;
 }
 
 void CPrepareRoomScene::ReleaseObjects()
 {
+	if (m_ppFloorObj)
+	{
+		for (int i = 0; i < m_nFloorObj; i++) if (m_ppFloorObj[i])
+		{
+			m_ppFloorObj[i]->ReleaseUploadBuffers();
+			m_ppFloorObj[i]->Release();
+		}
+		delete[] m_ppFloorObj;
+	}
 	CScene::ReleaseObjects();
 }
 
 void CPrepareRoomScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	CScene::Render(pd3dCommandList, pCamera);
+	for (int i = 0; i < m_nFloorObj; i++)
+	{
+		if (m_ppFloorObj[i])
+		{
+			if (!m_ppFloorObj[i]->m_pSkinnedAnimationController) m_ppFloorObj[i]->UpdateTransform(NULL);
+			m_ppFloorObj[i]->Animate(m_fElapsedTime);
+			m_ppFloorObj[i]->Render(pd3dCommandList, pCamera);
+		}
+	}
 }
 
 void CPrepareRoomScene::ReleaseUploadBuffers()
 {
 	CScene::ReleaseUploadBuffers();
+	for (int i = 0; i < m_nFloorObj; i++) m_ppFloorObj[i]->ReleaseUploadBuffers();
+
 
 }
 

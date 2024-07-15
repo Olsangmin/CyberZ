@@ -60,19 +60,44 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	if (pMapModel4) delete pMapModel4;
 
 
-	m_nFloorObj = 3;
+	m_nFloorObj = 19;
 	m_ppFloorObj = new CFloorObj * [m_nFloorObj];
 
 	CLoadedModelInfo* pFloormodel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/Occ_Range.bin", NULL);
 	m_ppFloorObj[0] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFloormodel);
-	m_ppFloorObj[0]->SetPosition(100.f, 0.0f, 930.f);
+	m_ppFloorObj[0]->SetPosition(100.f, 0.3f, 930.f);
 
 	m_ppFloorObj[1] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFloormodel);
-	m_ppFloorObj[1]->SetPosition(650.f, 0.f, 100.f);
+	m_ppFloorObj[1]->SetPosition(650.f, 0.3f, 100.f);
 
 	m_ppFloorObj[2] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFloormodel);
-	m_ppFloorObj[2]->SetPosition(500.f, 0.f, 500.f);
+	m_ppFloorObj[2]->SetPosition(500.f, 0.3f, 500.f);
 	if (pFloormodel) delete pFloormodel;
+
+	CLoadedModelInfo* pMainFloormodel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/StandardFloor.bin", NULL);
+
+	for (int i = 0; i < 4; i++)
+	{
+
+		m_ppFloorObj[3+i*4] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMainFloormodel);
+		m_ppFloorObj[3+i*4]->SetScale(3.f, 0.f, 3.f);
+		m_ppFloorObj[3+i*4]->SetPosition(-200.f, 0.3f, i*400-200.f);
+
+		m_ppFloorObj[4 + i * 4] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMainFloormodel);
+		m_ppFloorObj[4 + i * 4]->SetScale(3.f, 0.f, 3.f);
+		m_ppFloorObj[4 + i * 4]->SetPosition(200.f, 0.3f, i * 400 - 200.f);
+		
+		m_ppFloorObj[5 + i * 4] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMainFloormodel);
+		m_ppFloorObj[5 + i * 4]->SetScale(3.f, 0.f, 3.f);
+		m_ppFloorObj[5 + i * 4]->SetPosition(600.f, 0.3f, i * 400 - 200.f);
+
+		m_ppFloorObj[6 + i * 4] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMainFloormodel);
+		m_ppFloorObj[6 + i * 4]->SetScale(3.f, 0.f, 3.f);
+		m_ppFloorObj[6 + i * 4]->SetPosition(1000.f, 0.3f, i * 400 - 200.f);
+
+	}
+
+	if (pMainFloormodel) delete pMainFloormodel;
 
 	//===============================//
 	// Mission Obj(1)
@@ -367,7 +392,6 @@ void CFirstRoundScene::AnimateObjects(float fTimeElapsed)
 					Missionflag = true;
 				}
 			}
-
 		}
 		else{
 			for (int j = 0; j < m_nPlayer; j++) if (m_ppPlayer[j]) {
@@ -376,7 +400,6 @@ void CFirstRoundScene::AnimateObjects(float fTimeElapsed)
 					Missionflag = true;
 				}
 			}
-
 		}
 
 
