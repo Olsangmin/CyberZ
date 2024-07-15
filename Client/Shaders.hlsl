@@ -459,6 +459,7 @@ float4 PSScreenRectSamplingTextured(VS_SCREEN_RECT_TEXTURED_OUTPUT input) : SV_T
     float3 normal = normalize(normalData.rgb * 2.0 - 1.0);
 
     // Calculate lighting
+    //float4 light = Lighting(input.position.xyz, normalData.rgb);
     float4 light = gtxtIlluminationTexture.Sample(gssWrap, uv);
 
     // Combine albedo and light
