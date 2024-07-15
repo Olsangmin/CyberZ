@@ -293,7 +293,6 @@ void CThirdPersonCamera::Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed)
 			SetLookAt(xmf3LookAt);
 		}
 		RegenerateViewMatrix();
-		GenerateFrustum();
 	}
 }
 
