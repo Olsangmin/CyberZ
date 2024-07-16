@@ -105,5 +105,14 @@ void Session::send_move_npc_packet(int n_id, DirectX::XMFLOAT3 pos)
 	do_send(&p);
 }
 
+void Session::send_player_death_packet(int p_id)
+{
+	SC_PLAYER_DEATH_PACKET p;
+	p.size = sizeof(p);
+	p.type = SC_PLAYER_DEATH;
+	p.id = p_id;
+	do_send(&p);
+}
+
 
 

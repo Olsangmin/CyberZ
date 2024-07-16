@@ -78,6 +78,7 @@ CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 
 CyborgPlayer::~CyborgPlayer()
 {
+
 }
 
 CCamera* CyborgPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)

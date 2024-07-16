@@ -196,6 +196,10 @@ void Server::Worker_thread()
 			auto& npc = gMap.npcs[key - 100];
 			if (npc.current_behavior == ATTACK) {
 				std::cout << npc.near_player << "사망" << std::endl;
+				clients[npc.near_player].anim = CRAWL;
+				for (int id : gMap.cl_ids) {
+					clients[id].send_player_death_packet(npc.near_player);
+				}
 			}
 			npc.IsAttack = false;
 			delete ex_over;
@@ -338,12 +342,6 @@ void Server::Process_packet(int c_id, char* packet)
 		// std::cout << "Client[" << c_id << "] Anim_Change. \n";
 	}
 					   break;
-	case CS_TEST: {
-		CS_TEST_PACKET* p = reinterpret_cast<CS_TEST_PACKET*>(packet);
-		// gMap.StartGame();
-
-	}
-				break;
 
 	case CS_CHANGE_CHARACTER: {
 		CS_CHANGE_CHARACTER_PACKET* p = reinterpret_cast<CS_CHANGE_CHARACTER_PACKET*>(packet);
@@ -377,6 +375,23 @@ void Server::Process_packet(int c_id, char* packet)
 		}
 
 	}break;
+
+	case CS_ALIVE_PLAYER: {
+		CS_ALIVE_PLAYER_PACKET* p = reinterpret_cast<CS_ALIVE_PLAYER_PACKET*>(packet);
+		clients[c_id].anim = IDLE;
+		SC_PLAYER_ALIVE_PACKET alivePacket;
+		alivePacket.size = sizeof(alivePacket);
+		alivePacket.type = SC_PLAYER_ALIVE;
+		alivePacket.id = c_id;
+		for (auto id : gMap.cl_ids) {
+			clients[id].do_send(&alivePacket);
+		}
+	}break;
+
+	case CS_TEST: {
+		CS_TEST_PACKET* p = reinterpret_cast<CS_TEST_PACKET*>(packet);
+
+	} break;
 
 	default: {
 		std::cout << "정의되지 않은 패킷 - " << packet[1] << "\n" << std::endl;

@@ -43,8 +43,10 @@ constexpr char CS_CHANGE_ANIM = 4; // 애니메이션 변경
 constexpr char CS_CHANGE_CHARACTER = 5; // 캐릭터 변경
 constexpr char CS_ALLPLAYER_READY = 6; // 게임 시작(방장)
 constexpr char CS_GAME_START = 7; // 게임 시작(서버)
+constexpr char CS_ALIVE_PLAYER = 8;
 
-constexpr char CS_GETKEY = 11;
+
+constexpr char CS_GETKEY = 21;
 
 constexpr char CS_TEST = 200;
 
@@ -59,9 +61,11 @@ constexpr char SC_GAME_START = 6;
 constexpr char SC_ADD_NPC = 7;
 constexpr char SC_MOVE_NPC = 8;
 constexpr char SC_ATTACK_NPC = 9;
+constexpr char SC_PLAYER_DEATH = 10;
+constexpr char SC_PLAYER_ALIVE = 11;
 
 
-constexpr char SC_GETKEY = 11;
+constexpr char SC_GETKEY = 21;
 
 
 constexpr char SC_TEST = 200;
@@ -128,6 +132,12 @@ struct CS_ALLPLAYER_READY_PACKET {
 struct CS_GETKEY_PACKET {
 	unsigned char size;
 	char	type;
+};
+
+struct CS_ALIVE_PLAYER_PACKET {
+	unsigned char size;
+	char	type;
+	int id;
 };
 
 struct CS_TEST_PACKET {
@@ -224,6 +234,18 @@ struct SC_MESSAGE_PACKET {
 	char	type;
 	int id;
 	std::string message;
+};
+
+struct SC_PLAYER_DEATH_PACKET {
+	unsigned char size;
+	char	type;
+	int id;
+};
+
+struct SC_PLAYER_ALIVE_PACKET {
+	unsigned char size;
+	char	type;
+	int id;
 };
 
 struct SC_TEST_PACKET {

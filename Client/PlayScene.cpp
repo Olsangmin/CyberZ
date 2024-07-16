@@ -329,10 +329,11 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 			break;
 		}
 		case 'L': {
-			/*reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->SetAttackStatus(true);
-			reinterpret_cast<CRobotObject*>(m_ppEnemy[1])->SetAttackStatus(true);
-			reinterpret_cast<CRobotObject*>(m_ppEnemy[2])->SetAttackStatus(true);*/
-			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->SetCrawl(true);
+			CS_ALIVE_PLAYER_PACKET p;
+			p.size = sizeof(p);
+			p.type = CS_ALIVE_PLAYER;
+			p.id = my_id;
+			send_packet(&p);
 			break;
 		}
 		case 'F': {
@@ -547,7 +548,6 @@ void CFirstRoundScene::ProcessPacket(char* p)
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(xmf3);
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetAttackStatus(true);
 		
-		cout << "[" << packet->p_id << "] АјАн" << endl;
 	}break;
 
 	case SC_GETKEY: {
@@ -565,9 +565,37 @@ void CFirstRoundScene::ProcessPacket(char* p)
 
 	}break;
 
+	case SC_PLAYER_DEATH: {
+		SC_PLAYER_DEATH_PACKET* packet = reinterpret_cast<SC_PLAYER_DEATH_PACKET*>(p);
+		
+		int id = packet->id;
+		auto& it = idANDtype.find(id);
+		if (it == idANDtype.end()) break;
+		else {
 
-	default:
+			Player_Character_Type type = it->second;
+			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->SetCrawl(true);
+		}
+
+	}break;
+
+	case SC_PLAYER_ALIVE: {
+		SC_PLAYER_ALIVE_PACKET* packet = reinterpret_cast<SC_PLAYER_ALIVE_PACKET*>(p);
+		int id = packet->id;
+		auto& it = idANDtype.find(id);
+		if (it == idANDtype.end()) break;
+		else {
+
+			Player_Character_Type type = it->second;
+			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->SetCrawl(false);
+		}
+	}break;
+						
+
+	default: {
 		printf("Scene[Stage1] - Unknown PACKET type [%d]\n", p[1]);
+		break;
+	}
 	}
 }
 
@@ -578,13 +606,6 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 {
 
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
-
-#ifdef USE_NETWORK
-	CS_GAMESTART_PACKET p;
-	p.size = sizeof(p);
-	p.type = CS_GAME_START;
-	send_packet(&p);
-#endif // USE_NETWORK
 
 	m_pUI = new CSecondRoundSceneUI();
 
@@ -977,6 +998,6 @@ void CSecondRoundScene::ProcessPacket(char* p)
 
 
 	default:
-		printf("Scene[Stage1] - Unknown PACKET type [%d]\n", p[1]);
+		printf("Scene[Stage2] - Unknown PACKET type [%d]\n", p[1]);
 	}
 }

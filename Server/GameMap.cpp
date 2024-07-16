@@ -234,6 +234,7 @@ void GameMap::Update(int tick)
 		
 		for (auto ids : cl_ids) {
 			if (players[ids].anim == CREEP) continue;
+			if (players[ids].anim == CRAWL) continue;
 			// 같은 섹터
 			if (npc.my_sector == getSector(players[ids].GetPos())) {
 				patrol = false;
