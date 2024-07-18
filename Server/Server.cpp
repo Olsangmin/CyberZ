@@ -72,7 +72,8 @@ void Server::Network()
 		if (fps.count() < 1) continue;
 
 
-		if (frame_count.count() & 1) {
+		if (frame_count.count() == 0) {
+			// std::cout << "PLAYER UPDATE" << std::endl;
 			SC_UPDATE_PLAYER_PACKET uPackets[MAX_USER];
 			for (int i = 0; auto id : gMap.cl_ids) {
 				uPackets[i].size = sizeof(SC_UPDATE_PLAYER_PACKET);

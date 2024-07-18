@@ -129,6 +129,11 @@ void NPC::PathClear()
 	n_path = q;
 }
 
+void NPC::UpdateBB()
+{
+	boundingBox.Center = GetPos();
+}
+
 
 
 

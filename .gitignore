@@ -16,3 +16,7 @@
 *.db
 *.json
 *.command
+Client/CyberZ_Client/x64/Release/CyberZ_Client.iobj
+Client/CyberZ_Client/x64/Release/CyberZ_Client.ipdb
+Server/CyberZ_Server/x64/Release/CyberZ_Server.iobj
+Server/CyberZ_Server/x64/Release/CyberZ_Server.ipdb

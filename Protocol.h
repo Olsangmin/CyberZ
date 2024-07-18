@@ -29,7 +29,7 @@ static std::array<DirectX::XMFLOAT3, 3> KeyBox = {
 	XMFLOAT3(450.f, 0.f, 650.f), XMFLOAT3(150.f, 0.f, 850.f),
 	XMFLOAT3(850.f, 0.f, 150.f) };
 
-
+constexpr float AttackRange = 5.0f;
 
 
 enum NPC_BEHAVIOR { PATROL, CHASE, ATTACK };
@@ -70,6 +70,7 @@ constexpr char SC_GETKEY = 21;
 
 constexpr char SC_TEST = 200;
 constexpr char SC_MESSAGE = 255;
+
 
 enum Player_Animation_ST {
 	IDLE, WALK, RUN, CREEP, CRAWL,

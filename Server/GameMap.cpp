@@ -127,6 +127,27 @@ void GameMap::initializeMap()
 		}
 	}
 
+	/*for (int i = 0; i < MissionPos.size(); ++i)
+	{
+		std::string ObjName = "Mission " + std::to_string(i);
+
+		DirectX::BoundingOrientedBox box{};
+		box.Center = MissionPos[i];
+		box.Extents = DirectX::XMFLOAT3(static_cast<float>(cellWidth - 0.01f), 10.f, static_cast<float>(cellDepth - 0.01f));
+
+		data[ObjName] = box;
+	}
+
+	for (int i = 0; i < KeyBox.size(); ++i)
+	{
+		std::string ObjName = "KeyBox " + std::to_string(i);
+
+		DirectX::BoundingOrientedBox box{};
+		box.Center = KeyBox[i];
+		box.Extents = DirectX::XMFLOAT3(static_cast<float>(cellWidth - 0.01f), 5.f, static_cast<float>(cellDepth - 0.01f));
+
+		data[ObjName] = box;
+	}*/
 
 	for (int x = 0; x < cellWidth; ++x) {
 		for (int y = 0; y < cellDepth; ++y) {
@@ -163,7 +184,7 @@ void GameMap::StartGame()
 	std::cout << "size" << cl_ids.size() << std::endl;
 	for (auto& cl : cl_ids) {
 		server.clients[cl].SetPos(PlayerInitPos[cl]);
-		std::cout << "player[" << cl << "]의 캐릭터 " << server.clients[cl].GetType() << std::endl;
+		std::cout << "player[" << cl << "]의 캐릭터 " << server.clients[cl].GetType()<< " ";
 		SC_GAME_START_PACKET p;
 		p.size = sizeof(p);
 		p.type = SC_GAME_START;
@@ -222,13 +243,13 @@ void GameMap::Update(int tick)
 
 	// npc가 이동해야 하면 깨우기
 	auto& players = server.clients;
-
 	if (tick == 0 || tick == 15 || tick == 30 || tick == 45) {
 
 	}
 	else return;
 
-	for (auto& npc : npcs) {		
+	for (auto& npc : npcs) {	
+		npc.UpdateBB();
 		bool patrol = true;
 		float current_dis = npc.distance_near;
 		
@@ -240,7 +261,7 @@ void GameMap::Update(int tick)
 				patrol = false;
 				
 				float distance = Distance_float(npc.GetPos(), players[ids].GetPos());
-				if ((npc.current_behavior == ATTACK) && (distance < 5.f) && (npc.near_player == ids))
+				if ((npc.current_behavior == ATTACK) && (distance < AttackRange) && (npc.near_player == ids))
 					break;
 				
 				
@@ -262,7 +283,7 @@ void GameMap::Update(int tick)
 
 				std::cout << "가까운 플레이어로 교체" << std::endl;
 				std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[npc.near_player].GetPos());
-				if ((path.size() == 0) && (npc.IsAttack == false)) {
+				if ((path.size() == 0) && (npc.IsAttack == false) && (distance < AttackRange)) {
 					npc.current_behavior = ATTACK;
 					break;
 				}
@@ -289,9 +310,6 @@ void GameMap::Update(int tick)
 		
 		npc.DoWork();
 	}
-
-	
-
 	
 	
 }
@@ -323,8 +341,9 @@ void GameMap::InitializeNPC()
 		npcs[i].SetPos(NPCInitPos[i]);
 		npcs[i].my_sector = getSector(npcs[i].GetPos());
 		CELL& cell = GetCurrentCell(npcs[i].GetPos());
+		npcs[i].boundingBox.Center = npcs[i].GetPos();
+		npcs[i].boundingBox.Extents = DirectX::XMFLOAT3(3.f, 20.f, 3.f);
 		// cell.cellType = CT_NPC;
-		// std::cout << "NPC[" << npcs[i].GetId() << "] goto " << std::endl;
 	}
 
 	/*auto path = BFS(npcs[0].GetPos(), PlayerInitPos[0]);
