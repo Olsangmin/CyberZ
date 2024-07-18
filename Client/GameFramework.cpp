@@ -439,8 +439,8 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 
 	// Make Scene
 	// Ã³À½ ¾À ºôµå
-	m_nSceneNum = FIRST_ROUND_SCENE;
-	m_pScene = new CFirstRoundScene();
+	m_nSceneNum = START_SCENE;
+	m_pScene = new CStartScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
 	if(m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 
@@ -497,6 +497,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			m_nSceneNum = nScene;
 			m_pScene = new CStartScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
+			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
 			break;
@@ -505,6 +506,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 		{
 			m_pScene = new CLoadingScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
+			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = false;
 			break;
@@ -514,6 +516,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			m_nSceneNum = nScene;
 			m_pScene = new CPrepareRoomScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);	
+			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
 
@@ -527,6 +530,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			m_nSceneNum = nScene;
 			m_pScene = new CFirstRoundScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
+			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
 			break;
@@ -536,6 +540,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			m_nSceneNum = nScene;
 			m_pScene = new CSecondRoundScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
+			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
 			break;
@@ -603,6 +608,13 @@ void CGameFramework::LoadingCHK()
 		if (m_nSceneNum == START_SCENE)
 		{
 			ChangeScene(PREPARE_ROOM_SCENE, 4);
+		}
+		if (m_nSceneNum == FIRST_ROUND_SCENE)
+		{
+			int myPlayerNum = 0;
+			myPlayerNum = m_pScene->GetModelInfo();
+
+			ChangeScene(SECOND_ROUND_SCENE, myPlayerNum);
 		}
 		if (m_nSceneNum == PREPARE_ROOM_SCENE && m_pScene->AllPlayerReady())
 		{

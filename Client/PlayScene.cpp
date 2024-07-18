@@ -368,6 +368,10 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 			
 			break;
 		}
+		case '9': { // 스테이지 2로 변경
+			m_bChangeScene = true;
+			break;
+		}
 		}
 		break;
 	}
