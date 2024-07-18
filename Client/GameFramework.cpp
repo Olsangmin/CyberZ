@@ -680,7 +680,6 @@ void CGameFramework::FrameAdvance()
 
     AnimateObjects();
 
-	m_pScene->OnPreRender(m_pd3dCommandList, m_pCamera);
 
  	LoadingCHK();
 

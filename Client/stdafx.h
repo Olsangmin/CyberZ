@@ -72,7 +72,7 @@ using namespace std;
 #include "Network.h"
 
 // 주석하면 서버없이 가능@@@@@@@@@
-#define USE_NETWORK 
+// #define USE_NETWORK 
 
 // =================================================
 
@@ -102,7 +102,7 @@ extern HINSTANCE						ghAppInstance;
 
 
 // 조명 & 그림자
-#define MAX_LIGHTS						16 
+#define MAX_LIGHTS						5
 
 #define POINT_LIGHT						1
 #define SPOT_LIGHT						2

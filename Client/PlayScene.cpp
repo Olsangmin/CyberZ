@@ -638,19 +638,17 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CLoadedModelInfo* pInsideModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2InsideObj.bin", NULL);
 	m_ppHierarchicalGameObjects[0] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pInsideModel);
 	m_ppHierarchicalGameObjects[0]->SetScale(10, 10, 10);
-	m_ppHierarchicalGameObjects[0]->SetPosition(165, 0, 320);
 	if (pInsideModel) delete pInsideModel;
 
 	CLoadedModelInfo* pOutlineBBModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2OutBB.bin", NULL);
 	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pOutlineBBModel);
 	m_ppHierarchicalGameObjects[1]->SetScale(10, 10, 10);
-	m_ppHierarchicalGameObjects[1]->SetPosition(165, 0, 320);
+	m_ppHierarchicalGameObjects[1]->SetPosition(155, 0, 288);
 	if (pOutlineBBModel) delete pOutlineBBModel;
 	
 	CLoadedModelInfo* pMainModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2.bin", NULL);
 	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMainModel);
 	m_ppHierarchicalGameObjects[2]->SetScale(10, 10, 10);
-	m_ppHierarchicalGameObjects[2]->SetPosition(129, 0, 296);
 	if (pMainModel) delete pMainModel;
 
 	m_nFloorObj = 2;
@@ -658,11 +656,13 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	CLoadedModelInfo* pFloormodel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2Ground.bin", NULL);
 	m_ppFloorObj[0] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFloormodel);
-	m_ppFloorObj[0]->SetPosition(0, 0.5, 0);
+	m_ppFloorObj[0]->SetScale(3, 0, 3);
+	m_ppFloorObj[0]->SetPosition(-100, 0.5, -500);
 	if (pFloormodel) delete pFloormodel;
 	
 	CLoadedModelInfo* pOutmodel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2OutLine.bin", NULL);
 	m_ppFloorObj[1] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pOutmodel);
+	m_ppFloorObj[1]->SetScale(10, 10, 10);
 	if (pOutmodel) delete pOutmodel;
 	
 	//===============================//

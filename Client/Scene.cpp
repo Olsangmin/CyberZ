@@ -27,7 +27,7 @@ CScene::~CScene()
 
 void CScene::BuildDefaultLightsAndMaterials()
 {
-	m_nLights = 5;
+	m_nLights = MAX_LIGHTS;
 	m_pLights = new LIGHT[m_nLights];
 	::ZeroMemory(m_pLights, sizeof(LIGHT) * m_nLights);
 
@@ -74,8 +74,10 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[3].m_xmf4Diffuse = XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0f);
 	m_pLights[3].m_xmf4Specular = XMFLOAT4(1.0f, 0.3f, 0.3f, 0.0f);
 	m_pLights[3].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.01f, 0.0001f);
+	m_pLights[3].m_xmf3Direction = XMFLOAT3(-1.0f, -1.0f, 0.0f);
 
 	m_pLights[3].m_xmf3Position = XMFLOAT3(500.0f, 100.0f, 500.0f);
+
 
 	// ??
 	m_pLights[4].m_bEnable = false;
@@ -86,6 +88,8 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[4].m_xmf4Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.0f);
 	m_pLights[4].m_xmf3Position = XMFLOAT3(600.0f, 250.0f, 700.0f);
 	m_pLights[4].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
+	m_pLights[4].m_xmf3Direction = XMFLOAT3(-1.0f, -1.0f, 0.0f);
+
 }
 
 void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum)
@@ -203,7 +207,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 {
 	ID3D12RootSignature* pd3dGraphicsRootSignature = NULL;
 
-	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[11];
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[12];
 
 	pd3dDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[0].NumDescriptors = 1;
@@ -273,7 +277,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 
 	pd3dDescriptorRanges[11].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[11].NumDescriptors = MAX_DEPTH_TEXTURES;
-	pd3dDescriptorRanges[11].BaseShaderRegister = 3; //Depth Buffer (Light.hlsl / t3)
+	pd3dDescriptorRanges[11].BaseShaderRegister = 19; //Depth Buffer (Light.hlsl / t19)
 	pd3dDescriptorRanges[11].RegisterSpace = 0;
 	pd3dDescriptorRanges[11].OffsetInDescriptorsFromTableStart = 0;
 
@@ -409,7 +413,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dSamplerDescs[2].AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
 	pd3dSamplerDescs[2].MipLODBias = 0.0f;
 	pd3dSamplerDescs[2].MaxAnisotropy = 1;
-	pd3dSamplerDescs[2].ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; //D3D12_COMPARISON_FUNC_LESS
+	pd3dSamplerDescs[2].ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS; //D3D12_COMPARISON_FUNC_LESS
 	pd3dSamplerDescs[2].BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE; // D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
 	pd3dSamplerDescs[2].MinLOD = 0;
 	pd3dSamplerDescs[2].MaxLOD = D3D12_FLOAT32_MAX;
@@ -643,6 +647,8 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 
 	if (m_pd3dGraphicsRootSignature) pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 	if (m_pd3dCbvSrvDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
+
+	OnPreRender(pd3dCommandList, pCamera);
 
 	UpdateShaderVariables(pd3dCommandList);
 

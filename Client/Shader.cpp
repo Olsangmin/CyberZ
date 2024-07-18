@@ -1434,12 +1434,14 @@ void CDepthRenderShader::PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID
 		if (m_pLights[j].m_bEnable)
 		{
 			XMFLOAT3 xmf3Position = m_pLights[j].m_xmf3Position;
-			XMFLOAT3 xmf3Look = m_pLights[j].m_xmf3Direction;
+			XMFLOAT3 xmf3Look = XMFLOAT3(0.0f, 1.0f, 0.0f);
 			XMFLOAT3 xmf3Up = XMFLOAT3(0.0f, +1.0f, 0.0f);
+
+			if(m_pLights[j].m_bEnable) xmf3Look = m_pLights[j].m_xmf3Direction;
 
 			XMMATRIX xmmtxLightView = XMMatrixLookToLH(XMLoadFloat3(&xmf3Position), XMLoadFloat3(&xmf3Look), XMLoadFloat3(&xmf3Up));
 
-			XMMATRIX xmmtxProjection;
+			XMMATRIX xmmtxProjection = XMMatrixIdentity();
 			if (m_pLights[j].m_nType == DIRECTIONAL_LIGHT)
 			{
 				xmmtxProjection = CreateOrthographicProjectionMatrix(xmmtxLightView, pCamera, xmpBoundingBox);
@@ -1455,6 +1457,7 @@ void CDepthRenderShader::PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID
 			else if (m_pLights[j].m_nType == POINT_LIGHT)
 			{
 				//ShadowMap[6]
+				xmmtxProjection = XMMatrixIdentity();
 			}
 
 			// 조명의 내용을 카메라에 저장
@@ -1470,10 +1473,10 @@ void CDepthRenderShader::PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID
 			::SynchronizeResourceTransition(pd3dCommandList, m_pDepthFromLightTexture->GetResource(j), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 			// 렌더타겟 클리어
-			float pfClearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-			pd3dCommandList->ClearRenderTargetView(m_pd3dRtvCPUDescriptorHandles[j], pfClearColor, 0, NULL);
-			pd3dCommandList->ClearDepthStencilView(m_d3dDsvDescriptorCPUHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, NULL);
-			pd3dCommandList->OMSetRenderTargets(1, &m_pd3dRtvCPUDescriptorHandles[j], TRUE, &m_d3dDsvDescriptorCPUHandle);
+			//float pfClearColor[4] = { 1.0f, .0f, 1.0f, 1.0f };
+			//pd3dCommandList->ClearRenderTargetView(m_pd3dRtvCPUDescriptorHandles[j], pfClearColor, 0, NULL);
+			//pd3dCommandList->ClearDepthStencilView(m_d3dDsvDescriptorCPUHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, NULL);
+			//pd3dCommandList->OMSetRenderTargets(1, &m_pd3dRtvCPUDescriptorHandles[j], TRUE, &m_d3dDsvDescriptorCPUHandle);
 
 			Render(pd3dCommandList, m_ppDepthRenderCameras[j]);
 

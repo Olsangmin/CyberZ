@@ -1,5 +1,5 @@
 //--------------------------------------------------------------------------------------
-#define MAX_LIGHTS			16 
+#define MAX_LIGHTS			5 
 #define MAX_MATERIALS		16 
 
 #define POINT_LIGHT			1
@@ -27,8 +27,6 @@ struct LIGHT
 	float					padding;
 };
 
-
-
 //화면 사이즈 고려 해야함
 #define FRAME_BUFFER_WIDTH		640
 #define FRAME_BUFFER_HEIGHT		480
@@ -48,7 +46,7 @@ cbuffer cbLights : register(b4)
 
 #define MAX_DEPTH_TEXTURES		MAX_LIGHTS
 
-Texture2D<float> gtxtDepthTextures[MAX_DEPTH_TEXTURES] : register(t3);
+Texture2D<float> gtxtDepthTextures[MAX_DEPTH_TEXTURES] : register(t19);
 SamplerComparisonState gssComparisonPCFShadow : register(s2);
 
 #define _WITH_PCF_FILTERING
@@ -177,21 +175,20 @@ float4 Lighting(float3 vPosition, float3 vNormal, bool bShadow, float4 shadowMap
 		if (gLights[i].m_bEnable)
 		{
 			float fShadowFactor = 1.0f;
-			//if (bShadow) fShadowFactor = Compute3x3ShadowFactor(shadowMapUVs[i].xy, shadowMapUVs[i].z, i);
+			if (bShadow) fShadowFactor = Compute3x3ShadowFactor(shadowMapUVs[i].xy, shadowMapUVs[i].z, i);
 			
 			if (gLights[i].m_nType == DIRECTIONAL_LIGHT)
 			{
-                cColor += DirectionalLight(i, vNormal, vToCamera) * fShadowFactor;
+                cColor += DirectionalLight(i, vNormal, vToCamera);
             }
 			else if (gLights[i].m_nType == POINT_LIGHT)
 			{
-                cColor += PointLight(i, vPosition, vNormal, vToCamera) * fShadowFactor;
+                cColor += PointLight(i, vPosition, vNormal, vToCamera);
             }
 			else if (gLights[i].m_nType == SPOT_LIGHT)
 			{
-                cColor += SpotLight(i, vPosition, vNormal, vToCamera) * fShadowFactor;
+                cColor += SpotLight(i, vPosition, vNormal, vToCamera);
             }
-			cColor += gLights[i].m_cAmbient * gMaterial.m_cAmbient;
 			
         }
 	}
