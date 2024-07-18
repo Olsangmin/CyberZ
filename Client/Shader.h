@@ -7,6 +7,8 @@
 #include "Object.h"
 #include "Camera.h"
 
+struct LIGHT;
+
 class CShader
 {
 public:
@@ -38,6 +40,7 @@ public:
 
 	virtual ID3D12RootSignature* CreateGraphicsRootSignature(ID3D12Device* pd3dDevice) { return(NULL); }
 	ID3D12RootSignature* GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
+
 
 	virtual void CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList) { }
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList) { }
@@ -263,3 +266,88 @@ protected:
 
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+
+struct TOLIGHTSPACEINFO
+{
+	XMFLOAT4X4						m_pxmf4x4ToTextures[MAX_LIGHTS]; //Transposed
+	XMFLOAT4						m_pxmf4LightPositions[MAX_LIGHTS];
+};
+
+class CDepthRenderShader : public CStandardShader
+{
+public:
+	CDepthRenderShader(LIGHT* pLights);
+	virtual ~CDepthRenderShader();
+
+	virtual D3D12_DEPTH_STENCIL_DESC CreateDepthStencilState();
+	virtual D3D12_RASTERIZER_DESC CreateRasterizerState();
+
+	virtual D3D12_SHADER_BYTECODE CreatePixelShader();
+
+	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void ReleaseShaderVariables();
+
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext = NULL);
+	virtual void ReleaseObjects();
+
+	void PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+
+protected:
+	CTexture* m_pDepthFromLightTexture = NULL;
+
+	CCamera* m_ppDepthRenderCameras[MAX_DEPTH_TEXTURES];
+
+	ID3D12DescriptorHeap* m_pd3dRtvDescriptorHeap = NULL;
+	D3D12_CPU_DESCRIPTOR_HANDLE		m_pd3dRtvCPUDescriptorHandles[MAX_DEPTH_TEXTURES];
+
+	ID3D12DescriptorHeap* m_pd3dDsvDescriptorHeap = NULL;
+	ID3D12Resource* m_pd3dDepthBuffer = NULL;
+	D3D12_CPU_DESCRIPTOR_HANDLE		m_d3dDsvDescriptorCPUHandle;
+
+	XMMATRIX						m_xmProjectionToTexture;
+
+public:
+	CTexture* GetDepthTexture() { return(m_pDepthFromLightTexture); }
+	ID3D12Resource* GetDepthTextureResource(UINT nIndex) { return(m_pDepthFromLightTexture->GetResource(nIndex)); }
+
+protected:
+	LIGHT* m_pLights = NULL;
+
+	TOLIGHTSPACEINFO* m_pToLightSpaces;
+
+	ID3D12Resource* m_pd3dcbToLightSpaces = NULL;
+	TOLIGHTSPACEINFO* m_pcbMappedToLightSpaces = NULL;
+};
+
+class CShadowMapShader : public CStandardShader
+{
+public:
+	CShadowMapShader();
+	virtual ~CShadowMapShader();
+
+	virtual D3D12_DEPTH_STENCIL_DESC CreateDepthStencilState();
+
+	virtual D3D12_SHADER_BYTECODE CreateVertexShader();
+	virtual D3D12_SHADER_BYTECODE CreatePixelShader();
+
+	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void ReleaseShaderVariables();
+
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext = NULL);
+	virtual void AnimateObjects(float fTimeElapsed) { }
+	virtual void ReleaseObjects();
+
+	virtual void ReleaseUploadBuffers();
+
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+
+public:
+
+	CTexture* m_pDepthFromLightTexture = NULL;
+};

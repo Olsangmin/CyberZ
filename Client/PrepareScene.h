@@ -31,10 +31,6 @@ public:
 	void ChangeModel(int nPlayer, int nModel);
 
 public:
-	int						m_nFloorObj = 0;
-	CFloorObj** m_ppFloorObj = NULL;
-
-public:
 	void ProcessPacket(char* p);
 	int	GetModelInfo();
 	int GetPlayerModelInfo(int num) { return m_nPlayerSet[num]; }

@@ -174,7 +174,6 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 		if (pEthanModel) delete pEthanModel;
 	*/
 
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	//===============================//
 	// Player (3 / 1 - Corzim, 2 - Evan, 3 - Uranya)
@@ -368,6 +367,10 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 		case 'C': {
 			m_pMyPlayer->SetCreepFlag();
 			
+			break;
+		}
+		case '9': { // 스테이지 2로 변경
+			m_bChangeScene = true;
 			break;
 		}
 		}

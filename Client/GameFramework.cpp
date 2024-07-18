@@ -440,12 +440,13 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 	// Make Scene
 	// Ã³À½ ¾À ºôµå
 	m_nSceneNum = START_SCENE;
-	m_pScene = new CStartScene(); 
-	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0); 
+	m_pScene = new CStartScene();
+	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
+	if(m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 
 	m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 
-#ifdef DEFERRED_RENDERING
+	// µðÆÛµå ·»´õ¸µ¿ë PostProcessing ½¦ÀÌ´õ ¸¸µé¾îÁÖ±â
 	m_pPostProcessingShader = new CTextureDeferdShader();
 	m_pPostProcessingShader->CreateShader(m_pd3dDevice, m_pScene->GetGraphicsRootSignature(), 1, NULL, DXGI_FORMAT_D32_FLOAT);
 	
@@ -456,8 +457,8 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 	m_pPostProcessingShader->CreateResourcesAndRtvsSrvs(m_pd3dDevice, m_pd3dCommandList, 4, pdxgiRtvFormats, d3dRtvCPUDescriptorHandle); //SRV to (Render Targets) + (Depth Buffer)
 	
 	//m_pScene->CreateShaderResourceView(m_pd3dDevice, m_pd3dDepthStencilBuffer, DXGI_FORMAT_R32_FLOAT);
-#endif	
-		// Make Scene UI
+
+	// Make Scene UI
 	m_pScene->m_pUI->CreateDirect2DDevice(m_hWnd, m_pd3dDevice, m_pd3dCommandList, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers);
 
 	m_pd3dCommandList->Close();
@@ -496,6 +497,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			m_nSceneNum = nScene;
 			m_pScene = new CStartScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
+			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
 			break;
@@ -504,6 +506,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 		{
 			m_pScene = new CLoadingScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
+			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = false;
 			break;
@@ -513,6 +516,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			m_nSceneNum = nScene;
 			m_pScene = new CPrepareRoomScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);	
+			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
 
@@ -526,6 +530,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			m_nSceneNum = nScene;
 			m_pScene = new CFirstRoundScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
+			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
 			break;
@@ -535,6 +540,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			m_nSceneNum = nScene;
 			m_pScene = new CSecondRoundScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
+			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
 			break;
@@ -543,8 +549,6 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 	}
 	m_pScene->m_pUI->CreateDirect2DDevice(m_hWnd, m_pd3dDevice, m_pd3dCommandList, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers);
 
-
-#ifdef DEFERRED_RENDERING	
 
 	m_pPostProcessingShader = new CTextureDeferdShader();
 	m_pPostProcessingShader->CreateShader(m_pd3dDevice, m_pScene->GetGraphicsRootSignature(), 1, NULL, DXGI_FORMAT_D32_FLOAT);
@@ -557,7 +561,6 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 	DXGI_FORMAT pdxgiRtvFormats[4] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_FLOAT };
 	m_pPostProcessingShader->CreateResourcesAndRtvsSrvs(m_pd3dDevice, m_pd3dCommandList, 4, pdxgiRtvFormats, d3dRtvCPUDescriptorHandle); //SRV to (Render Targets) + (Depth Buffer)
 
-#endif	
 
 	m_pd3dCommandList->Close();
 	ID3D12CommandList* ppd3dCommandLists[] = { m_pd3dCommandList};
@@ -605,6 +608,13 @@ void CGameFramework::LoadingCHK()
 		if (m_nSceneNum == START_SCENE)
 		{
 			ChangeScene(PREPARE_ROOM_SCENE, 4);
+		}
+		if (m_nSceneNum == FIRST_ROUND_SCENE)
+		{
+			int myPlayerNum = 0;
+			myPlayerNum = m_pScene->GetModelInfo();
+
+			ChangeScene(SECOND_ROUND_SCENE, myPlayerNum);
 		}
 		if (m_nSceneNum == PREPARE_ROOM_SCENE && m_pScene->AllPlayerReady())
 		{
@@ -670,6 +680,8 @@ void CGameFramework::FrameAdvance()
 
     AnimateObjects();
 
+	m_pScene->OnPreRender(m_pd3dCommandList, m_pCamera);
+
  	LoadingCHK();
 
 	HRESULT hResult = m_pd3dCommandAllocator->Reset();
@@ -679,32 +691,15 @@ void CGameFramework::FrameAdvance()
 
 	m_pd3dCommandList->ClearDepthStencilView(m_d3dDsvDescriptorCPUHandle, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 
-#ifdef DEFERRED_RENDERING	
-
 	m_pPostProcessingShader->OnPrepareRenderTarget(m_pd3dCommandList, 1, &m_pd3dSwapChainBackBufferRTVCPUHandles[m_nSwapChainBufferIndex], &m_d3dDsvDescriptorCPUHandle);
-
-#else
-
-	D3D12_CPU_DESCRIPTOR_HANDLE d3dRtvCPUDescriptorHandle = m_pd3dRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
-	d3dRtvCPUDescriptorHandle.ptr += (m_nSwapChainBufferIndex * ::gnRtvDescriptorIncrementSize);
-
-	float pfClearColor[4] = { 0.0f, 0.125f, 0.3f, 1.0f };
-	m_pd3dCommandList->ClearRenderTargetView(d3dRtvCPUDescriptorHandle, pfClearColor/*Colors::Azure*/, 0, NULL);
-
-	m_pd3dCommandList->OMSetRenderTargets(1, &d3dRtvCPUDescriptorHandle, TRUE, &d3dDsvCPUDescriptorHandle);
-
-#endif // DEFERRED_RENDERING
 
 
 	m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 	if (m_pScene) m_pScene->Render(m_pd3dCommandList, m_pCamera);
 	if (m_bRenderBoundingBox) m_pScene->RenderBoundingBox(m_pd3dCommandList, m_pCamera);
 
-#ifdef DEFERRED_RENDERING
-	
 	m_pPostProcessingShader->OnPostRenderTarget(m_pd3dCommandList);
 	
-#endif // DEFERRED_RENDERING
 
 	m_pd3dCommandList->OMSetRenderTargets(1, &m_pd3dSwapChainBackBufferRTVCPUHandles[m_nSwapChainBufferIndex], TRUE, NULL);
 	m_pPostProcessingShader->Render(m_pd3dCommandList, m_pCamera, &m_nDrawOption);

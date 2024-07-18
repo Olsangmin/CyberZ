@@ -27,9 +27,6 @@ public:
 
 	bool AllPlayerReady() { return false; }
 
-public:
-	int						m_nFloorObj = 0;
-	CFloorObj**				m_ppFloorObj = NULL;
 
 public:
 	void ProcessPacket(char* p);
