@@ -201,7 +201,7 @@ public:
 	void UpdateBoundingBox(XMFLOAT3 xmf3NextPos);
 	virtual void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList);
 	void MoveBBToParent(CGameObject* pTargetLv);
-
+	
 	void SetCbvGPUDescriptorHandle(D3D12_GPU_DESCRIPTOR_HANDLE d3dCbvGPUDescriptorHandle) { m_d3dCbvGPUDescriptorHandle = d3dCbvGPUDescriptorHandle; }
 	void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr) { m_d3dCbvGPUDescriptorHandle.ptr = nCbvGPUDescriptorHandlePtr; }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetCbvGPUDescriptorHandle() { return(m_d3dCbvGPUDescriptorHandle); }

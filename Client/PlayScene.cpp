@@ -174,7 +174,6 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 		if (pEthanModel) delete pEthanModel;
 	*/
 
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	//===============================//
 	// Player (3 / 1 - Corzim, 2 - Evan, 3 - Uranya)

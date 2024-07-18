@@ -34,13 +34,13 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_xmf4GlobalAmbient = XMFLOAT4(0.15f, 0.15f, 0.15f, 1.0f);
 
 	// ??
-	m_pLights[0].m_bEnable = false;
+	m_pLights[0].m_bEnable = true;
 	m_pLights[0].m_nType = DIRECTIONAL_LIGHT;
 	m_pLights[0].m_xmf4Ambient = XMFLOAT4(0.9f, 1.0f, 0.9f, 1.0f);
 	m_pLights[0].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.3f, 0.6f, 0.0f);
 	m_pLights[0].m_xmf4Specular = XMFLOAT4(0.7f, 0.6f, 0.5f, 0.0f);
 	m_pLights[0].m_xmf3Position = XMFLOAT3(FRAME_BUFFER_WIDTH * 1.5f, 450.0f, 0);
-	m_pLights[0].m_xmf3Direction = XMFLOAT3(1.0f, -1.0f, 0.0f);
+	m_pLights[0].m_xmf3Direction = XMFLOAT3(-1.0f, -1.0f, 0.0f);
 
 	// Player Flash Light 
 	m_pLights[1].m_bEnable = false;
@@ -57,12 +57,14 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[1].m_fTheta = (float)cos(XMConvertToRadians(20.0f));
 
 	// Sun
-	m_pLights[2].m_bEnable = true;
+	m_pLights[2].m_bEnable = false;
 	m_pLights[2].m_nType = DIRECTIONAL_LIGHT;
-	m_pLights[2].m_xmf4Ambient = XMFLOAT4(0.0f, 1.0f, 0.9f, 1.0f);
+	m_pLights[2].m_xmf4Ambient = XMFLOAT4(0.2f, 1.0f, 0.9f, 1.0f);
 	m_pLights[2].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.3f, 0.6f, 1.0f);
 	m_pLights[2].m_xmf4Specular = XMFLOAT4(0.7f, 0.6f, 0.5f, 0.0f);
-	m_pLights[2].m_xmf3Direction = XMFLOAT3(1.0f, -1.0f, 0.0f);
+	m_pLights[2].m_xmf3Direction = XMFLOAT3(-1.0f, -1.0f, 0.0f);
+
+	m_pLights[2].m_xmf3Position = XMFLOAT3(500.0f, 100.0f, 500.0f);
 
 	// 중앙 상단에 붉은 조명 추가(분위기 조성용)
 	m_pLights[3].m_bEnable = true;
@@ -96,6 +98,19 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
 	BuildDefaultLightsAndMaterials();
+
+}
+
+void CScene::CreateShadowShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	m_pDepthRenderShader = new CDepthRenderShader(m_pLights);
+	DXGI_FORMAT pdxgiRtvFormats[1] = { DXGI_FORMAT_R32_FLOAT };
+	m_pDepthRenderShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 1, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
+	m_pDepthRenderShader->BuildObjects(pd3dDevice, pd3dCommandList, NULL);
+
+	m_pShadowShader = new CShadowMapShader();
+	m_pShadowShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_D24_UNORM_S8_UINT);
+	m_pShadowShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pDepthRenderShader->GetDepthTexture());
 
 }
 
@@ -164,9 +179,23 @@ void CScene::ReleaseObjects()
 		m_pBoss->Release();
 	}
 
-	ReleaseShaderVariables();
-	if (m_pLights) delete[] m_pLights;
+	if (m_pDepthRenderShader)
+	{
+		m_pDepthRenderShader->ReleaseShaderVariables();
+		m_pDepthRenderShader->ReleaseObjects();
+		m_pDepthRenderShader->Release();
+	}
 
+	if (m_pShadowShader)
+	{
+		m_pShadowShader->ReleaseShaderVariables();
+		//m_pShadowShader->ReleaseObjects();
+		m_pShadowShader->Release();
+	}
+
+	ReleaseShaderVariables();
+
+	if (m_pLights) delete[] m_pLights;
 
 }
 
@@ -242,8 +271,13 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dDescriptorRanges[10].RegisterSpace = 0;
 	pd3dDescriptorRanges[10].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
+	pd3dDescriptorRanges[11].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	pd3dDescriptorRanges[11].NumDescriptors = MAX_DEPTH_TEXTURES;
+	pd3dDescriptorRanges[11].BaseShaderRegister = 3; //Depth Buffer (Light.hlsl / t3)
+	pd3dDescriptorRanges[11].RegisterSpace = 0;
+	pd3dDescriptorRanges[11].OffsetInDescriptorsFromTableStart = 0;
 
-	D3D12_ROOT_PARAMETER pd3dRootParameters[17];
+	D3D12_ROOT_PARAMETER pd3dRootParameters[19];
 
 	pd3dRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	pd3dRootParameters[0].Descriptor.ShaderRegister = 1; //b1 Camera
@@ -331,13 +365,17 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dRootParameters[16].DescriptorTable.pDescriptorRanges = &(pd3dDescriptorRanges[10]); //Texture2D
 	pd3dRootParameters[16].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
-	//pd3dRootParameters[17].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	//pd3dRootParameters[17].Descriptor.ShaderRegister = 3; //Materials
-	//pd3dRootParameters[17].Descriptor.RegisterSpace = 0;
-	//pd3dRootParameters[17].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	pd3dRootParameters[17].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	pd3dRootParameters[17].DescriptorTable.NumDescriptorRanges = 1;
+	pd3dRootParameters[17].DescriptorTable.pDescriptorRanges = &pd3dDescriptorRanges[11]; //Depth Buffer
+	pd3dRootParameters[17].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
+	pd3dRootParameters[18].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	pd3dRootParameters[18].Descriptor.ShaderRegister = 6; //ToLight
+	pd3dRootParameters[18].Descriptor.RegisterSpace = 0;
+	pd3dRootParameters[18].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
-	D3D12_STATIC_SAMPLER_DESC pd3dSamplerDescs[2];
+	D3D12_STATIC_SAMPLER_DESC pd3dSamplerDescs[3];
 
 	pd3dSamplerDescs[0].Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
 	pd3dSamplerDescs[0].AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -365,6 +403,20 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dSamplerDescs[1].RegisterSpace = 0;
 	pd3dSamplerDescs[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
+	pd3dSamplerDescs[2].Filter = D3D12_FILTER_COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+	pd3dSamplerDescs[2].AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+	pd3dSamplerDescs[2].AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+	pd3dSamplerDescs[2].AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+	pd3dSamplerDescs[2].MipLODBias = 0.0f;
+	pd3dSamplerDescs[2].MaxAnisotropy = 1;
+	pd3dSamplerDescs[2].ComparisonFunc = D3D12_COMPARISON_FUNC_LESS_EQUAL; //D3D12_COMPARISON_FUNC_LESS
+	pd3dSamplerDescs[2].BorderColor = D3D12_STATIC_BORDER_COLOR_OPAQUE_WHITE; // D3D12_STATIC_BORDER_COLOR_OPAQUE_BLACK;
+	pd3dSamplerDescs[2].MinLOD = 0;
+	pd3dSamplerDescs[2].MaxLOD = D3D12_FLOAT32_MAX;
+	pd3dSamplerDescs[2].ShaderRegister = 2;
+	pd3dSamplerDescs[2].RegisterSpace = 0;
+	pd3dSamplerDescs[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
 	D3D12_ROOT_SIGNATURE_FLAGS d3dRootSignatureFlags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS | D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS | D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 	D3D12_ROOT_SIGNATURE_DESC d3dRootSignatureDesc;
 	::ZeroMemory(&d3dRootSignatureDesc, sizeof(D3D12_ROOT_SIGNATURE_DESC));
@@ -390,11 +442,6 @@ void CScene::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 	m_pd3dcbLights = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 
 	m_pd3dcbLights->Map(0, NULL, (void**)&m_pcbMappedLights);
-
-	//UINT ncbMaterialBytes = ((sizeof(MATERIALS) + 255) & ~255); //256의 배수
-	//m_pd3dcbMaterials = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbMaterialBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-	//
-	//m_pd3dcbMaterials->Map(0, NULL, (void**)&m_pcbMappedMaterials);
 }
 
 void CScene::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
@@ -411,11 +458,6 @@ void CScene::ReleaseShaderVariables()
 		m_pd3dcbLights->Unmap(0, NULL);
 		m_pd3dcbLights->Release();
 	}
-	//if (m_pd3dcbMaterials)
-	//{
-	//	m_pd3dcbMaterials->Unmap(0, NULL);
-	//	m_pd3dcbMaterials->Release();
-	//}
 }
 
 void CScene::ReleaseUploadBuffers()
@@ -423,13 +465,16 @@ void CScene::ReleaseUploadBuffers()
 	if (m_pSkyBox) m_pSkyBox->ReleaseUploadBuffers();
 	if (m_pTerrain) m_pTerrain->ReleaseUploadBuffers();
 
-	if (m_ppPlayer) { for (int i = 0; i < m_nPlayer; ++i) m_ppPlayer[i]->ReleaseUploadBuffers(); }
+	for (int i = 0; i < m_nPlayer; ++i) m_ppPlayer[i]->ReleaseUploadBuffers();
 
 	for (int i = 0; i < m_nShaders; i++) m_ppShaders[i]->ReleaseUploadBuffers();
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) m_ppHierarchicalGameObjects[i]->ReleaseUploadBuffers();
 	for (int i = 0; i < m_nMissionObj; i++) m_ppMissionObj[i]->ReleaseUploadBuffers();
 	for (int i = 0; i < m_nEnemy; i++) m_ppEnemy[i]->ReleaseUploadBuffers();
 	if (m_pBoss) m_pBoss->ReleaseUploadBuffers();
+
+	if (m_pShadowShader) m_pShadowShader->ReleaseUploadBuffers();
+	if (m_pDepthRenderShader) m_pDepthRenderShader->ReleaseUploadBuffers();
 
 }
 
@@ -584,8 +629,13 @@ void CScene::AnimateObjects(float fTimeElapsed)
 		m_pLights[1].m_xmf3Position = m_ppPlayer[FIRST_PLAYER]->GetPosition();
 		m_pLights[1].m_xmf3Direction = m_ppPlayer[FIRST_PLAYER]->GetLookVector();
 	}
-	*/
-	  
+	*/  
+}
+
+void CScene::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	BoundingOrientedBox xmBoundingBoxs = CalculateBoundingBox();
+	m_pDepthRenderShader->PrepareShadowMap( &xmBoundingBoxs, pd3dCommandList, pCamera); // 그림자 준비 연산
 }
 
 void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -594,9 +644,24 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	if (m_pd3dGraphicsRootSignature) pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 	if (m_pd3dCbvSrvDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
 
-	pCamera = m_pMyPlayer->GetCamera();
+	UpdateShaderVariables(pd3dCommandList);
+
+	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();
+	pd3dCommandList->SetGraphicsRootConstantBufferView(2, d3dcbLightsGpuVirtualAddress); //Lights
+
+	// 그림자 연산을 위한 깊이 렌더 쉐이더 
+	m_pDepthRenderShader->UpdateShaderVariables(pd3dCommandList);
+
 	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	pCamera->UpdateShaderVariables(pd3dCommandList);
+
+	// 그림자 쉐이더
+	if (m_pShadowShader) m_pShadowShader->Render(pd3dCommandList, pCamera);
+
+	// 카메라 변경
+	pCamera = m_pMyPlayer->GetCamera();
+	//pCamera->SetViewportsAndScissorRects(pd3dCommandList);
+	//pCamera->UpdateShaderVariables(pd3dCommandList);
 
 	UpdateShaderVariables(pd3dCommandList);
 
@@ -604,11 +669,6 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	//cout<<"Scene - " << pCamera << endl;
 	//////////////////////////////////////////
 
-	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();
-	pd3dCommandList->SetGraphicsRootConstantBufferView(2, d3dcbLightsGpuVirtualAddress); //Lights
-
-	//D3D12_GPU_VIRTUAL_ADDRESS d3dcbMaterialsGpuVirtualAddress = m_pd3dcbMaterials->GetGPUVirtualAddress();
-	//pd3dCommandList->SetGraphicsRootConstantBufferView(17, d3dcbMaterialsGpuVirtualAddress); //Materials
 
 	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
@@ -750,6 +810,38 @@ bool CScene::CheckMissionBound(CGameObject* pBase, CMissonOBJ* pTarget)
 {
 	if (pBase->m_xmBoundingBox.Intersects(pTarget->m_xmMissionRange)) return(true);
 	else return false;
+}
+
+void CreateMerged(BoundingOrientedBox& Out, const BoundingOrientedBox& b1, const BoundingOrientedBox& b2) noexcept
+{
+	XMVECTOR b1Center = XMLoadFloat3(&b1.Center);
+	XMVECTOR b1Extents = XMLoadFloat3(&b1.Extents);
+
+	XMVECTOR b2Center = XMLoadFloat3(&b2.Center);
+	XMVECTOR b2Extents = XMLoadFloat3(&b2.Extents);
+
+	XMVECTOR Min = XMVectorSubtract(b1Center, b1Extents);
+	Min = XMVectorMin(Min, XMVectorSubtract(b2Center, b2Extents));
+
+	XMVECTOR Max = XMVectorAdd(b1Center, b1Extents);
+	Max = XMVectorMax(Max, XMVectorAdd(b2Center, b2Extents));
+
+	assert(XMVector3LessOrEqual(Min, Max));
+
+	XMStoreFloat3(&Out.Center, XMVectorScale(XMVectorAdd(Min, Max), 0.5f));
+	XMStoreFloat3(&Out.Extents, XMVectorScale(XMVectorSubtract(Max, Min), 0.5f));
+
+}
+
+BoundingOrientedBox CScene::CalculateBoundingBox()
+{
+	BoundingOrientedBox xmBoundingBoxs = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	if (m_nMissionObj) xmBoundingBoxs = m_ppMissionObj[0]->m_xmBoundingBox;
+	for (int i = 1; i < m_nMissionObj; i++) CreateMerged(xmBoundingBoxs, xmBoundingBoxs, m_ppMissionObj[i]->m_xmBoundingBox);
+	for (int i = 0; i < m_nHierarchicalGameObjects; i++) CreateMerged(xmBoundingBoxs, xmBoundingBoxs, m_ppHierarchicalGameObjects[i]->m_xmBoundingBox);
+	for (int i = 0; i < m_nFloorObj; i++) CreateMerged(xmBoundingBoxs, xmBoundingBoxs, m_ppFloorObj[i]->m_xmBoundingBox);
+	
+	return(xmBoundingBoxs); 
 }
 
 

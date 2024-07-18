@@ -9,13 +9,6 @@
 #include "GUI.h"
 
 
-#define MAX_LIGHTS						16 
-#define MAX_MATERIALS					16
-
-#define POINT_LIGHT						1
-#define SPOT_LIGHT						2
-#define DIRECTIONAL_LIGHT				3
-
 struct LIGHT
 {
 	XMFLOAT4							m_xmf4Ambient;
@@ -52,24 +45,28 @@ public:
 
 	virtual void CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void ReleaseObjects();
 	virtual void ReleaseShaderVariables();
+	virtual void ReleaseUploadBuffers();
 
 	virtual void BuildDefaultLightsAndMaterials();
 	virtual void BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int myPlayernum);
-	virtual void ReleaseObjects();
+	void CreateShadowShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+
 
 	ID3D12RootSignature *CreateGraphicsRootSignature(ID3D12Device *pd3dDevice);
 	ID3D12RootSignature *GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
 
 	virtual bool ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer);
     virtual void AnimateObjects(float fTimeElapsed);
+	void OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
     virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
 
 	virtual void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	bool CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget, XMFLOAT3& out);
 	bool CheckMissionBound(CGameObject* pBase, CMissonOBJ* pTarget);
+	BoundingOrientedBox CalculateBoundingBox();
 
-	virtual void ReleaseUploadBuffers();
 public:
 	// @@서버코드@@서버코드@@
 	void InitNetwork();
@@ -156,8 +153,13 @@ public:
 	ID3D12Resource*						m_pd3dcbLights = NULL;
 	LIGHTS*								m_pcbMappedLights = NULL;
 
-
 	DWORD								m_dwLastDirection;
+
+	CDepthRenderShader*					m_pDepthRenderShader = NULL;
+	CShadowMapShader*					m_pShadowShader = NULL;
+
+	int									m_nFloorObj = 0;
+	CFloorObj**							m_ppFloorObj = NULL;
 
 public:
 	virtual bool AllPlayerReady() { return false; }
