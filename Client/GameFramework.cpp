@@ -439,8 +439,8 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 
 	// Make Scene
 	// Ã³À½ ¾À ºôµå
-	m_nSceneNum = START_SCENE;
-	m_pScene = new CStartScene();
+	m_nSceneNum = PREPARE_ROOM_SCENE;
+	m_pScene = new CPrepareRoomScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
 	if(m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 
@@ -520,9 +520,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
 
-	#ifdef USE_NETWORK
-			m_pScene->InitNetwork();
-	#endif // USE_NETWORK
+	
 			break;
 		}
 		case FIRST_ROUND_SCENE:

@@ -31,6 +31,7 @@ public:
 public:
 	void ProcessPacket(char* p);
 	unordered_map<int, Player_Character_Type> idANDtype;
+	void Send_Go_Stage2();
 
 };
 

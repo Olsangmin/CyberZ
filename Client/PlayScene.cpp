@@ -352,6 +352,10 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 		case '3':
 			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->MissionCheck(wParam - 49);
 			break;
+
+		case '9':
+			Send_Go_Stage2();
+			break;
 		}
 		break;
 	}
@@ -370,7 +374,7 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 			break;
 		}
 		case '9': { // 스테이지 2로 변경
-			m_bChangeScene = true;
+			
 			break;
 		}
 		}
@@ -593,6 +597,11 @@ void CFirstRoundScene::ProcessPacket(char* p)
 			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->SetCrawl(false);
 		}
 	}break;
+
+	case SC_GO_STAGE2:
+	{
+		m_bChangeScene = true;
+	}break;
 						
 
 	default: {
@@ -602,11 +611,21 @@ void CFirstRoundScene::ProcessPacket(char* p)
 	}
 }
 
+void CFirstRoundScene::Send_Go_Stage2()
+{
+	CS_GO_STAGE2_PACKET p;
+	p.size = sizeof(p);
+	p.type = CS_GO_STAGE2;
+	send_packet(&p);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 
 void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum)
 {
+
+
 
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
 
@@ -739,8 +758,7 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	if (myPlayernum != 4) playernum = myPlayernum;
 
 	m_pMyPlayer = m_ppPlayer[playernum];
-	m_pMyPlayer->SetPosition(PlayerInitPos[playernum]);
-	m_pMyPlayer->SetPosition(XMFLOAT3(300.f, 0.f, 100.f));
+	m_pMyPlayer->SetPosition(PlayerInitPos_Stage2[playernum]);
 	m_pMyPlayer->ChangeCamera(SHOULDER_VIEW_CAMERA, 0.0f);
 	m_pMyPlayer->m_bUnable = true;
 
@@ -748,6 +766,13 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
+
+#ifdef USE_NETWORK
+	CS_GAMESTART_PACKET p;
+	p.size = sizeof(p);
+	p.type = CS_GAME_START;
+	send_packet(&p);
+#endif // USE_NETWORK
 }
 
 void CSecondRoundScene::ReleaseObjects()
@@ -982,21 +1007,6 @@ void CSecondRoundScene::ProcessPacket(char* p)
 	case SC_ATTACK_NPC: {
 		SC_ATTACK_NPC_PACKET* packet = reinterpret_cast<SC_ATTACK_NPC_PACKET*>(p);
 		cout << "[" << packet->p_id << "] 사망" << endl;
-	}break;
-
-	case SC_GETKEY: {
-		SC_GETKEY_PACKET* packet = reinterpret_cast<SC_GETKEY_PACKET*>(p);
-
-		int id = packet->p_id;
-		auto& it = idANDtype.find(id);
-
-		if (it == idANDtype.end()) break;
-		else {
-
-			Player_Character_Type type = it->second;
-			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->ChangeKeyState(true);
-		}
-
 	}break;
 
 

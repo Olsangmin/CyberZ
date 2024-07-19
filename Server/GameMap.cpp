@@ -9,6 +9,7 @@ GameMap& GameMap::GetInstance()
 
 void GameMap::initializeMap()
 {
+	game_state = GAME_STATE::NOGAME;
 	using namespace DirectX;
 	// `cellWidth`와 `cellDepth` 크기로 2D 배열을 생성합니다.
 	cells.resize(cellWidth, std::vector<CELL>(cellDepth));
@@ -239,39 +240,122 @@ void GameMap::Update(int tick)
 	//	std::cout << "남은시간 : " << Remain_time.count() << " 초" << std::endl;
 	
 	
-	Server& server = Server::GetInstance();
-
-	// npc가 이동해야 하면 깨우기
-	auto& players = server.clients;
+	
 	if (tick == 0 || tick == 15 || tick == 30 || tick == 45) {
 
 	}
 	else return;
+	
+	switch (game_state)
+	{
+	case NOGAME:
+		return;
+	case STAGE1:
+		UpdateS1();
+		break;
+	case STAGE2:
+		UpdateS2();
+		break;
+	default:
+		return;
+	}
 
-	for (auto& npc : npcs) {	
+
+	//for (auto& npc : npcs) {	
+	//	npc.UpdateBB();
+	//	bool patrol = true;
+	//	float current_dis = npc.distance_near;
+	//	
+	//	for (auto ids : cl_ids) {
+	//		if (players[ids].anim == CREEP) continue;
+	//		if (players[ids].anim == CRAWL) continue;
+	//		// 같은 섹터
+	//		if (npc.my_sector == getSector(players[ids].GetPos())) {
+	//			patrol = false;
+	//			
+	//			float distance = Distance_float(npc.GetPos(), players[ids].GetPos());
+	//			if ((npc.current_behavior == ATTACK) && (distance < AttackRange) && (npc.near_player == ids))
+	//				break;
+	//			
+	//			
+	//			if (npc.near_player == ids) { // 동일 아이디면 dis만 업데이트
+	//				npc.distance_near = distance;
+	//				npc.current_behavior = CHASE;
+	//				if (npc.n_path.empty() == false) continue;
+	//			}
+	//			else {
+	//				if (current_dis > distance) { 
+	//					// 다른 플레이어로 교체
+	//					npc.distance_near = distance;
+	//					npc.current_behavior = CHASE;
+	//					npc.near_player = ids;
+	//					npc.PathClear();
+	//				}
+	//				else continue;
+	//			}
+
+	//			std::cout << "가까운 플레이어로 교체" << std::endl;
+	//			std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[npc.near_player].GetPos());
+	//			if ((path.size() == 0) && (npc.IsAttack == false) && (distance < AttackRange)) {
+	//				npc.current_behavior = ATTACK;
+	//				break;
+	//			}
+	//			for (auto& p : path) {
+	//				npc.n_path.push(p);
+	//			}
+	//		}
+	//	}
+
+
+	//	if (patrol == true) {
+	//		std::queue<DirectX::XMFLOAT3> q{};
+	//		npc.n_path = q;
+	//		npc.current_behavior = PATROL;
+
+	//		if (npc.n_path.empty())
+	//			npc.n_path.push(GetRandomPos(npc.GetPos()));
+
+	//		npc.near_player = -1;
+	//		npc.distance_near = 100000.f;
+	//	}
+
+
+	//	
+	//	npc.DoWork();
+	//}
+	
+	
+}
+
+void GameMap::UpdateS1()
+{
+	Server& server = Server::GetInstance();
+	auto& players = server.clients;
+
+	for (auto& npc : npcs) {
 		npc.UpdateBB();
 		bool patrol = true;
 		float current_dis = npc.distance_near;
-		
+
 		for (auto ids : cl_ids) {
 			if (players[ids].anim == CREEP) continue;
 			if (players[ids].anim == CRAWL) continue;
 			// 같은 섹터
 			if (npc.my_sector == getSector(players[ids].GetPos())) {
 				patrol = false;
-				
+
 				float distance = Distance_float(npc.GetPos(), players[ids].GetPos());
 				if ((npc.current_behavior == ATTACK) && (distance < AttackRange) && (npc.near_player == ids))
 					break;
-				
-				
+
+
 				if (npc.near_player == ids) { // 동일 아이디면 dis만 업데이트
 					npc.distance_near = distance;
 					npc.current_behavior = CHASE;
 					if (npc.n_path.empty() == false) continue;
 				}
 				else {
-					if (current_dis > distance) { 
+					if (current_dis > distance) {
 						// 다른 플레이어로 교체
 						npc.distance_near = distance;
 						npc.current_behavior = CHASE;
@@ -307,11 +391,14 @@ void GameMap::Update(int tick)
 		}
 
 
-		
+
 		npc.DoWork();
 	}
-	
-	
+}
+
+void GameMap::UpdateS2()
+{
+	std::cout << "Stage2 Update" << std::endl;
 }
 
 
