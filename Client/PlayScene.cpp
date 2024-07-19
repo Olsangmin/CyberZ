@@ -625,8 +625,6 @@ void CFirstRoundScene::Send_Go_Stage2()
 void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum)
 {
 
-
-
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
 
 	m_pUI = new CSecondRoundSceneUI();
@@ -762,7 +760,7 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_pMyPlayer->ChangeCamera(SHOULDER_VIEW_CAMERA, 0.0f);
 	m_pMyPlayer->m_bUnable = true;
 
-	reinterpret_cast<CFirstRoundSceneUI*>(m_pUI)->m_fMaxStamina = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fMaxStaminer;
+	reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMaxStamina = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fMaxStaminer;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -807,6 +805,8 @@ void CSecondRoundScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 
 void CSecondRoundScene::ReleaseUploadBuffers()
 {
+
+
 	CScene::ReleaseUploadBuffers();
 
 }
@@ -908,6 +908,13 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 void CSecondRoundScene::AnimateObjects(float fTimeElapsed)
 {
 	CScene::AnimateObjects(fTimeElapsed);
+
+	if (reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer < reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fMaxStaminer)
+	{
+		reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bStaminaBarOn = true;
+		reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fStaminaRange = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer;
+	}
+	else reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bStaminaBarOn = false;
 
 
 }

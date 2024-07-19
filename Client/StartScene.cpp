@@ -92,6 +92,7 @@ bool CStartScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 
 	CScene::OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 
+
 	if (m_bInputID){
 		switch (nMessageID)
 		{
@@ -106,13 +107,17 @@ bool CStartScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 				break;
 			}
 			default:
-				if ((wParam < 123 && wParam > 64)) {
-					if (m_bCaps) reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID += wParam;
-					else reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID += wParam + 32;
-				}
-				if ((wParam < 58 && wParam > 47))
+				if (reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID.size() < TextMax)
 				{
-					reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID += wParam;
+
+					if ((wParam < 123 && wParam > 64)) {
+						if (m_bCaps) reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID += wParam;
+						else reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID += wParam + 32;
+					}
+					if ((wParam < 58 && wParam > 47))
+					{
+						reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID += wParam;
+					}
 				}
 				break;
 			}
@@ -140,15 +145,17 @@ bool CStartScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 				break;
 			}
 			default:
-				if ((wParam < 123 && wParam > 64)) {
-					if (m_bCaps) reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW += wParam;
-					else reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW += wParam + 32;
-				}
-				if ((wParam < 58 && wParam > 47))
+				if (reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW.size() < TextMax)
 				{
-					reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW += wParam;
+					if ((wParam < 123 && wParam > 64)) {
+						if (m_bCaps) reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW += wParam;
+						else reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW += wParam + 32;
+					}
+					if ((wParam < 58 && wParam > 47))
+					{
+						reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW += wParam;
+					}
 				}
-
 				break;
 			}
 		}
@@ -220,9 +227,15 @@ bool CStartScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wP
 
 		m_bInputID = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppTextInputBox[0]->CheckChlick(hWnd, m_ptOldCursorPos);
 		m_bInputPW = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppTextInputBox[1]->CheckChlick(hWnd, m_ptOldCursorPos);
+		m_bSignUP = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[0]->CheckChlick(hWnd, m_ptOldCursorPos);
+		m_bLogin = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[1]->CheckChlick(hWnd, m_ptOldCursorPos);
+
 		break;
 	case WM_LBUTTONUP:
 	case WM_RBUTTONUP:
+		m_bSignUP = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[0]->m_bSelected = false;
+		m_bLogin = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[1]->m_bSelected = false;
+
 		::ReleaseCapture();
 		break;
 	case WM_MOUSEMOVE:

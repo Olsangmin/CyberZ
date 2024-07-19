@@ -58,20 +58,50 @@ void CButton::CreateTextFormat(IDWriteFactory* pDWriteFactory, float fontSize)
 	}
 }
 
-void CButton::Draw(ID2D1DeviceContext2* pd2dDeviceContext, ID2D1Effect* pd2dfxBitmapSource, ID2D1SolidColorBrush* pd2dbrText)
+void CButton::Draw(ID2D1DeviceContext2* pd2dDeviceContext, ID2D1SolidColorBrush* pd2dbrText, ID2D1SolidColorBrush* pd2dbrBorder)
 {
+	m_rTextInput = { m_fLeft + 5, m_fTop, m_fRight, m_fBottom };
 	m_rButtonBox = { m_fLeft, m_fTop, m_fRight, m_fBottom };
+	m_rRoundButtonBox = { m_rButtonBox , 5.f, 5.f};
 
-	//Image
-	D2D_POINT_2F d2dPoint = { m_fLeft, m_fTop };
-	pd2dDeviceContext->DrawImage(pd2dfxBitmapSource, &d2dPoint, &m_rButtonBox);
-	
+	//Box
+	if (m_bSelected) pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::White, 0.9f));
+	else pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 0.9f));
+
+	pd2dDeviceContext->FillRoundedRectangle(m_rRoundButtonBox, pd2dbrBorder);
 
 	//text
 	if (m_pTextFormat)
 	{
 		m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 		m_pTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
-		pd2dDeviceContext->DrawTextW(m_text.c_str(), static_cast<UINT32>(m_text.length()), m_pTextFormat, m_rButtonBox, pd2dbrText);
+		if (m_bSelected) pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
+		else pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
+		
+		pd2dDeviceContext->DrawTextW(m_text.c_str(), static_cast<UINT32>(m_text.length()), m_pTextFormat, m_rTextInput, pd2dbrText);
 	}
+}
+
+bool CButton::CheckChlick(HWND hWnd, POINT CursorPos)
+{
+	m_bSelected = false;
+
+	// 마우스 커서 위치 계산
+	RECT WindowRect;
+	GetWindowRect(hWnd, &WindowRect);
+
+	POINT mousePos;
+	mousePos.x = CursorPos.x - WindowRect.left;
+	mousePos.y = CursorPos.y - WindowRect.top - 30;
+
+	// 충돌확인
+	if (mousePos.x > m_fLeft && mousePos.x < m_fRight)
+	{
+		if (mousePos.y > m_fTop && mousePos.y < m_fBottom)
+		{
+			m_bSelected = true;
+		}
+	}
+
+	return(m_bSelected);
 }

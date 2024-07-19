@@ -25,7 +25,6 @@ private:
 	IDWriteTextFormat* m_pTextFormat = NULL;
 
 public:
-	
 	bool				m_bSelected = false;
 
 public:

@@ -153,7 +153,8 @@ public:
 	IDnPW_INPUT_STATE					m_CheckInfo = EMPTY;
 public:
 	void DrawUI(UINT m_nSwapChainBufferIndex);
-	void UISet(UINT m_nSwapChainBufferIndex);
+	void UISet_Small(UINT m_nSwapChainBufferIndex);
+	void UISet_Full(UINT m_nSwapChainBufferIndex);
 
 
 };

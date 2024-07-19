@@ -50,7 +50,7 @@ void CTextInput::CreateTextFormat(IDWriteFactory* pDWriteFactory, float fontSize
 
 void CTextInput::Draw(ID2D1DeviceContext2* pd2dDeviceContext, ID2D1SolidColorBrush* pd2dbrText, ID2D1SolidColorBrush* pd2dbrBorder)
 {
-	m_rTextInput = { m_fLeft, m_fTop, m_fRight, m_fBottom };
+	m_rTextInput = { m_fLeft+5, m_fTop, m_fRight, m_fBottom };
 	m_rButtonBox = {m_fLeft, m_fTop, m_fRight, m_fBottom };
 	
 	//Box
@@ -63,7 +63,7 @@ void CTextInput::Draw(ID2D1DeviceContext2* pd2dDeviceContext, ID2D1SolidColorBru
 	//text
 	if (m_pTextFormat)
 	{
-		m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+		//m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 		m_pTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 		if (m_bSelected) pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
 		else pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::Black, 1.0f));

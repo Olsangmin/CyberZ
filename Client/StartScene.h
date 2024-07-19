@@ -22,10 +22,14 @@ public:
 	bool OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
 private:
+	const int					TextMax = 17;
+
 	POINT						m_ptOldCursorPos;
 
 	bool						m_bInputID = false;
 	bool						m_bInputPW = false;
+	bool						m_bSignUP = false;
+	bool						m_bLogin = false;
 
 	std::string				m_ID = "ID";
 	std::string				m_PW = "Pw";
