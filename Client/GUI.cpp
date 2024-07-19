@@ -2,13 +2,14 @@
 #include "stdafx.h"
 #include "GUI.h"
 
+
 CUI::CUI()
 {
 }
 
 CUI::~CUI()
 {
-
+	
 }
 
 void CUI::Release()
@@ -30,6 +31,16 @@ void CUI::Release()
 	{
 		if (m_ppd3d11WrappedBackBuffers[i]) m_ppd3d11WrappedBackBuffers[i]->Release();
 		if (m_ppd2dRenderTargets[i]) m_ppd2dRenderTargets[i]->Release();
+	}
+	if (m_ppButton)
+	{
+		for (int i = 0; i < m_nButton; i++) if (m_ppButton[i]) m_ppButton[i]->Release();
+		delete[] m_ppButton;
+	}
+	if (m_ppTextInputBox)
+	{
+		for (int i = 0; i < m_nTextInputBox; i++) if (m_ppTextInputBox[i]) m_ppTextInputBox[i]->Release();
+		delete[] m_ppTextInputBox;
 	}
 
 	//Image
@@ -469,7 +480,7 @@ void CSecondRoundSceneUI::ItemUI()
 
 	D2D1_RECT_F rcUpperText = D2D1::RectF(top, left, top + gab, left + gab);
 	WCHAR MissionText[] = L"ITEM";
-	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
+	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
 	m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
 
 	if (m_bcard)
@@ -514,6 +525,21 @@ void CSecondRoundSceneUI::StaminaBarUI()
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///
+CStartSceneUI::CStartSceneUI() {
+
+	// set Button
+	m_nButton = 0;
+	m_ppButton = new CButton * [m_nButton];
+	
+	//m_ppButton[0] = new CButton(0, 0, 100, 100, L"test");
+
+	// set TextInputBox
+	m_nTextInputBox = 2;
+	m_ppTextInputBox = new CTextInput * [m_nTextInputBox];
+
+	m_ppTextInputBox[0] = new CTextInput(100, 200, 100, 20, L"test");
+	m_ppTextInputBox[1] = new CTextInput(100, 250, 100, 20, L"test");
+}
 
 void CStartSceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 {
@@ -536,14 +562,36 @@ void CStartSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 {
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 
-
+	//=================================================
 	// Background Image
 	LoadUIImage(L"Image/test.jpg", m_pwicImagingFactory, m_pd2dfxBitmapSource);
 	D2D_POINT_2F d2dPoint = { 0.f, 0.f };
 	D2D_RECT_F d2dRect = { 0.0f, 0.0f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT };
 	m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &d2dPoint, &d2dRect);
 
+	//=================================================
+	//Button 
+	//LoadUIImage(L"Image/Button.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
+	//m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
+	//m_ppButton[0]->CreateTextFormat(m_pdWriteFactory, 12.f);
+	//m_ppButton[0]->SetText(L"Button");
+	//m_ppButton[0]->Draw(m_pd2dDeviceContext, m_pd2dfxBitmapSource, m_pd2dbrText);
 
+	//=================================================
+	// TextBox (ID/PW)
+	
+	//ID
+	m_ppTextInputBox[0]->CreateTextFormat(m_pdWriteFactory, 15.f);
+	m_ppTextInputBox[0]->SetText(m_ID.c_str());
+	m_ppTextInputBox[0]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
+
+	//PW
+	m_ppTextInputBox[1]->CreateTextFormat(m_pdWriteFactory, 15.f);
+	m_ppTextInputBox[1]->SetText(m_PW.c_str());
+	m_ppTextInputBox[1]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
+
+
+	//=================================================
 	// Tiltle
 	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 40.0f, L"en-US", &m_pdwFont);
 	

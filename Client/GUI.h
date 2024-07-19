@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Button.h"
+#include "TextInput.h"
+
 class CUI
 {
 public:
@@ -45,10 +48,17 @@ public:
 
 	bool m_bcard = false;
 
+	int				m_nButton = 0;
+	CButton**		m_ppButton = NULL;
+
+	int				m_nTextInputBox = 0;
+	CTextInput**	m_ppTextInputBox = NULL;
+
 public:
 	void CreateDirect2DDevice(HWND m_hWnd, ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12CommandQueue* m_pd3dCommandQueue, ID3D12Resource* m_ppd3dSwapChainBackBuffers[m_nSwapChainBuffers]);
-	void LoadUIImage(const wchar_t* filename, IWICImagingFactory* pwicImagingFactory, ID2D1Effect* pd2dfxBitmapSource);
 	virtual void DrawUI(UINT m_nSwapChainBufferIndex);
+
+	void LoadUIImage(const wchar_t* filename, IWICImagingFactory* pwicImagingFactory, ID2D1Effect* pd2dfxBitmapSource);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -127,8 +137,11 @@ public:
 class CStartSceneUI : public CUI
 {
 public:
-	CStartSceneUI() {}
+	CStartSceneUI();
 	~CStartSceneUI() {}
+
+	std::wstring			m_ID = L"testID";
+	std::wstring			m_PW = L"testPW";
 
 public:
 	void DrawUI(UINT m_nSwapChainBufferIndex);
