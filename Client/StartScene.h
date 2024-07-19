@@ -23,8 +23,12 @@ public:
 
 private:
 	POINT						m_ptOldCursorPos;
+
 	bool						m_bInputID = false;
 	bool						m_bInputPW = false;
+
+	std::string				m_ID = "ID";
+	std::string				m_PW = "Pw";
 
 
 public:

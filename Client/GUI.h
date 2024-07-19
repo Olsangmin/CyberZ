@@ -133,6 +133,13 @@ public:
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///
+enum IDnPW_INPUT_STATE
+{
+	EMPTY,
+	ALL_CORRET,
+	ID_ERROR,
+	PW_ERROR,
+};
 
 class CStartSceneUI : public CUI
 {
@@ -143,6 +150,7 @@ public:
 	std::wstring			m_ID = L"testID";
 	std::wstring			m_PW = L"testPW";
 
+	IDnPW_INPUT_STATE					m_CheckInfo = EMPTY;
 public:
 	void DrawUI(UINT m_nSwapChainBufferIndex);
 	void UISet(UINT m_nSwapChainBufferIndex);

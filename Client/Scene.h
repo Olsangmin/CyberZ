@@ -147,6 +147,7 @@ public:
 	
 	CUI*								m_pUI = NULL;
 	bool								m_bUIOn = true;
+	bool								m_bCaps = false;
 
 	bool								m_bChangeScene = false;
 	bool								Missionflag = false;

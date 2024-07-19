@@ -571,6 +571,7 @@ void CStartSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 
 	//=================================================
 	//Button 
+	
 	//LoadUIImage(L"Image/Button.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
 	//m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
 	//m_ppButton[0]->CreateTextFormat(m_pdWriteFactory, 12.f);
@@ -581,11 +582,15 @@ void CStartSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 	// TextBox (ID/PW)
 	
 	//ID
+	m_ppTextInputBox[0]->SetPosition(FRAME_BUFFER_WIDTH - 600, FRAME_BUFFER_HEIGHT / 3);
+	m_ppTextInputBox[0]->SetSize(200, 20);
 	m_ppTextInputBox[0]->CreateTextFormat(m_pdWriteFactory, 15.f);
 	m_ppTextInputBox[0]->SetText(m_ID.c_str());
 	m_ppTextInputBox[0]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
 
 	//PW
+	m_ppTextInputBox[1]->SetPosition(FRAME_BUFFER_WIDTH - 600, FRAME_BUFFER_HEIGHT / 3 + 23);
+	m_ppTextInputBox[1]->SetSize(200, 20);
 	m_ppTextInputBox[1]->CreateTextFormat(m_pdWriteFactory, 15.f);
 	m_ppTextInputBox[1]->SetText(m_PW.c_str());
 	m_ppTextInputBox[1]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
@@ -616,9 +621,29 @@ void CStartSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 	height = 200.f;
 
 	D2D1_RECT_F rcPressText = D2D1::RectF(top, left, top + height, left + width);
-	WCHAR PressA[] = L"Press 'A' to Start";
+	
+	std::wstring SatrtInfo;
+
+	switch (m_CheckInfo)
+	{
+	case EMPTY:
+		SatrtInfo = L"Enter ID and PW";
+		break;
+	case ALL_CORRET:
+		SatrtInfo = L"Press 'A' to Start";
+		break;
+	case ID_ERROR:
+		SatrtInfo = L"ID ERROR";
+		break;
+	case PW_ERROR:
+		SatrtInfo = L"PW ERROR";
+		break;
+	default:
+		break;
+	}
+	
 	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
-	m_pd2dDeviceContext->DrawTextW(PressA, (UINT32)wcslen(PressA), m_pdwFont, &rcPressText, m_pd2dbrText);
+	m_pd2dDeviceContext->DrawTextW(SatrtInfo.c_str(), static_cast<UINT32>(SatrtInfo.length()), m_pdwFont, &rcPressText, m_pd2dbrText);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

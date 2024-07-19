@@ -30,7 +30,7 @@ public:
 
 public:
 	void SetPosition(float x, float y) { m_fLeft = x; m_fTop = y; }
-	void SetSize(float width, float height) { m_fWidth = width; m_fHeight = height; }
+	void SetSize(float width, float height); 
 
 	void SetText(const wchar_t* text) { m_text = text; }
 	wstring GetText() { return (m_text); }

@@ -22,6 +22,15 @@ void CTextInput::Release()
 	if (m_pTextFormat) m_pTextFormat->Release();
 }
 
+void CTextInput::SetSize(float width, float height)
+{ 
+	m_fWidth = width; 
+	m_fHeight = height; 
+	
+	m_fRight = m_fLeft + m_fWidth;
+	m_fBottom = m_fTop + m_fHeight;
+}
+
 void CTextInput::CreateTextFormat(IDWriteFactory* pDWriteFactory, float fontSize)
 {
 	if (!m_pTextFormat)
@@ -54,7 +63,6 @@ void CTextInput::Draw(ID2D1DeviceContext2* pd2dDeviceContext, ID2D1SolidColorBru
 	//text
 	if (m_pTextFormat)
 	{
-		
 		m_pTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 		m_pTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 		if (m_bSelected) pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
