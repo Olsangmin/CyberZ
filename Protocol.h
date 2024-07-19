@@ -9,6 +9,7 @@ constexpr int NUM_NPC = 3;
 constexpr int MAX_FRAME = 60;
 
 constexpr int NAME_SIZE = 20;
+constexpr int PW_SIZE = 20;
 
 using namespace DirectX;
 
@@ -17,8 +18,8 @@ static std::array<DirectX::XMFLOAT3, MAX_USER> PlayerInitPos = {
 	XMFLOAT3(200.f, 0.f, 800.f) };
 
 static std::array<DirectX::XMFLOAT3, MAX_USER> PlayerInitPos_Stage2 = {
-	XMFLOAT3(300.f, 0.f, 100.f), XMFLOAT3(350.f, 0.f, 100.f),
-	XMFLOAT3(250.f, 0.f, 100.f) };
+	XMFLOAT3(50.f, 0.f, 470.f), XMFLOAT3(100.f, 0.f, 470.f),
+	XMFLOAT3(150.f, 0.f, 470.f) };
 
 static std::array<DirectX::XMFLOAT3, MAX_USER> NPCInitPos = {
 	XMFLOAT3(400.f, 0.f, 650.f), XMFLOAT3(370.f, 0.f, 170.f),
@@ -92,6 +93,7 @@ struct CS_LOGIN_PACKET {
 	unsigned char size;
 	char	type;
 	char	name[NAME_SIZE];
+	char	PW[NAME_SIZE];
 };
 
 struct CS_LOGOUT_PACKET {

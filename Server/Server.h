@@ -5,6 +5,7 @@
 #include <concurrent_priority_queue.h>
 #include "GameMap.h"
 #include <random>
+#include "DBConnectionPool.h"
 
 
 class Server
@@ -17,6 +18,7 @@ public:
 	{
 		closesocket(s_socket);
 		WSACleanup();
+		delete m_DBConnectionPool;
 	}
 	void Network();
 	void Worker_thread();
@@ -51,6 +53,8 @@ public:
 	concurrency::concurrent_priority_queue<TIMER_EVENT> timer_queue;
 
 	GameMap gMap{ 1000.f, 1000.f, 100, 100};
+
 	
+	DBConnectionPool* m_DBConnectionPool = nullptr;
 };
 

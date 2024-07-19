@@ -12,6 +12,8 @@ Server::Server()
 	for (int i = 0; i < MAX_USER; ++i) {
 		clients[i].SetId(-1);
 	}
+
+	m_DBConnectionPool = new DBConnectionPool();
 }
 
 void Server::Network()
@@ -41,6 +43,73 @@ void Server::Network()
 	gMap.initializeMap();
 
 	gMap.printMap();
+
+	if (false == m_DBConnectionPool->Connect(1, L"Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=CyberZDB;Trusted_Connection=Yes;"))
+	{
+		std::cout << "DB Connect 오류 !" << std::endl;
+		exit(-1);
+	}
+	else
+	{
+		std::cout << "DB 서버 Connected" << std::endl;
+	}
+
+	for (int i = 0; i < 3; ++i)
+	{
+		DBConnection* dbConn = m_DBConnectionPool->Pop();
+		dbConn->Unbind();
+
+		int gold = 50;
+		SQLLEN len = 0;
+
+		if (dbConn->BindParam(1, SQL_C_LONG, SQL_INTEGER, sizeof(gold), &gold, &len))
+		{
+
+		}
+
+		if (dbConn->Execute(L"INSERT INTO [dbo].[Gold]([gold]) VALUES(?)"))
+		{
+
+		}
+		m_DBConnectionPool->Push(dbConn);
+	}
+
+	// 데이터 Read
+	{
+		DBConnection* dbConn = m_DBConnectionPool->Pop();
+		dbConn->Unbind();
+
+		int gold = 50;
+		SQLLEN len = 0;
+		if (dbConn->BindParam(1, SQL_C_LONG, SQL_INTEGER, sizeof(gold), &gold, &len))
+		{
+
+		}
+
+
+
+		int outId = 0;
+		SQLLEN outIdlen = 0;
+		dbConn->BindCol(1, SQL_C_LONG, sizeof(outId), &outId, &outIdlen);
+
+		int outGold = 0;
+		SQLLEN outGoldlen = 0;
+		dbConn->BindCol(2, SQL_C_LONG, sizeof(outGold), &outGold, &outGoldlen);
+
+
+		if (dbConn->Execute(L"SELECT id, gold FROM [dbo].[Gold] WHERE gold = (?)"))
+		{
+
+		}
+
+		while (dbConn->Fetch())
+		{
+			std::cout << "Id: " << outId << " Gold: " << outGold << std::endl;
+		}
+
+		m_DBConnectionPool->Push(dbConn);
+	}
+
 
 	std::cout << "Server Start" << std::endl;
 
@@ -221,6 +290,7 @@ void Server::Process_packet(int c_id, char* packet)
 	case CS_LOGIN: {
 		CS_LOGIN_PACKET* p = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
 		strcpy_s(clients[c_id].name, p->name);
+		strcpy_s(clients[c_id].password, p->PW);
 		{
 			std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
 			clients[c_id].state = ST_LOBBY;
@@ -241,8 +311,8 @@ void Server::Process_packet(int c_id, char* packet)
 			cl.send_change_Character_type_packet(c_id, clients[c_id].GetType());
 			clients[c_id].send_change_Character_type_packet(cl.GetId(), cl.GetType());
 		}
-	}
-				 break;
+	} break;
+				
 
 	case CS_ALLPLAYER_READY: {
 		if (c_id != gMap.cl_ids[0]) break;

@@ -9,6 +9,10 @@ extern SOCKET c_socket;
 extern string ServerIP;
 extern int my_id;
 
+extern string ID;
+extern string PassWork;
+
+
 enum Obj_STATE{ FREE, INGAME };
 class ObjectInfo {
 public:

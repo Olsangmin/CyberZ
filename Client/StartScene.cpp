@@ -196,6 +196,9 @@ bool CStartScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 			m_ID = wcharToChar(reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID);
 			m_PW = wcharToChar(reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW);
 
+			Login_Id = m_ID;
+			Login_PassWork = m_PW;
+
 			cout << "ID:" << m_ID.c_str() <<", PW:" <<m_PW.c_str() <<endl;
 			break;
 		}
