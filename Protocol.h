@@ -16,6 +16,10 @@ static std::array<DirectX::XMFLOAT3, MAX_USER> PlayerInitPos = {
 	XMFLOAT3(700.f, 0.f, 200.f), XMFLOAT3(900.f, 0.f, 400.f),
 	XMFLOAT3(200.f, 0.f, 800.f) };
 
+static std::array<DirectX::XMFLOAT3, MAX_USER> PlayerInitPos_Stage2 = {
+	XMFLOAT3(300.f, 0.f, 100.f), XMFLOAT3(350.f, 0.f, 100.f),
+	XMFLOAT3(250.f, 0.f, 100.f) };
+
 static std::array<DirectX::XMFLOAT3, MAX_USER> NPCInitPos = {
 	XMFLOAT3(400.f, 0.f, 650.f), XMFLOAT3(370.f, 0.f, 170.f),
 	XMFLOAT3(760.f, 0.f, 950.f) };
@@ -47,6 +51,7 @@ constexpr char CS_ALIVE_PLAYER = 8;
 
 
 constexpr char CS_GETKEY = 21;
+constexpr char CS_GO_STAGE2 = 22;
 
 constexpr char CS_TEST = 200;
 
@@ -66,6 +71,7 @@ constexpr char SC_PLAYER_ALIVE = 11;
 
 
 constexpr char SC_GETKEY = 21;
+constexpr char SC_GO_STAGE2 = 22;
 
 
 constexpr char SC_TEST = 200;
@@ -146,6 +152,12 @@ struct CS_TEST_PACKET {
 	char	type;
 	int	x;
 };
+
+struct CS_GO_STAGE2_PACKET {
+	unsigned char size;
+	char	type;
+};
+
 // ------------------------------------------
 struct SC_LOGIN_INFO_PACKET {
 	unsigned char size;
@@ -228,6 +240,11 @@ struct SC_GETKEY_PACKET {
 	unsigned char size;
 	char	type;
 	int p_id;
+};
+
+struct SC_GO_STAGE2_PACKET {
+	unsigned char size;
+	char	type;
 };
 
 struct SC_MESSAGE_PACKET {

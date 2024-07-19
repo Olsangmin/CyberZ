@@ -52,6 +52,8 @@ struct CELL
 };
 
 
+enum GAME_STATE {NOGAME, LOADING, STAGE1, STAGE2};
+
 class GameMap
 {
 public:
@@ -70,17 +72,21 @@ public:
     void StartGame();
     void EndGame() { InGame = false; }
     void PlayGame() { 
+        SetStage(GAME_STATE::STAGE1);
         InGame = true; 
         Start_time = std::chrono::steady_clock::now();
         End_time = Start_time + std::chrono::seconds(10);
-
-        
     }
+    void SetStage(GAME_STATE state) { game_state = state; }
+    GAME_STATE GetStage() { return game_state; }
     bool is_InGame() const { return InGame; }
 
     void printMap() const;
 
     void Update(int tick);
+
+    void UpdateS1();
+    void UpdateS2();
 
     CELL& GetCurrentCell(DirectX::XMFLOAT3 in_pos);
 
@@ -227,6 +233,7 @@ private:
     std::chrono::steady_clock::time_point End_time;
 
     std::chrono::duration<double> Remain_time;
+    GAME_STATE game_state;
 };
 
 
