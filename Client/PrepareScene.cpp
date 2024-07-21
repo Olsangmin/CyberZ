@@ -64,16 +64,16 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	for (int j = 0; j < 3; j++)
 	{
-		m_ppModelInfoPlayer[j * 4] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
-		m_ppModelInfoPlayer[1 + j * 4] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
-		m_ppModelInfoPlayer[2 + j * 4] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
+		m_ppModelInfoPlayer[j * 4] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_a.bin", NULL);
+		m_ppModelInfoPlayer[1 + j * 4] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_b.bin", NULL);
+		m_ppModelInfoPlayer[2 + j * 4] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_c.bin", NULL);
 		m_ppModelInfoPlayer[3 + j * 4] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Robot.bin", NULL);
 	}
 
 	for (int j = 0; j < 3; j++)
 	{
 		for (int i = 0; i < 4; ++i) {
-			CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i + j * 4]);
+			CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i + j * 4], THIRD_PERSON_CAMERA, 1);
 			m_ppPlayer[i + j * 4] = pPlayer;
 			m_ppPlayer[i + j * 4]->SetPlayerData(i);
 			m_ppPlayer[i + j * 4]->Rotate(0.f, 180.f, 0.f);

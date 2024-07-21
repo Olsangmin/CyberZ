@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CyborgPlayer.h"
 
-CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, CLoadedModelInfo* pModel, DWORD dCamera)
+CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, CLoadedModelInfo* pModel, DWORD dCamera, int nMaxAni)
 {
 	m_pCamera = ChangeCamera(dCamera, 0.0f);
 
@@ -9,10 +9,10 @@ CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 
 	SetChild(pPlayerModel->m_pModelRootObject, true);
 
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, MAX_ANIMATION_TYPE, pPlayerModel);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nMaxAni, pPlayerModel);
 
 	// Animation Setting
-	for (int i = 0; i < MAX_ANIMATION_TYPE; ++i)
+	for (int i = 0; i < nMaxAni; ++i)
 		m_pSkinnedAnimationController->SetTrackAnimationSet(i, i);
 
 	// Default animation setting

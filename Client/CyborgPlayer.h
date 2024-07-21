@@ -4,7 +4,7 @@
 class CyborgPlayer : public CPlayer
 {
 public:
-	CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext = NULL, CLoadedModelInfo* pModel = NULL, DWORD dCamera = THIRD_PERSON_CAMERA);
+	CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext = NULL, CLoadedModelInfo* pModel = NULL, DWORD dCamera = THIRD_PERSON_CAMERA, int nMaxAni = MAX_ANIMATION_TYPE);
 	virtual ~CyborgPlayer();
 
 	Player_Animation_ST GetCurrentAni() { return m_pasCurrentAni; }
