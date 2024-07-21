@@ -894,12 +894,12 @@ void CScene::InitNetwork()
 	unsigned long noblock = 1;
 	ioctlsocket(c_socket, FIONBIO, &noblock);
 
-	CS_LOGIN_PACKET p;
+	/*CS_LOGIN_PACKET p;
 	p.size = sizeof(p);
 	p.type = CS_LOGIN;
 	strcpy_s(p.name, Login_Id.c_str());
 	strcpy_s(p.PW, Login_PassWord.c_str());
-	send_packet(&p);
+	send_packet(&p);*/
 }
 
 void CScene::Recv_Packet()

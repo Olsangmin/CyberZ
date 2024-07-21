@@ -52,63 +52,32 @@ void Server::Network()
 	else
 	{
 		std::cout << "DB 서버 Connected" << std::endl;
+
+		// Creat Table
+		// 
+		// DROP TABLE IF EXISTS[dbo].[User_Account];			
+		{
+			/*auto query = L"									\
+			CREATE TABLE [dbo].[User_Account]					\
+			(											\
+				[id] INT NOT NULL PRIMARY KEY IDENTITY, \
+				[account_id] NVARCHAR(20) NOT NULL UNIQUE, \
+				[password] NVARCHAR(20) NOT NULL,						\
+				[createDate] DATETIME NULL				\
+			);";
+
+			DBConnection* dbConn = m_DBConnectionPool->Pop();
+			if (false == dbConn->Execute(query)) {
+				return;
+			}
+			m_DBConnectionPool->Push(dbConn);*/
+		}
 	}
 
-	for (int i = 0; i < 3; ++i)
-	{
-		DBConnection* dbConn = m_DBConnectionPool->Pop();
-		dbConn->Unbind();
 
-		int gold = 50;
-		SQLLEN len = 0;
-
-		if (dbConn->BindParam(1, SQL_C_LONG, SQL_INTEGER, sizeof(gold), &gold, &len))
-		{
-
-		}
-
-		if (dbConn->Execute(L"INSERT INTO [dbo].[Gold]([gold]) VALUES(?)"))
-		{
-
-		}
-		m_DBConnectionPool->Push(dbConn);
-	}
 
 	// 데이터 Read
-	{
-		DBConnection* dbConn = m_DBConnectionPool->Pop();
-		dbConn->Unbind();
 
-		int gold = 50;
-		SQLLEN len = 0;
-		if (dbConn->BindParam(1, SQL_C_LONG, SQL_INTEGER, sizeof(gold), &gold, &len))
-		{
-
-		}
-
-
-
-		int outId = 0;
-		SQLLEN outIdlen = 0;
-		dbConn->BindCol(1, SQL_C_LONG, sizeof(outId), &outId, &outIdlen);
-
-		int outGold = 0;
-		SQLLEN outGoldlen = 0;
-		dbConn->BindCol(2, SQL_C_LONG, sizeof(outGold), &outGold, &outGoldlen);
-
-
-		if (dbConn->Execute(L"SELECT id, gold FROM [dbo].[Gold] WHERE gold = (?)"))
-		{
-
-		}
-
-		while (dbConn->Fetch())
-		{
-			std::cout << "Id: " << outId << " Gold: " << outGold << std::endl;
-		}
-
-		m_DBConnectionPool->Push(dbConn);
-	}
 
 
 	std::cout << "Server Start" << std::endl;
@@ -119,6 +88,7 @@ void Server::Network()
 	for (int i = 0; i < num_threads; ++i)
 		worker_threads.emplace_back(&Server::Worker_thread, this);
 	std::thread timer_thread{ &Server::TimerThread, this };
+	// std::thread db_thread{ &Server::DBThread, this };
 
 
 	using frame = std::chrono::duration<int, std::ratio<1, MAX_FRAME>>;
@@ -137,7 +107,7 @@ void Server::Network()
 		fps = duration_cast<frame>(std::chrono::steady_clock::now() - fps_timer);
 
 		// 아직 1/60초가 안지났으면 패스
-		
+
 		if (fps.count() < 1) continue;
 
 
@@ -260,7 +230,7 @@ void Server::Worker_thread()
 
 			delete ex_over;
 		}
-					  break;
+						break;
 
 		case OP_NPC_ATTACK: {
 			auto& npc = gMap.npcs[key - 100];
@@ -293,13 +263,18 @@ void Server::Process_packet(int c_id, char* packet)
 		strcpy_s(clients[c_id].password, p->PW);
 		{
 			std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
-			clients[c_id].state = ST_LOBBY;
-			// gMap.StartGame();
+			{
+				if (false == TryLogin(clients[c_id].name, clients[c_id].password))
+				{
+					return;
+				}
+				clients[c_id].state = ST_LOBBY;
+			}
 		}
 		std::cout << "Client[" << c_id << "] Login.\n" << std::endl;
 		clients[c_id].send_login_info_packet();
-		
-		if(gMap.cl_ids.size() <= 3)
+
+		if (gMap.cl_ids.size() <= 3)
 			gMap.cl_ids.push_back(c_id);
 
 		for (auto& cl : clients) {
@@ -312,7 +287,47 @@ void Server::Process_packet(int c_id, char* packet)
 			clients[c_id].send_change_Character_type_packet(cl.GetId(), cl.GetType());
 		}
 	} break;
-				
+	case CS_SIGNUP: {
+		CS_SIGNUP_PACKET* p = reinterpret_cast<CS_SIGNUP_PACKET*>(packet);
+		
+
+		DBConnection* dbConn = m_DBConnectionPool->Pop();
+		dbConn->Unbind();
+
+		WCHAR name[20] = {};
+		MultiByteToWideChar(CP_ACP, 0, p->name, -1, name, 20);
+		SQLLEN nameLen = 0;
+
+		if (dbConn->BindParam(1, name, &nameLen))
+		{
+
+		}
+
+		WCHAR password[20] = {};
+		MultiByteToWideChar(CP_ACP, 0, p->PW, -1, password, 20);
+		SQLLEN passwordLen = 0;
+
+		if (dbConn->BindParam(2, password, &passwordLen))
+		{
+
+		}
+
+		TIMESTAMP_STRUCT ts = {2024, 07, 01};
+		SQLLEN tsLen = 0;
+
+		if (dbConn->BindParam(3, &ts, &tsLen))
+		{
+
+		}
+
+
+		if (dbConn->Execute(L"INSERT INTO [dbo].[User_Account]([account_id], [password], [createDate]) VALUES(?, ?, ?)"))
+		{
+
+		}
+		m_DBConnectionPool->Push(dbConn);
+
+	}break;
 
 	case CS_ALLPLAYER_READY: {
 		if (c_id != gMap.cl_ids[0]) break;
@@ -321,7 +336,7 @@ void Server::Process_packet(int c_id, char* packet)
 		std::sort(gMap.cl_ids.begin(), gMap.cl_ids.end());
 		auto u = std::unique(gMap.cl_ids.begin(), gMap.cl_ids.end());
 		gMap.cl_ids.erase(u, gMap.cl_ids.end());
-		
+
 		std::set<int> types;
 		for (auto id : gMap.cl_ids)
 			types.insert(clients[id].GetType());
@@ -330,7 +345,7 @@ void Server::Process_packet(int c_id, char* packet)
 			std::cout << "캐릭터 중복 " << std::endl;
 			break;
 		}
-		
+
 
 		for (auto& cl : clients) {
 			{
@@ -343,7 +358,7 @@ void Server::Process_packet(int c_id, char* packet)
 			}
 			// if (cl.GetId() == c_id) continue;
 		}
-		
+
 		std::cout << "방장[" << c_id << "] - " << std::endl;
 		gMap.StartGame();
 		break;
@@ -374,7 +389,7 @@ void Server::Process_packet(int c_id, char* packet)
 				clients[pl].SetPos(PlayerInitPos_Stage2[clients[pl].GetType()]);
 			}
 			for (auto& pl : players) {
-				
+
 				for (auto& others : gMap.cl_ids) {
 					clients[pl].send_add_player_packet(others,
 						clients[others].GetPos(), clients[others].GetRotation(), clients[others].GetType());
@@ -382,7 +397,7 @@ void Server::Process_packet(int c_id, char* packet)
 			}
 			gMap.SetStage(STAGE2);
 		}
-		
+
 		break;
 	}
 	case CS_LOGOUT: {
@@ -482,7 +497,7 @@ void Server::Process_packet(int c_id, char* packet)
 	case CS_GO_STAGE2: {
 		CS_GO_STAGE2_PACKET* p = reinterpret_cast<CS_GO_STAGE2_PACKET*>(packet);
 		if (c_id != gMap.cl_ids[0]) break;
-		
+
 		for (int id : gMap.cl_ids) {
 			if (clients[id].state != ST_INGAME) continue;
 			SC_GO_STAGE2_PACKET packet;
@@ -494,7 +509,7 @@ void Server::Process_packet(int c_id, char* packet)
 		gMap.SetStage(GAME_STATE::LOADING);
 
 
-		
+
 	}break;
 
 	case CS_TEST: {
@@ -550,7 +565,7 @@ void Server::TimerThread()
 				OVER_EXP* overE = new OVER_EXP;
 				overE->comp_type = OP_NPC_MOVE;
 				PostQueuedCompletionStatus(h_iocp, 1, ev.npc_id, &overE->over);
-		
+
 				break;
 			}
 			case EV_NPC_ATTACK: {
@@ -574,4 +589,76 @@ void Server::TimerThread()
 		// 비었을 때의 작업
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
+}
+
+void Server::DBThread()
+{
+	using namespace std::chrono;
+	while (true)
+	{
+
+	}
+}
+
+bool Server::TryLogin(char* cl_name, char* cl_password)
+{
+	DBConnection* dbConn = m_DBConnectionPool->Pop();
+	dbConn->Unbind();
+
+	
+	WCHAR name[20] = {};
+	MultiByteToWideChar(CP_ACP, 0, cl_name, -1, name, 20);
+	SQLLEN nameLen = 0;
+	if (dbConn->BindParam(1, name, &nameLen))
+	{
+
+	}
+
+
+	int outId = 0;
+	SQLLEN outIdlen = 0;
+	dbConn->BindCol(1, &outId, &outIdlen);
+
+	WCHAR outName[20] = {};
+	SQLLEN outNameLen = 0;
+	dbConn->BindCol(2, outName, static_cast<int>(sizeof(outName) / sizeof(outName[0])), &outNameLen);
+
+	
+	WCHAR outpassword[20] = {};
+	SQLLEN outpasswordLen = 0;
+	dbConn->BindCol(3, outpassword, static_cast<int>(sizeof(outpassword) / sizeof(outpassword[0])), &outpasswordLen);
+
+
+	if (dbConn->Execute(L"SELECT id, account_id, password FROM [dbo].[User_Account] WHERE account_id = (?)"))
+	{
+
+	}
+
+	bool result = false;
+	if (dbConn->Fetch())
+	{
+		// TODO
+		WCHAR clpassword[20] = {};
+		MultiByteToWideChar(CP_ACP, 0, cl_password, -1, clpassword, 20);
+		if (lstrcmpW(clpassword, outpassword) == 0)
+		{
+			std::cout << "로그인 성공" << std::endl;
+			result = true;
+		}
+		else
+		{
+			std::cout << "비밀번호가 다릅니다." << std::endl;
+			result = false;
+		}
+	}
+	else
+	{
+		std::cout << "없는 아이디" << std::endl;
+		result = false;
+	}
+
+	m_DBConnectionPool->Push(dbConn);
+
+	return result;
+	
 }

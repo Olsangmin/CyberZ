@@ -55,6 +55,7 @@ constexpr char CS_GETKEY = 21;
 constexpr char CS_GO_STAGE2 = 22;
 
 constexpr char CS_TEST = 200;
+constexpr char CS_SIGNUP = 201;
 
 // =======================
 constexpr char SC_LOGIN_INFO = 0;
@@ -90,6 +91,13 @@ enum Player_Character_Type {
 
 #pragma pack (push, 1)
 struct CS_LOGIN_PACKET {
+	unsigned char size;
+	char	type;
+	char	name[NAME_SIZE];
+	char	PW[NAME_SIZE];
+};
+
+struct CS_SIGNUP_PACKET {
 	unsigned char size;
 	char	type;
 	char	name[NAME_SIZE];

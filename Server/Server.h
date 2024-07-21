@@ -25,9 +25,12 @@ public:
 	void Process_packet(int c_id, char* packet);
 	void Disconnect(int c_id);
 	int Get_new_client_id();
-	
+
 
 	void TimerThread();
+	void DBThread();
+
+	bool TryLogin(char* cl_name, char* cl_password);
 
 	/*std::vector<DirectX::XMFLOAT3> random_pos{ (DirectX::XMFLOAT3(500.f,0.f, 500.f))
 	,(DirectX::XMFLOAT3(950.f,0.f, 750.f))
