@@ -284,6 +284,16 @@ void CyborgPlayer::Update(float fTimeElapsed)
 	SetBuffer(&Upacket, Upacket.size);
 }
 
+void CyborgPlayer::Release()
+{
+	CPlayer::Release();
+	if (m_ppMissionObjects) {
+		for (int i = 0; i < m_nMissionObject; ++i)
+			m_ppMissionObjects[i]->Release();
+		//delete[] m_ppMissionObjects;
+	}
+}
+
 void CyborgPlayer::UpdateBB()
 {
 	if (m_pSibling)m_pSibling->UpdateBoundingBox(m_xmf3Velocity);

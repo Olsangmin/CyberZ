@@ -345,7 +345,7 @@ CGameObject::~CGameObject()
 {
 	if (m_pMesh) m_pMesh->Release();
 
-	if (m_nMaterials > 0)
+	if (m_nMaterials > 0&&m_ppMaterials)
 	{
 		for (int i = 0; i < m_nMaterials; i++)
 		{
@@ -582,7 +582,9 @@ void CGameObject::ReleaseShaderVariables()
 
 void CGameObject::ReleaseUploadBuffers()
 {
-	if (m_pMesh) m_pMesh->ReleaseUploadBuffers();
+	if (m_pMesh) {
+		m_pMesh->ReleaseUploadBuffers();
+	}
 
 	for (int i = 0; i < m_nMaterials; i++)
 	{

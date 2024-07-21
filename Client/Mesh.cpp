@@ -13,7 +13,9 @@ CMesh::CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandLis
 CMesh::~CMesh()
 {
 	if (m_pd3dVertexBufferViews) delete[] m_pd3dVertexBufferViews;
-	if (m_pd3dPositionBuffer) m_pd3dPositionBuffer->Release();
+	if (m_pd3dPositionBuffer) {
+		m_pd3dPositionBuffer->Release();
+	}
 
 	if (m_nSubMeshes > 0)
 	{
@@ -608,7 +610,6 @@ CSkinnedMesh::~CSkinnedMesh()
 
 	if (m_ppSkinningBoneFrameCaches) delete[] m_ppSkinningBoneFrameCaches;
 	if (m_ppstrSkinningBoneNames) delete[] m_ppstrSkinningBoneNames;
-
 	if (m_pxmf4x4BindPoseBoneOffsets) delete[] m_pxmf4x4BindPoseBoneOffsets;
 	if (m_pd3dcbBindPoseBoneOffsets) m_pd3dcbBindPoseBoneOffsets->Release();
 

@@ -19,6 +19,7 @@ public:
 	virtual void Move(DWORD dwDirection, float fDistance, bool bVelocity = false);
 
 	virtual void Update(float fTimeElapsed);
+	virtual void Release();
 	void UpdateBB();
 
 	void AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2);
@@ -99,3 +100,43 @@ public:
 	//-------------------------------------
 };
 
+//class CObjectPool:public CyborgPlayer{
+//private:
+//	CPlayer** m_ppPlayer;
+//	CLoadedModelInfo** m_ppModelInfoPlayer;
+//	int m_nPlayer;
+//public:
+//    CObjectPool(){
+//		m_nPlayer = MAX_PLAYER;
+//
+//		m_ppPlayer = new CPlayer * [m_nPlayer];
+//
+//		m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
+//
+//		// 저장된 모델 바꿀 수 있음
+//		m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
+//		m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
+//		m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
+//
+//		for (int i = 0; i < m_nPlayer; ++i) {
+//			CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i], THIRD_PERSON_CAMERA);
+//			m_ppPlayer[i] = pPlayer;
+//			m_ppPlayer[i]->SetPlayerData(i);
+//		}
+//    }
+//    
+//    ~CObjectPool()
+//    {
+//		for (int i = 0; i < m_nPlayer; ++i) {
+//			m_ppPlayer[i]->Release();
+//		}
+//		delete[] m_ppPlayer;
+//    }
+//    
+//    // 오브젝트를 꺼낸다.
+//    CyborgPlayer** PopObject(int num)
+//    {
+//		return reinterpret_cast<CyborgPlayer**>(m_ppPlayer);
+//    }
+//    
+//};
