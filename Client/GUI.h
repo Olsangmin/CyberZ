@@ -100,6 +100,7 @@ public:
 
 	void MissionText();
 	void MissionProgressBar(int MissionNum);
+	void kyecardUI();
 	void ItemUI();
 	void StaminaBarUI();
 

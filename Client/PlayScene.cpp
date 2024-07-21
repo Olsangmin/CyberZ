@@ -125,22 +125,22 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	if (pMachine3) delete pMachine3;
 
 	// 보안키 미션
-	CLoadedModelInfo* pMssionMachine1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
+	CLoadedModelInfo* pMssionMachine1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine_2.bin", NULL);
 	m_ppMissionObj[3] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine1, MissionRange, 1);
 	m_ppMissionObj[3]->Rotate(0.f,0.f,0.f);
-	m_ppMissionObj[3]->SetPosition(540.f, 0.f, 300.f);
+	m_ppMissionObj[3]->SetPosition(540.f, -5.f, 300.f);
 	if (pMssionMachine1) delete pMssionMachine1;
 
-	CLoadedModelInfo* pMssionMachine2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
+	CLoadedModelInfo* pMssionMachine2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine_2.bin", NULL);
 	m_ppMissionObj[4] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine2, MissionRange, 1);
 	m_ppMissionObj[4]->Rotate(0.f, -90.f, 0.f);
-	m_ppMissionObj[4]->SetPosition(780.f, 0.f, 750.f);
+	m_ppMissionObj[4]->SetPosition(780.f, -5.f, 750.f);
 	if (pMssionMachine2) delete pMssionMachine2;
 	
-	CLoadedModelInfo* pMssionMachine3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
+	CLoadedModelInfo* pMssionMachine3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine_2.bin", NULL);
 	m_ppMissionObj[5] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine3, MissionRange, 1);
 	m_ppMissionObj[5]->Rotate(0.f, -90.f, 0.f);
-	m_ppMissionObj[5]->SetPosition(140.f, 0.f, 230.f);
+	m_ppMissionObj[5]->SetPosition(140.f, -5.f, 230.f);
 	if (pMssionMachine3) delete pMssionMachine3;
 
 
@@ -641,13 +641,12 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_pTerrain->SetPosition(XMFLOAT3(-2000.f, 0.f, -2000.f));
 
 	//===============================//
-	// Map (4)
+	// Map (3)
 	// [Present Setting]
-	// 1 - 울타리				|| OBJ
-	// 2 - 맵 1(우상단)			|| OBJ
-	// 3 - 맵 2(좌하단)			|| OBJ
-	// 4 - 점령 미션용 obj		|| OBJ
-
+	// 0 -	내부 사물			|| OBJ
+	// 1 - 외벽 바운딩 박스		|| OBJ
+	// 2 - 외벽&깃발			|| OBJ
+	
 	m_nHierarchicalGameObjects = 3;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
@@ -668,6 +667,8 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppHierarchicalGameObjects[2]->SetScale(10, 10, 10);
 	if (pMainModel) delete pMainModel;
 
+
+	// 2 - floor
 	m_nFloorObj = 2;
 	m_ppFloorObj = new CFloorObj * [m_nFloorObj];
 
@@ -681,15 +682,48 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppFloorObj[1] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pOutmodel);
 	m_ppFloorObj[1]->SetScale(10, 10, 10);
 	if (pOutmodel) delete pOutmodel;
+
+
 	
 	//===============================//
-	// Mission Obj(1)
-	m_nMissionObj = 0;
+	// Mission Obj
+	m_nMissionObj = 5;
 	m_ppMissionObj = new CMissonOBJ * [m_nMissionObj];
 
-	// 미션 범위
-	XMFLOAT3 OccMissionRange = XMFLOAT3(37.f, 30.f, 37.f);
+	// 미션 인식 범위
 	XMFLOAT3 MissionRange = XMFLOAT3(10.f, 20.f, 10.f);
+
+	// 보안키 미션
+	CLoadedModelInfo* pMssionMachine1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
+	m_ppMissionObj[0] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine1, MissionRange, 1);
+	m_ppMissionObj[0]->Rotate(0.f, 180.f, 0.f);
+	m_ppMissionObj[0]->SetPosition(317.f, 0.f, 161.f);
+	if (pMssionMachine1) delete pMssionMachine1;
+
+	CLoadedModelInfo* pMssionMachine2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
+	m_ppMissionObj[1] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine2, MissionRange, 1);
+	m_ppMissionObj[1]->Rotate(0.f, 0.f, 0.f);
+	m_ppMissionObj[1]->SetPosition(84.f, 0.f, 587.f);
+	if (pMssionMachine2) delete pMssionMachine2;
+
+	CLoadedModelInfo* pMssionMachine3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
+	m_ppMissionObj[2] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine3, MissionRange, 1);
+	m_ppMissionObj[2]->Rotate(0.f, -90.f, 0.f);
+	m_ppMissionObj[2]->SetPosition(325.f, 0.f, 379.f);
+	if (pMssionMachine3) delete pMssionMachine3;
+
+	CLoadedModelInfo* pMssionMachine4 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
+	m_ppMissionObj[3] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine4, MissionRange, 1);
+	m_ppMissionObj[3]->Rotate(0.f, -90.f, 0.f);
+	m_ppMissionObj[3]->SetPosition(149.f, 0.f, 299.f);
+	if (pMssionMachine4) delete pMssionMachine4;
+
+	CLoadedModelInfo* pMssionMachine5 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
+	m_ppMissionObj[4] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine5, MissionRange, 1);
+	m_ppMissionObj[4]->Rotate(0.f, -90.f, 0.f);
+	m_ppMissionObj[4]->SetPosition(111.f, 0.f, 125.f);
+	if (pMssionMachine5) delete pMssionMachine5;
+
 
 	//===============================//
 
