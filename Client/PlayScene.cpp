@@ -336,15 +336,8 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 			break;
 		}
 		case 'F': {
-			for (int i = 3; i < m_nMissionObj; i++)
-			{
-				if (m_ppMissionObj[i]->m_bMissionflag) 
-				{
-					if(!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetSecurityKey())
-						reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(0);
-				}
-			}
-			
+			Player_Interaction_Type InteractionType = CheckInteraction();
+			Interaction(InteractionType);
 			break;
 		}
 		case '1':
@@ -384,6 +377,54 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 		break;
 	}
 	return false;
+}
+
+int CFirstRoundScene::IsCrawlPlayer()
+{
+	for (int i = 0; i < m_nPlayer; ++i) {
+		if (m_ppPlayer[i]->m_xmBoundingBox.Intersects(m_pMyPlayer->m_xmBoundingBox)&& reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetCrawl()) {
+			CS_ALIVE_PLAYER_PACKET p;
+			p.size = sizeof(p);
+			p.type = CS_ALIVE_PLAYER;
+			p.id = my_id;
+			send_packet(&p);
+		}
+	}
+	return 0;
+}
+
+bool CFirstRoundScene::CheckMissionObj()
+{
+	for (int i = 3; i < m_nMissionObj; i++)
+	{
+		if (m_ppMissionObj[i]->m_bMissionflag)
+		{
+			if (!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetSecurityKey())
+				return true;
+		}
+	}
+	return false;
+}
+
+Player_Interaction_Type CFirstRoundScene::CheckInteraction()
+{
+	if (CheckMissionObj())return CardMission;
+}
+
+void CFirstRoundScene::Interaction(Player_Interaction_Type type)
+{
+	switch (type) {
+	case CardMission: {
+		reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(0);
+		break;
+	}
+	case Heal: {
+		break;
+	}
+	case FinalMission: {
+		break;
+	}
+	}
 }
 
 void CFirstRoundScene::AnimateObjects(float fTimeElapsed)
@@ -730,7 +771,7 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CLoadedModelInfo* pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot2.bin", NULL);
 	m_pBoss = new CBossRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 7);
 	m_pBoss->m_pSkinnedAnimationController->SetTrackAnimationSet(1, 1);
-	m_pBoss->SetPosition(NPCInitPos[1]);
+	m_pBoss->SetPosition(XMFLOAT3(150,0,50));
 	m_pBoss->SetScale(8.0f, 8.0f, 8.0f);
 
 	if (pRobotModel) delete pRobotModel;
@@ -907,6 +948,10 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 		}
 		case 'C': {
 			if (m_pMyPlayer->GetStaminer())m_pMyPlayer->SetCreep();
+			break;
+		}
+		case 'L': {
+			reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetAttackStatus(true);
 			break;
 		}
 		case '1':

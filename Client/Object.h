@@ -405,7 +405,8 @@ public:
 
 	virtual void Update(float fTimeElapsed);
 
-	void SetAttackStatus(bool status) { m_bAttackStatus = status; }
+	void SetAttackStatus(bool status) { m_bAttackStatus = status;  AttackType = rand() % 2;
+	}
 	void MoveToTarget();
 	void RotateDirection(float fAngle);
 
@@ -413,10 +414,11 @@ public:
 
 	void SetTarget(XMFLOAT3 xmf3Target) { m_xmf3Target = xmf3Target; }
 	virtual void IsMove(Player_Animation_ST CheckAni);
-	bool IsAttackP();
+	bool IsAttackP(Player_Animation_ST Status);
 
 	Player_Animation_ST m_pasCurrentAni;
 	Player_Animation_ST m_pasNextAni;
+	int AttackType{};
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

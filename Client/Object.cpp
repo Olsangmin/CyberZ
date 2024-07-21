@@ -1452,6 +1452,9 @@ CBossRobotObject::CBossRobotObject(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 	// Default animation setting
 	m_pSkinnedAnimationController->SetAllTrackDisable();
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	m_pSkinnedAnimationController->SetTrackSpeed(WALK, 0.5f);
+	m_pSkinnedAnimationController->SetTrackSpeed(RUN, 0.5f);
+	m_pSkinnedAnimationController->SetTrackSpeed(HIT, 0.7f);
 }
 
 CBossRobotObject::~CBossRobotObject()
@@ -1463,7 +1466,7 @@ void CBossRobotObject::Update(float fTimeElapsed)
 	CGameObject::Update(fTimeElapsed);
 	if (m_pSkinnedAnimationController) {
 		AnimationBlending(m_pasCurrentAni, m_pasNextAni);
-		IsAttackP() ? 0 : MoveToTarget(), IsMove(m_pasNextAni);
+		IsAttackP(CREEP) ? 0 : MoveToTarget(), IsMove(m_pasNextAni);
 
 	}
 }
@@ -1531,21 +1534,21 @@ void CBossRobotObject::IsMove(Player_Animation_ST CheckAni)
 	}
 }
 
-bool CBossRobotObject::IsAttackP()
+bool CBossRobotObject::IsAttackP(Player_Animation_ST status)
 {
+	Player_Animation_ST Status = Player_Animation_ST(int(status) + AttackType);
 	if (m_bAttackStatus == true) {
-		if (m_pasCurrentAni != RUN && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
-			m_pasNextAni = RUN;
+		if (m_pasCurrentAni != Status && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+			m_pasNextAni = Status;
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
-			m_pSkinnedAnimationController->SetTrackType(RUN, ANIMATION_TYPE_ONCE);
-			m_pSkinnedAnimationController->SetTrackSpeed(0, 0.3f);
+			m_pSkinnedAnimationController->SetTrackType(Status, ANIMATION_TYPE_ONCE);
 		}
-		CAnimationTrack AnimationTrack = m_pSkinnedAnimationController->m_pAnimationTracks[RUN];
+		CAnimationTrack AnimationTrack = m_pSkinnedAnimationController->m_pAnimationTracks[Status];
 		CAnimationSet* pAnimationSet = m_pSkinnedAnimationController->m_pAnimationSets->m_pAnimationSets[AnimationTrack.m_nAnimationSet];
 		float fTrackPosition = AnimationTrack.m_fPosition;
 		float fTrackLength = pAnimationSet->m_fLength;
 		if (fTrackPosition >= fTrackLength) {
-			m_pSkinnedAnimationController->m_pAnimationTracks[RUN].m_fPosition = 0;
+			m_pSkinnedAnimationController->m_pAnimationTracks[Status].m_fPosition = 0;
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 			m_pasNextAni = IDLE;
 			m_bAttackStatus = false;

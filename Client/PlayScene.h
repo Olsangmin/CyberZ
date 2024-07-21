@@ -23,6 +23,11 @@ public:
 
 	bool ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer);
 	bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
+
+	int IsCrawlPlayer();
+	bool CheckMissionObj();
+	Player_Interaction_Type CheckInteraction();
+	void Interaction(Player_Interaction_Type type);
 	void AnimateObjects(float fTimeElapsed);
 
 	bool AllPlayerReady() { return false; }

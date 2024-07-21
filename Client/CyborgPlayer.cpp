@@ -478,6 +478,12 @@ void CyborgPlayer::SetJump()
 {
 }
 
+void CyborgPlayer::SetCrawl(bool IsCrawl)
+{
+	m_bIsCrawl = IsCrawl;
+	m_xmBoundingBox = BoundingOrientedBox(GetPosition(), XMFLOAT3(0.3f, 0.3f, 0.3f), XMFLOAT4(0.f, 0.f, 0.f, 1.0f));
+}
+
 void CyborgPlayer::IsIdle()
 {
 	if (m_pasCurrentAni != IDLE && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {

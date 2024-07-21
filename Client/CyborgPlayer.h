@@ -60,6 +60,7 @@ private:
 	bool							m_bSecurityKey{ false };
 
 	float							m_fKeyRotate{ 0.f };
+
 public:
 	bool GetSecurityKey() { return m_bSecurityKey; };
 	void ChangeKeyState(bool state) { m_bSecurityKey = state; }
@@ -78,12 +79,14 @@ public:
 	void ExhaustionStaminer();
 	void RestorationStaminer();
 
+	bool GetCrawl() { return m_bIsCrawl; }
+
 	// Animation
 	virtual void SetRun(bool value);
 	virtual void SetCreep();
 	virtual void SetCreepFlag();
 	virtual void SetJump();
-	virtual void SetCrawl(bool IsCrawl) { m_bIsCrawl = IsCrawl; }
+	virtual void SetCrawl(bool IsCrawl);
 
 	virtual void IsIdle();
 	virtual void IsRun();

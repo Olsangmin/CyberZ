@@ -87,6 +87,10 @@ enum Player_Character_Type {
 	Corzim, Evan, Uranya, Robot
 };
 
+enum Player_Interaction_Type {
+	CardMission, Heal, FinalMission
+};
+
 #pragma pack (push, 1)
 struct CS_LOGIN_PACKET {
 	unsigned char size;
