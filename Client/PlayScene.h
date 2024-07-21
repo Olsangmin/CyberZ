@@ -13,11 +13,11 @@ class CFirstRoundScene :public CScene
 {
 public:
 	CFirstRoundScene() { m_bChangeScene = false; }
-	~CFirstRoundScene() {}
+	virtual ~CFirstRoundScene() {}
 
 	void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum = 4);
 	
-	void ReleaseObjects();
+	virtual void ReleaseObjects();
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	void ReleaseUploadBuffers();
 
@@ -38,12 +38,12 @@ class CSecondRoundScene : public CScene
 {
 public:
 	CSecondRoundScene() { m_bChangeScene = false; }
-	~CSecondRoundScene() {}
+	virtual ~CSecondRoundScene() {}
 
 
 	void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum = 4);
 
-	void ReleaseObjects();
+	virtual void ReleaseObjects();
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	void ReleaseUploadBuffers();
 

@@ -130,6 +130,9 @@ void CScene::ReleaseObjects()
 	if (m_pd3dGraphicsRootSignature) m_pd3dGraphicsRootSignature->Release();
 	if (m_pd3dCbvSrvDescriptorHeap) m_pd3dCbvSrvDescriptorHeap->Release();
 
+	//if (m_ppModelInfoPlayer)delete[] m_ppModelInfoPlayer;
+
+
 	if (m_ppPlayer) {
 		for (int i = 0; i < m_nPlayer; ++i) {
 			m_ppPlayer[i]->Release();

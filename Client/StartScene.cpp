@@ -58,6 +58,11 @@ void CStartScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 	m_pMyPlayer->m_bUnable = false;
 }
 
+void CStartScene::ReleaseObjects()
+{
+	CScene::ReleaseObjects();
+}
+
 bool CStartScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
 {
 	CScene::ProcessInput(m_hWnd, m_ptOldCursorPos, pKeysBuffer);
