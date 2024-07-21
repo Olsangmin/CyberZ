@@ -66,37 +66,188 @@ void CStartScene::ReleaseObjects()
 bool CStartScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
 {
 	CScene::ProcessInput(m_hWnd, m_ptOldCursorPos, pKeysBuffer);
+
+	if (pKeysBuffer[VK_SHIFT] & 0xF0) m_bCaps = true;
+	else  m_bCaps = false;
+
 	return(false);
 
 }
 
+std::string wcharToChar(const std::wstring& wstr) {
+	// Get the length of the resulting string in bytes
+	int len = WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, nullptr, 0, nullptr, nullptr);
+	if (len == 0) {
+		// Error handling if conversion fails
+		throw std::runtime_error("Conversion failed");
+	}
+
+	// Allocate a buffer to hold the resulting string
+	std::string str(len, '\0');
+
+	// Perform the actual conversion
+	WideCharToMultiByte(CP_ACP, 0, wstr.c_str(), -1, &str[0], len, nullptr, nullptr);
+
+	return str;
+}
+
+
 bool CStartScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
+
+	CScene::OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+
+
+	if (m_bInputID){
+		switch (nMessageID)
+		{
+		case WM_KEYDOWN: {
+			switch (wParam) {
+			case VK_BACK:
+			{
+				if (!reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID.empty())
+				{
+					reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID.pop_back();
+				}
+				break;
+			}
+			default:
+				if (reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID.size() < TextMax)
+				{
+
+					if ((wParam < 123 && wParam > 64)) {
+						if (m_bCaps) reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID += wParam;
+						else reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID += wParam + 32;
+					}
+					if ((wParam < 58 && wParam > 47))
+					{
+						reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID += wParam;
+					}
+				}
+				break;
+			}
+		}
+		case WM_KEYUP: {
+			switch (wParam) {
+			default:
+				break;
+			}
+		}
+		}
+		
+	}
+	else if (m_bInputPW) {
+		switch (nMessageID)
+		{
+		case WM_KEYDOWN: {
+			switch (wParam) {
+			case VK_BACK:
+			{
+				if (!reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW.empty())
+				{
+					reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW.pop_back();
+				}
+				break;
+			}
+			default:
+				if (reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW.size() < TextMax)
+				{
+					if ((wParam < 123 && wParam > 64)) {
+						if (m_bCaps) reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW += wParam;
+						else reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW += wParam + 32;
+					}
+					if ((wParam < 58 && wParam > 47))
+					{
+						reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW += wParam;
+					}
+				}
+				break;
+			}
+		}
+		}
+
+	}
+	else {
+		switch (nMessageID)
+		{
+		case WM_KEYDOWN: {
+			switch (wParam) {
+			case 'A':
+			{
+				if (reinterpret_cast<CStartSceneUI*>(m_pUI)->m_CheckInfo == ALL_CORRET)
+				{
+					std::cout << "Change Scene" << endl;
+					m_bChangeScene = true;
+				}
+				break;
+			}
+			default:
+				break;
+			}
+		}
+		}
+		
+	}
+
+	//상시 입력
 	switch (nMessageID)
 	{
 	case WM_KEYDOWN: {
 		switch (wParam) {
+		case VK_RETURN:
+		{
+			reinterpret_cast<CStartSceneUI*>(m_pUI)->m_CheckInfo = ALL_CORRET;
 
+			m_ID = wcharToChar(reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID);
+			m_PW = wcharToChar(reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW);
+
+			cout << "ID:" << m_ID.c_str() <<", PW:" <<m_PW.c_str() <<endl;
+			break;
+		}
+		default:
+			break;
+		}
+	}
+	case WM_KEYUP: {
+		switch (wParam) {
 		
 		default:
 			break;
 		}
+	}
 
-	
 	}
-	case WM_KEYUP: {
-		switch (wParam) {
-		case 'A':
-			std::cout << "Change Scene" << endl;
-			m_bChangeScene = true;
-			break;
-
-		default:
-			break;
-		}
-	}
-	}
-	CScene::OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 	return(false);
+
+}
+
+bool CStartScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+		::SetCapture(hWnd);
+		::GetCursorPos(&m_ptOldCursorPos);
+
+		m_bInputID = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppTextInputBox[0]->CheckChlick(hWnd, m_ptOldCursorPos);
+		m_bInputPW = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppTextInputBox[1]->CheckChlick(hWnd, m_ptOldCursorPos);
+		m_bSignUP = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[0]->CheckChlick(hWnd, m_ptOldCursorPos);
+		m_bLogin = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[1]->CheckChlick(hWnd, m_ptOldCursorPos);
+
+		break;
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
+		m_bSignUP = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[0]->m_bSelected = false;
+		m_bLogin = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[1]->m_bSelected = false;
+
+		::ReleaseCapture();
+		break;
+	case WM_MOUSEMOVE:
+		break;
+	default:
+		break;
+	}
+	return(true);
 
 }

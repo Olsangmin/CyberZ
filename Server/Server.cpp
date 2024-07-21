@@ -283,19 +283,35 @@ void Server::Process_packet(int c_id, char* packet)
 		if (c_id != gMap.cl_ids[0]) break;
 
 		std::vector<int> players = gMap.cl_ids;
-		auto& npcs = gMap.npcs;
-		for (auto& pl : players) { // 012
-			for (auto& others : gMap.cl_ids) {
-				clients[pl].send_add_player_packet(others,
-					clients[others].GetPos(), clients[others].GetRotation(), clients[others].GetType());
-			}
+		if (gMap.GetStage() == NOGAME) {
+			auto& npcs = gMap.npcs;
+			for (auto& pl : players) { // 012
+				for (auto& others : gMap.cl_ids) {
+					clients[pl].send_add_player_packet(others,
+						clients[others].GetPos(), clients[others].GetRotation(), clients[others].GetType());
+				}
 
-			for (auto& npc : npcs) {
-				clients[pl].send_add_npc_packet(npc.GetId(), npc.GetPos(), npc.GetRotation());
-				std::cout << pl << " to " << npc.GetId() << std::endl;
+				for (auto& npc : npcs) {
+					clients[pl].send_add_npc_packet(npc.GetId(), npc.GetPos(), npc.GetRotation());
+					std::cout << pl << " to " << npc.GetId() << std::endl;
+				}
 			}
+			gMap.PlayGame();
 		}
-		gMap.PlayGame();
+
+		else if (gMap.GetStage() == LOADING) {
+			for (auto& pl : players) {
+				clients[pl].SetPos(PlayerInitPos_Stage2[clients[pl].GetType()]);
+			}
+			for (auto& pl : players) {
+				
+				for (auto& others : gMap.cl_ids) {
+					clients[pl].send_add_player_packet(others,
+						clients[others].GetPos(), clients[others].GetRotation(), clients[others].GetType());
+				}
+			}
+			gMap.SetStage(STAGE2);
+		}
 		
 		break;
 	}
@@ -323,6 +339,8 @@ void Server::Process_packet(int c_id, char* packet)
 
 	case CS_UPDATE_PLAYER: {
 		CS_UPDATE_PLAYER_PACKET* p = reinterpret_cast<CS_UPDATE_PLAYER_PACKET*>(packet);
+		if (gMap.GetStage() == NOGAME || gMap.GetStage() == LOADING)
+			break;
 		{
 			std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
 			clients[c_id].SetPos(p->position);
@@ -384,9 +402,29 @@ void Server::Process_packet(int c_id, char* packet)
 		alivePacket.size = sizeof(alivePacket);
 		alivePacket.type = SC_PLAYER_ALIVE;
 		alivePacket.id = c_id;
+
 		for (auto id : gMap.cl_ids) {
 			clients[id].do_send(&alivePacket);
 		}
+
+	}break;
+
+	case CS_GO_STAGE2: {
+		CS_GO_STAGE2_PACKET* p = reinterpret_cast<CS_GO_STAGE2_PACKET*>(packet);
+		if (c_id != gMap.cl_ids[0]) break;
+		
+		for (int id : gMap.cl_ids) {
+			if (clients[id].state != ST_INGAME) continue;
+			SC_GO_STAGE2_PACKET packet;
+			packet.size = sizeof(packet);
+			packet.type = SC_GO_STAGE2;
+			clients[id].do_send(&packet);
+		}
+
+		gMap.SetStage(GAME_STATE::LOADING);
+
+
+		
 	}break;
 
 	case CS_TEST: {

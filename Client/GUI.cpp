@@ -2,13 +2,14 @@
 #include "stdafx.h"
 #include "GUI.h"
 
+
 CUI::CUI()
 {
 }
 
 CUI::~CUI()
 {
-
+	
 }
 
 void CUI::Release()
@@ -30,6 +31,16 @@ void CUI::Release()
 	{
 		if (m_ppd3d11WrappedBackBuffers[i]) m_ppd3d11WrappedBackBuffers[i]->Release();
 		if (m_ppd2dRenderTargets[i]) m_ppd2dRenderTargets[i]->Release();
+	}
+	if (m_ppButton)
+	{
+		for (int i = 0; i < m_nButton; i++) if (m_ppButton[i]) m_ppButton[i]->Release();
+		delete[] m_ppButton;
+	}
+	if (m_ppTextInputBox)
+	{
+		for (int i = 0; i < m_nTextInputBox; i++) if (m_ppTextInputBox[i]) m_ppTextInputBox[i]->Release();
+		delete[] m_ppTextInputBox;
 	}
 
 	//Image
@@ -294,12 +305,13 @@ void CFirstRoundSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 	MissionText();
 	for (int i = 0; i < 3; i++)	MissionProgressBar(i);
 	if (m_bStaminaBarOn) StaminaBarUI();
+	kyecardUI();
 	ItemUI();
 	
 }
 
 void CFirstRoundSceneUI::MissionText()
-{
+{ 
 	float gab = 35.5;
 
 	D2D1_RECT_F rcUpperText = D2D1::RectF(100.f, 30.f, 300.f, 60.f);
@@ -318,7 +330,6 @@ void CFirstRoundSceneUI::MissionText()
 	m_pd2dDeviceContext->DrawTextW(MissionText2, (UINT32)wcslen(MissionText2), m_pdwFont, &rcUpperText3, m_pd2dbrText);
 
 }
-
 
 void CFirstRoundSceneUI::MissionProgressBar(int MissionNum)
 {
@@ -354,6 +365,19 @@ void CFirstRoundSceneUI::MissionProgressBar(int MissionNum)
 
 }
 
+void CFirstRoundSceneUI::kyecardUI()
+{
+
+	D2D1_RECT_F rcKyeCardRect = { 0.0f, 0.0f, 200.0f, 130.0f };
+	D2D_POINT_2F lKeyCard = { 15.f, 130.f };
+
+	if (m_bcard) LoadUIImage(L"Image/CardKey.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
+	else LoadUIImage(L"Image/Card_off.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
+	
+	m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &lKeyCard, &rcKyeCardRect);
+
+}
+
 void CFirstRoundSceneUI::ItemUI()
 {
 	D2D1_RECT_F* rcMissionBarFrame;
@@ -377,14 +401,6 @@ void CFirstRoundSceneUI::ItemUI()
 	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
 	m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
 
-	if (m_bcard)
-	{
-		// KeyCard Image
-		LoadUIImage(L"Image/CardKey.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
-		D2D_POINT_2F d2dPoint = { FRAME_BUFFER_WIDTH - 250.f, FRAME_BUFFER_HEIGHT - 180.f };
-		D2D_RECT_F d2dRect = { 0.0f, 0.0f, 200.0f, 130.0f };
-		m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &d2dPoint, &d2dRect);
-	}
 
 }
 
@@ -448,7 +464,6 @@ void CSecondRoundSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 	ItemUI();
 }
 
-
 void CSecondRoundSceneUI::ItemUI()
 {
 	D2D1_RECT_F* rcMissionBarFrame;
@@ -469,17 +484,8 @@ void CSecondRoundSceneUI::ItemUI()
 
 	D2D1_RECT_F rcUpperText = D2D1::RectF(top, left, top + gab, left + gab);
 	WCHAR MissionText[] = L"ITEM";
-	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
+	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
 	m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
-
-	if (m_bcard)
-	{
-		// KeyCard Image
-		LoadUIImage(L"Image/CardKey.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
-		D2D_POINT_2F d2dPoint = { FRAME_BUFFER_WIDTH - 250.f, FRAME_BUFFER_HEIGHT - 180.f };
-		D2D_RECT_F d2dRect = { 0.0f, 0.0f, 200.0f, 130.0f };
-		m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &d2dPoint, &d2dRect);
-	}
 
 }
 
@@ -515,6 +521,23 @@ void CSecondRoundSceneUI::StaminaBarUI()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///
 
+CStartSceneUI::CStartSceneUI() {
+
+	// set Button
+	m_nButton = 2;
+	m_ppButton = new CButton * [m_nButton];
+	
+	m_ppButton[0] = new CButton(0, 0, 100, 100, L"test");
+	m_ppButton[1] = new CButton(0, 0, 100, 100, L"test");
+
+	// set TextInputBox
+	m_nTextInputBox = 2;
+	m_ppTextInputBox = new CTextInput * [m_nTextInputBox];
+
+	m_ppTextInputBox[0] = new CTextInput(100, 200, 100, 20, L"test");
+	m_ppTextInputBox[1] = new CTextInput(100, 250, 100, 20, L"test");
+}
+
 void CStartSceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 {
 	m_pd2dDeviceContext->SetTarget(m_ppd2dRenderTargets[m_nSwapChainBufferIndex]);
@@ -525,52 +548,205 @@ void CStartSceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 	m_pd2dDeviceContext->SetTransform(D2D1::Matrix3x2F::Identity());
 
 	//Direct2D Drawing
-	UISet(m_nSwapChainBufferIndex);
+#ifdef SMALL_WINDOW_SCREEN
+
+	UISet_Small(m_nSwapChainBufferIndex);
+#else
+	UISet_Full(m_nSwapChainBufferIndex);
+#endif // SMALL_WINDOW_SCREEN
+
 
 	m_pd2dDeviceContext->EndDraw();
 	m_pd3d11On12Device->ReleaseWrappedResources(ppd3dResources, _countof(ppd3dResources));
 	m_pd3d11DeviceContext->Flush();
 }
 
-void CStartSceneUI::UISet(UINT m_nSwapChainBufferIndex)
+void CStartSceneUI::UISet_Small(UINT m_nSwapChainBufferIndex)
 {
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 
-
+	//=================================================
 	// Background Image
-	LoadUIImage(L"Image/test.jpg", m_pwicImagingFactory, m_pd2dfxBitmapSource);
+	LoadUIImage(L"Image/StartBG_Small.jpg", m_pwicImagingFactory, m_pd2dfxBitmapSource);
+	D2D_POINT_2F d2dPoint = { 0.f, 0.f };
+	D2D_RECT_F d2dRect = { 0.0f, 0.0f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT };
+	m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &d2dPoint, &d2dRect);
+	
+	//=================================================
+	// Partition Rect
+
+	D2D1_RECT_F		PartitionRect = { 0.f , 0.f, 550.f, 800.f };
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(0x000000, 0.8f));
+	m_pd2dDeviceContext->FillRectangle(PartitionRect, m_pd2dbrBorder);
+
+	//=================================================
+	//Button 
+
+	m_ppButton[0]->SetPosition(10, FRAME_BUFFER_HEIGHT / 2 + 120);
+	m_ppButton[0]->SetSize(160, 60);
+	m_ppButton[0]->CreateTextFormat(m_pdWriteFactory, 20.f);
+	m_ppButton[0]->SetText(L"Sign Up");
+	m_ppButton[0]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
+
+	m_ppButton[1]->SetPosition(180, FRAME_BUFFER_HEIGHT / 2 + 120);
+	m_ppButton[1]->SetSize(160, 60);
+	m_ppButton[1]->CreateTextFormat(m_pdWriteFactory, 20.f);
+	m_ppButton[1]->SetText(L"Login");
+	m_ppButton[1]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
+
+	//=================================================
+	// TextBox (ID/PW)
+	
+	//ID
+	m_ppTextInputBox[0]->SetPosition(10, FRAME_BUFFER_HEIGHT / 2 + 30);
+	m_ppTextInputBox[0]->SetSize(400, 40);
+	m_ppTextInputBox[0]->CreateTextFormat(m_pdWriteFactory, 15.f);
+	m_ppTextInputBox[0]->SetText(m_ID.c_str());
+	m_ppTextInputBox[0]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
+
+	//PW
+	m_ppTextInputBox[1]->SetPosition(10, FRAME_BUFFER_HEIGHT / 2 + 73);
+	m_ppTextInputBox[1]->SetSize(400, 40);
+	m_ppTextInputBox[1]->CreateTextFormat(m_pdWriteFactory, 15.f);
+	m_ppTextInputBox[1]->SetText(m_PW.c_str());
+	m_ppTextInputBox[1]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
+
+
+	//=================================================
+	// Tiltle
+
+	D2D1_RECT_F rcTitleRect = { 0.0f, 0.0f, 460.0f, 350.0f };
+	D2D_POINT_2F lTitle_Position = { 15.f, 0.f };
+
+	LoadUIImage(L"Image/Title_small.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
+	m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &lTitle_Position, &rcTitleRect);
+
+	// Explane text
+	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 15.0f, L"en-US", &m_pdwFont);
+
+	float left = 20;
+	float top = 350;
+	float width = 150.f;
+	float height = 50.f;
+
+	D2D1_RECT_F rcPressText = D2D1::RectF(left, top, left + width, top + height);
+	
+	std::wstring SatrtInfo;
+
+	switch (m_CheckInfo)
+	{
+	case EMPTY:
+		SatrtInfo = L"Enter ID and PW";
+		break;
+	case ALL_CORRET:
+		SatrtInfo = L"Press 'A' to Start";
+		break;
+	case ID_ERROR:
+		SatrtInfo = L"ID ERROR";
+		break;
+	case PW_ERROR:
+		SatrtInfo = L"PW ERROR";
+		break;
+	default:
+		break;
+	}
+	
+	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
+	m_pd2dDeviceContext->DrawTextW(SatrtInfo.c_str(), static_cast<UINT32>(SatrtInfo.length()), m_pdwFont, &rcPressText, m_pd2dbrText);
+}
+
+void CStartSceneUI::UISet_Full(UINT m_nSwapChainBufferIndex)
+{
+	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
+
+	//=================================================
+	// Background Image
+	LoadUIImage(L"Image/StartBG.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
 	D2D_POINT_2F d2dPoint = { 0.f, 0.f };
 	D2D_RECT_F d2dRect = { 0.0f, 0.0f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT };
 	m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &d2dPoint, &d2dRect);
 
+	//=================================================
+	// partition Rect
 
+	D2D1_RECT_F		PartitionRect = { 0.f , 0.f, 700.f, 1090.f };
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(0x000000, 0.8f));
+	m_pd2dDeviceContext->FillRectangle(PartitionRect, m_pd2dbrBorder);
+
+	//=================================================
+	//Button 
+
+	m_ppButton[0]->SetPosition(40, FRAME_BUFFER_HEIGHT / 3 + 220);
+	m_ppButton[0]->SetSize(130, 50);
+	m_ppButton[0]->CreateTextFormat(m_pdWriteFactory, 20.f);
+	m_ppButton[0]->SetText(L"Sign Up");
+	m_ppButton[0]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
+
+	m_ppButton[1]->SetPosition(200, FRAME_BUFFER_HEIGHT / 3 + 220);
+	m_ppButton[1]->SetSize(130, 50);
+	m_ppButton[1]->CreateTextFormat(m_pdWriteFactory, 20.f);
+	m_ppButton[1]->SetText(L"Login");
+	m_ppButton[1]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
+
+	//=================================================
+	// TextBox (ID/PW)
+
+	//ID
+	m_ppTextInputBox[0]->SetPosition(40, FRAME_BUFFER_HEIGHT / 3 +100);
+	m_ppTextInputBox[0]->SetSize(500, 40);
+	m_ppTextInputBox[0]->CreateTextFormat(m_pdWriteFactory, 30.f);
+	m_ppTextInputBox[0]->SetText(m_ID.c_str());
+	m_ppTextInputBox[0]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
+
+	//PW
+	m_ppTextInputBox[1]->SetPosition(40, FRAME_BUFFER_HEIGHT / 3 + 160);
+	m_ppTextInputBox[1]->SetSize(500, 40);
+	m_ppTextInputBox[1]->CreateTextFormat(m_pdWriteFactory, 30.f);
+	m_ppTextInputBox[1]->SetText(m_PW.c_str());
+	m_ppTextInputBox[1]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
+
+
+	//=================================================
 	// Tiltle
-	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 40.0f, L"en-US", &m_pdwFont);
-	
-	float top = 10.f;
-	float left = 10.f;
-	float width = 200.f;
-	float height = 200.f;
 
-	D2D1_RECT_F rcUpperText = D2D1::RectF(top, left, top + height, left + width);
-	WCHAR TitleText[] = L"CyberZ Test Title";
-	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
-	m_pd2dDeviceContext->DrawTextW(TitleText, (UINT32)wcslen(TitleText), m_pdwFont, &rcUpperText, m_pd2dbrText);
+	D2D1_RECT_F rcTitleRect = { 0.0f, 0.0f, 460.0f, 350.0f };
+	D2D_POINT_2F lTitle_Position = { 60.f, 20.f };
+
+	LoadUIImage(L"Image/Title.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
+	m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &lTitle_Position, &rcTitleRect);
 
 
-
-	// Explane text
+	// 로그인창 아래 안내 문구용
 	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20.0f, L"en-US", &m_pdwFont);
+	m_pdwFont->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 
-	top = FRAME_BUFFER_HEIGHT - (FRAME_BUFFER_HEIGHT/2);
-	left = FRAME_BUFFER_WIDTH - (FRAME_BUFFER_WIDTH/2);
-	width = 200.f;
-	height = 200.f;
+	float top = FRAME_BUFFER_HEIGHT / 3 + 70;
+	float left = 40;
+	float width = 200.f;
+	float height = 10.f;
 
-	D2D1_RECT_F rcPressText = D2D1::RectF(top, left, top + height, left + width);
-	WCHAR PressA[] = L"Press 'A' to Start";
+	D2D1_RECT_F rcInfoText = D2D1::RectF(left, top, left + width, top + height);
+	std::wstring SatrtInfo;
+	switch (m_CheckInfo)
+	{
+	case EMPTY:
+		SatrtInfo = L"* Enter ID and PW";
+		break;
+	case ALL_CORRET:
+		SatrtInfo = L"* Press 'A' to Start";
+		break;
+	case ID_ERROR:
+		SatrtInfo = L"* ID ERROR";
+		break;
+	case PW_ERROR:
+		SatrtInfo = L"* PW ERROR";
+		break;
+	default:
+		break;
+	}
+
 	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
-	m_pd2dDeviceContext->DrawTextW(PressA, (UINT32)wcslen(PressA), m_pdwFont, &rcPressText, m_pd2dbrText);
+	m_pd2dDeviceContext->DrawTextW(SatrtInfo.c_str(), static_cast<UINT32>(SatrtInfo.length()), m_pdwFont, &rcInfoText, m_pd2dbrText);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -598,10 +774,9 @@ void CLoadingUI::UISet(UINT m_nSwapChainBufferIndex)
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 
 	// Background Image
-	LoadUIImage(L"Image/Black.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
-	D2D_POINT_2F d2dPoint = { 0.f, 0.f };
-	D2D_RECT_F d2dRect = { 0.0f, 0.0f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT };
-	m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &d2dPoint, &d2dRect);
+	D2D1_RECT_F		PartitionRect = { 0.f , 0.f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT };
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(0x000000, 1.0f));
+	m_pd2dDeviceContext->FillRectangle(PartitionRect, m_pd2dbrBorder);
 
 
 	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20.0f, L"en-US", &m_pdwFont);

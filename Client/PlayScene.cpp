@@ -125,22 +125,22 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	if (pMachine3) delete pMachine3;
 
 	// 보안키 미션
-	CLoadedModelInfo* pMssionMachine1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
+	CLoadedModelInfo* pMssionMachine1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine_2.bin", NULL);
 	m_ppMissionObj[3] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine1, MissionRange, 1);
 	m_ppMissionObj[3]->Rotate(0.f,0.f,0.f);
-	m_ppMissionObj[3]->SetPosition(540.f, 0.f, 300.f);
+	m_ppMissionObj[3]->SetPosition(540.f, -5.f, 300.f);
 	if (pMssionMachine1) delete pMssionMachine1;
 
-	CLoadedModelInfo* pMssionMachine2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
+	CLoadedModelInfo* pMssionMachine2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine_2.bin", NULL);
 	m_ppMissionObj[4] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine2, MissionRange, 1);
 	m_ppMissionObj[4]->Rotate(0.f, -90.f, 0.f);
-	m_ppMissionObj[4]->SetPosition(780.f, 0.f, 750.f);
+	m_ppMissionObj[4]->SetPosition(780.f, -5.f, 750.f);
 	if (pMssionMachine2) delete pMssionMachine2;
 	
-	CLoadedModelInfo* pMssionMachine3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
+	CLoadedModelInfo* pMssionMachine3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine_2.bin", NULL);
 	m_ppMissionObj[5] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine3, MissionRange, 1);
 	m_ppMissionObj[5]->Rotate(0.f, -90.f, 0.f);
-	m_ppMissionObj[5]->SetPosition(140.f, 0.f, 230.f);
+	m_ppMissionObj[5]->SetPosition(140.f, -5.f, 230.f);
 	if (pMssionMachine3) delete pMssionMachine3;
 
 
@@ -352,6 +352,10 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 		case '3':
 			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->MissionCheck(wParam - 49);
 			break;
+
+		case '9':
+			Send_Go_Stage2();
+			break;
 		}
 		break;
 	}
@@ -370,7 +374,7 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 			break;
 		}
 		case '9': { // 스테이지 2로 변경
-			m_bChangeScene = true;
+			
 			break;
 		}
 		}
@@ -593,6 +597,11 @@ void CFirstRoundScene::ProcessPacket(char* p)
 			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->SetCrawl(false);
 		}
 	}break;
+
+	case SC_GO_STAGE2:
+	{
+		m_bChangeScene = true;
+	}break;
 						
 
 	default: {
@@ -600,6 +609,14 @@ void CFirstRoundScene::ProcessPacket(char* p)
 		break;
 	}
 	}
+}
+
+void CFirstRoundScene::Send_Go_Stage2()
+{
+	CS_GO_STAGE2_PACKET p;
+	p.size = sizeof(p);
+	p.type = CS_GO_STAGE2;
+	send_packet(&p);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -624,13 +641,12 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_pTerrain->SetPosition(XMFLOAT3(-2000.f, 0.f, -2000.f));
 
 	//===============================//
-	// Map (4)
+	// Map (3)
 	// [Present Setting]
-	// 1 - 울타리				|| OBJ
-	// 2 - 맵 1(우상단)			|| OBJ
-	// 3 - 맵 2(좌하단)			|| OBJ
-	// 4 - 점령 미션용 obj		|| OBJ
-
+	// 0 -	내부 사물			|| OBJ
+	// 1 - 외벽 바운딩 박스		|| OBJ
+	// 2 - 외벽&깃발			|| OBJ
+	
 	m_nHierarchicalGameObjects = 3;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
@@ -651,6 +667,8 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppHierarchicalGameObjects[2]->SetScale(10, 10, 10);
 	if (pMainModel) delete pMainModel;
 
+
+	// 2 - floor
 	m_nFloorObj = 2;
 	m_ppFloorObj = new CFloorObj * [m_nFloorObj];
 
@@ -664,15 +682,48 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppFloorObj[1] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pOutmodel);
 	m_ppFloorObj[1]->SetScale(10, 10, 10);
 	if (pOutmodel) delete pOutmodel;
+
+
 	
 	//===============================//
-	// Mission Obj(1)
-	m_nMissionObj = 0;
+	// Mission Obj
+	m_nMissionObj = 5;
 	m_ppMissionObj = new CMissonOBJ * [m_nMissionObj];
 
-	// 미션 범위
-	XMFLOAT3 OccMissionRange = XMFLOAT3(37.f, 30.f, 37.f);
+	// 미션 인식 범위
 	XMFLOAT3 MissionRange = XMFLOAT3(10.f, 20.f, 10.f);
+
+	// 보안키 미션
+	CLoadedModelInfo* pMssionMachine1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
+	m_ppMissionObj[0] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine1, MissionRange, 1);
+	m_ppMissionObj[0]->Rotate(0.f, 180.f, 0.f);
+	m_ppMissionObj[0]->SetPosition(317.f, 0.f, 161.f);
+	if (pMssionMachine1) delete pMssionMachine1;
+
+	CLoadedModelInfo* pMssionMachine2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
+	m_ppMissionObj[1] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine2, MissionRange, 1);
+	m_ppMissionObj[1]->Rotate(0.f, 0.f, 0.f);
+	m_ppMissionObj[1]->SetPosition(84.f, 0.f, 587.f);
+	if (pMssionMachine2) delete pMssionMachine2;
+
+	CLoadedModelInfo* pMssionMachine3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
+	m_ppMissionObj[2] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine3, MissionRange, 1);
+	m_ppMissionObj[2]->Rotate(0.f, -90.f, 0.f);
+	m_ppMissionObj[2]->SetPosition(325.f, 0.f, 379.f);
+	if (pMssionMachine3) delete pMssionMachine3;
+
+	CLoadedModelInfo* pMssionMachine4 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
+	m_ppMissionObj[3] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine4, MissionRange, 1);
+	m_ppMissionObj[3]->Rotate(0.f, -90.f, 0.f);
+	m_ppMissionObj[3]->SetPosition(149.f, 0.f, 299.f);
+	if (pMssionMachine4) delete pMssionMachine4;
+
+	CLoadedModelInfo* pMssionMachine5 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
+	m_ppMissionObj[4] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine5, MissionRange, 1);
+	m_ppMissionObj[4]->Rotate(0.f, -90.f, 0.f);
+	m_ppMissionObj[4]->SetPosition(111.f, 0.f, 125.f);
+	if (pMssionMachine5) delete pMssionMachine5;
+
 
 	//===============================//
 
@@ -739,15 +790,21 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	if (myPlayernum != 4) playernum = myPlayernum;
 
 	m_pMyPlayer = m_ppPlayer[playernum];
-	m_pMyPlayer->SetPosition(PlayerInitPos[playernum]);
-	m_pMyPlayer->SetPosition(XMFLOAT3(300.f, 0.f, 100.f));
+	m_pMyPlayer->SetPosition(PlayerInitPos_Stage2[playernum]);
 	m_pMyPlayer->ChangeCamera(SHOULDER_VIEW_CAMERA, 0.0f);
 	m_pMyPlayer->m_bUnable = true;
 
-	reinterpret_cast<CFirstRoundSceneUI*>(m_pUI)->m_fMaxStamina = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fMaxStaminer;
+	reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMaxStamina = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fMaxStaminer;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
+
+#ifdef USE_NETWORK
+	CS_GAMESTART_PACKET p;
+	p.size = sizeof(p);
+	p.type = CS_GAME_START;
+	send_packet(&p);
+#endif // USE_NETWORK
 }
 
 void CSecondRoundScene::ReleaseObjects()
@@ -782,6 +839,8 @@ void CSecondRoundScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 
 void CSecondRoundScene::ReleaseUploadBuffers()
 {
+
+
 	CScene::ReleaseUploadBuffers();
 
 }
@@ -884,6 +943,13 @@ void CSecondRoundScene::AnimateObjects(float fTimeElapsed)
 {
 	CScene::AnimateObjects(fTimeElapsed);
 
+	if (reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer < reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fMaxStaminer)
+	{
+		reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bStaminaBarOn = true;
+		reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fStaminaRange = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer;
+	}
+	else reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bStaminaBarOn = false;
+
 
 }
 
@@ -982,21 +1048,6 @@ void CSecondRoundScene::ProcessPacket(char* p)
 	case SC_ATTACK_NPC: {
 		SC_ATTACK_NPC_PACKET* packet = reinterpret_cast<SC_ATTACK_NPC_PACKET*>(p);
 		cout << "[" << packet->p_id << "] 사망" << endl;
-	}break;
-
-	case SC_GETKEY: {
-		SC_GETKEY_PACKET* packet = reinterpret_cast<SC_GETKEY_PACKET*>(p);
-
-		int id = packet->p_id;
-		auto& it = idANDtype.find(id);
-
-		if (it == idANDtype.end()) break;
-		else {
-
-			Player_Character_Type type = it->second;
-			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->ChangeKeyState(true);
-		}
-
 	}break;
 
 

@@ -64,6 +64,7 @@ public:
 	void send_move_npc_packet(int n_id, DirectX::XMFLOAT3 pos);
 
 	void send_player_death_packet(int p_id);
+	
 
 private:
 	OVER_EXP recv_over;

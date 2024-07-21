@@ -83,17 +83,25 @@ using Microsoft::WRL::ComPtr;
 
 extern HINSTANCE						ghAppInstance;
 
-#define SMALL_WINDOW_SCREEN
+
+
+ #define SMALL_WINDOW_SCREEN
 
 #ifdef SMALL_WINDOW_SCREEN
 
-	#define FRAME_BUFFER_WIDTH				640
-	#define FRAME_BUFFER_HEIGHT				480
+	#define FRAME_BUFFER_WIDTH				1280//640
+	#define FRAME_BUFFER_HEIGHT				720 //360
+
+	#define FRAME_POS_X						CW_USEDEFAULT   //CW_USEDEFAULT == 화면위치 자동 배치
+	#define FRAME_POS_Y						CW_USEDEFAULT
 
 #else
 
 	#define FRAME_BUFFER_WIDTH				1920
 	#define FRAME_BUFFER_HEIGHT				1080
+
+	#define FRAME_POS_X						0
+	#define FRAME_POS_Y						0
 
 #endif // SMALL_WINDOW_SCREEN
 

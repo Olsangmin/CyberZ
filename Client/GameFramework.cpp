@@ -290,8 +290,8 @@ void CGameFramework::ChangeSwapChainState()
 
 	DXGI_MODE_DESC dxgiTargetParameters;
 	dxgiTargetParameters.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	dxgiTargetParameters.Width = m_nWndClientWidth;
-	dxgiTargetParameters.Height = m_nWndClientHeight;
+	dxgiTargetParameters.Width = FRAME_BUFFER_WIDTH;
+	dxgiTargetParameters.Height = FRAME_BUFFER_HEIGHT;
 	dxgiTargetParameters.RefreshRate.Numerator = 60;
 	dxgiTargetParameters.RefreshRate.Denominator = 1;
 	dxgiTargetParameters.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
@@ -312,6 +312,8 @@ void CGameFramework::ChangeSwapChainState()
 void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	if (m_pScene) m_pScene->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
+
+
 	switch (nMessageID)
 	{
 		case WM_LBUTTONDOWN:
@@ -520,9 +522,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
 
-	#ifdef USE_NETWORK
-			m_pScene->InitNetwork();
-	#endif // USE_NETWORK
+	
 			break;
 		}
 		case FIRST_ROUND_SCENE:
@@ -605,16 +605,16 @@ void CGameFramework::LoadingCHK()
 
 			return;
 		}
-		if (m_nSceneNum == START_SCENE)
-		{
-			ChangeScene(PREPARE_ROOM_SCENE, 4);
-		}
 		if (m_nSceneNum == FIRST_ROUND_SCENE)
 		{
 			int myPlayerNum = 0;
 			myPlayerNum = m_pScene->GetModelInfo();
 
 			ChangeScene(SECOND_ROUND_SCENE, myPlayerNum);
+		}
+		if (m_nSceneNum == START_SCENE)
+		{
+			ChangeScene(PREPARE_ROOM_SCENE, 4);
 		}
 		if (m_nSceneNum == PREPARE_ROOM_SCENE && m_pScene->AllPlayerReady())
 		{
