@@ -2,8 +2,8 @@
 
 #ifdef SMALL_WINDOW_SCREEN
 
-#define FRAME_BUFFER_WIDTH				640
-#define FRAME_BUFFER_HEIGHT				360
+#define FRAME_BUFFER_WIDTH				1280
+#define FRAME_BUFFER_HEIGHT				720 
 
 #else
 

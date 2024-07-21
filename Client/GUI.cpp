@@ -567,7 +567,7 @@ void CStartSceneUI::UISet_Small(UINT m_nSwapChainBufferIndex)
 
 	//=================================================
 	// Background Image
-	LoadUIImage(L"Image/StartBG_Small.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
+	LoadUIImage(L"Image/StartBG_Small.jpg", m_pwicImagingFactory, m_pd2dfxBitmapSource);
 	D2D_POINT_2F d2dPoint = { 0.f, 0.f };
 	D2D_RECT_F d2dRect = { 0.0f, 0.0f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT };
 	m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &d2dPoint, &d2dRect);
@@ -575,22 +575,22 @@ void CStartSceneUI::UISet_Small(UINT m_nSwapChainBufferIndex)
 	//=================================================
 	// Partition Rect
 
-	D2D1_RECT_F		PartitionRect = { 0.f , 0.f, 270.f, 380.f };
+	D2D1_RECT_F		PartitionRect = { 0.f , 0.f, 550.f, 800.f };
 	m_pd2dbrBorder->SetColor(D2D1::ColorF(0x000000, 0.8f));
 	m_pd2dDeviceContext->FillRectangle(PartitionRect, m_pd2dbrBorder);
 
 	//=================================================
 	//Button 
 
-	m_ppButton[0]->SetPosition(FRAME_BUFFER_WIDTH - 600, FRAME_BUFFER_HEIGHT / 2 + 80);
-	m_ppButton[0]->SetSize(80, 30);
-	m_ppButton[0]->CreateTextFormat(m_pdWriteFactory, 10.f);
+	m_ppButton[0]->SetPosition(10, FRAME_BUFFER_HEIGHT / 2 + 120);
+	m_ppButton[0]->SetSize(160, 60);
+	m_ppButton[0]->CreateTextFormat(m_pdWriteFactory, 20.f);
 	m_ppButton[0]->SetText(L"Sign Up");
 	m_ppButton[0]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
 
-	m_ppButton[1]->SetPosition(FRAME_BUFFER_WIDTH - 500, FRAME_BUFFER_HEIGHT / 2 + 80);
-	m_ppButton[1]->SetSize(80, 30);
-	m_ppButton[1]->CreateTextFormat(m_pdWriteFactory, 10.f);
+	m_ppButton[1]->SetPosition(180, FRAME_BUFFER_HEIGHT / 2 + 120);
+	m_ppButton[1]->SetSize(160, 60);
+	m_ppButton[1]->CreateTextFormat(m_pdWriteFactory, 20.f);
 	m_ppButton[1]->SetText(L"Login");
 	m_ppButton[1]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
 
@@ -598,15 +598,15 @@ void CStartSceneUI::UISet_Small(UINT m_nSwapChainBufferIndex)
 	// TextBox (ID/PW)
 	
 	//ID
-	m_ppTextInputBox[0]->SetPosition(FRAME_BUFFER_WIDTH - 600, FRAME_BUFFER_HEIGHT / 2 + 30);
-	m_ppTextInputBox[0]->SetSize(200, 20);
+	m_ppTextInputBox[0]->SetPosition(10, FRAME_BUFFER_HEIGHT / 2 + 30);
+	m_ppTextInputBox[0]->SetSize(400, 40);
 	m_ppTextInputBox[0]->CreateTextFormat(m_pdWriteFactory, 15.f);
 	m_ppTextInputBox[0]->SetText(m_ID.c_str());
 	m_ppTextInputBox[0]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
 
 	//PW
-	m_ppTextInputBox[1]->SetPosition(FRAME_BUFFER_WIDTH - 600, FRAME_BUFFER_HEIGHT / 2 + 53);
-	m_ppTextInputBox[1]->SetSize(200, 20);
+	m_ppTextInputBox[1]->SetPosition(10, FRAME_BUFFER_HEIGHT / 2 + 73);
+	m_ppTextInputBox[1]->SetSize(400, 40);
 	m_ppTextInputBox[1]->CreateTextFormat(m_pdWriteFactory, 15.f);
 	m_ppTextInputBox[1]->SetText(m_PW.c_str());
 	m_ppTextInputBox[1]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
@@ -615,7 +615,7 @@ void CStartSceneUI::UISet_Small(UINT m_nSwapChainBufferIndex)
 	//=================================================
 	// Tiltle
 
-	D2D1_RECT_F rcTitleRect = { 0.0f, 0.0f, 230.0f, 175.0f };
+	D2D1_RECT_F rcTitleRect = { 0.0f, 0.0f, 460.0f, 350.0f };
 	D2D_POINT_2F lTitle_Position = { 15.f, 0.f };
 
 	LoadUIImage(L"Image/Title_small.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
@@ -624,8 +624,8 @@ void CStartSceneUI::UISet_Small(UINT m_nSwapChainBufferIndex)
 	// Explane text
 	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 15.0f, L"en-US", &m_pdwFont);
 
-	float left = 40;
-	float top = 180;
+	float left = 20;
+	float top = 350;
 	float width = 150.f;
 	float height = 50.f;
 
