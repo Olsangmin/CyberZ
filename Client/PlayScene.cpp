@@ -692,31 +692,31 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CLoadedModelInfo* pMssionMachine1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
 	m_ppMissionObj[0] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine1, MissionRange, 1);
 	m_ppMissionObj[0]->Rotate(0.f, 180.f, 0.f);
-	m_ppMissionObj[0]->SetPosition(317.f, 0.f, 161.f);
+	m_ppMissionObj[0]->SetPosition(MissionPos_Stage2[0]);
 	if (pMssionMachine1) delete pMssionMachine1;
 
 	CLoadedModelInfo* pMssionMachine2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
 	m_ppMissionObj[1] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine2, MissionRange, 1);
 	m_ppMissionObj[1]->Rotate(0.f, 0.f, 0.f);
-	m_ppMissionObj[1]->SetPosition(84.f, 0.f, 587.f);
+	m_ppMissionObj[1]->SetPosition(MissionPos_Stage2[1]);
 	if (pMssionMachine2) delete pMssionMachine2;
 
 	CLoadedModelInfo* pMssionMachine3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
 	m_ppMissionObj[2] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine3, MissionRange, 1);
 	m_ppMissionObj[2]->Rotate(0.f, -90.f, 0.f);
-	m_ppMissionObj[2]->SetPosition(325.f, 0.f, 379.f);
+	m_ppMissionObj[2]->SetPosition(MissionPos_Stage2[2]);
 	if (pMssionMachine3) delete pMssionMachine3;
 
 	CLoadedModelInfo* pMssionMachine4 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
 	m_ppMissionObj[3] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine4, MissionRange, 1);
 	m_ppMissionObj[3]->Rotate(0.f, -90.f, 0.f);
-	m_ppMissionObj[3]->SetPosition(140.f, 0.f, 300.f);
+	m_ppMissionObj[3]->SetPosition(MissionPos_Stage2[3]);
 	if (pMssionMachine4) delete pMssionMachine4;
 
 	CLoadedModelInfo* pMssionMachine5 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
 	m_ppMissionObj[4] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine5, MissionRange, 1);
 	m_ppMissionObj[4]->Rotate(0.f, -90.f, 0.f);
-	m_ppMissionObj[4]->SetPosition(80.f, 0.f, 125.f);
+	m_ppMissionObj[4]->SetPosition(MissionPos_Stage2[4]);
 	if (pMssionMachine5) delete pMssionMachine5;
 
 
@@ -911,14 +911,9 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 				if (m_ppMissionObj[i]->m_bMissionflag)
 				{
 					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMissionOn = true;
-
+					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[i]->SetState(TURNON);
 				}
 			}
-			break;
-		}
-		case 'G':
-		{
-			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_otherMissionON = true;
 			break;
 		}
 		}
@@ -961,22 +956,19 @@ bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPA
 		::ReleaseCapture();
 		break;
 	case WM_MOUSEMOVE:
-		if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMissionOn)
+		if (m_nMissionOn) //  미션이 돌아갈때만 on
 		{
 			::SetCapture(hWnd);
 			::GetCursorPos(&m_ptOldCursorPos);
 			if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppTagButton[0]->CheckMouseOn(hWnd, m_ptOldCursorPos))
 			{
-				if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_otherMissionON)
+				if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMissionRange[m_nMissionLevel] < 650)
 				{
-					if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMissionRange[m_nMissionLevel] < 650)
-					{
-						reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->SetProgress(m_nMissionLevel, 0.5f);
-					}
-					if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppProgressBar[m_nMissionLevel]->GetDone() && m_nMissionLevel < 2)
-					{
-						m_nMissionLevel += 1;
-					}
+					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->SetProgress(m_nMissionLevel, 0.5f);
+				}
+				if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppProgressBar[m_nMissionLevel]->GetDone() && m_nMissionLevel < 2)
+				{
+					m_nMissionLevel += 1;
 				}
 				
 			}
@@ -1021,9 +1013,9 @@ void CSecondRoundScene::AnimateObjects(float fTimeElapsed)
 		}
 
 		m_ppMissionObj[i]->m_bMissionflag = Missionflag;
+		if(!Missionflag)reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[i]->SetState(TURNOFF);
 	}
 
-	//reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_otherMissionON = 
 
 }
 

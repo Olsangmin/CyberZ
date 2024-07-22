@@ -1416,6 +1416,11 @@ void CMissonOBJ::SetPosition(float x, float y, float z)
 
 }
 
+void CMissonOBJ::SetPosition(XMFLOAT3 xmf3Position)
+{
+	SetPosition(xmf3Position.x, xmf3Position.y, xmf3Position.z);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //

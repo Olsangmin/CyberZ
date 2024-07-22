@@ -5,6 +5,8 @@
 #include "TagButton.h"
 #include "ProgressBar.h"
 
+#include "Machine.h"
+
 class CUI
 {
 public:
@@ -112,6 +114,8 @@ public:
 
 };
 
+
+
 class CSecondRoundSceneUI : public CUI
 {
 public:
@@ -124,7 +128,6 @@ public:
 	float		m_fMaxStamina = 100.f;
 	bool		m_bStaminaBarOn = true;
 	bool		m_bMissionOn = false;
-	bool		m_otherMissionON = false;
 
 	float		m_fMissionRange[3] = { 0 };
 
@@ -134,13 +137,18 @@ public:
 	int					m_nProgressBar = 0;
 	CProgressBar**		m_ppProgressBar = NULL;
 
+	int					m_nMachine = 0;
+	CMachine**			m_ppMachine = NULL;
+
 	void ItemUI();
 	void StaminaBarUI();
 
+	void BossUI();
+	void MachineUI();
 	void MissionUI();
 	void SetProgress(int progressNum, float figure) { m_fMissionRange[progressNum] = m_fMissionRange[progressNum] + figure; }
 
-	void RecMove();
+	void RecMove(D2D1_RECT_F mssionBox);
 	float dx = 3, dy = 3;
 
 public:

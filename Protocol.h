@@ -28,6 +28,11 @@ static std::array<DirectX::XMFLOAT3, 3> MissionPos = {
 	XMFLOAT3(500.f, 0.f, 500.f), XMFLOAT3(150.f, 0.f, 850.f),
 	XMFLOAT3(850.f, 0.f, 150.f) };
 
+static std::array<DirectX::XMFLOAT3, 5> MissionPos_Stage2 = {
+	XMFLOAT3(317.f, 0.f, 161.f), XMFLOAT3(84.f, 0.f, 595.f),
+	XMFLOAT3(325.f, 0.f, 379.f), XMFLOAT3(140.f, 0.f, 300.f),
+	XMFLOAT3(80.f, 0.f, 125.f) };
+
 
 static std::array<DirectX::XMFLOAT3, 3> KeyBox = {
 	XMFLOAT3(450.f, 0.f, 650.f), XMFLOAT3(150.f, 0.f, 850.f),

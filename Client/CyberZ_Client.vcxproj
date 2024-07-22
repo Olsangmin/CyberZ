@@ -143,6 +143,7 @@
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Machine.cpp" />
     <ClCompile Include="PrepareScene.cpp" />
     <ClCompile Include="CyborgPlayer.cpp" />
     <ClCompile Include="DDSTextureLoader12.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="Animation.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Machine.h" />
     <ClInclude Include="PrepareScene.h" />
     <ClInclude Include="CyborgPlayer.h" />
     <ClInclude Include="d3dx12.h" />

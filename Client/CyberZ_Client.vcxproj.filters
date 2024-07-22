@@ -67,6 +67,9 @@
     <Filter Include="11. GUI\11-01. UIAssets">
       <UniqueIdentifier>{d6476df1-171d-4b99-9664-9abc847c1f80}</UniqueIdentifier>
     </Filter>
+    <Filter Include="11. GUI\11-02. UIobj">
+      <UniqueIdentifier>{694f5bac-4b33-4148-9ff6-0d5731f2a32f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CyberZ_Client.rc">
@@ -158,7 +161,10 @@
       <Filter>11. GUI\11-01. UIAssets</Filter>
     </ClCompile>
     <ClCompile Include="ProgressBar.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>11. GUI\11-01. UIAssets</Filter>
+    </ClCompile>
+    <ClCompile Include="Machine.cpp">
+      <Filter>11. GUI\11-02. UIobj</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -247,7 +253,10 @@
       <Filter>11. GUI\11-01. UIAssets</Filter>
     </ClInclude>
     <ClInclude Include="ProgressBar.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>11. GUI\11-01. UIAssets</Filter>
+    </ClInclude>
+    <ClInclude Include="Machine.h">
+      <Filter>11. GUI\11-02. UIobj</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

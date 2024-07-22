@@ -61,6 +61,8 @@ public:
 	CFloorObj					**m_ppFloorObj = NULL;
 
 	int							m_nMissionLevel = 0;
+	bool						m_nMissionOn = true;
+	
 
 public:
 	void ProcessPacket(char* p);
