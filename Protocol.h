@@ -9,6 +9,7 @@ constexpr int NUM_NPC = 3;
 constexpr int MAX_FRAME = 60;
 
 constexpr int NAME_SIZE = 20;
+constexpr int PW_SIZE = 20;
 
 using namespace DirectX;
 
@@ -17,26 +18,28 @@ static std::array<DirectX::XMFLOAT3, MAX_USER> PlayerInitPos = {
 	XMFLOAT3(200.f, 0.f, 800.f) };
 
 static std::array<DirectX::XMFLOAT3, MAX_USER> PlayerInitPos_Stage2 = {
-	XMFLOAT3(300.f, 0.f, 100.f), XMFLOAT3(350.f, 0.f, 100.f),
-	XMFLOAT3(250.f, 0.f, 100.f) };
+	XMFLOAT3(50.f, 0.f, 470.f), XMFLOAT3(100.f, 0.f, 470.f),
+	XMFLOAT3(150.f, 0.f, 470.f) };
 
 static std::array<DirectX::XMFLOAT3, MAX_USER> NPCInitPos = {
 	XMFLOAT3(400.f, 0.f, 650.f), XMFLOAT3(370.f, 0.f, 170.f),
 	XMFLOAT3(760.f, 0.f, 950.f) };
 
 static std::array<DirectX::XMFLOAT3, 3> MissionPos = {
-	XMFLOAT3(500.f, 0.f, 500.f), XMFLOAT3(150.f, 0.f, 850.f),
-	XMFLOAT3(850.f, 0.f, 150.f) };
+	XMFLOAT3(100.f, 0.0f, 930.f), XMFLOAT3(650.f, 0.f, 100.f),
+	XMFLOAT3(500.f, 0.f, 500.f) };
 
 
 static std::array<DirectX::XMFLOAT3, 3> KeyBox = {
-	XMFLOAT3(450.f, 0.f, 650.f), XMFLOAT3(150.f, 0.f, 850.f),
-	XMFLOAT3(850.f, 0.f, 150.f) };
+	XMFLOAT3(540.f, 0.f, 300.f), XMFLOAT3(780.f, 0.f, 750.f),
+	XMFLOAT3(140.f, 0.f, 230.f) };
 
 constexpr float AttackRange = 5.0f;
 
 
 enum NPC_BEHAVIOR { PATROL, CHASE, ATTACK };
+
+enum S2_COM_STATE { TURNOFF, TURNON, UNABLE };
 
 // Packet Key
 constexpr char CS_LOGIN = 0;
@@ -53,7 +56,10 @@ constexpr char CS_ALIVE_PLAYER = 8;
 constexpr char CS_GETKEY = 21;
 constexpr char CS_GO_STAGE2 = 22;
 
+constexpr char CS_CHANGE_COMST = 30;
+
 constexpr char CS_TEST = 200;
+constexpr char CS_SIGNUP = 201;
 
 // =======================
 constexpr char SC_LOGIN_INFO = 0;
@@ -72,6 +78,8 @@ constexpr char SC_PLAYER_ALIVE = 11;
 
 constexpr char SC_GETKEY = 21;
 constexpr char SC_GO_STAGE2 = 22;
+
+constexpr char SC_CHANGE_COMST = 30;
 
 
 constexpr char SC_TEST = 200;
@@ -96,6 +104,14 @@ struct CS_LOGIN_PACKET {
 	unsigned char size;
 	char	type;
 	char	name[NAME_SIZE];
+	char	PW[NAME_SIZE];
+};
+
+struct CS_SIGNUP_PACKET {
+	unsigned char size;
+	char	type;
+	char	name[NAME_SIZE];
+	char	PW[NAME_SIZE];
 };
 
 struct CS_LOGOUT_PACKET {
@@ -160,6 +176,13 @@ struct CS_TEST_PACKET {
 struct CS_GO_STAGE2_PACKET {
 	unsigned char size;
 	char	type;
+};
+
+struct CS_CHANGE_COMST {
+	unsigned char size;
+	char	type;
+	int comNum;
+	S2_COM_STATE state;
 };
 
 // ------------------------------------------
@@ -269,6 +292,16 @@ struct SC_PLAYER_ALIVE_PACKET {
 	char	type;
 	int id;
 };
+
+struct SC_CHANGE_COMST {
+	unsigned char size;
+	char	type;
+	int p_id;
+	int comNum;
+	S2_COM_STATE state;
+};
+
+
 
 struct SC_TEST_PACKET {
 	unsigned char size;

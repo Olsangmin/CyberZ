@@ -87,10 +87,6 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_pMyPlayer = m_ppPlayer[4];
 	m_pMyPlayer->ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
-#ifdef USE_NETWORK
-	InitNetwork();
-#endif // USE_NETWORK
-
 }
 
 bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
@@ -329,10 +325,10 @@ void CPrepareRoomScene::ProcessPacket(char* p)
 	{
 	case SC_LOGIN_INFO:
 	{
-		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
+		/*SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
 		my_id = packet->id;
 		cout << "My ID is " << my_id << " !" << endl;
-		reinterpret_cast<CFirstSceneUI*>(m_pUI)->m_bPlayerOn[my_id] = true;
+		reinterpret_cast<CFirstSceneUI*>(m_pUI)->m_bPlayerOn[my_id] = true;*/
 
 	} break;
 

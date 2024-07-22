@@ -439,12 +439,19 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
+
+
 	// Make Scene
 	// Ã³À½ ¾À ºôµå
 	m_nSceneNum = START_SCENE;
 	m_pScene = new CStartScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
 	if(m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
+
+#ifdef USE_NETWORK
+	if (m_pScene) m_pScene->InitNetwork();
+#endif // USE_NETWORK
+
 
 	m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 

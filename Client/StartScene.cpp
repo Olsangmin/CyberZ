@@ -201,6 +201,9 @@ bool CStartScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 			m_ID = wcharToChar(reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID);
 			m_PW = wcharToChar(reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW);
 
+			Login_Id = m_ID;
+			Login_PassWord = m_PW;
+
 			cout << "ID:" << m_ID.c_str() <<", PW:" <<m_PW.c_str() <<endl;
 			break;
 		}
@@ -232,8 +235,19 @@ bool CStartScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wP
 
 		m_bInputID = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppTextInputBox[0]->CheckChlick(hWnd, m_ptOldCursorPos);
 		m_bInputPW = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppTextInputBox[1]->CheckChlick(hWnd, m_ptOldCursorPos);
-		m_bSignUP = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[0]->CheckChlick(hWnd, m_ptOldCursorPos);
-		m_bLogin = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[1]->CheckChlick(hWnd, m_ptOldCursorPos);
+		// m_bSignUP = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[0]->CheckChlick(hWnd, m_ptOldCursorPos);
+		if(reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[0]->CheckChlick(hWnd, m_ptOldCursorPos))
+		{
+			m_bSignUP = true;
+			Send_SignUp();
+		}
+		
+		// m_bLogin = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[1]->CheckChlick(hWnd, m_ptOldCursorPos);
+		if (reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[1]->CheckChlick(hWnd, m_ptOldCursorPos))
+		{
+			m_bLogin = true;
+			Send_Login();
+		}
 
 		break;
 	case WM_LBUTTONUP:
@@ -250,4 +264,25 @@ bool CStartScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wP
 	}
 	return(true);
 
+}
+
+void CStartScene::Send_Login()
+{
+	CS_LOGIN_PACKET p;
+	p.size = sizeof(p);
+	p.type = CS_LOGIN;
+	strcpy_s(p.name, Login_Id.c_str());
+	strcpy_s(p.PW, Login_PassWord.c_str());
+	send_packet(&p);
+}
+
+void CStartScene::Send_SignUp()
+{
+	CS_SIGNUP_PACKET p;
+	p.size = sizeof(p);
+	p.type = CS_SIGNUP;
+	strcpy_s(p.name, Login_Id.c_str());
+	strcpy_s(p.PW, Login_PassWord.c_str());
+	send_packet(&p);
+	
 }
