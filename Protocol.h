@@ -18,8 +18,8 @@ static std::array<DirectX::XMFLOAT3, MAX_USER> PlayerInitPos = {
 	XMFLOAT3(200.f, 0.f, 800.f) };
 
 static std::array<DirectX::XMFLOAT3, MAX_USER> PlayerInitPos_Stage2 = {
-	XMFLOAT3(50.f, 0.f, 470.f), XMFLOAT3(100.f, 0.f, 470.f),
-	XMFLOAT3(150.f, 0.f, 470.f) };
+	XMFLOAT3(300.f, 0.f, 100.f), XMFLOAT3(80.f, 0.f, 440.f),
+	XMFLOAT3(270.f, 0.f, 580.f) };
 
 static std::array<DirectX::XMFLOAT3, MAX_USER> NPCInitPos = {
 	XMFLOAT3(400.f, 0.f, 650.f), XMFLOAT3(370.f, 0.f, 170.f),
@@ -28,6 +28,11 @@ static std::array<DirectX::XMFLOAT3, MAX_USER> NPCInitPos = {
 static std::array<DirectX::XMFLOAT3, 3> MissionPos = {
 	XMFLOAT3(100.f, 0.0f, 930.f), XMFLOAT3(650.f, 0.f, 100.f),
 	XMFLOAT3(500.f, 0.f, 500.f) };
+
+static std::array<DirectX::XMFLOAT3, 5> MissionPos_Stage2 = {
+	XMFLOAT3(317.f, 0.f, 161.f), XMFLOAT3(84.f, 0.f, 595.f),
+	XMFLOAT3(325.f, 0.f, 379.f), XMFLOAT3(140.f, 0.f, 300.f),
+	XMFLOAT3(80.f, 0.f, 125.f) };
 
 
 static std::array<DirectX::XMFLOAT3, 3> KeyBox = {

@@ -2,6 +2,10 @@
 
 #include "Button.h"
 #include "TextInput.h"
+#include "TagButton.h"
+#include "ProgressBar.h"
+
+#include "Machine.h"
 
 class CUI
 {
@@ -63,11 +67,11 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class CFirstSceneUI : public CUI
+class CPrepareRoomSceneUI : public CUI
 {
 public:
-	CFirstSceneUI() {}
-	~CFirstSceneUI() {}
+	CPrepareRoomSceneUI() {}
+	~CPrepareRoomSceneUI() {}
 
 public:
 
@@ -110,22 +114,42 @@ public:
 
 };
 
+
+
 class CSecondRoundSceneUI : public CUI
 {
 public:
-	CSecondRoundSceneUI() {}
-	~CSecondRoundSceneUI() {}
+	CSecondRoundSceneUI();
+	~CSecondRoundSceneUI();
 
 public:
 
 	float		m_fStaminaRange = 100.f;
 	float		m_fMaxStamina = 100.f;
 	bool		m_bStaminaBarOn = true;
+	bool		m_bMissionOn = false;
 
-	//void MissionText();
-	//void MissionProgressBar(int MissionNum);
+	float		m_fMissionRange[3] = { 0 };
+
+	int					m_ntagButton = 0;
+	CTagButton			**m_ppTagButton = NULL;
+
+	int					m_nProgressBar = 0;
+	CProgressBar**		m_ppProgressBar = NULL;
+
+	int					m_nMachine = 0;
+	CMachine**			m_ppMachine = NULL;
+
 	void ItemUI();
 	void StaminaBarUI();
+
+	void BossUI();
+	void MachineUI();
+	void MissionUI();
+	void SetProgress(int progressNum, float figure) { m_fMissionRange[progressNum] = m_fMissionRange[progressNum] + figure; }
+
+	void RecMove(D2D1_RECT_F mssionBox);
+	float dx = 3, dy = 3;
 
 public:
 	void DrawUI(UINT m_nSwapChainBufferIndex);

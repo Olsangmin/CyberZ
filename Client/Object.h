@@ -455,6 +455,8 @@ public:
 	void RenderMissionRange(ID3D12GraphicsCommandList* pd3dCommandList);
 
 	void SetPosition(float x, float y, float z);
+	void SetPosition(XMFLOAT3 xmf3Position);
+
 
 	void SetMissionCategory(int n) { m_nCategory = n; }
 };

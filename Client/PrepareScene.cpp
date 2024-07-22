@@ -7,7 +7,7 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
 
 
-	m_pUI = new CFirstSceneUI();
+	m_pUI = new CPrepareRoomSceneUI();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -336,7 +336,7 @@ void CPrepareRoomScene::ProcessPacket(char* p)
 		SC_CHANGE_CHARACTER_PACKET* packet = reinterpret_cast<SC_CHANGE_CHARACTER_PACKET*>(p);
 		cout << packet->id << " -> " << packet->c_type << endl;
 		ChangeModel(packet->id, packet->c_type);
-		reinterpret_cast<CFirstSceneUI*>(m_pUI)->m_bPlayerOn[packet->id] = true;
+		reinterpret_cast<CPrepareRoomSceneUI*>(m_pUI)->m_bPlayerOn[packet->id] = true;
 
 	}break;
 

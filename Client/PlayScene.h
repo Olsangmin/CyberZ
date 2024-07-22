@@ -55,11 +55,19 @@ public:
 
 	bool ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer);
 	bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
+	bool OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 	void AnimateObjects(float fTimeElapsed);
 
 public:
-	int						m_nFloorObj = 0;
-	CFloorObj				**m_ppFloorObj = NULL;
+
+	POINT						m_ptOldCursorPos;
+
+	int							m_nFloorObj = 0;
+	CFloorObj					**m_ppFloorObj = NULL;
+
+	int							m_nMissionLevel = 0;
+	bool						m_nMissionOn = true;
+	
 
 public:
 	void ProcessPacket(char* p);
