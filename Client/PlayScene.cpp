@@ -328,11 +328,12 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 			break;
 		}
 		case 'L': {
-			CS_ALIVE_PLAYER_PACKET p;
+			/*CS_ALIVE_PLAYER_PACKET p;
 			p.size = sizeof(p);
 			p.type = CS_ALIVE_PLAYER;
 			p.id = my_id;
-			send_packet(&p);
+			send_packet(&p);*/
+			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[1])->SetCrawl(false);
 			break;
 		}
 		case 'F': {
@@ -682,7 +683,7 @@ void CFirstRoundScene::ProcessPacket(char* p)
 		else {
 
 			Player_Character_Type type = it->second;
-			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->SetCrawl(false);
+			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[id])->SetCrawl(false);
 			cout << "<Alive>" << type << endl;
 		}
 	}break;

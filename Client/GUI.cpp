@@ -630,14 +630,6 @@ void CSecondRoundSceneUI::MissionUI()
 
 #ifdef SMALL_WINDOW_SCREEN
 	//BG
-	width = 800; height = 500; x = (FRAME_BUFFER_WIDTH - width)/2; y = (FRAME_BUFFER_HEIGHT - height)/2;
-	background = { x,y,x + width,y + height };
-
-	width = 1500; height = 900; x = (FRAME_BUFFER_WIDTH - width) / 2; y = (FRAME_BUFFER_HEIGHT - height) / 2;
-	prograss
-
-#else
-	//BG
 	width = 900; height = 900; x = (FRAME_BUFFER_WIDTH - width) / 2; y = (FRAME_BUFFER_HEIGHT - height) / 2;
 	background = { x, y, x + width, y + height };
 

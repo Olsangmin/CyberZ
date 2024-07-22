@@ -85,7 +85,7 @@ extern HINSTANCE						ghAppInstance;
 
 
 
- //#define SMALL_WINDOW_SCREEN
+ #define SMALL_WINDOW_SCREEN
 
 #ifdef SMALL_WINDOW_SCREEN
 
