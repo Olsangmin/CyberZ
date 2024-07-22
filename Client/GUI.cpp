@@ -39,6 +39,7 @@ void CUI::Release()
 		for (int i = 0; i < m_nButton; i++) if (m_ppButton[i]) m_ppButton[i]->Release();
 		delete[] m_ppButton;
 	}
+
 	if (m_ppTextInputBox)
 	{
 		for (int i = 0; i < m_nTextInputBox; i++) if (m_ppTextInputBox[i]) m_ppTextInputBox[i]->Release();
@@ -490,7 +491,7 @@ void CSecondRoundSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 	BossUI();
 	MachineUI();
 
-	if (m_bMissionOn) MissionUI();
+	if (m_bMyOn) MissionUI();
 
 
 
@@ -942,14 +943,14 @@ void CLoadingUI::UISet(UINT m_nSwapChainBufferIndex)
 	m_pd2dDeviceContext->FillRectangle(PartitionRect, m_pd2dbrBorder);
 
 
-	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20.0f, L"en-US", &m_pdwFont);
-
-	float top = FRAME_BUFFER_HEIGHT - (FRAME_BUFFER_HEIGHT / 2);
-	float left = FRAME_BUFFER_WIDTH - (FRAME_BUFFER_WIDTH / 2);
-	float width = 200.f;
+	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 40.0f, L"en-US", &m_pdwFont);
+	float width = 700.f;
 	float height = 200.f;
+	float left = FRAME_BUFFER_WIDTH / 2 - 100;
+	float top = FRAME_BUFFER_HEIGHT / 2;
+	
 
-	D2D1_RECT_F rcPressText = D2D1::RectF(top, left, top + height, left + width);
+	D2D1_RECT_F rcPressText = D2D1::RectF(left, top, left + width, top + height);
 	WCHAR PressA[] = L"Now Loading...";
 	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
 	m_pd2dDeviceContext->DrawTextW(PressA, (UINT32)wcslen(PressA), m_pdwFont, &rcPressText, m_pd2dbrText);

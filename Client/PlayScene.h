@@ -66,7 +66,8 @@ public:
 	CFloorObj					**m_ppFloorObj = NULL;
 
 	int							m_nMissionLevel = 0;
-	bool						m_nMissionOn = true;
+	bool						m_nMissionOn = false;
+	bool						m_nRiseProgress = false;
 	
 
 public:

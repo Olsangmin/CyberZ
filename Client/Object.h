@@ -447,6 +447,8 @@ public:
 	int		m_nCategory = 0;
 	bool	m_bMissionflag = false;
 
+	bool	m_bEnd = false;
+
 public:
 	void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList);
 
