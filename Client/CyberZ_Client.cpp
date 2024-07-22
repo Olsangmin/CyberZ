@@ -29,9 +29,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	HACCEL hAccelTable;
 
 	ifstream ip_file{ "../IPaddr.config" };
-	//if (ip_file) {
-	//	while (ip_file >> ServerIP);
-	//}
+	/*if (ip_file) {
+		while (ip_file >> ServerIP);
+	}*/
 	
 
 	::LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);

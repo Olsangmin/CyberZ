@@ -120,6 +120,7 @@ void Server::Network()
 				uPackets[i].id = clients[id].GetId();
 				uPackets[i].position = clients[id].GetPos();
 				uPackets[i].rotation = clients[id].GetRotation();
+				uPackets[i].ani_st = clients[id].anim;
 				++i;
 			}
 
@@ -236,7 +237,6 @@ void Server::Worker_thread()
 			auto& npc = gMap.npcs[key - 100];
 			if (npc.current_behavior == ATTACK) {
 				std::cout << npc.near_player << "»ç¸Á" << std::endl;
-				clients[npc.near_player].anim = CRAWL;
 				for (int id : gMap.cl_ids) {
 					clients[id].send_player_death_packet(npc.near_player);
 				}

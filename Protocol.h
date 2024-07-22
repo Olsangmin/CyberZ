@@ -39,7 +39,7 @@ static std::array<DirectX::XMFLOAT3, 3> KeyBox = {
 	XMFLOAT3(540.f, 0.f, 300.f), XMFLOAT3(780.f, 0.f, 750.f),
 	XMFLOAT3(140.f, 0.f, 230.f) };
 
-constexpr float AttackRange = 5.0f;
+constexpr float AttackRange = 10.0f;
 
 
 enum NPC_BEHAVIOR { PATROL, CHASE, ATTACK };
