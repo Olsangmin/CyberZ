@@ -2,6 +2,8 @@
 
 #include "Button.h"
 #include "TextInput.h"
+#include "TagButton.h"
+#include "ProgressBar.h"
 
 class CUI
 {
@@ -63,11 +65,11 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class CFirstSceneUI : public CUI
+class CPrepareRoomSceneUI : public CUI
 {
 public:
-	CFirstSceneUI() {}
-	~CFirstSceneUI() {}
+	CPrepareRoomSceneUI() {}
+	~CPrepareRoomSceneUI() {}
 
 public:
 
@@ -113,19 +115,33 @@ public:
 class CSecondRoundSceneUI : public CUI
 {
 public:
-	CSecondRoundSceneUI() {}
-	~CSecondRoundSceneUI() {}
+	CSecondRoundSceneUI();
+	~CSecondRoundSceneUI();
 
 public:
 
 	float		m_fStaminaRange = 100.f;
 	float		m_fMaxStamina = 100.f;
 	bool		m_bStaminaBarOn = true;
+	bool		m_bMissionOn = false;
+	bool		m_otherMissionON = false;
 
-	//void MissionText();
-	//void MissionProgressBar(int MissionNum);
+	float		m_fMissionRange[3] = { 0 };
+
+	int					m_ntagButton = 0;
+	CTagButton			**m_ppTagButton = NULL;
+
+	int					m_nProgressBar = 0;
+	CProgressBar**		m_ppProgressBar = NULL;
+
 	void ItemUI();
 	void StaminaBarUI();
+
+	void MissionUI();
+	void SetProgress(int progressNum, float figure) { m_fMissionRange[progressNum] = m_fMissionRange[progressNum] + figure; }
+
+	void RecMove();
+	float dx = 3, dy = 3;
 
 public:
 	void DrawUI(UINT m_nSwapChainBufferIndex);

@@ -38,24 +38,24 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
 	// 1 - obj1
-	CLoadedModelInfo* pfenceModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/fence.bin", NULL);
+	CLoadedModelInfo* pfenceModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Fence.bin", NULL);
 	m_ppHierarchicalGameObjects[0] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pfenceModel);
 	if (pfenceModel) delete pfenceModel;
 
-	CLoadedModelInfo* pMapModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/MAP1_Modified.bin", NULL);
+	CLoadedModelInfo* pMapModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MAP1_Modified.bin", NULL);
 	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel);
 	if (pMapModel) delete pMapModel;
 	
-	CLoadedModelInfo* pMapModel2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/MAP2_Modified.bin", NULL);
+	CLoadedModelInfo* pMapModel2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MAP2_Modified.bin", NULL);
 	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel2);
 	if (pMapModel2) delete pMapModel2;
 	
 	
-	CLoadedModelInfo* pMapModel3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/Section1_modify.bin", NULL);
+	CLoadedModelInfo* pMapModel3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Section1_modify.bin", NULL);
 	m_ppHierarchicalGameObjects[3] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel3);
 	if (pMapModel3) delete pMapModel3;
 
-	CLoadedModelInfo* pMapModel4 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/test/First_section.bin", NULL);
+	CLoadedModelInfo* pMapModel4 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/First_section.bin", NULL);
 	m_ppHierarchicalGameObjects[4] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel4);
 	if (pMapModel4) delete pMapModel4;
 
@@ -128,7 +128,7 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CLoadedModelInfo* pMssionMachine1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine_2.bin", NULL);
 	m_ppMissionObj[3] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine1, MissionRange, 1);
 	m_ppMissionObj[3]->Rotate(0.f,0.f,0.f);
-	m_ppMissionObj[3]->SetPosition(540.f, -5.f, 300.f);
+	m_ppMissionObj[3]->SetPosition(525.f, -5.f, 260.f);
 	if (pMssionMachine1) delete pMssionMachine1;
 
 	CLoadedModelInfo* pMssionMachine2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine_2.bin", NULL);
@@ -140,7 +140,7 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CLoadedModelInfo* pMssionMachine3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine_2.bin", NULL);
 	m_ppMissionObj[5] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine3, MissionRange, 1);
 	m_ppMissionObj[5]->Rotate(0.f, -90.f, 0.f);
-	m_ppMissionObj[5]->SetPosition(140.f, -5.f, 230.f);
+	m_ppMissionObj[5]->SetPosition(133.f, -5.f, 200.f);
 	if (pMssionMachine3) delete pMssionMachine3;
 
 
@@ -653,18 +653,14 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	// 1 - obj1
 	CLoadedModelInfo* pInsideModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2InsideObj.bin", NULL);
 	m_ppHierarchicalGameObjects[0] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pInsideModel);
-	m_ppHierarchicalGameObjects[0]->SetScale(10, 10, 10);
 	if (pInsideModel) delete pInsideModel;
 
 	CLoadedModelInfo* pOutlineBBModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2OutBB.bin", NULL);
 	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pOutlineBBModel);
-	m_ppHierarchicalGameObjects[1]->SetScale(10, 10, 10);
-	m_ppHierarchicalGameObjects[1]->SetPosition(155, 0, 288);
 	if (pOutlineBBModel) delete pOutlineBBModel;
 	
 	CLoadedModelInfo* pMainModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2.bin", NULL);
 	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMainModel);
-	m_ppHierarchicalGameObjects[2]->SetScale(10, 10, 10);
 	if (pMainModel) delete pMainModel;
 
 
@@ -680,7 +676,6 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	
 	CLoadedModelInfo* pOutmodel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2OutLine.bin", NULL);
 	m_ppFloorObj[1] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pOutmodel);
-	m_ppFloorObj[1]->SetScale(10, 10, 10);
 	if (pOutmodel) delete pOutmodel;
 
 
@@ -693,7 +688,7 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	// 미션 인식 범위
 	XMFLOAT3 MissionRange = XMFLOAT3(10.f, 20.f, 10.f);
 
-	// 보안키 미션
+	// 협동 미션
 	CLoadedModelInfo* pMssionMachine1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
 	m_ppMissionObj[0] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine1, MissionRange, 1);
 	m_ppMissionObj[0]->Rotate(0.f, 180.f, 0.f);
@@ -715,13 +710,13 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CLoadedModelInfo* pMssionMachine4 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
 	m_ppMissionObj[3] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine4, MissionRange, 1);
 	m_ppMissionObj[3]->Rotate(0.f, -90.f, 0.f);
-	m_ppMissionObj[3]->SetPosition(149.f, 0.f, 299.f);
+	m_ppMissionObj[3]->SetPosition(140.f, 0.f, 300.f);
 	if (pMssionMachine4) delete pMssionMachine4;
 
 	CLoadedModelInfo* pMssionMachine5 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
 	m_ppMissionObj[4] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine5, MissionRange, 1);
 	m_ppMissionObj[4]->Rotate(0.f, -90.f, 0.f);
-	m_ppMissionObj[4]->SetPosition(111.f, 0.f, 125.f);
+	m_ppMissionObj[4]->SetPosition(80.f, 0.f, 125.f);
 	if (pMssionMachine5) delete pMssionMachine5;
 
 
@@ -730,14 +725,14 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CLoadedModelInfo* pRobotModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Robot2.bin", NULL);
 	m_pBoss = new CBossRobotObject(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pRobotModel, 7);
 	m_pBoss->m_pSkinnedAnimationController->SetTrackAnimationSet(1, 1);
-	m_pBoss->SetPosition(NPCInitPos[1]);
+	m_pBoss->SetPosition(110.f, 0, 205.f);
 	m_pBoss->SetScale(8.0f, 8.0f, 8.0f);
 
 	if (pRobotModel) delete pRobotModel;
 
 
 	//===============================//
-	m_nEnemy = 3;
+	m_nEnemy = 0;
 	m_ppEnemy = new CGameObject * [m_nEnemy];
 
 	for (int i = 0; i < m_nEnemy; i++)
@@ -751,7 +746,7 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 		if (pRobotModel) delete pRobotModel;
 	}
-
+	 
 
 	//===============================//
 	// SHADER OBJ (NULL)
@@ -880,7 +875,7 @@ bool CSecondRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) {
-			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(-1);
+			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMissionOn=false;
 			m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
 		}
 	}
@@ -908,12 +903,24 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 		case 'C': {
 			if (m_pMyPlayer->GetStaminer())m_pMyPlayer->SetCreep();
 			break;
-		}
-		case '1':
-		case '2':
-		case '3':
-			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->MissionCheck(wParam - 49);
+		}		
+		case 'F':
+		{
+			for (int i = 0; i < m_nMissionObj; i++)
+			{
+				if (m_ppMissionObj[i]->m_bMissionflag)
+				{
+					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMissionOn = true;
+
+				}
+			}
 			break;
+		}
+		case 'G':
+		{
+			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_otherMissionON = true;
+			break;
+		}
 		}
 		break;
 	}
@@ -939,6 +946,57 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 	return false;
 }
 
+bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+
+	switch (nMessageID)
+	{
+	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+		::SetCapture(hWnd);
+		::GetCursorPos(&m_ptOldCursorPos);
+		break;
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
+		::ReleaseCapture();
+		break;
+	case WM_MOUSEMOVE:
+		if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMissionOn)
+		{
+			::SetCapture(hWnd);
+			::GetCursorPos(&m_ptOldCursorPos);
+			if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppTagButton[0]->CheckMouseOn(hWnd, m_ptOldCursorPos))
+			{
+				if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_otherMissionON)
+				{
+					if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMissionRange[m_nMissionLevel] < 650)
+					{
+						reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->SetProgress(m_nMissionLevel, 0.5f);
+					}
+					if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppProgressBar[m_nMissionLevel]->GetDone() && m_nMissionLevel < 2)
+					{
+						m_nMissionLevel += 1;
+					}
+				}
+				
+			}
+			else 
+			{
+				if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMissionRange[m_nMissionLevel] > 0 && reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMissionRange[m_nMissionLevel] < 650)
+				{
+					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->SetProgress(m_nMissionLevel, -0.7f);
+				}
+			}
+			::ReleaseCapture();
+		}
+		break;
+			
+	default:
+		break;
+	}
+	return false;
+}
+
 void CSecondRoundScene::AnimateObjects(float fTimeElapsed)
 {
 	CScene::AnimateObjects(fTimeElapsed);
@@ -950,6 +1008,22 @@ void CSecondRoundScene::AnimateObjects(float fTimeElapsed)
 	}
 	else reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bStaminaBarOn = false;
 
+
+	for (int i = 0; i < m_nMissionObj; i++)
+	{
+		Missionflag = false;
+		
+		for (int j = 0; j < m_nPlayer; j++) if (m_ppPlayer[j]) {
+			if (CheckMissionBound(m_ppPlayer[j], m_ppMissionObj[i]))
+			{
+				Missionflag = true;
+			}
+		}
+
+		m_ppMissionObj[i]->m_bMissionflag = Missionflag;
+	}
+
+	//reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_otherMissionON = 
 
 }
 

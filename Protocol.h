@@ -17,8 +17,8 @@ static std::array<DirectX::XMFLOAT3, MAX_USER> PlayerInitPos = {
 	XMFLOAT3(200.f, 0.f, 800.f) };
 
 static std::array<DirectX::XMFLOAT3, MAX_USER> PlayerInitPos_Stage2 = {
-	XMFLOAT3(300.f, 0.f, 100.f), XMFLOAT3(350.f, 0.f, 100.f),
-	XMFLOAT3(250.f, 0.f, 100.f) };
+	XMFLOAT3(300.f, 0.f, 100.f), XMFLOAT3(80.f, 0.f, 440.f),
+	XMFLOAT3(270.f, 0.f, 580.f) };
 
 static std::array<DirectX::XMFLOAT3, MAX_USER> NPCInitPos = {
 	XMFLOAT3(400.f, 0.f, 650.f), XMFLOAT3(370.f, 0.f, 170.f),

@@ -157,10 +157,12 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayScene.cpp" />
+    <ClCompile Include="ProgressBar.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="StartScene.cpp" />
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="TagButton.cpp" />
     <ClCompile Include="TextInput.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="WICTextureLoader12.cpp" />
@@ -185,11 +187,13 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayScene.h" />
+    <ClInclude Include="ProgressBar.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="StartScene.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TagButton.h" />
     <ClInclude Include="TextInput.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="WICTextureLoader12.h" />

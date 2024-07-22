@@ -226,7 +226,8 @@ bool CStartScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wP
 		::GetCursorPos(&m_ptOldCursorPos);
 
 		m_bInputID = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppTextInputBox[0]->CheckChlick(hWnd, m_ptOldCursorPos);
-		m_bInputPW = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppTextInputBox[1]->CheckChlick(hWnd, m_ptOldCursorPos);
+		m_bInputPW = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppTextInputBox[1]->CheckChlick(hWnd, m_ptOldCursorPos);\
+
 		m_bSignUP = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[0]->CheckChlick(hWnd, m_ptOldCursorPos);
 		m_bLogin = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[1]->CheckChlick(hWnd, m_ptOldCursorPos);
 

@@ -32,6 +32,8 @@ void CUI::Release()
 		if (m_ppd3d11WrappedBackBuffers[i]) m_ppd3d11WrappedBackBuffers[i]->Release();
 		if (m_ppd2dRenderTargets[i]) m_ppd2dRenderTargets[i]->Release();
 	}
+
+	// Asset
 	if (m_ppButton)
 	{
 		for (int i = 0; i < m_nButton; i++) if (m_ppButton[i]) m_ppButton[i]->Release();
@@ -203,7 +205,7 @@ void CUI::DrawUI(UINT m_nSwapChainBufferIndex)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-void CFirstSceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
+void CPrepareRoomSceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 {
 
 	m_pd2dDeviceContext->SetTarget(m_ppd2dRenderTargets[m_nSwapChainBufferIndex]);
@@ -221,14 +223,14 @@ void CFirstSceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 	m_pd3d11DeviceContext->Flush();
 }
 
-void CFirstSceneUI::UISet(UINT m_nSwapChainBufferIndex)
+void CPrepareRoomSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 {
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 
 	CheckEnter();
 }
 
-void CFirstSceneUI::CheckEnter()
+void CPrepareRoomSceneUI::CheckEnter()
 {
 	
 #ifdef SMALL_WINDOW_SCREEN
@@ -439,6 +441,25 @@ void CFirstRoundSceneUI::StaminaBarUI()
 //========================================================================================//
 // Second Round
 
+CSecondRoundSceneUI::CSecondRoundSceneUI()
+{
+	m_ntagButton = 1;
+	m_ppTagButton = new CTagButton * [m_ntagButton];
+
+	m_ppTagButton[0] = new CTagButton(1500, 700, 0, 0);
+
+	m_nProgressBar = 3;
+	m_ppProgressBar = new CProgressBar * [m_nProgressBar];
+	for (int i = 0; i < m_nProgressBar; i++) m_ppProgressBar[i] = new CProgressBar();
+
+}
+
+CSecondRoundSceneUI::~CSecondRoundSceneUI()
+{
+	delete[] m_ppTagButton;
+	delete[] m_ppProgressBar;
+}
+
 void CSecondRoundSceneUI::DrawUI(UINT m_nSwapChainBufferIndex)
 {
 	m_pd2dDeviceContext->SetTarget(m_ppd2dRenderTargets[m_nSwapChainBufferIndex]);
@@ -462,21 +483,25 @@ void CSecondRoundSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 
 	if (m_bStaminaBarOn) StaminaBarUI();
 	ItemUI();
+	if (m_bMissionOn) MissionUI();
+
 }
+
 
 void CSecondRoundSceneUI::ItemUI()
 {
-	D2D1_RECT_F* rcMissionBarFrame;
-	rcMissionBarFrame = new D2D1_RECT_F;
-	rcMissionBarFrame->top = FRAME_BUFFER_HEIGHT - 200.f;
-	rcMissionBarFrame->left = FRAME_BUFFER_WIDTH - 270.0f;
-	rcMissionBarFrame->right = FRAME_BUFFER_WIDTH - 50.f;
-	rcMissionBarFrame->bottom = FRAME_BUFFER_HEIGHT - 50.0f;
+
+	D2D1_RECT_F* rcItemFrame;
+	rcItemFrame = new D2D1_RECT_F;
+	rcItemFrame->top = FRAME_BUFFER_HEIGHT - 200.f;
+	rcItemFrame->left = FRAME_BUFFER_WIDTH - 270.0f;
+	rcItemFrame->right = FRAME_BUFFER_WIDTH - 50.f;
+	rcItemFrame->bottom = FRAME_BUFFER_HEIGHT - 50.0f;
 
 	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
-	m_pd2dDeviceContext->DrawRectangle(rcMissionBarFrame, m_pd2dbrBorder);
+	m_pd2dDeviceContext->DrawRectangle(rcItemFrame, m_pd2dbrBorder);
 
-	delete rcMissionBarFrame;
+	delete rcItemFrame;
 
 	float top = 1650.f;
 	float left = 850.f;
@@ -484,6 +509,7 @@ void CSecondRoundSceneUI::ItemUI()
 
 	D2D1_RECT_F rcUpperText = D2D1::RectF(top, left, top + gab, left + gab);
 	WCHAR MissionText[] = L"ITEM";
+	m_pdWriteFactory->CreateTextFormat(L"Arial", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 30.f, L"en-US", &m_pdwFont);
 	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
 	m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
 
@@ -518,6 +544,143 @@ void CSecondRoundSceneUI::StaminaBarUI()
 	delete rcStaminaBar;
 	delete rcStaminaBarFrame;
 }
+
+void CSecondRoundSceneUI::MissionUI()
+{
+
+	float x, y, width, height;
+
+	D2D1_RECT_F background = { 0,0,0,0 };
+	D2D1_RECT_F missionbackground = { 0,0,0,0 };
+
+	float statefontsize = 15;
+	float OnOffsize = 15;
+	float Missionfontsize = 15;
+	D2D1_RECT_F rcMachiceText = { 0, 0, 0, 0 };
+	D2D1_RECT_F rcOnOffText = { 0, 0, 0, 0 };
+	D2D1_RECT_F rcMissionInfoText = { 0, 0, 0, 0 };
+
+
+	float gab = 60;
+	float fontsize = 15;
+
+	float progressWidth, progressheight;
+	D2D1_RECT_F progressFrame[3];
+	D2D1_RECT_F progress[3];
+	D2D1_RECT_F rcProgressText = { 300, 540, 800, 600 };
+
+#ifdef SMALL_WINDOW_SCREEN
+	//BG
+	width = 800; height = 500; x = (FRAME_BUFFER_WIDTH - width)/2; y = (FRAME_BUFFER_HEIGHT - height)/2;
+	background = { x,y,x + width,y + height };
+
+	width = 1500; height = 900; x = (FRAME_BUFFER_WIDTH - width) / 2; y = (FRAME_BUFFER_HEIGHT - height) / 2;
+	prograss
+
+#else
+	//BG
+	width = 1500; height = 900; x = (FRAME_BUFFER_WIDTH - width) / 2; y = (FRAME_BUFFER_HEIGHT - height) / 2;
+	background = { x, y, x + width, y + height };
+
+	//other state
+	statefontsize = 70;
+	OnOffsize = 120;
+	rcMachiceText = { 300, 230, 700, 300 };
+	rcOnOffText = { 630, 230, 930, 300 };
+
+	//mission
+	missionbackground = {1000, 230, 1630, 900 };
+	Missionfontsize = 40;
+	rcMissionInfoText = {1000, 170, 1630, 220 };
+
+	//Progress Text
+	fontsize = 40.f;
+	rcProgressText = { 300, 600, 800, 650 };
+
+	// Progress bar
+	gab = 70;
+	progressWidth = 650; progressheight = 50; x = 300; y = (FRAME_BUFFER_HEIGHT) / 2 + 150;
+	for (int i = 0; i < 3; i++)
+	{
+		progress[i] = { x, y + gab * i,  x , y + progressheight + gab * i };
+	}
+
+#endif // SMALL_WINDOW_SCREEN
+
+
+	//BG
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::RoyalBlue, 0.85f));
+	m_pd2dDeviceContext->FillRectangle(background, m_pd2dbrBorder);
+
+	// other state
+	WCHAR OtherStateText[] = L"Other Machine State";
+	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
+	m_pdWriteFactory->CreateTextFormat(L"Arial", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, statefontsize, L"en-US", &m_pdwFont);
+	m_pd2dDeviceContext->DrawTextW(OtherStateText, (UINT32)wcslen(OtherStateText), m_pdwFont, &rcMachiceText, m_pd2dbrText);
+
+	WCHAR MissionONText[] = L"ON-LINE";
+	WCHAR MissionOFFText[] = L"OFF-LINE";
+	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::Red, 1.0f));
+	m_pdWriteFactory->CreateTextFormat(L"Arial", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, OnOffsize, L"en-US", &m_pdwFont);
+	if (m_otherMissionON)
+	{
+		m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::YellowGreen, 1.0f));
+		m_pd2dDeviceContext->DrawTextW(MissionONText, (UINT32)wcslen(MissionONText), m_pdwFont, &rcOnOffText, m_pd2dbrText);
+	}
+	else
+	{
+		m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::Red, 1.0f));
+		m_pd2dDeviceContext->DrawTextW(MissionOFFText, (UINT32)wcslen(MissionOFFText), m_pdwFont, &rcOnOffText, m_pd2dbrText);
+	}
+
+	//TagMission
+	WCHAR MissioninfoText[] = L"Chase Navy Box";
+	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
+	m_pdWriteFactory->CreateTextFormat(L"Arial", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, Missionfontsize, L"en-US", &m_pdwFont);
+	m_pd2dDeviceContext->DrawTextW(MissioninfoText, (UINT32)wcslen(MissioninfoText), m_pdwFont, &rcMissionInfoText, m_pd2dbrText);
+
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
+	m_pd2dDeviceContext->FillRectangle(missionbackground, m_pd2dbrBorder);
+
+
+	m_ppTagButton[0]->SetPosition(1500, 700);
+	m_ppTagButton[0]->SetSize(70, 70);
+	RecMove();
+	m_ppTagButton[0]->Draw(m_pd2dDeviceContext, m_pd2dbrBorder, 0);
+
+	// progress
+	WCHAR ProgressText[] = L"System Progress";
+	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
+	m_pdwFont->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	m_pdWriteFactory->CreateTextFormat(L"Arial", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, fontsize, L"en-US", &m_pdwFont);
+	m_pd2dDeviceContext->DrawTextW(ProgressText, (UINT32)wcslen(ProgressText), m_pdwFont, &rcProgressText, m_pd2dbrText);
+
+
+	D2D1_COLOR_F			FrameColor = D2D1::ColorF(0.0f, 0.0f, 0.0f, 1.0f);
+	D2D1_COLOR_F			ProcessColor = D2D1::ColorF(1.0f, 1.0f, 1.0f, 1.0f);
+
+	for (int i = 0; i < 3; i++) 
+	{
+		m_ppProgressBar[i]->SetColor(FrameColor, ProcessColor);
+		m_ppProgressBar[i]->SetPosition(progress[i].left , progress[i].top);
+		m_ppProgressBar[i]->SetSize(progressWidth, progressheight);
+		m_ppProgressBar[i]->SetProcess(m_fMissionRange[i]);
+		m_ppProgressBar[i]->Draw(m_pd2dDeviceContext, m_pd2dbrText, m_pd2dbrBorder);
+	}
+}
+
+void CSecondRoundSceneUI::RecMove()
+{
+	D2D1_RECT_F tempRec= m_ppTagButton[0]->GetRect();
+	tempRec.left += dx;
+	tempRec.top += dy;
+
+	if (tempRec.left < 1000 || tempRec.left + 70 > 1630) dx = -dx;
+	if (tempRec.top  < 230 || tempRec.top + 70 > 900) dy = -dy;
+
+	m_ppTagButton[0]->SetPosition(tempRec.left, tempRec.top);
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///
 

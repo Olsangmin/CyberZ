@@ -154,6 +154,12 @@
     <ClCompile Include="TextInput.cpp">
       <Filter>11. GUI\11-01. UIAssets</Filter>
     </ClCompile>
+    <ClCompile Include="TagButton.cpp">
+      <Filter>11. GUI\11-01. UIAssets</Filter>
+    </ClCompile>
+    <ClCompile Include="ProgressBar.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameFramework.h">
@@ -236,6 +242,12 @@
     </ClInclude>
     <ClInclude Include="TextInput.h">
       <Filter>11. GUI\11-01. UIAssets</Filter>
+    </ClInclude>
+    <ClInclude Include="TagButton.h">
+      <Filter>11. GUI\11-01. UIAssets</Filter>
+    </ClInclude>
+    <ClInclude Include="ProgressBar.h">
+      <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

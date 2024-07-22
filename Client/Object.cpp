@@ -1449,7 +1449,7 @@ CBossRobotObject::CBossRobotObject(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 
 	// Default animation setting
 	m_pSkinnedAnimationController->SetAllTrackDisable();
-	m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	m_pSkinnedAnimationController->SetTrackEnable(2, true);
 }
 
 CBossRobotObject::~CBossRobotObject()
