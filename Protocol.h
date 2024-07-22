@@ -101,7 +101,7 @@ enum Player_Character_Type {
 };
 
 enum Player_Interaction_Type {
-	CardMission, Heal, FinalMission
+	CardMission, Heal, FinalMission, NON = 100
 };
 
 #pragma pack (push, 1)

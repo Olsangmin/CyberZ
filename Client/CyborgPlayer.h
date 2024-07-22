@@ -58,6 +58,7 @@ private:
 	int								m_nAnswer{ -1 };
 	int								m_nAnswerCount{ 0 };
 	bool							m_bSecurityKey{ false };
+	int								m_HealTarget{ -1 };
 
 	float							m_fKeyRotate{ 0.f };
 
@@ -70,6 +71,9 @@ public:
 
 	virtual bool GetStaminer() { return m_bHasStaminer; };
 	virtual float GetVelocitySpeed() { return m_fVelocitySpeed; };
+
+	int GetHealTarget() { return m_HealTarget; }
+	void SetHealTarget(int HealTarget) { m_HealTarget = HealTarget; }
 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 

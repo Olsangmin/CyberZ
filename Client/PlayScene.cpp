@@ -406,9 +406,25 @@ bool CFirstRoundScene::CheckMissionObj()
 	return false;
 }
 
+bool CFirstRoundScene::CheckHeal()
+{
+	for (int i = 0; i < m_nPlayer; ++i) {
+		if (m_pMyPlayer != m_ppPlayer[i] && m_pMyPlayer->m_xmBoundingBox.Intersects(m_ppPlayer[i]->m_xmBoundingBox)) {
+			if (reinterpret_cast<CyborgPlayer*>(m_ppPlayer[i])->GetCurrentAni() == CRAWL) {
+				reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->SetHealTarget(m_ppPlayer[i]->p_id);
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
 Player_Interaction_Type CFirstRoundScene::CheckInteraction()
 {
 	if (CheckMissionObj())return CardMission;
+	if (CheckHeal())return Heal;
+	return NON;
 }
 
 void CFirstRoundScene::Interaction(Player_Interaction_Type type)
@@ -419,6 +435,13 @@ void CFirstRoundScene::Interaction(Player_Interaction_Type type)
 		break;
 	}
 	case Heal: {
+		int id = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetHealTarget();
+		cout<<"<Heal>" << my_id << "->" << id << endl;
+		CS_ALIVE_PLAYER_PACKET p;
+		p.size = sizeof(p);
+		p.type = CS_ALIVE_PLAYER;
+		p.id = id;
+		send_packet(&p);
 		break;
 	}
 	case FinalMission: {
@@ -487,6 +510,14 @@ void CFirstRoundScene::AnimateObjects(float fTimeElapsed)
 
 }
 
+
+int CFirstRoundScene::FindID(Player_Character_Type type)
+{
+	for (int i = 0; i < 3; ++i)
+		if (idANDtype.find(i)->second == type)
+			return i;
+	return -1;
+}
 
 void CFirstRoundScene::ProcessPacket(char* p)
 {
@@ -636,6 +667,7 @@ void CFirstRoundScene::ProcessPacket(char* p)
 
 			Player_Character_Type type = it->second;
 			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->SetCrawl(false);
+			cout << "<Alive>" << type << endl;
 		}
 	}break;
 

@@ -29,9 +29,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCm
 	HACCEL hAccelTable;
 
 	ifstream ip_file{ "../IPaddr.config" };
-	//if (ip_file) {
-	//	while (ip_file >> ServerIP);
-	//}
+	/*if (ip_file) {
+		while (ip_file >> ServerIP);
+	}*/
 	
 
 	::LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -73,7 +73,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 	WNDCLASSEX wcex;
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
-
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
 	wcex.lpfnWndProc = WndProc;
 	wcex.cbClsExtra = 0;

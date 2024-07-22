@@ -436,7 +436,7 @@ void CyborgPlayer::MissionCheck(int num)
 void CyborgPlayer::ExhaustionStaminer()
 {
 	if (m_bIsRun)
-		if(m_fStaminer>0)m_fStaminer-=0.2f;
+		if(m_fStaminer>0)m_fStaminer-=0.1f;
 	if (m_bIsCreep)
 		if (m_fStaminer > 0)m_fStaminer -= 0.1f;
 	if (m_fStaminer <= 0.0f) {

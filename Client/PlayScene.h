@@ -26,6 +26,7 @@ public:
 
 	int IsCrawlPlayer();
 	bool CheckMissionObj();
+	bool CheckHeal();
 	Player_Interaction_Type CheckInteraction();
 	void Interaction(Player_Interaction_Type type);
 	void AnimateObjects(float fTimeElapsed);
@@ -34,6 +35,7 @@ public:
 
 
 public:
+	int FindID(Player_Character_Type type);
 	void ProcessPacket(char* p);
 	unordered_map<int, Player_Character_Type> idANDtype;
 	void Send_Go_Stage2();
