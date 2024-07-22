@@ -128,13 +128,13 @@ void GameMap::initializeMap()
 		}
 	}
 
-	/*for (int i = 0; i < MissionPos.size(); ++i)
+	for (int i = 0; i < MissionPos.size(); ++i)
 	{
 		std::string ObjName = "Mission " + std::to_string(i);
 
 		DirectX::BoundingOrientedBox box{};
 		box.Center = MissionPos[i];
-		box.Extents = DirectX::XMFLOAT3(static_cast<float>(cellWidth - 0.01f), 10.f, static_cast<float>(cellDepth - 0.01f));
+		box.Extents = DirectX::XMFLOAT3(4.9f, 10.f, 4.9f);
 
 		data[ObjName] = box;
 	}
@@ -145,10 +145,10 @@ void GameMap::initializeMap()
 
 		DirectX::BoundingOrientedBox box{};
 		box.Center = KeyBox[i];
-		box.Extents = DirectX::XMFLOAT3(static_cast<float>(cellWidth - 0.01f), 5.f, static_cast<float>(cellDepth - 0.01f));
+		box.Extents = DirectX::XMFLOAT3(4.9f, 5.f, 4.9f);
 
 		data[ObjName] = box;
-	}*/
+	}
 
 	for (int x = 0; x < cellWidth; ++x) {
 		for (int y = 0; y < cellDepth; ++y) {
@@ -177,6 +177,160 @@ void GameMap::initializeMap()
 	InitializeNPC();
 	std::cout << "NPC loading 완료\n";
 
+}
+
+void GameMap::ChangeToMap2()
+{
+	
+	std::cout << "Map 초기화 중.." << std::endl;
+	cells.clear();
+
+	mapWidth = 350.f;
+	mapDepth = 650.f;
+	cellWidth = 35;
+	cellDepth = 65;
+
+	using namespace DirectX;
+	// `cellWidth`와 `cellDepth` 크기로 2D 배열을 생성합니다.
+	cells.resize(cellWidth, std::vector<CELL>(cellDepth));
+
+	std::unordered_map<std::string, DirectX::BoundingOrientedBox> data;
+	std::ifstream in{ "Resource/Map/Stage2InsideObj_info.txt" };
+
+	if (!in) {
+		std::cout << "File Error!" << std::endl;
+		exit(-1);
+	}
+	else {
+		std::string line;
+		std::string objName;
+
+		while (std::getline(in, line)) {
+			// 줄의 시작 공백을 제거
+			line.erase(0, line.find_first_not_of(" \t\n\r"));
+
+			// <Frame> 태그 처리
+			if (line.find("<Frame>:") == 0) {
+				objName = line.substr(9);
+			}
+
+			// <Bounds> 태그 처리
+			else if (line.find("<Bounds>:") == 0) {
+				// <Bounds>: 뒤의 값을 추출
+				std::istringstream iss(line.substr(9));
+				float values[6];
+
+				// 올바르게 6개의 실수 값 추출
+				for (int i = 0; i < 6; i++) {
+					if (!(iss >> values[i])) {
+						std::cerr << "실수 값 추출 오류 발생" << std::endl;
+						exit(-1);
+					}
+				}
+
+				// BoundingOrientedBox에 값 설정
+				DirectX::BoundingOrientedBox box{};
+				box.Center = DirectX::XMFLOAT3(values[0], values[1], values[2]);
+				box.Extents = DirectX::XMFLOAT3(values[3], values[4], values[5]);
+
+				// 데이터 저장
+				data[objName] = box;
+
+			}
+			else if (line.find("<Rotation>:") == 0) {
+				// <Rotation>: 뒤의 값을 추출
+				std::istringstream iss(line.substr(11));
+				char discard;
+				float rotX, rotY, rotZ{};
+
+				if (!(iss >> discard >> rotX >> discard >> rotY >> discard >> rotZ >> discard)) {
+					std::cerr << "회전 값 추출 오류 발생" << std::endl;
+					exit(-1);
+				}
+
+
+				float angleX = XMConvertToRadians(rotX);
+				float angleY = XMConvertToRadians(rotY);
+				float angleZ = XMConvertToRadians(rotZ);
+				XMVECTOR quaternionX = DirectX::XMQuaternionRotationRollPitchYaw(angleX, 0.0f, 0.0f);
+				XMVECTOR quaternionY = DirectX::XMQuaternionRotationRollPitchYaw(0.0f, angleY, 0.0f);
+				XMVECTOR quaternionZ = DirectX::XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, angleZ);
+
+				XMVECTOR quaternion = DirectX::XMQuaternionMultiply(quaternionX, DirectX::XMQuaternionMultiply(quaternionY, quaternionZ));
+
+				XMFLOAT4 orientation{};
+				DirectX::XMStoreFloat4(&orientation, quaternion);
+
+				data[objName].Orientation = orientation;
+
+				XMVECTOR rotatedExtents = XMVectorSet(data[objName].Extents.x, data[objName].Extents.y, data[objName].Extents.z, 0.f);
+				XMVECTOR orientationQuat = XMVectorSet(orientation.x, orientation.y, orientation.z, orientation.w);
+
+				XMMATRIX rotationMatrix = XMMatrixRotationQuaternion(orientationQuat);
+				XMMATRIX inverseRotationMatrix = XMMatrixInverse(nullptr, rotationMatrix);
+				XMVECTOR originalExtents = XMVector3Transform(rotatedExtents, inverseRotationMatrix);
+
+				originalExtents = XMVectorAbs(originalExtents);
+
+				XMFLOAT3 originalExtentsFloat;
+				XMStoreFloat3(&originalExtentsFloat, originalExtents);
+
+				data[objName].Extents = originalExtentsFloat;
+			}
+
+		}
+
+
+		/*for (const auto& pair : data) {
+			std::cout << "Object Name: " << pair.first << std::endl;
+			const DirectX::BoundingOrientedBox& box = pair.second;
+			std::cout << "Center: (" << box.Center.x << ", " << box.Center.y << ", " << box.Center.z << ")" << std::endl;
+			std::cout << "Orientation: (" << box.Orientation.x << ", " << box.Orientation.y << ", " << box.Orientation.z << ") - " << box.Orientation.w << std::endl;
+		}*/
+
+
+	}
+
+
+	// 각 셀을 초기화하고 셀의 위치 및 크기를 설정합니다.
+	for (int x = 0; x < cellWidth; ++x) {
+		for (int y = 0; y < cellDepth; ++y) {
+			// 각 셀의 위치와 크기를 설정
+			cells[x][y] = CELL();
+			cells[x][y].cellType = GROUND;
+			cells[x][y].isObstacle = false;
+			cells[x][y].center.x = (x + 0.5f) * mapWidth / cellWidth;
+			cells[x][y].center.z = (y + 0.5f) * mapDepth / cellDepth;
+			cells[x][y].width = static_cast<int>(mapWidth / cellWidth);
+			cells[x][y].height = static_cast<int>(mapDepth / cellDepth);
+
+		}
+	}
+
+
+	for (int x = 0; x < cellWidth; ++x) {
+		for (int y = 0; y < cellDepth; ++y) {
+			for (auto& datas : data) {
+				if (cells[x][y].InCell(datas.second)) {
+					/*if (x >= 40 && x <= 55 && y >= 30 && y < 60) {
+						cells[x][y].cellType = CONT;
+						cells[x][y].isObstacle = true;
+						std::cout << "[" << x << "," << y << "] ";
+						std::cout << "Center: (" << datas.second.Center.x << ", " << datas.second.Center.y << ", " << datas.second.Center.z << ")" << std::endl;
+						std::cout << "Extexts: (" << datas.second.Extents.x << ", " << datas.second.Extents.y << ", " << datas.second.Extents.z << ")" << std::endl;
+
+						std::cout << "Orientation: (" << datas.second.Orientation.x << ", " << datas.second.Orientation.y << ", " << datas.second.Orientation.z << ") - " << datas.second.Orientation.w << std::endl << std::endl;
+						break;
+					}*/
+					cells[x][y].cellType = CONT;
+					cells[x][y].isObstacle = true;
+					break;
+				}
+			}
+
+		}
+	}
+	std::cout << "Map2 loading 완료\n";
 }
 
 void GameMap::StartGame()

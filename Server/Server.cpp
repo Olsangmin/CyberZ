@@ -395,6 +395,7 @@ void Server::Process_packet(int c_id, char* packet)
 						clients[others].GetPos(), clients[others].GetRotation(), clients[others].GetType());
 				}
 			}
+			gMap.ChangeToMap2();
 			gMap.SetStage(STAGE2);
 		}
 
@@ -596,7 +597,8 @@ void Server::DBThread()
 	using namespace std::chrono;
 	while (true)
 	{
-
+		
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 }
 

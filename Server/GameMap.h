@@ -69,6 +69,9 @@ public:
 
     void initializeMap();
 
+    void ChangeToMap2();
+
+    
     void StartGame();
     void EndGame() { InGame = false; }
     void PlayGame() { 
@@ -193,6 +196,8 @@ public:
     }
 
     std::array<NPC, NUM_NPC> npcs;
+
+    NPC BossNpc;
 
     std::vector<int> cl_ids;
 
