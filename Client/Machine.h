@@ -1,7 +1,5 @@
 #pragma once
 
-enum  S2_COM_STATE { TURNON, TURNOFF, UNABLE };
-
 class CMachine
 {
 public:

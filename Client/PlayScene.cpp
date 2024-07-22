@@ -967,8 +967,6 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 			}
 			break;
 		}
-		}
-		break;
 	}
 
 	//============ KeyUP ============//
