@@ -50,6 +50,7 @@ public:
 	CCamera						*m_pCamera = NULL;
 	bool						m_bUnable = false;
 	bool						m_bReady = false;
+	bool						m_bSliding = false;
 
 	XMFLOAT3					m_xmf3BeforeColliedPosition = XMFLOAT3(0.0f, 0.0f, 0.0f);
 

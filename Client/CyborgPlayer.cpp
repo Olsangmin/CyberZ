@@ -509,9 +509,9 @@ void CyborgPlayer::IsRun()
 
 void CyborgPlayer::IsCreep()
 {
-	if (m_pasCurrentAni != CREEP && m_bIsCreep && !m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+	if (m_pasCurrentAni != USE && m_bIsCreep && !m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
 		SetMaxVelocityXZ(10.f);
-		m_pasNextAni = CREEP;
+		m_pasNextAni = USE;
 		m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 		AnimationPacket(m_pasNextAni);
 	}

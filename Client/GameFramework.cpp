@@ -566,7 +566,12 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 	ID3D12CommandList* ppd3dCommandLists[] = { m_pd3dCommandList};
 	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
 
+
 	WaitForGpuComplete();
+
+	if (m_pScene) m_pScene->ReleaseUploadBuffers();
+
+	m_GameTimer.Reset();
 }
 
 void CGameFramework::GetSceneInfo()

@@ -790,36 +790,33 @@ bool CScene::CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget, XM
 		for (int i = 0; i < 8; ++i)
 			co[i] = XMLoadFloat3(&corner[i]);
 
-		if (pBase->m_xmBoundingBox.Intersects(co[0], co[1], co[2])) {
-			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[1] - co[0], co[2] - co[0])));
+		if (pBase->m_xmBoundingBox.Intersects(co[0], co[1], co[2])||
+			pBase->m_xmBoundingBox.Intersects(co[0], co[2], co[3])) {
+			XMFLOAT3 TargetVector = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[1] - co[0], co[2] - co[0])));
+			if ((TargetVector.x == out.x ) || Vector3::IsZero(out))
+				out = TargetVector;
 			return(true);
 		}
-		if (pBase->m_xmBoundingBox.Intersects(co[0], co[2], co[3])) {
-			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[2] - co[0], co[3] - co[0])));
+		if (pBase->m_xmBoundingBox.Intersects(co[4], co[0], co[3])||
+			pBase->m_xmBoundingBox.Intersects(co[4], co[3], co[7]) ){
+			XMFLOAT3 TargetVector = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[0] - co[4], co[3] - co[4])));
+			if ((TargetVector.x == out.x ) || Vector3::IsZero(out))
+				out = TargetVector;
 			return(true);
 		}
-		if (pBase->m_xmBoundingBox.Intersects(co[4], co[0], co[3])) {
-			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[0] - co[4], co[3] - co[4])));
+		if (pBase->m_xmBoundingBox.Intersects(co[5], co[4], co[7])||
+			pBase->m_xmBoundingBox.Intersects(co[5], co[7], co[6])) {
+			XMFLOAT3 TargetVector = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[4] - co[5], co[7] - co[5])));
+			if ((TargetVector.x == out.x ) || Vector3::IsZero(out))
+				out = TargetVector;
 			return(true);
 		}
-		if (pBase->m_xmBoundingBox.Intersects(co[4], co[3], co[7])) {
-			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[3] - co[4], co[7] - co[4])));
-			return(true);
-		}
-		if (pBase->m_xmBoundingBox.Intersects(co[5], co[4], co[7])) {
-			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[4] - co[5], co[7] - co[5])));
-			return(true);
-		}
-		if (pBase->m_xmBoundingBox.Intersects(co[5], co[7], co[6])) {
-			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[7] - co[5], co[6] - co[5])));
-			return(true);
-		}
-		if (pBase->m_xmBoundingBox.Intersects(co[1], co[5], co[6])) {
-			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[5] - co[1], co[6] - co[1])));
-			return(true);
-		}
-		if (pBase->m_xmBoundingBox.Intersects(co[1], co[6], co[2])) {
-			out = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[6] - co[1], co[2] - co[1])));
+
+		if (pBase->m_xmBoundingBox.Intersects(co[1], co[5], co[6])||
+			pBase->m_xmBoundingBox.Intersects(co[1], co[6], co[2])) {
+			XMFLOAT3 TargetVector = Vector3::Normalize(Vector3::XMVectorToFloat3(DirectX::XMVector3Cross(co[5] - co[1], co[6] - co[1])));
+			if ((TargetVector.x == out.x ) || Vector3::IsZero(out))
+				out = TargetVector;
 			return(true);
 		}
 	
