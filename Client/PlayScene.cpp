@@ -965,6 +965,19 @@ bool CSecondRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) {
 			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn=false;
+
+			if (m_nDoingMachine != -1) {
+				S2_COM_STATE sstate{};
+				sstate = TURNOFF;
+
+				CS_CHANGE_COMST_PACKET p;
+				p.size = sizeof(&p);
+				p.type = CS_CHANGE_COMST;
+				p.comNum = m_nDoingMachine;
+				p.state = sstate;
+				send_packet(&p);
+			}
+
 			m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
 		}
 	}
@@ -1051,7 +1064,7 @@ bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPA
 		::ReleaseCapture();
 		break;
 	case WM_MOUSEMOVE:
-		if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn) //  미션이 돌아갈때만 on
+		if (m_nDoingMachine !=-1 && reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn) //  미션이 돌아갈때만 on
 		{
 			::SetCapture(hWnd);
 			::GetCursorPos(&m_ptOldCursorPos);
@@ -1073,11 +1086,9 @@ bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPA
 			p.comNum = m_nDoingMachine;
 			p.state = sstate;
 			send_packet(&p);
+
 			::ReleaseCapture();
 		}
-		break;
-			
-	default:
 		break;
 	}
 	return false;
