@@ -328,12 +328,11 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 			break;
 		}
 		case 'L': {
-			/*CS_ALIVE_PLAYER_PACKET p;
+			CS_ALIVE_PLAYER_PACKET p;
 			p.size = sizeof(p);
 			p.type = CS_ALIVE_PLAYER;
 			p.id = my_id;
-			send_packet(&p);*/
-			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[1])->SetCrawl(false);
+			send_packet(&p);
 			break;
 		}
 		case 'F': {
@@ -1072,13 +1071,13 @@ bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPA
 			S2_COM_STATE sstate{};
 			if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppTagButton[0]->CheckMouseOn(hWnd, m_ptOldCursorPos))
 			{
-				
 				sstate = TURNON;
+				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(sstate);
 			}
 			else 
 			{
-				
 				sstate = TURNOFF;
+				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(sstate);
 			}
 			CS_CHANGE_COMST_PACKET p;
 			p.size = sizeof(&p);

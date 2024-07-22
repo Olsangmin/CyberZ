@@ -264,7 +264,7 @@ void Server::Process_packet(int c_id, char* packet)
 		{
 			std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
 			{
-			/*	if (false == TryLogin(clients[c_id].name, clients[c_id].password))
+				/*if (false == TryLogin(clients[c_id].name, clients[c_id].password))
 				{
 					return;
 				}*/
