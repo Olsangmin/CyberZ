@@ -183,7 +183,7 @@ struct CS_GO_STAGE2_PACKET {
 	char	type;
 };
 
-struct CS_CHANGE_COMST {
+struct CS_CHANGE_COMST_PACKET {
 	unsigned char size;
 	char	type;
 	int comNum;
@@ -298,7 +298,7 @@ struct SC_PLAYER_ALIVE_PACKET {
 	int id;
 };
 
-struct SC_CHANGE_COMST {
+struct SC_CHANGE_COMST_PACKET {
 	unsigned char size;
 	char	type;
 	int p_id;

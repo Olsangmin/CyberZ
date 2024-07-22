@@ -198,6 +198,7 @@ public:
     std::array<NPC, NUM_NPC> npcs;
 
     NPC BossNpc;
+    std::array<S2_COM_STATE, 5> coms = { TURNOFF };
 
     std::vector<int> cl_ids;
 

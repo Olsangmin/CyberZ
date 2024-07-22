@@ -509,7 +509,22 @@ void Server::Process_packet(int c_id, char* packet)
 
 		gMap.SetStage(GAME_STATE::LOADING);
 
+	}break;
 
+	case CS_CHANGE_COMST: {
+		CS_CHANGE_COMST_PACKET* p = reinterpret_cast<CS_CHANGE_COMST_PACKET*>(packet);
+		gMap.coms[p->comNum] = p->state;
+		
+		for (auto id : gMap.cl_ids)
+		{
+			SC_CHANGE_COMST_PACKET comst;
+			comst.size = sizeof(comst);
+			comst.type = SC_CHANGE_COMST;
+			comst.comNum = p->comNum;
+			comst.state = p->state;
+
+			clients[id].do_send(&p);
+		}
 
 	}break;
 

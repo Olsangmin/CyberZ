@@ -579,6 +579,8 @@ void GameMap::UpdateS1()
 void GameMap::UpdateS2()
 {
 	std::cout << "Stage2 Update" << std::endl;
+
+	
 }
 
 

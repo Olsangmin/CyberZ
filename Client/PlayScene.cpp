@@ -1055,14 +1055,24 @@ bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPA
 		{
 			::SetCapture(hWnd);
 			::GetCursorPos(&m_ptOldCursorPos);
+			
+			S2_COM_STATE sstate{};
 			if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppTagButton[0]->CheckMouseOn(hWnd, m_ptOldCursorPos))
 			{
 				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(TURNON);
+				sstate = TURNON;
 			}
 			else 
 			{
 				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(TURNOFF);
+				sstate = TURNOFF;
 			}
+			CS_CHANGE_COMST_PACKET p;
+			p.size = sizeof(&p);
+			p.type = CS_CHANGE_COMST;
+			p.comNum = m_nDoingMachine;
+			p.state = sstate;
+			send_packet(&p);
 			::ReleaseCapture();
 		}
 		break;
@@ -1214,6 +1224,11 @@ void CSecondRoundScene::ProcessPacket(char* p)
 		cout << "[" << packet->p_id << "] »ç¸Á" << endl;
 	}break;
 
+	case SC_CHANGE_COMST: {
+		SC_CHANGE_COMST_PACKET* packet = reinterpret_cast<SC_CHANGE_COMST_PACKET*>(p);
+		reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[packet->comNum]->SetState(packet->state);
+
+	}break;
 
 	default:
 		printf("Scene[Stage2] - Unknown PACKET type [%d]\n", p[1]);
