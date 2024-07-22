@@ -1003,7 +1003,7 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 				if (m_ppMissionObj[i]->m_bMissionflag)
 				{
 					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = true;
-					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[i]->SetState(TURNON);
+					m_nDoingMachine = i;
 
 				}
 			}
@@ -1056,11 +1056,11 @@ bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPA
 			::GetCursorPos(&m_ptOldCursorPos);
 			if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppTagButton[0]->CheckMouseOn(hWnd, m_ptOldCursorPos))
 			{
-				m_nMissionOn = true;
+				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(TURNON);
 			}
 			else 
 			{
-				m_nMissionOn = false;
+				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(TURNOFF);
 			}
 			::ReleaseCapture();
 		}

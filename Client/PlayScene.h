@@ -68,9 +68,9 @@ public:
 	CFloorObj					**m_ppFloorObj = NULL;
 
 	int							m_nMissionLevel = 0;
-	bool						m_nMissionOn = false;
 	bool						m_nRiseProgress = false;
 	
+	int							m_nDoingMachine = -1;
 
 public:
 	void ProcessPacket(char* p);
