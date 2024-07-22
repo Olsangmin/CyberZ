@@ -205,6 +205,7 @@ bool CStartScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 			Login_PassWord = m_PW;
 
 			cout << "ID:" << m_ID.c_str() <<", PW:" <<m_PW.c_str() <<endl;
+			Send_Login();
 			break;
 		}
 		default:
@@ -236,8 +237,18 @@ bool CStartScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wP
 		m_bInputID = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppTextInputBox[0]->CheckChlick(hWnd, m_ptOldCursorPos);
 		m_bInputPW = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppTextInputBox[1]->CheckChlick(hWnd, m_ptOldCursorPos);
 		// m_bSignUP = reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[0]->CheckChlick(hWnd, m_ptOldCursorPos);
+		
+		reinterpret_cast<CStartSceneUI*>(m_pUI)->m_CheckInfo = ALL_CORRET;
+
+		m_ID = wcharToChar(reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ID);
+		m_PW = wcharToChar(reinterpret_cast<CStartSceneUI*>(m_pUI)->m_PW);
+
+		Login_Id = m_ID;
+		Login_PassWord = m_PW;
+		
 		if(reinterpret_cast<CStartSceneUI*>(m_pUI)->m_ppButton[0]->CheckChlick(hWnd, m_ptOldCursorPos))
 		{
+
 			m_bSignUP = true;
 			Send_SignUp();
 		}

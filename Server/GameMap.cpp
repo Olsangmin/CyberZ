@@ -489,7 +489,8 @@ void GameMap::UpdateS1()
 	for (auto& npc : npcs) {
 		npc.UpdateBB();
 		bool patrol = true;
-		float current_dis = npc.distance_near;
+		float closed_dis = 100000.f;;
+
 
 		for (auto ids : cl_ids) {
 			if (players[ids].anim == CREEP) continue;
@@ -499,38 +500,42 @@ void GameMap::UpdateS1()
 				patrol = false;
 
 				float distance = Distance_float(npc.GetPos(), players[ids].GetPos());
-				if ((npc.current_behavior == ATTACK) && (distance < AttackRange) && (npc.near_player == ids))
-					break;
+				//if ((npc.current_behavior == ATTACK) && (distance < AttackRange) && (npc.near_player == ids))
+				//	break;
 
 
-				if (npc.near_player == ids) { // 동일 아이디면 dis만 업데이트
-					npc.distance_near = distance;
-					npc.current_behavior = CHASE;
-					if (npc.n_path.empty() == false) continue;
-				}
-				else {
-					if (current_dis > distance) {
-						// 다른 플레이어로 교체
-						npc.distance_near = distance;
-						npc.current_behavior = CHASE;
-						npc.near_player = ids;
-						npc.PathClear();
-					}
-					else continue;
-				}
+				//if (npc.near_player == ids) { // 동일 아이디면 dis만 업데이트
+				//	npc.distance_near = distance;
+				//	npc.current_behavior = CHASE;
+				//	if (npc.n_path.empty() == false) continue;
+				//}
+				//else {
+				//	if (current_dis > distance) {
+				//		// 다른 플레이어로 교체
+				//		npc.distance_near = distance;
+				//		npc.current_behavior = CHASE;
+				//		npc.near_player = ids;
+				//		npc.PathClear();
+				//	}
+				//	else continue;
+				//}
 
-				std::cout << "가까운 플레이어로 교체" << std::endl;
-				std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[npc.near_player].GetPos());
-				if ((path.size() == 0) && (npc.IsAttack == false) && (distance < AttackRange)) {
-					npc.current_behavior = ATTACK;
-					break;
-				}
-				for (auto& p : path) {
-					npc.n_path.push(p);
+				//std::cout << "가까운 플레이어로 교체" << std::endl;
+				//std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[npc.near_player].GetPos());
+				//if ((path.size() == 0) && (npc.IsAttack == false) && (distance < AttackRange)) {
+				//	npc.current_behavior = ATTACK;
+				//	break;
+				//}
+				//for (auto& p : path) {
+				//	npc.n_path.push(p);
+				//}
+
+				if (closed_dis > distance) {
+					closed_dis = distance;
+					npc.near_player = ids;
 				}
 			}
 		}
-
 
 		if (patrol == true) {
 			std::queue<DirectX::XMFLOAT3> q{};
@@ -542,6 +547,27 @@ void GameMap::UpdateS1()
 
 			npc.near_player = -1;
 			npc.distance_near = 100000.f;
+		}
+		else
+		{
+			
+			if (npc.distance_near < AttackRange)
+			{
+				npc.current_behavior = ATTACK;
+			}
+			else
+			{
+				npc.current_behavior = CHASE;
+				if (npc.distance_near < closed_dis) {
+					// std::cout << npc.distance_near << " > " << closed_dis << " --- 경로 재탐색" <<  std::endl;
+					npc.PathClear();
+					std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[npc.near_player].GetPos());
+					for (auto& p : path) {
+						npc.n_path.push(p);
+					}
+				}
+			}
+			npc.distance_near = closed_dis;
 		}
 
 
