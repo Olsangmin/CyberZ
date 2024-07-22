@@ -487,7 +487,7 @@ void Server::Process_packet(int c_id, char* packet)
 		SC_PLAYER_ALIVE_PACKET alivePacket;
 		alivePacket.size = sizeof(alivePacket);
 		alivePacket.type = SC_PLAYER_ALIVE;
-		alivePacket.id = c_id;
+		alivePacket.id = p->id;
 
 		for (auto id : gMap.cl_ids) {
 			clients[id].do_send(&alivePacket);
@@ -523,7 +523,7 @@ void Server::Process_packet(int c_id, char* packet)
 			comst.comNum = p->comNum;
 			comst.state = p->state;
 
-			clients[id].do_send(&p);
+			clients[id].do_send(&comst);
 		}
 
 	}break;

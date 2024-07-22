@@ -683,7 +683,7 @@ void CFirstRoundScene::ProcessPacket(char* p)
 		else {
 
 			Player_Character_Type type = it->second;
-			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[id])->SetCrawl(false);
+			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->SetCrawl(false);
 			cout << "<Alive>" << type << endl;
 		}
 	}break;
@@ -1104,11 +1104,15 @@ void CSecondRoundScene::AnimateObjects(float fTimeElapsed)
 			Missionflag = true;
 		}
 		m_ppMissionObj[i]->m_bMissionflag = Missionflag;
-		if(!Missionflag)reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[i]->SetState(TURNOFF);
 	}
 
+	int check = 0;
+	for (int i = 0; i < m_nMissionObj; i++)
+	{
+		if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[i]->GetState() == TURNON) check += 1;
+	}
 
-	if(m_nRiseProgress && m_nMissionLevel < 3){
+	if(check > 1 && m_nMissionLevel < 3){
 		if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMissionRange[m_nMissionLevel] < 650)
 		{
 			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->SetProgress(m_nMissionLevel, 1.5f);
