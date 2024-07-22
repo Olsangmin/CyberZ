@@ -127,7 +127,8 @@ public:
 	float		m_fStaminaRange = 100.f;
 	float		m_fMaxStamina = 100.f;
 	bool		m_bStaminaBarOn = true;
-	bool		m_bMissionOn = false;
+	bool		m_bMyOn = false;
+
 
 	float		m_fMissionRange[3] = { 0 };
 

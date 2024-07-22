@@ -468,6 +468,10 @@ void CFirstRoundScene::AnimateObjects(float fTimeElapsed)
 				}
 				else if (m_pUI->m_fMissionGauge[i] > 0) m_pUI->m_fMissionGauge[i] -= 1.0f;
 			}
+			else
+			{
+				m_ppMissionObj[i]->m_bEnd = true;
+			}
 		}
 		else
 		{
@@ -480,10 +484,22 @@ void CFirstRoundScene::AnimateObjects(float fTimeElapsed)
 	
 	if (reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer < reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fMaxStaminer)
 	{
-			reinterpret_cast<CFirstRoundSceneUI*>(m_pUI)->m_bStaminaBarOn = true;
-			reinterpret_cast<CFirstRoundSceneUI*>(m_pUI)->m_fStaminaRange = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer;
+		reinterpret_cast<CFirstRoundSceneUI*>(m_pUI)->m_bStaminaBarOn = true;
+		reinterpret_cast<CFirstRoundSceneUI*>(m_pUI)->m_fStaminaRange = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer;
 	}
 	else reinterpret_cast<CFirstRoundSceneUI*>(m_pUI)->m_bStaminaBarOn = false;
+
+	int endcheck = 0;
+
+	for (int i = 0; i < m_nMissionObj; i++)
+	{
+		if (m_ppMissionObj[i]->m_bEnd) endcheck += 1;
+	}
+
+	if (endcheck == 3)
+	{
+		Send_Go_Stage2();
+	}
 
 }
 
@@ -876,7 +892,6 @@ void CSecondRoundScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 void CSecondRoundScene::ReleaseUploadBuffers()
 {
 
-
 	CScene::ReleaseUploadBuffers();
 
 }
@@ -916,7 +931,7 @@ bool CSecondRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) {
-			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMissionOn=false;
+			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn=false;
 			m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
 		}
 	}
@@ -949,24 +964,22 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 			reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetAttackStatus(true);
 			break;
 		}
-		case '1':
-		case '2':
-		case '3':
-			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->MissionCheck(wParam - 49);
-			break;
-		}		
 		case 'F':
 		{
 			for (int i = 0; i < m_nMissionObj; i++)
 			{
 				if (m_ppMissionObj[i]->m_bMissionflag)
 				{
-					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMissionOn = true;
+					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = true;
 					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[i]->SetState(TURNON);
+
 				}
 			}
 			break;
 		}
+		break;
+		}
+		break;
 	}
 
 	//============ KeyUP ============//
@@ -1005,28 +1018,17 @@ bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPA
 		::ReleaseCapture();
 		break;
 	case WM_MOUSEMOVE:
-		if (m_nMissionOn) //  미션이 돌아갈때만 on
+		if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn) //  미션이 돌아갈때만 on
 		{
 			::SetCapture(hWnd);
 			::GetCursorPos(&m_ptOldCursorPos);
 			if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppTagButton[0]->CheckMouseOn(hWnd, m_ptOldCursorPos))
 			{
-				if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMissionRange[m_nMissionLevel] < 650)
-				{
-					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->SetProgress(m_nMissionLevel, 0.5f);
-				}
-				if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppProgressBar[m_nMissionLevel]->GetDone() && m_nMissionLevel < 2)
-				{
-					m_nMissionLevel += 1;
-				}
-				
+				m_nMissionOn = true;
 			}
 			else 
 			{
-				if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMissionRange[m_nMissionLevel] > 0 && reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMissionRange[m_nMissionLevel] < 650)
-				{
-					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->SetProgress(m_nMissionLevel, -0.7f);
-				}
+				m_nMissionOn = false;
 			}
 			::ReleaseCapture();
 		}
@@ -1054,17 +1056,31 @@ void CSecondRoundScene::AnimateObjects(float fTimeElapsed)
 	{
 		Missionflag = false;
 		
-		for (int j = 0; j < m_nPlayer; j++) if (m_ppPlayer[j]) {
-			if (CheckMissionBound(m_ppPlayer[j], m_ppMissionObj[i]))
-			{
-				Missionflag = true;
-			}
+		if (CheckMissionBound(m_pMyPlayer, m_ppMissionObj[i]))
+		{
+			Missionflag = true;
 		}
-
 		m_ppMissionObj[i]->m_bMissionflag = Missionflag;
 		if(!Missionflag)reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[i]->SetState(TURNOFF);
 	}
 
+
+	if(m_nRiseProgress && m_nMissionLevel < 3){
+		if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMissionRange[m_nMissionLevel] < 650)
+		{
+			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->SetProgress(m_nMissionLevel, 1.5f);
+		}
+		if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppProgressBar[m_nMissionLevel]->GetDone() && m_nMissionLevel < 3)
+		{
+			m_nMissionLevel += 1;
+		}
+	}
+	else{
+		if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMissionRange[m_nMissionLevel] > 0 && reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMissionRange[m_nMissionLevel] < 650)
+		{
+			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->SetProgress(m_nMissionLevel, -0.7f);
+		}
+	}
 
 }
 
