@@ -490,7 +490,7 @@ void GameMap::UpdateS1()
 		npc.UpdateBB();
 		bool patrol = true;
 		float closed_dis = 100000.f;;
-
+		if (npc.IsAttack == true) continue;
 
 		for (auto ids : cl_ids) {
 			if (players[ids].anim == CREEP) continue;
@@ -551,7 +551,7 @@ void GameMap::UpdateS1()
 		else
 		{
 			
-			if (npc.distance_near < AttackRange)
+			if (closed_dis < AttackRange)
 			{
 				npc.current_behavior = ATTACK;
 			}
@@ -566,8 +566,10 @@ void GameMap::UpdateS1()
 						npc.n_path.push(p);
 					}
 				}
+				
 			}
 			npc.distance_near = closed_dis;
+			
 		}
 
 

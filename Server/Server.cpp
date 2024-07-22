@@ -235,7 +235,7 @@ void Server::Worker_thread()
 
 		case OP_NPC_ATTACK: {
 			auto& npc = gMap.npcs[key - 100];
-			if (npc.current_behavior == ATTACK) {
+			if (npc.IsAttack && (gMap.Distance_float(clients[npc.near_player].GetPos(), npc.GetPos()) < AttackRange)) {
 				std::cout << npc.near_player << "»ç¸Á" << std::endl;
 				for (int id : gMap.cl_ids) {
 					clients[id].send_player_death_packet(npc.near_player);
