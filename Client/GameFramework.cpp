@@ -439,12 +439,10 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
-
-
 	// Make Scene
 	// Ã³À½ ¾À ºôµå
-	m_nSceneNum = START_SCENE;
-	m_pScene = new CStartScene();
+	m_nSceneNum = SECOND_ROUND_SCENE;
+	m_pScene = new CSecondRoundScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
 	if(m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 
