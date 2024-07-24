@@ -406,7 +406,7 @@ public:
 
 	virtual void Update(float fTimeElapsed);
 
-	void SetAttackStatus(bool status) { m_bAttackStatus = status;  AttackType = rand() % 2;
+	void SetAttackStatus(bool status, int AttackType) { m_bAttackStatus = status;  AttackType = AttackType;
 	}
 	void MoveToTarget();
 	void RotateDirection(float fAngle);
