@@ -440,10 +440,10 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 
 	// Make Scene
 	// Ã³À½ ¾À ºôµå
-	m_nSceneNum = FIRST_ROUND_SCENE;
-	m_pScene = new CFirstRoundScene();
+	m_nSceneNum = START_SCENE;
+	m_pScene = new CStartScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
-	//if(m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
+	if(m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 
 #ifdef USE_NETWORK
 	if (m_pScene) m_pScene->InitNetwork();
