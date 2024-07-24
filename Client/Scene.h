@@ -63,6 +63,7 @@ public:
 	virtual void AnimateObjects(float fTimeElapsed);
 	
 	// Render
+	void OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList);
 	void OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
     virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
 

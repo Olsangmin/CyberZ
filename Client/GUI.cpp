@@ -493,8 +493,6 @@ void CSecondRoundSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 
 	if (m_bMyOn) MissionUI();
 
-
-
 }
 
 
@@ -627,8 +625,6 @@ void CSecondRoundSceneUI::MissionUI()
 
 	float fontsize = 15;
 
-
-#ifdef SMALL_WINDOW_SCREEN
 	//BG
 	width = 900; height = 900; x = (FRAME_BUFFER_WIDTH - width) / 2; y = (FRAME_BUFFER_HEIGHT - height) / 2;
 	background = { x, y, x + width, y + height };
@@ -639,7 +635,6 @@ void CSecondRoundSceneUI::MissionUI()
 	Missionfontsize = 40;
 	rcMissionInfoText = { x_mission, y_mission-40, x_mission + width_mission, y_mission };
 
-#endif // SMALL_WINDOW_SCREEN
 
 	//BG
 	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::RoyalBlue, 0.85f));

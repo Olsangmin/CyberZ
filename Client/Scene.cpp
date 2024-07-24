@@ -36,9 +36,9 @@ void CScene::BuildDefaultLightsAndMaterials()
 	// ??
 	m_pLights[0].m_bEnable = true;
 	m_pLights[0].m_nType = DIRECTIONAL_LIGHT;
-	m_pLights[0].m_xmf4Ambient = XMFLOAT4(0.9f, 1.0f, 0.9f, 1.0f);
+	m_pLights[0].m_xmf4Ambient = XMFLOAT4(0.5f, 1.0f, 0.9f, 1.0f);
 	m_pLights[0].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.3f, 0.6f, 0.0f);
-	m_pLights[0].m_xmf4Specular = XMFLOAT4(0.7f, 0.6f, 0.5f, 0.0f);
+	m_pLights[0].m_xmf4Specular = XMFLOAT4(0.5f, 0.3f, 0.7f, 0.0f);
 	m_pLights[0].m_xmf3Position = XMFLOAT3(FRAME_BUFFER_WIDTH * 1.5f, 450.0f, 0);
 	m_pLights[0].m_xmf3Direction = XMFLOAT3(-1.0f, -1.0f, 0.0f);
 
@@ -273,7 +273,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dDescriptorRanges[9].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	pd3dDescriptorRanges[10].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	pd3dDescriptorRanges[10].NumDescriptors = 5;
+	pd3dDescriptorRanges[10].NumDescriptors = 4;
 	pd3dDescriptorRanges[10].BaseShaderRegister = 14; //t14~t18: Texture2D<float4>
 	pd3dDescriptorRanges[10].RegisterSpace = 0;
 	pd3dDescriptorRanges[10].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
@@ -378,7 +378,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dRootParameters[17].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	pd3dRootParameters[18].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	pd3dRootParameters[18].Descriptor.ShaderRegister = 6; //ToLight
+	pd3dRootParameters[18].Descriptor.ShaderRegister = 6; //b6 ToLight 
 	pd3dRootParameters[18].Descriptor.RegisterSpace = 0;
 	pd3dRootParameters[18].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
@@ -655,33 +655,35 @@ void CScene::AnimateObjects(float fTimeElapsed)
 	*/  
 }
 
-void CScene::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+void CScene::OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	BoundingOrientedBox xmBoundingBoxs = CalculateBoundingBox();
-	m_pDepthRenderShader->PrepareShadowMap( &xmBoundingBoxs, pd3dCommandList, pCamera); // 그림자 준비 연산
-}
-
-void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
-{
-
 	if (m_pd3dGraphicsRootSignature) pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 	if (m_pd3dCbvSrvDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
 
-	OnPreRender(pd3dCommandList, pCamera);
 
 	UpdateShaderVariables(pd3dCommandList);
 
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(2, d3dcbLightsGpuVirtualAddress); //Lights
+}
+
+void CScene::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	BoundingOrientedBox xmBoundingBoxs = CalculateBoundingBox();
+	if (m_pDepthRenderShader)m_pDepthRenderShader->PrepareShadowMap( &xmBoundingBoxs, pd3dCommandList, pCamera); // 그림자 준비 연산
+
+
+}
+
+void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+
 
 	// 그림자 연산을 위한 깊이 렌더 쉐이더 
-	m_pDepthRenderShader->UpdateShaderVariables(pd3dCommandList);
+	if(m_pDepthRenderShader)m_pDepthRenderShader->UpdateShaderVariables(pd3dCommandList);
 
 	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	pCamera->UpdateShaderVariables(pd3dCommandList);
-
-	// 그림자 쉐이더
-	if (m_pShadowShader) m_pShadowShader->Render(pd3dCommandList, pCamera);
 
 	// 카메라 변경
 	pCamera = m_pMyPlayer->GetCamera();
@@ -690,8 +692,6 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 
 	UpdateShaderVariables(pd3dCommandList);
 
-	//Check
-	//cout<<"Scene - " << pCamera << endl;
 	//////////////////////////////////////////
 
 
@@ -740,6 +740,15 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 			if (m_ppPlayer[i]->m_bUnable)m_ppPlayer[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
+
+
+	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
+	pCamera->UpdateShaderVariables(pd3dCommandList);
+
+
+	// 그림자 쉐이더
+	if (m_pShadowShader) m_pShadowShader->Render(pd3dCommandList, pCamera);
+
 
 }
 
