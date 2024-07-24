@@ -44,35 +44,35 @@ void Server::Network()
 
 	gMap.printMap();
 
-	//if (false == m_DBConnectionPool->Connect(1, L"Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=CyberZDB;Trusted_Connection=Yes;"))
-	//{
-	//	std::cout << "DB Connect 오류 !" << std::endl;
-	//	exit(-1);
-	//}
-	//else
-	//{
-	//	std::cout << "DB 서버 Connected" << std::endl;
+	if (false == m_DBConnectionPool->Connect(1, L"Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=CyberZDB;Trusted_Connection=Yes;"))
+	{
+		std::cout << "DB Connect 오류 !" << std::endl;
+		exit(-1);
+	}
+	else
+	{
+		std::cout << "DB 서버 Connected" << std::endl;
 
-	//	// Creat Table
-	//	// 
-	//	// DROP TABLE IF EXISTS[dbo].[User_Account];			
-	//	{
-	//		/*auto query = L"									\
-	//		CREATE TABLE [dbo].[User_Account]					\
-	//		(											\
-	//			[id] INT NOT NULL PRIMARY KEY IDENTITY, \
-	//			[account_id] NVARCHAR(20) NOT NULL UNIQUE, \
-	//			[password] NVARCHAR(20) NOT NULL,						\
-	//			[createDate] DATETIME NULL				\
-	//		);";
+		// Creat Table
+		// 
+		// DROP TABLE IF EXISTS[dbo].[User_Account];			
+		{
+			/*auto query = L"									\
+			CREATE TABLE [dbo].[User_Account]					\
+			(											\
+				[id] INT NOT NULL PRIMARY KEY IDENTITY, \
+				[account_id] NVARCHAR(20) NOT NULL UNIQUE, \
+				[password] NVARCHAR(20) NOT NULL,						\
+				[createDate] DATETIME NULL				\
+			);";
 
-	//		DBConnection* dbConn = m_DBConnectionPool->Pop();
-	//		if (false == dbConn->Execute(query)) {
-	//			return;
-	//		}
-	//		m_DBConnectionPool->Push(dbConn);*/
-	//	}
-	//}
+			DBConnection* dbConn = m_DBConnectionPool->Pop();
+			if (false == dbConn->Execute(query)) {
+				return;
+			}
+			m_DBConnectionPool->Push(dbConn);*/
+		}
+	}
 
 
 
@@ -259,37 +259,42 @@ void Server::Process_packet(int c_id, char* packet)
 	{
 	case CS_LOGIN: {
 		CS_LOGIN_PACKET* p = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
-		strcpy_s(clients[c_id].name, p->name);
-		strcpy_s(clients[c_id].password, p->PW);
+
+		std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
 		{
-			std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
+			strcpy_s(clients[c_id].name, p->name);
+			strcpy_s(clients[c_id].password, p->PW);
+			if (false == TryLogin(clients[c_id].name, clients[c_id].password))
 			{
-				/*if (false == TryLogin(clients[c_id].name, clients[c_id].password))
-				{
-					return;
-				}*/
-				clients[c_id].state = ST_LOBBY;
+				return;
 			}
+
 		}
 		std::cout << "Client[" << c_id << "] Login.\n" << std::endl;
 		clients[c_id].send_login_info_packet();
 
+
+	} break;
+
+	case CS_ENTER_ROOM: {
 		if (gMap.cl_ids.size() <= 3)
 			gMap.cl_ids.push_back(c_id);
 
-		for (auto& cl : clients) {
-			{
-				std::lock_guard<std::mutex> ll(cl.o_lock);
+		std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
+		{
+			clients[c_id].state = ST_LOBBY;
+			for (auto& cl : clients) {
 				if (ST_LOBBY != cl.state) continue;
+				// if (cl.GetId() == c_id) continue;
+				cl.send_change_Character_type_packet(c_id, clients[c_id].GetType());
+				clients[c_id].send_change_Character_type_packet(cl.GetId(), cl.GetType());
 			}
-			if (cl.GetId() == c_id) continue;
-			cl.send_change_Character_type_packet(c_id, clients[c_id].GetType());
-			clients[c_id].send_change_Character_type_packet(cl.GetId(), cl.GetType());
 		}
-	} break;
+	}break;
+
 	case CS_SIGNUP: {
 		CS_SIGNUP_PACKET* p = reinterpret_cast<CS_SIGNUP_PACKET*>(packet);
-		
+
 
 		DBConnection* dbConn = m_DBConnectionPool->Pop();
 		dbConn->Unbind();
@@ -312,7 +317,7 @@ void Server::Process_packet(int c_id, char* packet)
 
 		}
 
-		TIMESTAMP_STRUCT ts = {2024, 07, 01};
+		TIMESTAMP_STRUCT ts = { 2024, 07, 01 };
 		SQLLEN tsLen = 0;
 
 		if (dbConn->BindParam(3, &ts, &tsLen))
@@ -514,7 +519,7 @@ void Server::Process_packet(int c_id, char* packet)
 	case CS_CHANGE_COMST: {
 		CS_CHANGE_COMST_PACKET* p = reinterpret_cast<CS_CHANGE_COMST_PACKET*>(packet);
 		gMap.coms[p->comNum] = p->state;
-		
+
 		for (auto id : gMap.cl_ids)
 		{
 			SC_CHANGE_COMST_PACKET comst;
@@ -612,7 +617,7 @@ void Server::DBThread()
 	using namespace std::chrono;
 	while (true)
 	{
-		
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 }
@@ -622,7 +627,7 @@ bool Server::TryLogin(char* cl_name, char* cl_password)
 	DBConnection* dbConn = m_DBConnectionPool->Pop();
 	dbConn->Unbind();
 
-	
+
 	WCHAR name[20] = {};
 	MultiByteToWideChar(CP_ACP, 0, cl_name, -1, name, 20);
 	SQLLEN nameLen = 0;
@@ -640,7 +645,7 @@ bool Server::TryLogin(char* cl_name, char* cl_password)
 	SQLLEN outNameLen = 0;
 	dbConn->BindCol(2, outName, static_cast<int>(sizeof(outName) / sizeof(outName[0])), &outNameLen);
 
-	
+
 	WCHAR outpassword[20] = {};
 	SQLLEN outpasswordLen = 0;
 	dbConn->BindCol(3, outpassword, static_cast<int>(sizeof(outpassword) / sizeof(outpassword[0])), &outpasswordLen);
@@ -677,5 +682,5 @@ bool Server::TryLogin(char* cl_name, char* cl_password)
 	m_DBConnectionPool->Push(dbConn);
 
 	return result;
-	
+
 }

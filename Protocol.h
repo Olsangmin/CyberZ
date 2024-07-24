@@ -65,6 +65,7 @@ constexpr char CS_CHANGE_COMST = 30;
 
 constexpr char CS_TEST = 200;
 constexpr char CS_SIGNUP = 201;
+constexpr char CS_ENTER_ROOM = 202;
 
 // =======================
 constexpr char SC_LOGIN_INFO = 0;
@@ -117,6 +118,11 @@ struct CS_SIGNUP_PACKET {
 	char	type;
 	char	name[NAME_SIZE];
 	char	PW[NAME_SIZE];
+};
+
+struct CS_ENTER_ROOM_PACKET {
+	unsigned char size;
+	char	type;
 };
 
 struct CS_LOGOUT_PACKET {
