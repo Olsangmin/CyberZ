@@ -177,22 +177,22 @@ float4 Lighting(float3 vPosition, float3 vNormal, bool bShadow, float4 shadowMap
 	{
 		if (gLights[i].m_bEnable)
 		{
-			//float fShadowFactor = 1.0f;
+			float fShadowFactor = 1.0f;
 			//if (bShadow) fShadowFactor = Compute3x3ShadowFactor(shadowMapUVs[i].xy, shadowMapUVs[i].z, i);
 			
 			if (gLights[i].m_nType == DIRECTIONAL_LIGHT)
 			{
-                cColor += DirectionalLight(i, vNormal, vToCamera);
+                cColor += DirectionalLight(i, vNormal, vToCamera) * fShadowFactor;
             }
 			else if (gLights[i].m_nType == POINT_LIGHT)
 			{
-                cColor += PointLight(i, vPosition, vNormal, vToCamera);
+                cColor += PointLight(i, vPosition, vNormal, vToCamera) * fShadowFactor;
             }
 			else if (gLights[i].m_nType == SPOT_LIGHT)
 			{
-                cColor += SpotLight(i, vPosition, vNormal, vToCamera);
+                cColor += SpotLight(i, vPosition, vNormal, vToCamera) * fShadowFactor;
             }
-			
+            cColor += gLights[i].m_cAmbient * gMaterial.m_cAmbient;
         }
 	}
 	cColor += (gcGlobalAmbientLight * gMaterial.m_cAmbient);

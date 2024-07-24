@@ -39,9 +39,9 @@ D3D12_SHADER_BYTECODE CShader::CreatePixelShader()
 D3D12_SHADER_BYTECODE CShader::CompileShaderFromFile(WCHAR *pszFileName, LPCSTR pszShaderName, LPCSTR pszShaderProfile, ID3DBlob **ppd3dShaderBlob)
 {
 	UINT nCompileFlags = 0;
-#if defined(_DEBUG)
+//#if defined(_DEBUG)
 	nCompileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#endif
+//#endif
 
 	ID3DBlob *pd3dErrorBlob = NULL;
 	HRESULT hResult = ::D3DCompileFromFile(pszFileName, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, pszShaderName, pszShaderProfile, nCompileFlags, 0, ppd3dShaderBlob, &pd3dErrorBlob);
@@ -999,9 +999,10 @@ void CDepthRenderShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCo
 	}
 
 	// CBV/SRV µð½ºÅ©¸³ÅÍ Èü ¹× ¼ÎÀÌ´õ ¸®¼Ò½ººä »ý¼º
-	CScene::CreateShaderResourceViews(pd3dDevice, m_pDepthFromLightTexture, 0, 17); //Depth Buffer
+	CScene::CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, m_pDepthFromLightTexture->GetTextures());
+	//CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	CScene::CreateShaderResourceViews(pd3dDevice, m_pDepthFromLightTexture, 0, 17); //Depth Buffer t19
 
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
 void CDepthRenderShader::ReleaseObjects()
@@ -1489,6 +1490,7 @@ CShadowMapShader::CShadowMapShader()
 
 CShadowMapShader::~CShadowMapShader()
 {
+	ReleaseShaderVariables();
 }
 
 D3D12_DEPTH_STENCIL_DESC CShadowMapShader::CreateDepthStencilState()

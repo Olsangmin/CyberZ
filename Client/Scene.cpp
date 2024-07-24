@@ -36,10 +36,13 @@ void CScene::BuildDefaultLightsAndMaterials()
 	// ??
 	m_pLights[0].m_bEnable = true;
 	m_pLights[0].m_nType = DIRECTIONAL_LIGHT;
+	m_pLights[0].m_fRange = 2000.0f;
+
 	m_pLights[0].m_xmf4Ambient = XMFLOAT4(0.5f, 1.0f, 0.9f, 1.0f);
 	m_pLights[0].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.3f, 0.6f, 0.0f);
-	m_pLights[0].m_xmf4Specular = XMFLOAT4(0.5f, 0.3f, 0.7f, 0.0f);
-	m_pLights[0].m_xmf3Position = XMFLOAT3(FRAME_BUFFER_WIDTH * 1.5f, 450.0f, 0);
+	m_pLights[0].m_xmf4Specular = XMFLOAT4(0.7f, 0.6f, 0.5f, 0.0f);
+
+	m_pLights[0].m_xmf3Position = XMFLOAT3(500.f, 450.0f, 500.f);
 	m_pLights[0].m_xmf3Direction = XMFLOAT3(-1.0f, -1.0f, 0.0f);
 
 	// Player Flash Light 
@@ -67,7 +70,7 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[2].m_xmf3Position = XMFLOAT3(500.0f, 100.0f, 500.0f);
 
 	// 중앙 상단에 붉은 조명 추가(분위기 조성용)
-	m_pLights[3].m_bEnable = true;
+	m_pLights[3].m_bEnable = false;
 	m_pLights[3].m_nType = POINT_LIGHT;
 	m_pLights[3].m_fRange = 2000.0f;
 	m_pLights[3].m_xmf4Ambient = XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0f);
@@ -98,10 +101,10 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 800); //나중에 다시 계산해서 넣기
+	
+	BuildDefaultLightsAndMaterials();
 
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-
-	BuildDefaultLightsAndMaterials();
 
 }
 
@@ -120,7 +123,6 @@ void CScene::CreateShadowShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandL
 
 void CScene::ReleaseObjects()
 {
-
 	if (m_pUI)
 	{
 		m_pUI->Release();
@@ -672,12 +674,10 @@ void CScene::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 	BoundingOrientedBox xmBoundingBoxs = CalculateBoundingBox();
 	if (m_pDepthRenderShader)m_pDepthRenderShader->PrepareShadowMap( &xmBoundingBoxs, pd3dCommandList, pCamera); // 그림자 준비 연산
 
-
 }
 
 void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-
 
 	// 그림자 연산을 위한 깊이 렌더 쉐이더 
 	if(m_pDepthRenderShader)m_pDepthRenderShader->UpdateShaderVariables(pd3dCommandList);
@@ -685,15 +685,19 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	pCamera->UpdateShaderVariables(pd3dCommandList);
 
+	if (m_pShadowShader) m_pShadowShader->Render(pd3dCommandList, pCamera);
+	
 	// 카메라 변경
 	pCamera = m_pMyPlayer->GetCamera();
-	//pCamera->SetViewportsAndScissorRects(pd3dCommandList);
-	//pCamera->UpdateShaderVariables(pd3dCommandList);
+	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
+	pCamera->UpdateShaderVariables(pd3dCommandList);
 
 	UpdateShaderVariables(pd3dCommandList);
 
 	//////////////////////////////////////////
 
+
+	//=======================================
 
 	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 	if (m_pTerrain) m_pTerrain->Render(pd3dCommandList, pCamera);
@@ -741,14 +745,10 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 		}
 	}
 
+	// 그림자 쉐이더
 
 	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	pCamera->UpdateShaderVariables(pd3dCommandList);
-
-
-	// 그림자 쉐이더
-	if (m_pShadowShader) m_pShadowShader->Render(pd3dCommandList, pCamera);
-
 
 }
 
