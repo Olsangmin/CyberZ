@@ -220,7 +220,7 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTexturedLightingToMultipleRTs(VS_STANDARD_OU
 
     output.normal = float4(normalW * 0.5f + 0.5f, 1.0f); // Convert to [0, 1]
 	float4 shadowMapUVs[MAX_LIGHTS];
-    output.cIllumination = Lighting(input.positionW, normalize(input.normalW), true, shadowMapUVs);
+    output.cIllumination = Lighting(input.positionW, normalW, true, shadowMapUVs);
     output.depth = input.position.z;
 
     output.color = cColor;
@@ -328,6 +328,81 @@ float4 PSBoundingBox(VS_BOUNDINGBOX_OUTPUT input) : SV_TARGET1
 {
     return (input.color);
 }
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+/*
+
+struct CB_TO_LIGHT_SPACE
+{
+    matrix mtxToTextureSpace;
+    float4 f4Position;
+};
+
+cbuffer cbToLightSpace : register(b6)
+{
+    CB_TO_LIGHT_SPACE gcbToLightSpaces[MAX_LIGHTS];
+};
+
+
+struct PS_DEPTH_OUTPUT
+{
+    float fzPosition : SV_Target;
+    float fDepth : SV_Depth;
+};
+
+PS_DEPTH_OUTPUT PSDepthWriteShader(VS_STANDARD_OUTPUT input)
+{
+    PS_DEPTH_OUTPUT output;
+
+    output.fzPosition = input.position.z;
+    output.fDepth = input.position.z;
+
+    return (output);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+struct VS_SHADOW_MAP_OUTPUT
+{
+    float4 position : SV_POSITION;
+    float3 positionW : POSITION;
+    float3 normalW : NORMAL;
+
+    float4 shadowMapUVs[MAX_LIGHTS] : TEXCOORD0;
+};
+
+VS_SHADOW_MAP_OUTPUT VSShadowMapShadow(VS_STANDARD_INPUT input)
+{
+    VS_SHADOW_MAP_OUTPUT output = (VS_SHADOW_MAP_OUTPUT) 0;
+
+    
+    float4 positionW = mul(float4(input.position, 1.0f), gmtxGameObject);
+    output.positionW = mul(float4(input.position, 1.0f), gmtxGameObject).xyz;
+    output.normalW = mul(input.normal, (float3x3) gmtxGameObject);
+    output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
+    
+    for (int i = 0; i < MAX_LIGHTS; i++)
+    {
+        if (gcbToLightSpaces[i].f4Position.w != 0.0f)
+            output.shadowMapUVs[i] = mul(positionW, gcbToLightSpaces[i].mtxToTextureSpace);
+    }
+
+    return (output);
+}
+
+float4 PSShadowMapShadow(VS_SHADOW_MAP_OUTPUT input) : SV_TARGET
+{
+    float4 cIllumination = Lighting(input.positionW, normalize(input.normalW), true, input.shadowMapUVs);
+
+    return (cIllumination);
+}
+
+*/
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //
 Texture2D<float4> gtxtTextureTexture : register(t14);
@@ -335,7 +410,6 @@ Texture2D<float4> gtxtIlluminationTexture : register(t15);
 Texture2D<float4> gtxtNormalTexture2 : register(t16);
 
 Texture2D<float> gtxtzDepthTexture : register(t17);
-Texture2D<float> gtxtDepthTexture : register(t18);
 
 
 struct VS_TEXTURED_INPUT
@@ -452,91 +526,14 @@ float4 PSScreenRectSamplingTextured(VS_SCREEN_RECT_TEXTURED_OUTPUT input) : SV_T
     float4 color = gtxtTextureTexture.Sample(gssWrap, uv);
     float4 normalData = gtxtNormalTexture2.Sample(gssWrap, uv);
     float4 specular = gtxtSpecularTexture.Sample(gssWrap, uv);
-    float depth = gtxtDepthTexture.Sample(gssWrap, uv).r;
-
-    // Reconstruct position from depth
-    float3 position = ReconstructPosition(uv, depth);
-
-    // Convert normal from [0, 1] to [-1, 1]
-    float3 normal = normalize(normalData.rgb * 2.0 - 1.0);
-
+    float depth = gtxtzDepthTexture.Load(uint3((uint) input.position.x, (uint) input.position.y, 0));
+    
     // Calculate lighting
-    //float4 light = Lighting(input.position.xyz, normalData.rgb);
     float4 light = gtxtIlluminationTexture.Sample(gssWrap, uv);
 
     // Combine albedo and light
     float4 outcolor = lerp(color, light, 0.5f);
 
-    return outcolor;
+    return (outcolor);
 
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-
-struct CB_TO_LIGHT_SPACE
-{
-    matrix mtxToTextureSpace;
-    float4 f4Position;
-};
-
-cbuffer cbToLightSpace : register(b6)
-{
-    CB_TO_LIGHT_SPACE gcbToLightSpaces[MAX_LIGHTS];
-};
-
-
-struct PS_DEPTH_OUTPUT
-{
-    float fzPosition : SV_Target;
-    float fDepth : SV_Depth;
-};
-
-PS_DEPTH_OUTPUT PSDepthWriteShader( VS_STANDARD_OUTPUT input)
-{
-    PS_DEPTH_OUTPUT output;
-
-    output.fzPosition = input.position.z;
-    output.fDepth = input.position.z;
-
-    return (output);
-}
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-struct VS_SHADOW_MAP_OUTPUT
-{
-    float4 position : SV_POSITION;
-    float3 positionW : POSITION;
-    float3 normalW : NORMAL;
-
-    float4 shadowMapUVs[MAX_LIGHTS] : TEXCOORD0;
-};
-
-VS_SHADOW_MAP_OUTPUT VSShadowMapShadow(VS_STANDARD_INPUT input)
-{
-    VS_SHADOW_MAP_OUTPUT output = (VS_SHADOW_MAP_OUTPUT) 0;
-
-    float4 positionW = mul(float4(input.position, 1.0f), gmtxGameObject);
-    output.positionW = positionW.xyz;
-    output.position = mul(mul(positionW, gmtxView), gmtxProjection);
-    output.normalW = mul(float4(input.normal, 0.0f), gmtxGameObject).xyz;
-
-    for (int i = 0; i < MAX_LIGHTS; i++)
-    {
-        if (gcbToLightSpaces[i].f4Position.w != 0.0f)
-            output.shadowMapUVs[i] = mul(positionW, gcbToLightSpaces[i].mtxToTextureSpace);
-    }
-
-    return (output);
-}
-
-float4 PSShadowMapShadow(VS_SHADOW_MAP_OUTPUT input) : SV_TARGET2
-{
-    float4 cIllumination = Lighting(input.positionW, normalize(input.normalW), true, input.shadowMapUVs);
-
-    return (cIllumination);
-}
-
-

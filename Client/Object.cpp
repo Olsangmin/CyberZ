@@ -237,16 +237,19 @@ CShader* CMaterial::m_pBoundingBoxShader = NULL;
 
 void CMaterial::PrepareShaders(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
+	DXGI_FORMAT pdxgiRtvFormats[5] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_FLOAT };
+
+
 	m_pStandardShader = new CStandardShader();
-	m_pStandardShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_R8G8B8A8_UNORM);
+	m_pStandardShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 5, pdxgiRtvFormats, DXGI_FORMAT_R32_FLOAT);
 	m_pStandardShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	m_pSkinnedAnimationShader = new CSkinnedAnimationStandardShader();
-	m_pSkinnedAnimationShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_R8G8B8A8_UNORM);
+	m_pSkinnedAnimationShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 5, pdxgiRtvFormats, DXGI_FORMAT_R32_FLOAT);
 	m_pSkinnedAnimationShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	m_pBoundingBoxShader = new CBoundingBoxShader();
-	m_pBoundingBoxShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_R8G8B8A8_UNORM);
+	m_pBoundingBoxShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_R32_FLOAT);
 
 }
 

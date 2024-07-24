@@ -33,7 +33,6 @@ public:
 	D3D12_SHADER_BYTECODE CompileShaderFromFile(WCHAR *pszFileName, LPCSTR pszShaderName, LPCSTR pszShaderProfile, ID3DBlob **ppd3dShaderBlob);
 	D3D12_SHADER_BYTECODE ReadCompiledShaderFromFile(WCHAR *pszFileName, ID3DBlob **ppd3dShaderBlob=NULL);
 
-	//virtual void CreateShader(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
 	virtual void CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3dPrimitiveTopologyType);
 	virtual void CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, UINT nRenderTargets, DXGI_FORMAT* pdxgiRtvFormats, DXGI_FORMAT dxgiDsvFormat);
 
@@ -311,9 +310,14 @@ protected:
 
 	XMMATRIX						m_xmProjectionToTexture;
 
+
+
 public:
 	CTexture* GetDepthTexture() { return(m_pDepthFromLightTexture); }
 	ID3D12Resource* GetDepthTextureResource(UINT nIndex) { return(m_pDepthFromLightTexture->GetResource(nIndex)); }
+
+	CGameObject*	m_pObjects = NULL;
+
 
 protected:
 	LIGHT* m_pLights = NULL;

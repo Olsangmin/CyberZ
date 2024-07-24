@@ -27,9 +27,17 @@ struct LIGHT
 	float					padding;
 };
 
+cbuffer cbLights : register(b4)
+{
+    LIGHT gLights[MAX_LIGHTS];
+    float4 gcGlobalAmbientLight;
+    int gnLights;
+};
+
+
 //화면 사이즈 고려 해야함
-#define FRAME_BUFFER_WIDTH		640
-#define FRAME_BUFFER_HEIGHT		480
+#define FRAME_BUFFER_WIDTH		1960
+#define FRAME_BUFFER_HEIGHT		1080
 
 #define _DEPTH_BUFFER_WIDTH		(FRAME_BUFFER_WIDTH * 4)
 #define _DEPTH_BUFFER_HEIGHT	(FRAME_BUFFER_HEIGHT * 4)
@@ -37,12 +45,6 @@ struct LIGHT
 #define DELTA_X					(1.0f / _DEPTH_BUFFER_WIDTH)
 #define DELTA_Y					(1.0f / _DEPTH_BUFFER_HEIGHT)
 
-cbuffer cbLights : register(b4)
-{
-	LIGHT					gLights[MAX_LIGHTS];
-	float4					gcGlobalAmbientLight;
-	int						gnLights;
-};
 
 #define MAX_DEPTH_TEXTURES		MAX_LIGHTS
 
@@ -164,6 +166,7 @@ float4 SpotLight(int nIndex, float3 vPosition, float3 vNormal, float3 vToCamera)
 	return(float4(0.0f, 0.0f, 0.0f, 0.0f));
 }
 
+
 float4 Lighting(float3 vPosition, float3 vNormal, bool bShadow, float4 shadowMapUVs[MAX_LIGHTS])
 {
 	float3 vCameraPosition = float3(gvCameraPosition.x, gvCameraPosition.y, gvCameraPosition.z);
@@ -174,8 +177,8 @@ float4 Lighting(float3 vPosition, float3 vNormal, bool bShadow, float4 shadowMap
 	{
 		if (gLights[i].m_bEnable)
 		{
-			float fShadowFactor = 1.0f;
-			if (bShadow) fShadowFactor = Compute3x3ShadowFactor(shadowMapUVs[i].xy, shadowMapUVs[i].z, i);
+			//float fShadowFactor = 1.0f;
+			//if (bShadow) fShadowFactor = Compute3x3ShadowFactor(shadowMapUVs[i].xy, shadowMapUVs[i].z, i);
 			
 			if (gLights[i].m_nType == DIRECTIONAL_LIGHT)
 			{

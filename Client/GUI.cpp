@@ -491,8 +491,7 @@ void CSecondRoundSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 	BossUI();
 	MachineUI();
 
-	//if (m_bMyOn)
-		MissionUI();
+	if (m_bMyOn) MissionUI();
 
 }
 
