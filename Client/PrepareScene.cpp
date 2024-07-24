@@ -7,6 +7,8 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
 
 
+
+
 	m_pUI = new CPrepareRoomSceneUI();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -86,6 +88,13 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	m_pMyPlayer = m_ppPlayer[4];
 	m_pMyPlayer->ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+
+#ifdef USE_NETWORK
+	CS_ENTER_ROOM_PACKET p;
+	p.size = sizeof(p);
+	p.type = CS_ENTER_ROOM;
+	send_packet(&p);
+#endif // USE_NETWORK
 
 }
 
@@ -323,14 +332,14 @@ void CPrepareRoomScene::ProcessPacket(char* p)
 {
 	switch (p[1])
 	{
-	case SC_LOGIN_INFO:
-	{
-		/*SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
-		my_id = packet->id;
-		cout << "My ID is " << my_id << " !" << endl;
-		reinterpret_cast<CFirstSceneUI*>(m_pUI)->m_bPlayerOn[my_id] = true;*/
+	//case SC_LOGIN_INFO:
+	//{
+	//	/*SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
+	//	my_id = packet->id;
+	//	cout << "My ID is " << my_id << " !" << endl;
+	//	reinterpret_cast<CFirstSceneUI*>(m_pUI)->m_bPlayerOn[my_id] = true;*/
 
-	} break;
+	//} break;
 
 	case SC_CHANGE_CHARACTER: {
 		SC_CHANGE_CHARACTER_PACKET* packet = reinterpret_cast<SC_CHANGE_CHARACTER_PACKET*>(p);
