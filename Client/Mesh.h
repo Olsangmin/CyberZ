@@ -29,6 +29,7 @@ class CGameObject;
 class CMesh
 {
 public:
+	CMesh() {};
 	CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual ~CMesh();
 
@@ -276,3 +277,37 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList);
 };
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+
+class ParticleMesh : public CMesh
+{
+public:
+	struct ParticleVertex
+	{
+		XMFLOAT3 position;
+		XMFLOAT3 direction;
+		FLOAT speed;
+		FLOAT lifeTime;
+		FLOAT age;
+	};
+
+public:
+	ParticleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual ~ParticleMesh() = default;
+
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList);
+	void RenderStreamOutput(ID3D12GraphicsCommandList* pd3dCommandList);
+
+	void CreateStreamOutputBuffer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+
+private:
+	ComPtr<ID3D12Resource>          m_streamOutputBuffer;               // 스트림 출력 버퍼
+	D3D12_STREAM_OUTPUT_BUFFER_VIEW m_streamOutputBufferView;           // 스트림 출력 버퍼 뷰
+
+	UINT* m_pFilledSize;				// 스트림 버퍼에 쓰여진 데이터 크기
+	ComPtr<ID3D12Resource>	m_streamFilledSizeBuffer;		// 스트림 버퍼에 쓰여진 데이터 크기를 받을 버퍼
+	ComPtr<ID3D12Resource>	m_streamFilledSizeUploadBuffer;		// 위의 버퍼에 복사할 때 쓰일 업로드 버퍼
+	ComPtr<ID3D12Resource>	m_streamFilledSizeReadBackBuffer;	// 쓰여진 데이터 크기를 읽어올 때 쓰일 리드백 버퍼
+	ComPtr<ID3D12Resource>	m_drawBuffer;				// 스트림 출력된 결과를 복사해서 출력할 때 쓰일 버퍼
+};

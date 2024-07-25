@@ -35,7 +35,7 @@ using namespace std;
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>
 #include <DirectXCollision.h>
-
+#include "Direct3DX12/d3dx12.h"
 #include <Mmsystem.h>
 
 //dxd2D
