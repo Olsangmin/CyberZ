@@ -835,7 +835,12 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 		if (pRobotModel) delete pRobotModel;
 	}
-	 
+	m_nParticleObj = 1;
+	m_ppParticleObj = new CParticle * [m_nParticleObj];
+
+	for (int i = 0; i < m_nParticleObj; ++i) {
+		m_ppParticleObj[i] = new CParticle(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL);
+	}
 
 	//===============================//
 	// SHADER OBJ (NULL)
@@ -918,6 +923,10 @@ void CSecondRoundScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 			m_ppFloorObj[i]->Animate(m_fElapsedTime);
 			m_ppFloorObj[i]->Render(pd3dCommandList, pCamera);
 		}
+	}
+	for (int i = 0; i < m_nParticleObj; ++i) {
+		if (m_ppParticleObj[i])
+			m_ppParticleObj[i]->Render(pd3dCommandList, pCamera);
 	}
 }
 
@@ -1006,7 +1015,7 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 			break;
 		}
 		case 'L': {
-			reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetAttackStatus(true);
+			reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetAttackStatus(true, 0);
 			break;
 		}
 		case 'F':

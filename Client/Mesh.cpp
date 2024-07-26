@@ -867,105 +867,124 @@ void CBoundingBoxMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList)
 }
 
 
-constexpr size_t PARTICLE_COUNT{ 1000 };
-ParticleMesh::ParticleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList) : m_pFilledSize{ nullptr }, m_streamOutputBufferView{}
-{
-	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_POINTLIST;
+constexpr size_t PARTICLE_COUNT{ 36 };
 
-	vector<ParticleVertex> vertices{ PARTICLE_COUNT };
+ParticleMesh::ParticleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4 xm4Color) : CMesh(pd3dDevice, pd3dCommandList)
+{
+	m_nVertices = PARTICLE_COUNT;
+
+	m_nOffset = 0;
+	m_nSlot = 0;
+	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+
+	vector<XMFLOAT3> positions{ PARTICLE_COUNT };
+	vector<XMFLOAT3> directions{ PARTICLE_COUNT };
+	vector<FLOAT> speeds{ PARTICLE_COUNT };
+	vector<FLOAT> lifeTimes{ PARTICLE_COUNT };
+	vector<FLOAT> times{ PARTICLE_COUNT };
 	for (int i = 0; i < PARTICLE_COUNT; ++i)
 	{
-		ParticleVertex v{};
-		/*v.position.x = Random(-800.0f, 800.0f);
-		v.position.y = Random(-100.0f, 100.0f);
-		v.position.z = Random(-800.0f, 800.0f);
-		v.direction = XMFLOAT3{ Random(-1.0f, 1.0f), Random(-1.0f, 1.0f), Random(-1.0f, 1.0f) };
-		v.direction = Vector3::Normalize(v.direction);
-		v.speed = Random(40.0f, 50.0f);
-		v.lifeTime = Random(1.0f, 3.0f);
-		v.age = 0.0f;*/
-		vertices[i] = move(v);
+		position.x = 300+i;
+		position.y = 5;
+		position.z = 70;
+		direction = XMFLOAT3{ 1, 0, 0 };
+		direction = Vector3::Normalize(direction);
+		speed = 40.0f;
+		lifeTime = 3;
+		time = 0.0f;
+		positions.emplace_back(position);
+		directions.emplace_back(direction);
+		speeds.emplace_back(speed);
+		lifeTimes.emplace_back(lifeTime);
+		times.emplace_back(time);
 	}
+	m_pxmf3Positions = new XMFLOAT3[m_nVertices];
 
-	//IDirect3DDevice9::CreateVertexBuffer(device, commandList, vertices.data(), sizeof(ParticleVertex), static_cast<UINT>(vertices.size()));
+	float fx = 5.0f;
+	// Front Quad (quads point inward)
+	m_pxmf3Positions[0] = XMFLOAT3(-fx, +fx, +fx);
+	m_pxmf3Positions[1] = XMFLOAT3(+fx, +fx, +fx);
+	m_pxmf3Positions[2] = XMFLOAT3(-fx, -fx, +fx);
+	m_pxmf3Positions[3] = XMFLOAT3(-fx, -fx, +fx);
+	m_pxmf3Positions[4] = XMFLOAT3(+fx, +fx, +fx);
+	m_pxmf3Positions[5] = XMFLOAT3(+fx, -fx, +fx);
+	// Back Quad										
+	m_pxmf3Positions[6] = XMFLOAT3(+fx, +fx, -fx);
+	m_pxmf3Positions[7] = XMFLOAT3(-fx, +fx, -fx);
+	m_pxmf3Positions[8] = XMFLOAT3(+fx, -fx, -fx);
+	m_pxmf3Positions[9] = XMFLOAT3(+fx, -fx, -fx);
+	m_pxmf3Positions[10] = XMFLOAT3(-fx, +fx, -fx);
+	m_pxmf3Positions[11] = XMFLOAT3(-fx, -fx, -fx);
+	// Left Quad										
+	m_pxmf3Positions[12] = XMFLOAT3(-fx, +fx, -fx);
+	m_pxmf3Positions[13] = XMFLOAT3(-fx, +fx, +fx);
+	m_pxmf3Positions[14] = XMFLOAT3(-fx, -fx, -fx);
+	m_pxmf3Positions[15] = XMFLOAT3(-fx, -fx, -fx);
+	m_pxmf3Positions[16] = XMFLOAT3(-fx, +fx, +fx);
+	m_pxmf3Positions[17] = XMFLOAT3(-fx, -fx, +fx);
+	// Right Quad										
+	m_pxmf3Positions[18] = XMFLOAT3(+fx, +fx, +fx);
+	m_pxmf3Positions[19] = XMFLOAT3(+fx, +fx, -fx);
+	m_pxmf3Positions[20] = XMFLOAT3(+fx, -fx, +fx);
+	m_pxmf3Positions[21] = XMFLOAT3(+fx, -fx, +fx);
+	m_pxmf3Positions[22] = XMFLOAT3(+fx, +fx, -fx);
+	m_pxmf3Positions[23] = XMFLOAT3(+fx, -fx, -fx);
+	// Top Quad											
+	m_pxmf3Positions[24] = XMFLOAT3(-fx, +fx, -fx);
+	m_pxmf3Positions[25] = XMFLOAT3(+fx, +fx, -fx);
+	m_pxmf3Positions[26] = XMFLOAT3(-fx, +fx, +fx);
+	m_pxmf3Positions[27] = XMFLOAT3(-fx, +fx, +fx);
+	m_pxmf3Positions[28] = XMFLOAT3(+fx, +fx, -fx);
+	m_pxmf3Positions[29] = XMFLOAT3(+fx, +fx, +fx);
+	// Bottom Quad										
+	m_pxmf3Positions[30] = XMFLOAT3(-fx, -fx, +fx);
+	m_pxmf3Positions[31] = XMFLOAT3(+fx, -fx, +fx);
+	m_pxmf3Positions[32] = XMFLOAT3(-fx, -fx, -fx);
+	m_pxmf3Positions[33] = XMFLOAT3(-fx, -fx, -fx);
+	m_pxmf3Positions[34] = XMFLOAT3(+fx, -fx, +fx);
+	m_pxmf3Positions[35] = XMFLOAT3(+fx, -fx, -fx);
 
-	/////////////////////////////////////////////////////////////////////////////////////////////
-	m_pd3dPositionBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, vertices.data(), static_cast<UINT>(vertices.size()), D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-
-	m_nVertexBufferViews = 1;
+	m_nVertexBufferViews = 5;
 	m_pd3dVertexBufferViews = new D3D12_VERTEX_BUFFER_VIEW[m_nVertexBufferViews];
-
+	m_pd3dPositionBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, m_pxmf3Positions, sizeof(XMFLOAT3) * m_nVertices, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	//m_pd3dPositionBuffer->Map(0, NULL, (void**)&m_pcbMappedPositions);
 	m_pd3dVertexBufferViews[0].BufferLocation = m_pd3dPositionBuffer->GetGPUVirtualAddress();
-	m_pd3dVertexBufferViews[0].StrideInBytes = sizeof(ParticleVertex);
-	m_pd3dVertexBufferViews[0].SizeInBytes = sizeof(ParticleVertex) * PARTICLE_COUNT;
+	m_pd3dVertexBufferViews[0].StrideInBytes = sizeof(XMFLOAT3);
+	m_pd3dVertexBufferViews[0].SizeInBytes = sizeof(XMFLOAT3) * m_nVertices;
 
-	CreateStreamOutputBuffer(pd3dDevice, pd3dCommandList);
+	m_pd3dDirectionBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, directions.data(), sizeof(XMFLOAT3) * m_nVertices, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	m_pd3dVertexBufferViews[1].BufferLocation = m_pd3dDirectionBuffer->GetGPUVirtualAddress();
+	m_pd3dVertexBufferViews[1].StrideInBytes = sizeof(XMFLOAT3);
+	m_pd3dVertexBufferViews[1].SizeInBytes = sizeof(XMFLOAT3) * m_nVertices;
+
+	m_pd3dSpeedBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, speeds.data(), sizeof(FLOAT) * m_nVertices, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	m_pd3dVertexBufferViews[2].BufferLocation = m_pd3dSpeedBuffer->GetGPUVirtualAddress();
+	m_pd3dVertexBufferViews[2].StrideInBytes = sizeof(FLOAT);
+	m_pd3dVertexBufferViews[2].SizeInBytes = sizeof(FLOAT) * m_nVertices;
+
+	m_pd3dLifeTimeBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, lifeTimes.data(), sizeof(FLOAT) * m_nVertices, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	m_pd3dVertexBufferViews[3].BufferLocation = m_pd3dLifeTimeBuffer->GetGPUVirtualAddress();
+	m_pd3dVertexBufferViews[3].StrideInBytes = sizeof(FLOAT);
+	m_pd3dVertexBufferViews[3].SizeInBytes = sizeof(FLOAT) * m_nVertices;
+
+	m_pd3dTimeBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, times.data(), sizeof(FLOAT) * m_nVertices, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	m_pd3dVertexBufferViews[4].BufferLocation = m_pd3dTimeBuffer->GetGPUVirtualAddress();
+	m_pd3dVertexBufferViews[4].StrideInBytes = sizeof(FLOAT);
+	m_pd3dVertexBufferViews[4].SizeInBytes = sizeof(FLOAT) * m_nVertices;
 }
 
-void ParticleMesh::CreateStreamOutputBuffer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+ParticleMesh::~ParticleMesh()
 {
-	m_streamOutputBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, sizeof(ParticleVertex) * PARTICLE_COUNT, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_STREAM_OUT);
-
-	// 스트림출력 버퍼에 얼만큼 쓸건지를 저장하는 버퍼 생성
-	m_streamFilledSizeBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, sizeof(UINT64), D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_STREAM_OUT);
-
-	// 스트림출력 버퍼에 데이터를 복사하기 위한 업로드 버퍼 생성
-	m_streamFilledSizeUploadBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, sizeof(UINT64), D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_GENERIC_READ);
-	m_streamFilledSizeUploadBuffer->Map(0, NULL, reinterpret_cast<void**>(&m_pFilledSize));
-
-	// 스트림출력 버퍼 뷰 생성
-	m_streamOutputBufferView.BufferLocation = m_streamOutputBuffer->GetGPUVirtualAddress();
-	m_streamOutputBufferView.SizeInBytes = sizeof(ParticleVertex) * PARTICLE_COUNT;
-	m_streamOutputBufferView.BufferFilledSizeLocation = m_streamFilledSizeBuffer->GetGPUVirtualAddress();
-
-	// 스트림출력 버퍼에 쓰여진 데이터 크기를 CPU에서 읽기 위한 리드백 버퍼 생성
-	m_streamFilledSizeReadBackBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, sizeof(UINT64), D3D12_HEAP_TYPE_READBACK, D3D12_RESOURCE_STATE_COPY_DEST);
-
-	// 통상적인 렌더링에 사용되는 버퍼 생성
-	m_drawBuffer = CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, sizeof(ParticleVertex) * PARTICLE_COUNT, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);
 }
 
-void ParticleMesh::RenderStreamOutput(ID3D12GraphicsCommandList* pd3dCommandList)
+void ParticleMesh::UpdateVertexPosition(BoundingOrientedBox* pxmBoundingBox)
 {
-	// 스트림 출력 렌더링
+}
 
-	// 처음에는 정점 버퍼와 바인딩
-	// 그 이후로는 스트림 출력 결과와 바인딩
-	static bool isFirst{ true };
-	if (isFirst)
-	{
-		isFirst = false;
-		m_pd3dVertexBufferViews[0].BufferLocation = m_pd3dPositionBuffer->GetGPUVirtualAddress();
-		m_pd3dVertexBufferViews[0].StrideInBytes = sizeof(ParticleVertex);
-		m_pd3dVertexBufferViews[0].SizeInBytes = sizeof(ParticleVertex) * m_nVertices;
-	}
+void ParticleMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	pd3dCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+	pd3dCommandList->IASetVertexBuffers(m_nSlot, m_nVertexBufferViews, m_pd3dVertexBufferViews);
 
-	// m_pFilledSize를 m_streamFilledSizeBuffer에 복사
-	*m_pFilledSize = 0;
-	pd3dCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_streamFilledSizeBuffer.Get(), D3D12_RESOURCE_STATE_STREAM_OUT, D3D12_RESOURCE_STATE_COPY_DEST));
-	pd3dCommandList->CopyResource(m_streamFilledSizeBuffer.Get(), m_streamFilledSizeUploadBuffer.Get());
-	pd3dCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_streamFilledSizeBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_STREAM_OUT));
-
-	// 스트림 출력
-	D3D12_STREAM_OUTPUT_BUFFER_VIEW streamOutputBufferViews[]{ m_streamOutputBufferView };
-	pd3dCommandList->SOSetTargets(0, _countof(streamOutputBufferViews), streamOutputBufferViews);
-	CMesh::Render(pd3dCommandList,0);
-
-	// 리드백 버퍼로 스트림 출력으로 얼마만큼 데이터를 썼는지 받아옴
-	pd3dCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_streamFilledSizeBuffer.Get(), D3D12_RESOURCE_STATE_STREAM_OUT, D3D12_RESOURCE_STATE_COPY_SOURCE));
-	pd3dCommandList->CopyResource(m_streamFilledSizeReadBackBuffer.Get(), m_streamFilledSizeBuffer.Get());
-	pd3dCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_streamFilledSizeBuffer.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_STREAM_OUT));
-
-	// 리드백 버퍼에 받아온 데이터 크기로 정점 개수 재설정
-	UINT64* pFilledSize{ NULL };
-	m_streamFilledSizeReadBackBuffer->Map(0, NULL, reinterpret_cast<void**>(&pFilledSize));
-	m_nVertices = UINT(*pFilledSize) / sizeof(ParticleVertex);
-	m_streamFilledSizeReadBackBuffer->Unmap(0, NULL);
-
-	// 스트림 출력 결과를 m_drawBuffer로 복사
-	pd3dCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_drawBuffer.Get(), D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_COPY_DEST));
-	pd3dCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_streamOutputBuffer.Get(), D3D12_RESOURCE_STATE_STREAM_OUT, D3D12_RESOURCE_STATE_COPY_SOURCE));
-	pd3dCommandList->CopyResource(m_drawBuffer.Get(), m_streamOutputBuffer.Get());
-	pd3dCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_drawBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
-	pd3dCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_streamOutputBuffer.Get(), D3D12_RESOURCE_STATE_COPY_SOURCE, D3D12_RESOURCE_STATE_STREAM_OUT));
+	pd3dCommandList->DrawInstanced(m_nVertices, 1, m_nOffset, 0);
 }

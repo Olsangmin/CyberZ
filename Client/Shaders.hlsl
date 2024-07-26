@@ -319,7 +319,8 @@ struct VS_BOUNDINGBOX_OUTPUT
 VS_BOUNDINGBOX_OUTPUT VSBoundingBox(VS_BOUNDINGBOX_INPUT input)
 {
     VS_BOUNDINGBOX_OUTPUT output;
-    output.positionH = mul(mul(float4(input.position, 1.0f), gmtxView), gmtxProjection);
+    float3 pos = { input.position.x, input.position.y, input.position.z };
+    output.positionH = mul(mul(float4(pos, 1.0f), gmtxView), gmtxProjection);
     output.color = input.colorIn;
     return (output);
 }
@@ -329,6 +330,46 @@ float4 PSBoundingBox(VS_BOUNDINGBOX_OUTPUT input) : SV_TARGET1
     return (input.color);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+
+Texture2D gtxtParticleTexture : register(t25);
+SamplerState gssSet : register(s3);
+struct VS_PARTICLE_INPUT
+{
+    float3 position : POSITION;
+    float3 direction : DIRECTION;
+    float  speed : SPEED;
+    float  lifeTime : LIFETIME;
+    float  time : TIME;
+};
+
+struct VS_PARTICLE_OUTPUT
+{
+    float4 positionH : SV_POSITION;
+    float3 positionL : POSITION;
+    float4 color : COLOR;
+};
+
+VS_PARTICLE_OUTPUT VSParticle(VS_PARTICLE_INPUT input)
+{
+    VS_PARTICLE_OUTPUT output;
+    float3 pos = { input.position.x, input.position.y, input.position.z };
+   // float time = frac(input.time);
+   // pos.x = pos.x;
+    output.positionH = mul(mul(float4(pos, 1.0f), gmtxView), gmtxProjection);
+    output.color = float4( 1.0f, 0.0f, 0.0f, 1.0f);
+    output.positionL = input.position;
+    return (output);
+}
+
+float4 PSParticle(VS_PARTICLE_OUTPUT input) : SV_TARGET1
+{
+   // float4 cColor = gtxtParticleTexture.Sample(gssSet, input.positionL);
+   // return (cColor);
+    return (input.color);
+
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

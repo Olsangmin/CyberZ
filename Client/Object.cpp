@@ -1566,3 +1566,37 @@ bool CBossRobotObject::IsAttackP(Player_Animation_ST status)
 	}
 	return false;
 }
+
+CParticle::CParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, wchar_t* pszFileName)
+{
+	ParticleMesh* pParticleMesh = new ParticleMesh(pd3dDevice, pd3dCommandList, XMFLOAT4(0,0,0,1));
+	SetMesh(pParticleMesh);
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CTexture* pParticleTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
+	pParticleTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"SkyBox/SkyBox_0.dds", RESOURCE_TEXTURE2D, 0);
+
+	ParticleShader* pParticleShader = new ParticleShader();
+	pParticleShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	pParticleShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	//CScene::CreateShaderResourceViews(pd3dDevice, pParticleTexture, 0, 16);
+
+	CMaterial* pParticleMaterial = new CMaterial(1);
+	pParticleMaterial->SetTexture(pParticleTexture);
+	pParticleMaterial->SetShader(pParticleShader);
+
+	SetMaterial(0, pParticleMaterial);
+}
+
+CParticle::~CParticle()
+{
+}
+
+void CParticle::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	XMFLOAT3 xmf3CameraPos = pCamera->GetPosition();
+	SetPosition(xmf3CameraPos.x, xmf3CameraPos.y, xmf3CameraPos.z);
+	CGameObject::Render(pd3dCommandList, pCamera);
+}
