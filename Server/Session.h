@@ -42,6 +42,7 @@ public:
 		prev_remain = 0;
 		state = ST_FREE;
 		memset(name, 0, sizeof(name));
+		memset(password, 0, sizeof(password));
 	}
 	~Session() {}
 
