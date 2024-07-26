@@ -867,7 +867,7 @@ void CBoundingBoxMesh::Render(ID3D12GraphicsCommandList* pd3dCommandList)
 }
 
 
-constexpr size_t PARTICLE_COUNT{ 36 };
+constexpr size_t PARTICLE_COUNT{ 4 };
 
 ParticleMesh::ParticleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4 xm4Color) : CMesh(pd3dDevice, pd3dCommandList)
 {
@@ -875,7 +875,7 @@ ParticleMesh::ParticleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 
 	m_nOffset = 0;
 	m_nSlot = 0;
-	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP_ADJ;
 
 	vector<XMFLOAT3> positions{ PARTICLE_COUNT };
 	vector<XMFLOAT3> directions{ PARTICLE_COUNT };
@@ -884,6 +884,7 @@ ParticleMesh::ParticleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	vector<FLOAT> times{ PARTICLE_COUNT };
 	for (int i = 0; i < PARTICLE_COUNT; ++i)
 	{
+		int point = i / 6;
 		position.x = 300+i;
 		position.y = 5;
 		position.z = 70;
@@ -900,58 +901,84 @@ ParticleMesh::ParticleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	}
 	m_pxmf3Positions = new XMFLOAT3[m_nVertices];
 
-	float fx = 50.0f;
+	float fx = 5.0f;
 	// Front Quad (quads point inward)
-	m_pxmf3Positions[0] = XMFLOAT3(-fx, +fx, +fx);
-	m_pxmf3Positions[1] = XMFLOAT3(+fx, +fx, +fx);
-	m_pxmf3Positions[2] = XMFLOAT3(-fx, -fx, +fx);
-	m_pxmf3Positions[3] = XMFLOAT3(-fx, -fx, +fx);
-	m_pxmf3Positions[4] = XMFLOAT3(+fx, +fx, +fx);
-	m_pxmf3Positions[5] = XMFLOAT3(+fx, -fx, +fx);
-	// Back Quad										
-	m_pxmf3Positions[6] = XMFLOAT3(+fx, +fx, -fx);
-	m_pxmf3Positions[7] = XMFLOAT3(-fx, +fx, -fx);
-	m_pxmf3Positions[8] = XMFLOAT3(+fx, -fx, -fx);
-	m_pxmf3Positions[9] = XMFLOAT3(+fx, -fx, -fx);
-	m_pxmf3Positions[10] = XMFLOAT3(-fx, +fx, -fx);
-	m_pxmf3Positions[11] = XMFLOAT3(-fx, -fx, -fx);
-	// Left Quad										
-	m_pxmf3Positions[12] = XMFLOAT3(-fx, +fx, -fx);
-	m_pxmf3Positions[13] = XMFLOAT3(-fx, +fx, +fx);
-	m_pxmf3Positions[14] = XMFLOAT3(-fx, -fx, -fx);
-	m_pxmf3Positions[15] = XMFLOAT3(-fx, -fx, -fx);
-	m_pxmf3Positions[16] = XMFLOAT3(-fx, +fx, +fx);
-	m_pxmf3Positions[17] = XMFLOAT3(-fx, -fx, +fx);
-	// Right Quad										
-	m_pxmf3Positions[18] = XMFLOAT3(+fx, +fx, +fx);
-	m_pxmf3Positions[19] = XMFLOAT3(+fx, +fx, -fx);
-	m_pxmf3Positions[20] = XMFLOAT3(+fx, -fx, +fx);
-	m_pxmf3Positions[21] = XMFLOAT3(+fx, -fx, +fx);
-	m_pxmf3Positions[22] = XMFLOAT3(+fx, +fx, -fx);
-	m_pxmf3Positions[23] = XMFLOAT3(+fx, -fx, -fx);
-	// Top Quad											
-	m_pxmf3Positions[24] = XMFLOAT3(-fx, +fx, -fx);
-	m_pxmf3Positions[25] = XMFLOAT3(+fx, +fx, -fx);
-	m_pxmf3Positions[26] = XMFLOAT3(-fx, +fx, +fx);
-	m_pxmf3Positions[27] = XMFLOAT3(-fx, +fx, +fx);
-	m_pxmf3Positions[28] = XMFLOAT3(+fx, +fx, -fx);
-	m_pxmf3Positions[29] = XMFLOAT3(+fx, +fx, +fx);
-	// Bottom Quad										
-	m_pxmf3Positions[30] = XMFLOAT3(-fx, -fx, +fx);
-	m_pxmf3Positions[31] = XMFLOAT3(+fx, -fx, +fx);
-	m_pxmf3Positions[32] = XMFLOAT3(-fx, -fx, -fx);
-	m_pxmf3Positions[33] = XMFLOAT3(-fx, -fx, -fx);
-	m_pxmf3Positions[34] = XMFLOAT3(+fx, -fx, +fx);
-	m_pxmf3Positions[35] = XMFLOAT3(+fx, -fx, -fx);
-
+	m_pxmf3Positions[0] = XMFLOAT3(-fx + 300+10, +fx + 10, +fx + 40);
+	//m_pxmf3Positions[1] = XMFLOAT3(+fx + 300+20, +fx + 10, +fx + 40);
+	//m_pxmf3Positions[2] = XMFLOAT3(-fx + 300+30, -fx + 10, +fx + 40);
+	//m_pxmf3Positions[3] = XMFLOAT3(-fx + 300+40, -fx + 10, +fx + 40);
+	//m_pxmf3Positions[4] = XMFLOAT3(+fx + 300+50, +fx + 10, +fx + 40);
+	//m_pxmf3Positions[5] = XMFLOAT3(+fx + 300+60, -fx + 10, +fx + 40);
+	//// Back Quad										
+	//m_pxmf3Positions[6] = XMFLOAT3(+fx, +fx, -fx);
+	//m_pxmf3Positions[7] = XMFLOAT3(-fx, +fx, -fx);
+	//m_pxmf3Positions[8] = XMFLOAT3(+fx, -fx, -fx);
+	//m_pxmf3Positions[9] = XMFLOAT3(+fx, -fx, -fx);
+	//m_pxmf3Positions[10] = XMFLOAT3(-fx, +fx, -fx);
+	//m_pxmf3Positions[11] = XMFLOAT3(-fx, -fx, -fx);
+	//// Left Quad										
+	//m_pxmf3Positions[12] = XMFLOAT3(-fx, +fx, -fx);
+	//m_pxmf3Positions[13] = XMFLOAT3(-fx, +fx, +fx);
+	//m_pxmf3Positions[14] = XMFLOAT3(-fx, -fx, -fx);
+	//m_pxmf3Positions[15] = XMFLOAT3(-fx, -fx, -fx);
+	//m_pxmf3Positions[16] = XMFLOAT3(-fx, +fx, +fx);
+	//m_pxmf3Positions[17] = XMFLOAT3(-fx, -fx, +fx);
+	//// Right Quad										
+	//m_pxmf3Positions[18] = XMFLOAT3(+fx, +fx, +fx);
+	//m_pxmf3Positions[19] = XMFLOAT3(+fx, +fx, -fx);
+	//m_pxmf3Positions[20] = XMFLOAT3(+fx, -fx, +fx);
+	//m_pxmf3Positions[21] = XMFLOAT3(+fx, -fx, +fx);
+	//m_pxmf3Positions[22] = XMFLOAT3(+fx, +fx, -fx);
+	//m_pxmf3Positions[23] = XMFLOAT3(+fx, -fx, -fx);
+	//// Top Quad											
+	//m_pxmf3Positions[24] = XMFLOAT3(-fx, +fx, -fx);
+	//m_pxmf3Positions[25] = XMFLOAT3(+fx, +fx, -fx);
+	//m_pxmf3Positions[26] = XMFLOAT3(-fx, +fx, +fx);
+	//m_pxmf3Positions[27] = XMFLOAT3(-fx, +fx, +fx);
+	//m_pxmf3Positions[28] = XMFLOAT3(+fx, +fx, -fx);
+	//m_pxmf3Positions[29] = XMFLOAT3(+fx, +fx, +fx);
+	//// Bottom Quad										
+	//m_pxmf3Positions[30] = XMFLOAT3(-fx, -fx, +fx);
+	//m_pxmf3Positions[31] = XMFLOAT3(+fx, -fx, +fx);
+	//m_pxmf3Positions[32] = XMFLOAT3(-fx, -fx, -fx);
+	//m_pxmf3Positions[33] = XMFLOAT3(-fx, -fx, -fx);
+	//m_pxmf3Positions[34] = XMFLOAT3(+fx, -fx, +fx);
+	//m_pxmf3Positions[35] = XMFLOAT3(+fx, -fx, -fx);
+	m_nVertexBufferViews = 5;
+	m_pd3dVertexBufferViews = new D3D12_VERTEX_BUFFER_VIEW[m_nVertexBufferViews];
 
 	m_pd3dPositionBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, m_pxmf3Positions, sizeof(XMFLOAT3) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dPositionUploadBuffer);
+	m_pd3dVertexBufferViews[0].BufferLocation = m_pd3dPositionBuffer->GetGPUVirtualAddress();
+	m_pd3dVertexBufferViews[0].StrideInBytes = sizeof(XMFLOAT3);
+	m_pd3dVertexBufferViews[0].SizeInBytes = sizeof(XMFLOAT3) * m_nVertices;
 
-	m_d3dPositionBufferView.BufferLocation = m_pd3dPositionBuffer->GetGPUVirtualAddress();
-	m_d3dPositionBufferView.StrideInBytes = sizeof(XMFLOAT3);
-	m_d3dPositionBufferView.SizeInBytes = sizeof(XMFLOAT3) * m_nVertices;
+	m_pd3dDirectionBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, directions.data(), sizeof(XMFLOAT3) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dDirectionUploadBuffer);
+	m_pd3dVertexBufferViews[1].BufferLocation = m_pd3dDirectionBuffer->GetGPUVirtualAddress();
+	m_pd3dVertexBufferViews[1].StrideInBytes = sizeof(XMFLOAT3);
+	m_pd3dVertexBufferViews[1].SizeInBytes = sizeof(XMFLOAT3) * m_nVertices;
+
+	m_pd3dSpeedBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, speeds.data(), sizeof(FLOAT) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dSpeedUploadBuffer);
+	m_pd3dVertexBufferViews[2].BufferLocation = m_pd3dSpeedBuffer->GetGPUVirtualAddress();
+	m_pd3dVertexBufferViews[2].StrideInBytes = sizeof(FLOAT);
+	m_pd3dVertexBufferViews[2].SizeInBytes = sizeof(FLOAT) * m_nVertices;
+
+	m_pd3dLifeTimeBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, lifeTimes.data(), sizeof(FLOAT) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dLifeTimeUploadBuffer);
+	m_pd3dVertexBufferViews[3].BufferLocation = m_pd3dLifeTimeBuffer->GetGPUVirtualAddress();
+	m_pd3dVertexBufferViews[3].StrideInBytes = sizeof(FLOAT);
+	m_pd3dVertexBufferViews[3].SizeInBytes = sizeof(FLOAT) * m_nVertices;
+
+	m_pd3dTimeBuffer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, times.data(), sizeof(FLOAT) * m_nVertices, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, &m_pd3dTimeUploadBuffer);
+	m_pd3dVertexBufferViews[4].BufferLocation = m_pd3dTimeBuffer->GetGPUVirtualAddress();
+	m_pd3dVertexBufferViews[4].StrideInBytes = sizeof(FLOAT);
+	m_pd3dVertexBufferViews[4].SizeInBytes = sizeof(FLOAT) * m_nVertices;
+
 }
 
 ParticleMesh::~ParticleMesh()
 {
+}
+
+void ParticleMesh::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
+{
+	pd3dCommandList->IASetVertexBuffers(m_nSlot, 5, m_pd3dVertexBufferViews);
 }
