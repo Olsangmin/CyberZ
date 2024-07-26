@@ -72,7 +72,7 @@ public:
 	virtual void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	bool CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget, XMFLOAT3& out);
 	bool CheckMissionBound(CGameObject* pBase, CMissonOBJ* pTarget);
-	BoundingOrientedBox CalculateBoundingBox();
+	BoundingBox CalculateBoundingBox();
 
 public:
 	// @@서버코드@@서버코드@@

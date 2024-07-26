@@ -813,7 +813,7 @@ CBoundingBoxMesh::~CBoundingBoxMesh()
 
 }
 
-void CBoundingBoxMesh::UpdateVertexPosition(BoundingOrientedBox* pxmBoundingBox)
+void CBoundingBoxMesh::UpdateVertexPosition(BoundingBox* pxmBoundingBox)
 {
 	XMFLOAT3 xmf3Corners[8];
 	pxmBoundingBox->GetCorners(xmf3Corners);

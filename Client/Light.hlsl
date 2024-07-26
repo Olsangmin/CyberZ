@@ -173,12 +173,14 @@ float4 Lighting(float3 vPosition, float3 vNormal, bool bShadow, float4 shadowMap
 	float3 vToCamera = normalize(vCameraPosition - vPosition);
 
 	float4 cColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	[unroll(MAX_LIGHTS)] for (int i = 0; i < gnLights; i++)
+	[unroll(MAX_LIGHTS)] 
+		for (int i = 0; i < gnLights; i++)
 	{
 		if (gLights[i].m_bEnable)
 		{
 			float fShadowFactor = 1.0f;
-			//if (bShadow) fShadowFactor = Compute3x3ShadowFactor(shadowMapUVs[i].xy, shadowMapUVs[i].z, i);
+			if (bShadow) fShadowFactor = Compute3x3ShadowFactor(shadowMapUVs[i].xy, shadowMapUVs[i].z, i);
+            //if (bShadow) fShadowFactor = gtxtDepthTextures[i].SampleCmpLevelZero(gssComparisonPCFShadow, shadowMapUVs[i].xy, shadowMapUVs[i].z).r;
 			
 			if (gLights[i].m_nType == DIRECTIONAL_LIGHT)
 			{
@@ -198,6 +200,6 @@ float4 Lighting(float3 vPosition, float3 vNormal, bool bShadow, float4 shadowMap
 	cColor += (gcGlobalAmbientLight * gMaterial.m_cAmbient);
 	cColor.a = gMaterial.m_cDiffuse.a;
 
-	return(cColor);
+    return (cColor);
 }
 

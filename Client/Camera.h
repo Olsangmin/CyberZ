@@ -144,5 +144,5 @@ public:
 	virtual void SetLookAt(XMFLOAT3& vLookAt);
 	virtual void Rotate(float x, float y, float z);
 	virtual void GenerateFrustum();
-	virtual bool IsInFrustum(BoundingOrientedBox& xmBoundingBox);
+	virtual bool IsInFrustum(BoundingBox& xmBoundingBox);
 };

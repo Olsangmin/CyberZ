@@ -277,7 +277,8 @@ struct TOLIGHTSPACEINFO
 class CDepthRenderShader : public CStandardShader
 {
 public:
-	CDepthRenderShader(LIGHT* pLights);
+	CDepthRenderShader() {}
+	CDepthRenderShader(CMissonOBJ** ppObjects, LIGHT* pLights);
 	virtual ~CDepthRenderShader();
 
 	virtual D3D12_DEPTH_STENCIL_DESC CreateDepthStencilState();
@@ -287,12 +288,13 @@ public:
 
 	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void UpdateTextureShader(ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void ReleaseShaderVariables();
 
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext = NULL);
 	virtual void ReleaseObjects();
 
-	void PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	void PrepareShadowMap(BoundingBox* pBoundingBoxs, ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
@@ -310,13 +312,13 @@ protected:
 
 	XMMATRIX						m_xmProjectionToTexture;
 
-
+	
 
 public:
 	CTexture* GetDepthTexture() { return(m_pDepthFromLightTexture); }
 	ID3D12Resource* GetDepthTextureResource(UINT nIndex) { return(m_pDepthFromLightTexture->GetResource(nIndex)); }
 
-	CGameObject*	m_pObjects = NULL;
+	CMissonOBJ**	m_ppObjects = NULL;
 
 
 protected:

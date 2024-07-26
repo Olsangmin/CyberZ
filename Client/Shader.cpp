@@ -193,7 +193,7 @@ void CShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	m_d3dPipelineStateDesc.PrimitiveTopologyType = d3dPrimitiveTopologyType;
 	m_d3dPipelineStateDesc.NumRenderTargets = 1;
 	m_d3dPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
-	m_d3dPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	m_d3dPipelineStateDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
 	m_d3dPipelineStateDesc.SampleDesc.Count = 1;
 	m_d3dPipelineStateDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
 
@@ -681,7 +681,7 @@ D3D12_DEPTH_STENCIL_DESC CPostProcessingShader::CreateDepthStencilState()
 {
 	D3D12_DEPTH_STENCIL_DESC d3dDepthStencilDesc;
 	::ZeroMemory(&d3dDepthStencilDesc, sizeof(D3D12_DEPTH_STENCIL_DESC));
-	d3dDepthStencilDesc.DepthEnable = FALSE;
+	d3dDepthStencilDesc.DepthEnable = TRUE;
 	d3dDepthStencilDesc.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 	d3dDepthStencilDesc.DepthFunc = D3D12_COMPARISON_FUNC_ALWAYS;
 	d3dDepthStencilDesc.StencilEnable = FALSE;
@@ -850,8 +850,9 @@ void CTextureDeferdShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CC
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-CDepthRenderShader::CDepthRenderShader(LIGHT* pLights)
+CDepthRenderShader::CDepthRenderShader(CMissonOBJ** ppObjects, LIGHT* pLights)
 {
+	m_ppObjects = ppObjects;
 	m_pLights = pLights;
 	m_pToLightSpaces = new TOLIGHTSPACEINFO;
 
@@ -998,10 +999,9 @@ void CDepthRenderShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCo
 		m_ppDepthRenderCameras[i]->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	}
 
-	// CBV/SRV 디스크립터 힙 및 셰이더 리소스뷰 생성
-	CScene::CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, m_pDepthFromLightTexture->GetTextures());
-	//CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	//셰이더 리소스뷰 생성
 	CScene::CreateShaderResourceViews(pd3dDevice, m_pDepthFromLightTexture, 0, 17); //Depth Buffer t19
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 }
 
@@ -1039,6 +1039,12 @@ void CDepthRenderShader::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCo
 
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbToLightGpuVirtualAddress = m_pd3dcbToLightSpaces->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(18, d3dcbToLightGpuVirtualAddress); // cbToLightSpace (b6)
+
+}
+
+void CDepthRenderShader::UpdateTextureShader(ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	if (m_pDepthFromLightTexture) m_pDepthFromLightTexture->UpdateShaderVariables(pd3dCommandList);
 }
 
 void CDepthRenderShader::ReleaseShaderVariables()
@@ -1402,43 +1408,41 @@ XMMATRIX CreateOrthographicProjectionMatrix(XMMATRIX& xmmtxLightView, CCamera* p
 	return(xmmtxProjection);
 }
 
-void CDepthRenderShader::PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+void CDepthRenderShader::PrepareShadowMap(BoundingBox* pBoundingBoxs, ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-	//BoundingOrientedBox* xmpBoundingBox = 0;//= pBoundingBoxs;
+	BoundingBox xmpBoundingBox = m_ppObjects[0]->m_xmBoundingBox;
 
-	BoundingBox xmBoundingBox;
-	xmBoundingBox.Center = XMFLOAT3(500.0, 10.0, 500.0);
-
-
-	for (int j = 0; j < 1; j++)
+	for (int j = 0; j < MAX_LIGHTS; j++)
 	{
 		if (m_pLights[j].m_bEnable)
 		{
 			XMFLOAT3 xmf3Position = m_pLights[j].m_xmf3Position;
 			XMFLOAT3 xmf3Look = XMFLOAT3(0.0f, 1.0f, 0.0f);
-			XMFLOAT3 xmf3Up = XMFLOAT3(0.0f, +1.0f, 0.0f);
+			XMFLOAT3 xmf3Up = XMFLOAT3(0.0f, 0.0f, 1.0f);
 
 			if(m_pLights[j].m_bEnable) xmf3Look = m_pLights[j].m_xmf3Direction;
 
 			XMMATRIX xmmtxLightView = XMMatrixLookToLH(XMLoadFloat3(&xmf3Position), XMLoadFloat3(&xmf3Look), XMLoadFloat3(&xmf3Up));
+			float fNearPlaneDistance = 10.0f, fFarPlaneDistance = m_pLights[j].m_fRange;
 
 			XMMATRIX xmmtxProjection = XMMatrixIdentity();
 			if (m_pLights[j].m_nType == DIRECTIONAL_LIGHT)
 			{
-				xmmtxProjection = CreateOrthographicProjectionMatrix(xmmtxLightView, pCamera, &xmBoundingBox);
+				float fWidth = 100, fHeight = 100;
+
+				//xmmtxProjection = XMMatrixOrthographicLH(fWidth, fHeight, fNearPlaneDistance, fFarPlaneDistance);
+				xmmtxProjection = CreateOrthographicProjectionMatrix(xmmtxLightView, pCamera, &xmpBoundingBox);
 			}
 			else if (m_pLights[j].m_nType == SPOT_LIGHT)
 			{
 				float fFovAngle = 60.0f; // m_pLights->m_pLights[j].m_fPhi = cos(60.0f);
 				float fAspectRatio = float(_DEPTH_BUFFER_WIDTH) / float(_DEPTH_BUFFER_HEIGHT);
-				float fNearPlaneDistance = 10.0f, fFarPlaneDistance = m_pLights[j].m_fRange;
-
+				
 				xmmtxProjection = XMMatrixPerspectiveFovLH(XMConvertToRadians(fFovAngle), fAspectRatio, fNearPlaneDistance, fFarPlaneDistance);
 			}
 			else if (m_pLights[j].m_nType == POINT_LIGHT)
 			{
 				//ShadowMap[6]
-				//xmmtxProjection = XMMatrixIdentity();
 			}
 
 			// 조명의 내용을 카메라에 저장
@@ -1446,7 +1450,7 @@ void CDepthRenderShader::PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID
 			XMStoreFloat4x4(&m_ppDepthRenderCameras[j]->GetViewMatrix(), xmmtxLightView);
 			XMStoreFloat4x4(&m_ppDepthRenderCameras[j]->GetProjectionMatrix(), xmmtxProjection);
 
-			//
+			// 텍스처 매트릭스 설정
 			XMMATRIX xmmtxToTexture = XMMatrixTranspose(xmmtxLightView * xmmtxProjection * m_xmProjectionToTexture);
 			XMStoreFloat4x4(&m_pToLightSpaces->m_pxmf4x4ToTextures[j], xmmtxToTexture);
 			m_pToLightSpaces->m_pxmf4LightPositions[j] = XMFLOAT4(xmf3Position.x, xmf3Position.y, xmf3Position.z, 1.0f);
@@ -1454,7 +1458,7 @@ void CDepthRenderShader::PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID
 			::SynchronizeResourceTransition(pd3dCommandList, m_pDepthFromLightTexture->GetResource(j), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_RENDER_TARGET);
 
 			// 렌더타겟 클리어
-			float pfClearColor[4] = { 0.0f, 1.0f, 1.0f, 1.0f };
+			float pfClearColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 			pd3dCommandList->ClearRenderTargetView(m_pd3dRtvCPUDescriptorHandles[j], pfClearColor, 0, NULL);
 			pd3dCommandList->ClearDepthStencilView(m_d3dDsvDescriptorCPUHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, NULL);
 			pd3dCommandList->OMSetRenderTargets(1, &m_pd3dRtvCPUDescriptorHandles[j], TRUE, &m_d3dDsvDescriptorCPUHandle);
@@ -1478,7 +1482,12 @@ void CDepthRenderShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCam
 	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	pCamera->UpdateShaderVariables(pd3dCommandList);
 
-
+	for (int i = 0; i < 5; i++) {
+		m_ppObjects[i]->UpdateShaderVariables(pd3dCommandList);
+		if (!m_ppObjects[i]->m_pSkinnedAnimationController) m_ppObjects[i]->UpdateTransform(NULL);
+		m_ppObjects[i]->Animate(m_fElapsedTime);
+		m_ppObjects[i]->Render(pd3dCommandList, pCamera);
+	}
 }
 
 
@@ -1563,3 +1572,4 @@ void CShadowMapShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamer
 	UpdateShaderVariables(pd3dCommandList);
 
 }
+

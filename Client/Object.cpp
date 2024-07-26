@@ -148,6 +148,7 @@ D3D12_SHADER_RESOURCE_VIEW_DESC CTexture::GetShaderResourceViewDesc(int nIndex)
 	case RESOURCE_TEXTURE2D: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE2D)(d3dResourceDesc.DepthOrArraySize == 1)
 	case RESOURCE_TEXTURE2D_ARRAY: //[]
 		d3dShaderResourceViewDesc.Format = d3dResourceDesc.Format;
+		if (d3dResourceDesc.Format == DXGI_FORMAT_D32_FLOAT) d3dShaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 		d3dShaderResourceViewDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 		d3dShaderResourceViewDesc.Texture2D.MipLevels = -1;
 		d3dShaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
@@ -411,7 +412,7 @@ void CGameObject::UpdateBoundingBox(XMFLOAT3 xmf3NextPos)
 		xmf4x4World._41 += xmf3NextPos.x * 0.1;
 		xmf4x4World._43 += xmf3NextPos.z * 0.1;
 		m_pMesh->m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&xmf4x4World));
-		XMStoreFloat4(&m_xmBoundingBox.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmBoundingBox.Orientation)));
+		//XMStoreFloat4(&m_xmBoundingBox.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmBoundingBox.Orientation)));
 		MoveBBToParent(this);
 		return;
 	}
@@ -438,6 +439,16 @@ void CGameObject::MoveBBToParent(CGameObject* pTargetLv)
 		MoveBBToParent(pTargetLv->m_pParent);
 	}
 	else return;
+}
+
+void CGameObject::CalculateBoundingBox()
+{
+	m_xmBoundingBox = m_pMesh->m_xmBoundingBox;
+	BoundingBox::CreateMerged(m_xmBoundingBox, m_xmBoundingBox, m_pMesh->m_xmBoundingBox);
+	m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
+
+	if (m_pSibling)m_pSibling->CalculateBoundingBox();
+	if (m_pChild)m_pChild->CalculateBoundingBox();
 }
 
 void CGameObject::SetMesh(CMesh* pMesh)
@@ -965,7 +976,7 @@ bool CGameObject::IsVisible(CCamera* pCamera)
 {
 	OnPrepareRender();
 	bool bIsVisible = false;
-	BoundingOrientedBox xmBoundingBox = m_pMesh->m_xmBoundingBox;
+	BoundingBox xmBoundingBox = m_pMesh->m_xmBoundingBox;
 	if (pCamera) bIsVisible = reinterpret_cast<CThirdPersonCamera*>(pCamera)->IsInFrustum(xmBoundingBox);
 	return(bIsVisible);
 }
@@ -1119,7 +1130,7 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	pTerrainDetailTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Terrain/Detail_Texture_8.dds", RESOURCE_TEXTURE2D, 0);
 
 	CTerrainShader* pTerrainShader = new CTerrainShader();
-	pTerrainShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_R8G8B8A8_UNORM);
+	pTerrainShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_D32_FLOAT);
 	pTerrainShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 
@@ -1152,7 +1163,7 @@ CSkyBox::CSkyBox(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	pSkyBoxTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, pszFileName, RESOURCE_TEXTURE_CUBE, 0);
 
 	CSkyBoxShader* pSkyBoxShader = new CSkyBoxShader();
-	pSkyBoxShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_R8G8B8A8_UNORM);
+	pSkyBoxShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_D32_FLOAT);
 	pSkyBoxShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	CScene::CreateShaderResourceViews(pd3dDevice, pSkyBoxTexture, 0, 10);

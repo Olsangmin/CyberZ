@@ -440,8 +440,8 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 
 	// Make Scene
 	// Ã³À½ ¾À ºôµå
-	m_nSceneNum = START_SCENE;
-	m_pScene = new CStartScene();
+	m_nSceneNum = FIRST_ROUND_SCENE;
+	m_pScene = new CFirstRoundScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
 	if(m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 
@@ -450,7 +450,6 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 #endif // USE_NETWORK
 
 	m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
-
 
 	// µðÆÛµå ·»´õ¸µ¿ë PostProcessing ½¦ÀÌ´õ ¸¸µé¾îÁÖ±â
 	m_pPostProcessingShader = new CTextureDeferdShader();
@@ -707,7 +706,6 @@ void CGameFramework::FrameAdvance()
 	m_pPostProcessingShader->OnPrepareRenderTarget(m_pd3dCommandList, 1, &m_pd3dSwapChainBackBufferRTVCPUHandles[m_nSwapChainBufferIndex], &m_d3dDsvDescriptorCPUHandle);
 
 
-	m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 	if (m_pScene) m_pScene->Render(m_pd3dCommandList, m_pCamera);
 	if (m_bRenderBoundingBox) m_pScene->RenderBoundingBox(m_pd3dCommandList, m_pCamera);
 

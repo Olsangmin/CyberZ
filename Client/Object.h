@@ -193,7 +193,7 @@ public:
 	CAnimationController*			m_pSkinnedAnimationController = NULL;
 
 
-	BoundingOrientedBox				m_xmBoundingBox = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	BoundingBox						m_xmBoundingBox = BoundingBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f));
 	CBoundingBoxMesh				*m_pBoundingBoxMesh = NULL;
 	bool							m_bCheckBB = false;
 	
@@ -202,6 +202,9 @@ public:
 	virtual void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList);
 	void MoveBBToParent(CGameObject* pTargetLv);
 	
+	void CalculateBoundingBox();
+
+
 	void SetCbvGPUDescriptorHandle(D3D12_GPU_DESCRIPTOR_HANDLE d3dCbvGPUDescriptorHandle) { m_d3dCbvGPUDescriptorHandle = d3dCbvGPUDescriptorHandle; }
 	void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr) { m_d3dCbvGPUDescriptorHandle.ptr = nCbvGPUDescriptorHandlePtr; }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetCbvGPUDescriptorHandle() { return(m_d3dCbvGPUDescriptorHandle); }
@@ -439,7 +442,7 @@ public:
 	CMissonOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, XMFLOAT3 f3MissionRange, int nCategory);
 	virtual ~CMissonOBJ();
 
-	BoundingOrientedBox				m_xmMissionRange = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	BoundingBox						m_xmMissionRange = BoundingBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f));
 	CBoundingBoxMesh*				m_pMissionRangeMesh = NULL;
 
 	// 미션 종류
@@ -470,7 +473,7 @@ public:
 	CFloorObj(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel);
 	virtual ~CFloorObj();
 
-	BoundingOrientedBox				m_xmMissionRange = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	BoundingBox				m_xmMissionRange = BoundingBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f));
 	CBoundingBoxMesh* m_pMissionRangeMesh = NULL;
 
 };
