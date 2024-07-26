@@ -334,7 +334,7 @@ float4 PSBoundingBox(VS_BOUNDINGBOX_OUTPUT input) : SV_TARGET1
 //
 
 Texture2D gtxtParticleTexture : register(t25);
-SamplerState gssSet : register(s3);
+//SamplerState gssSet : register(s3);
 struct VS_PARTICLE_INPUT
 {
     float3 position : POSITION;
@@ -358,16 +358,16 @@ VS_PARTICLE_OUTPUT VSParticle(VS_PARTICLE_INPUT input)
    // float time = frac(input.time);
    // pos.x = pos.x;
     output.positionH = mul(mul(float4(pos, 1.0f), gmtxView), gmtxProjection);
-    output.color = float4( 1.0f, 0.0f, 0.0f, 1.0f);
+    output.color = float4( 0.0f, 1.0f, 1.0f, 1.0f);
     output.positionL = input.position;
     return (output);
 }
 
 float4 PSParticle(VS_PARTICLE_OUTPUT input) : SV_TARGET1
 {
-   // float4 cColor = gtxtParticleTexture.Sample(gssSet, input.positionL);
-   // return (cColor);
-    return (input.color);
+    float4 cColor = gtxtParticleTexture.Sample(gssWrap, input.positionL.xy);
+    return (cColor);
+    //return (input.color);
 
 }
 

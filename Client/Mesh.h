@@ -301,7 +301,4 @@ public:
 	ID3D12Resource* m_pd3dLifeTimeBuffer = NULL;
 	ID3D12Resource* m_pd3dTimeBuffer = NULL;
 
-
-	void UpdateVertexPosition(BoundingOrientedBox* pxmBoundingBox);
-	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList);
 };

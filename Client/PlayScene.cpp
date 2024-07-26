@@ -835,6 +835,9 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 		if (pRobotModel) delete pRobotModel;
 	}
+
+
+	//===============================//
 	m_nParticleObj = 1;
 	m_ppParticleObj = new CParticle * [m_nParticleObj];
 

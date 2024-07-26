@@ -1567,9 +1567,9 @@ bool CBossRobotObject::IsAttackP(Player_Animation_ST status)
 	return false;
 }
 
-CParticle::CParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, wchar_t* pszFileName)
+CParticle::CParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, wchar_t* pszFileName) : CGameObject(1)
 {
-	ParticleMesh* pParticleMesh = new ParticleMesh(pd3dDevice, pd3dCommandList, XMFLOAT4(0,0,0,1));
+	ParticleMesh* pParticleMesh = new ParticleMesh(pd3dDevice, pd3dCommandList, XMFLOAT4(10,10,10,1));
 	SetMesh(pParticleMesh);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -1581,10 +1581,10 @@ CParticle::CParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	pParticleShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
 	pParticleShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	//CScene::CreateShaderResourceViews(pd3dDevice, pParticleTexture, 0, 16);
+	CScene::CreateShaderResourceViews(pd3dDevice, pParticleTexture, 0, 19);
 
 	CMaterial* pParticleMaterial = new CMaterial(1);
-	pParticleMaterial->SetTexture(pParticleTexture);
+	pParticleMaterial->SetTexture(pParticleTexture,0);
 	pParticleMaterial->SetShader(pParticleShader);
 
 	SetMaterial(0, pParticleMaterial);
