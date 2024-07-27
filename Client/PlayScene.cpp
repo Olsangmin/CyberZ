@@ -1002,6 +1002,7 @@ bool CSecondRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 				p.comNum = m_nDoingMachine;
 				p.state = sstate;
 				send_packet(&p);
+				m_nDoingMachine = -1;
 			}
 			if (!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCrawl)
 				m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
@@ -1056,7 +1057,7 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 		{
 			for (int i = 0; i < m_nMissionObj; i++)
 			{
-				if (m_ppMissionObj[i]->m_bMissionflag)
+				if (m_pMyPlayer->m_xmBoundingBox.Intersects(m_ppMissionObj[i]->m_xmMissionRange))
 				{
 					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = true;
 					m_nDoingMachine = i;
@@ -1133,16 +1134,17 @@ void CSecondRoundScene::AnimateObjects(float fTimeElapsed)
 	else reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bStaminaBarOn = false;
 
 
-	for (int i = 0; i < m_nMissionObj; i++)
-	{
-		Missionflag = false;
-		
-		if (CheckMissionBound(m_pMyPlayer, m_ppMissionObj[i]))
-		{
-			Missionflag = true;
-		}
-		m_ppMissionObj[i]->m_bMissionflag = Missionflag;
-	}
+	//for (int i = 0; i < m_nMissionObj; i++)
+	//{
+	//	Missionflag = false;
+	//	
+	//	if (CheckMissionBound(m_pMyPlayer, m_ppMissionObj[i]))
+	//	{
+	//		Missionflag = true;
+	//		
+	//	}
+	//	m_ppMissionObj[i]->m_bMissionflag = Missionflag;
+	//}
 
 	int check = 0;
 	for (int i = 0; i < m_nMissionObj; i++)
