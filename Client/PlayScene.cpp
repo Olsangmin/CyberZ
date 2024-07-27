@@ -1053,10 +1053,6 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 			reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetAttackStatus(true, 2);
 			break;
 		}
-		case 'F':
-		{
-			break;
-		}
 		case 'F': {
 			Player_Interaction_Type InteractionType = CheckInteraction();
 			Interaction(InteractionType);
