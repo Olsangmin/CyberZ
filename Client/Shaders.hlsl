@@ -553,8 +553,7 @@ float4 PSScreenRectSamplingTextured(VS_SCREEN_RECT_TEXTURED_OUTPUT input) : SV_T
     light = gtxtIlluminationTexture.Sample(gssWrap, uv);
     
     // Combine albedo and light
-    float4 outcolor = lerp(color, light, 0.7f);
-
+    float4 outcolor = lerp(color, light, 0.4f);
     return (outcolor);
 
 }

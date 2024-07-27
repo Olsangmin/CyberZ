@@ -179,9 +179,7 @@ float4 Lighting(float3 vPosition, float3 vNormal, bool bShadow, float4 shadowMap
 		if (gLights[i].m_bEnable)
 		{
 			float fShadowFactor = 0.0f;
-			//if (bShadow) fShadowFactor = Compute3x3ShadowFactor(shadowMapUVs[i].xy, shadowMapUVs[i].z, i);
-            if (bShadow) fShadowFactor = gtxtDepthTextures[i].SampleCmpLevelZero(gssComparisonPCFShadow, shadowMapUVs[i].xy, shadowMapUVs[i].z).r;
-			
+            if (bShadow) fShadowFactor = Compute3x3ShadowFactor(shadowMapUVs[i].xy, shadowMapUVs[i].z, i);
 			
 			if (gLights[i].m_nType == DIRECTIONAL_LIGHT)
 			{
