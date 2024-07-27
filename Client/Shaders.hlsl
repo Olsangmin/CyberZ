@@ -359,13 +359,13 @@ VS_PARTICLE_OUTPUT VSParticle(VS_PARTICLE_INPUT input)
     
     VS_PARTICLE_OUTPUT output;
     float3 velocity = input.direction * (10.f* (sin(input.speed * input.time * input.time))*10);
-    float3 pos = input.position;
-    //float3 pos = /*{ input.position.x+velocity.x,input.position.y+velocity.y, input.position.z+velocity.z };*/input.position + velocity;
-    //if (velocity.x*velocity.y*velocity.z <= 0)
-    //{
-    //    pos = input.position;
+    //float3 pos = input.position;
+    float3 pos = /*{ input.position.x+velocity.x,input.position.y+velocity.y, input.position.z+velocity.z };*/input.position + velocity;
+    if (velocity.x * velocity.y * velocity.z <= 0)
+    {
+        pos = input.position;
         
-    //}
+    }
    // float3 gravity = float3(0.f, -20.f, 0.f);
    // velocity = velocity * gravity;
 
