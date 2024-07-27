@@ -71,7 +71,7 @@ public:
 	bool						m_nRiseProgress = false;
 	
 	int							m_nDoingMachine{};
-
+	S2_COM_STATE				sstate = TURNOFF;
 	
 
 public:

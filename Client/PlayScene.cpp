@@ -1061,6 +1061,16 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = true;
 					m_nDoingMachine = i;
 
+
+					S2_COM_STATE sstate{};
+					sstate = TURNON;
+
+					CS_CHANGE_COMST_PACKET p;
+					p.size = sizeof(&p);
+					p.type = CS_CHANGE_COMST;
+					p.comNum = m_nDoingMachine;
+					p.state = sstate;
+					send_packet(&p);
 				}
 			}
 			break;
@@ -1106,31 +1116,6 @@ bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPA
 		::ReleaseCapture();
 		break;
 	case WM_MOUSEMOVE:
-		if (m_nDoingMachine !=-1 && reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn) //  미션이 돌아갈때만 on
-		{
-			::SetCapture(hWnd);
-			::GetCursorPos(&m_ptOldCursorPos);
-			
-			S2_COM_STATE sstate{};
-			if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppTagButton[0]->CheckMouseOn(hWnd, m_ptOldCursorPos))
-			{
-				sstate = TURNON;
-				// reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(sstate);
-			}
-			else 
-			{
-				sstate = TURNOFF;
-				// reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(sstate);
-			}
-			CS_CHANGE_COMST_PACKET p;
-			p.size = sizeof(&p);
-			p.type = CS_CHANGE_COMST;
-			p.comNum = m_nDoingMachine;
-			p.state = sstate;
-			send_packet(&p);
-
-			::ReleaseCapture();
-		}
 		break;
 	}
 	return false;
