@@ -65,14 +65,15 @@ public:
 	// Render
 	void OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList);
 	void OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
-    virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+	void OtherRender(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
 
 
 	//bounding Box
 	virtual void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	bool CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget, XMFLOAT3& out);
 	bool CheckMissionBound(CGameObject* pBase, CMissonOBJ* pTarget);
-	BoundingBox CalculateBoundingBox();
+	BoundingOrientedBox CalculateBoundingBox();
 
 public:
 	// @@서버코드@@서버코드@@
@@ -167,7 +168,7 @@ public:
 	CShadowMapShader*					m_pShadowShader = NULL;
 
 	int									m_nFloorObj = 0;
-	CFloorObj**							m_ppFloorObj = NULL;
+	CGameObject**						m_ppFloorObj = NULL;
 
 public:
 	virtual bool AllPlayerReady() { return false; }

@@ -94,8 +94,9 @@ VS_STANDARD_OUTPUT VSStandard(VS_STANDARD_INPUT input)
 
     for (int i = 0; i < MAX_LIGHTS; i++)
     {
-        //if (gcbToLightSpaces[i].f4Position.w != 0.0f) 
+        if (gcbToLightSpaces[i].f4Position.w != 0.0f) 
             output.shadowMapUVs[i] = mul(positionW, gcbToLightSpaces[i].mtxToTextureSpace);
+        
     }
 
     
@@ -181,11 +182,11 @@ VS_STANDARD_OUTPUT VSSkinnedAnimationStandard(VS_SKINNED_STANDARD_INPUT input)
 	output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
 	output.uv = input.uv;
 
-    
+     
     for (int j = 0; j < MAX_LIGHTS; j++)
     {
-        //if (gcbToLightSpaces[j].f4Position.w != 0.0f) 
-            output.shadowMapUVs[j] = mul(positionW, gcbToLightSpaces[j].mtxToTextureSpace);
+        if (gcbToLightSpaces[j].f4Position.w != 0.0f) 
+        output.shadowMapUVs[j] = mul(positionW, gcbToLightSpaces[j].mtxToTextureSpace);
     }
     
 	return(output);
@@ -251,13 +252,12 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTexturedLightingToMultipleRTs(VS_STANDARD_OU
     }
 
     output.normal = float4(normalW * 0.5f + 0.5f, 1.0f); // Convert to [0, 1]
-    output.cIllumination = Lighting(input.positionW, 1/* normalize(normalW)*/, true, input.shadowMapUVs);
+    output.cIllumination = Lighting(input.positionW, 1 /* normalize(normalW)*/, true, input.shadowMapUVs);
     output.depth = input.position.z;
-
     output.color = cColor;
     
     return output;
-}
+  }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 Texture2D gtxtTerrainBaseTexture : register(t1);
@@ -545,14 +545,17 @@ float4 PSScreenRectSamplingTextured(VS_SCREEN_RECT_TEXTURED_OUTPUT input) : SV_T
     float4 color = gtxtTextureTexture.Sample(gssWrap, uv);
     float4 normalData = gtxtNormalTexture2.Sample(gssWrap, uv);
     float4 specular = gtxtSpecularTexture.Sample(gssWrap, uv);
-    float depth =  gtxtDepthTextures[3].Load(int3(input.position.xy, 0)).r;
+    float depth =  gtxtDepthTextures[0].Load(int3(input.position.xy, 0)).r;
     
     // Calculate lighting
-    float4 light = gtxtIlluminationTexture.Sample(gssWrap, uv);
+    float4 light = 1;
 
+    light = gtxtIlluminationTexture.Sample(gssWrap, uv);
+    
     // Combine albedo and light
     float4 outcolor = lerp(color, light, 0.7f);
 
-    return (outcolor);
+    return (depth);
 
 }
+

@@ -33,28 +33,31 @@ void CScene::BuildDefaultLightsAndMaterials()
 
 	m_xmf4GlobalAmbient = XMFLOAT4(0.15f, 0.15f, 0.15f, 1.0f);
 
-	// ??
+	// 전체 조명
 	m_pLights[0].m_bEnable = true;
 	m_pLights[0].m_nType = DIRECTIONAL_LIGHT;
-	m_pLights[0].m_fRange = 2000.0f;
+	m_pLights[0].m_fRange = 1000.0f;
 
 	m_pLights[0].m_xmf4Ambient = XMFLOAT4(0.5f, 1.0f, 0.9f, 1.0f);
 	m_pLights[0].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.3f, 0.6f, 0.0f);
 	m_pLights[0].m_xmf4Specular = XMFLOAT4(0.7f, 0.6f, 0.5f, 0.0f);
 
-	m_pLights[0].m_xmf3Position = XMFLOAT3(500.f, 450.0f, 500.f);
-	m_pLights[0].m_xmf3Direction = XMFLOAT3(-1.0f, -1.0f, 0.0f);
+	m_pLights[0].m_xmf3Position = XMFLOAT3(0.f, 100.0f, 0.f);
+	m_pLights[0].m_xmf3Direction = XMFLOAT3(1.0f, -1.0f, 0.0f);
 
 	// Player Flash Light 
 	m_pLights[1].m_bEnable = false;
 	m_pLights[1].m_nType = SPOT_LIGHT;
 	m_pLights[1].m_fRange = 500.0f;
+	
 	m_pLights[1].m_xmf4Ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
 	m_pLights[1].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f);
 	m_pLights[1].m_xmf4Specular = XMFLOAT4(0.3f, 0.3f, 0.3f, 0.0f);
 	m_pLights[1].m_xmf3Position = XMFLOAT3(-50.0f, 20.0f, -5.0f);
+
 	m_pLights[1].m_xmf3Direction = XMFLOAT3(0.0f, -1.0f, 1.0f);
 	m_pLights[1].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.01f, 0.0001f);
+
 	m_pLights[1].m_fFalloff = 8.0f;
 	m_pLights[1].m_fPhi = (float)cos(XMConvertToRadians(40.0f));
 	m_pLights[1].m_fTheta = (float)cos(XMConvertToRadians(20.0f));
@@ -70,16 +73,21 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[2].m_xmf3Position = XMFLOAT3(500.0f, 100.0f, 500.0f);
 
 	// 중앙 상단에 붉은 조명 추가(분위기 조성용)
-	m_pLights[3].m_bEnable = true;
-	m_pLights[3].m_nType = POINT_LIGHT;
-	m_pLights[3].m_fRange = 2000.0f;
+	m_pLights[3].m_bEnable = false;
+	m_pLights[3].m_nType = SPOT_LIGHT;
+	m_pLights[3].m_fRange = 800.0f;
+	m_pLights[3].m_fFalloff = 8.0f;
+
 	m_pLights[3].m_xmf4Ambient = XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0f);
 	m_pLights[3].m_xmf4Diffuse = XMFLOAT4(1.0f, 0.3f, 0.3f, 1.0f);
 	m_pLights[3].m_xmf4Specular = XMFLOAT4(1.0f, 0.3f, 0.3f, 0.0f);
 	m_pLights[3].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.01f, 0.0001f);
-	m_pLights[3].m_xmf3Direction = XMFLOAT3(-1.0f, -1.0f, 0.0f);
 
-	m_pLights[3].m_xmf3Position = XMFLOAT3(500.0f, 100.0f, 500.0f);
+	m_pLights[3].m_xmf3Position = XMFLOAT3(300.0f, 100.0f, 500.0f);
+	m_pLights[3].m_xmf3Direction = XMFLOAT3(-1.0f, 0.0f, -1.0f);
+
+	m_pLights[3].m_fPhi = (float)cos(XMConvertToRadians(60.0f));
+	m_pLights[3].m_fTheta = (float)cos(XMConvertToRadians(20.0f));
 
 
 	// ??
@@ -93,6 +101,7 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[4].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
 	m_pLights[4].m_xmf3Direction = XMFLOAT3(-1.0f, -1.0f, 0.0f);
 
+	
 }
 
 void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum)
@@ -110,7 +119,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 void CScene::CreateShadowShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	m_pDepthRenderShader = new CDepthRenderShader(m_ppMissionObj, m_pLights);
+	m_pDepthRenderShader = new CDepthRenderShader(m_ppHierarchicalGameObjects, m_ppFloorObj, m_pLights, m_nHierarchicalGameObjects);
 	DXGI_FORMAT pdxgiRtvFormats[1] = { DXGI_FORMAT_R32_FLOAT };
 	m_pDepthRenderShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 1, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
 	m_pDepthRenderShader->BuildObjects(pd3dDevice, pd3dCommandList, NULL);
@@ -424,7 +433,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dSamplerDescs[2].MaxLOD = D3D12_FLOAT32_MAX;
 	pd3dSamplerDescs[2].ShaderRegister = 2;
 	pd3dSamplerDescs[2].RegisterSpace = 0;
-	pd3dSamplerDescs[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	pd3dSamplerDescs[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	D3D12_ROOT_SIGNATURE_FLAGS d3dRootSignatureFlags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS | D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS | D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 	D3D12_ROOT_SIGNATURE_DESC d3dRootSignatureDesc;
@@ -671,7 +680,7 @@ void CScene::OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList)
 
 void CScene::OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-	BoundingBox xmBoundingBoxs = CalculateBoundingBox();
+	BoundingOrientedBox xmBoundingBoxs = CalculateBoundingBox();
 	if (m_pDepthRenderShader)m_pDepthRenderShader->PrepareShadowMap( &xmBoundingBoxs, pd3dCommandList, pCamera); // 그림자 준비 연산
 
 }
@@ -688,7 +697,6 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	//pCamera = m_pMyPlayer->GetCamera();
 	pCamera->SetViewportsAndScissorRects(pd3dCommandList);
 	pCamera->UpdateShaderVariables(pd3dCommandList);
-
 
 	//////////////////////////////////////////
 
@@ -741,7 +749,7 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 			if (m_ppPlayer[i]->m_bUnable)m_ppPlayer[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
-
+	
 
 }
 
@@ -836,7 +844,7 @@ bool CScene::CheckMissionBound(CGameObject* pBase, CMissonOBJ* pTarget)
 	else return false;
 }
 
-void CreateMerged(BoundingBox& Out, const BoundingBox& b1, const BoundingBox& b2) noexcept
+void CreateMerged(BoundingOrientedBox& Out, const BoundingOrientedBox& b1, const BoundingOrientedBox& b2) noexcept
 {
 	XMVECTOR b1Center = XMLoadFloat3(&b1.Center);
 	XMVECTOR b1Extents = XMLoadFloat3(&b1.Extents);
@@ -857,9 +865,9 @@ void CreateMerged(BoundingBox& Out, const BoundingBox& b1, const BoundingBox& b2
 
 }
 
-BoundingBox CScene::CalculateBoundingBox()
+BoundingOrientedBox CScene::CalculateBoundingBox()
 {
-	BoundingBox xmBoundingBoxs = BoundingBox(XMFLOAT3(500.0f, 30.0f, 500.0f), XMFLOAT3(0.01f, 0.01f, 0.01f));
+	BoundingOrientedBox xmBoundingBoxs = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	//if (m_nMissionObj) xmBoundingBoxs = m_ppMissionObj[0]->m_xmBoundingBox;
 	//for (int i = 1; i < m_nMissionObj; i++) CreateMerged(xmBoundingBoxs, xmBoundingBoxs, m_ppMissionObj[i]->m_xmBoundingBox);
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) CreateMerged(xmBoundingBoxs, xmBoundingBoxs, m_ppHierarchicalGameObjects[i]->m_xmBoundingBox);

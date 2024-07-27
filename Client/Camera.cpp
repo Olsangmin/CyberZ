@@ -365,7 +365,7 @@ void CThirdPersonCamera::GenerateFrustum()
 	//cout << corners[0].x<<", "<<corners[0].z << endl;
 }
 
-bool CThirdPersonCamera::IsInFrustum(BoundingBox& xmBoundingBox)
+bool CThirdPersonCamera::IsInFrustum(BoundingOrientedBox& xmBoundingBox)
 {
 	//cout << "Camera View -	[" << m_xmf4x4View._11 << "][" << m_xmf4x4View._12 << "][" << m_xmf4x4View._13 << "]" << endl;
 	return(m_xmFrustum.Intersects(xmBoundingBox));

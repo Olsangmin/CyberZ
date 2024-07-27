@@ -267,18 +267,22 @@ protected:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-
-struct TOLIGHTSPACEINFO
+struct TOOBJECTSPACEINFO
 {
-	XMFLOAT4X4						m_pxmf4x4ToTextures[MAX_LIGHTS]; //Transposed
-	XMFLOAT4						m_pxmf4LightPositions[MAX_LIGHTS];
+	XMFLOAT4X4						m_xmf4x4ToTexture;//조명좌표계로 바꾸는 행렬
+	XMFLOAT4						m_xmf4Position;//조명위치
+};
+
+struct TOLIGHTSPACES
+{
+	TOOBJECTSPACEINFO				ToLightSpaces[MAX_LIGHTS];
 };
 
 class CDepthRenderShader : public CStandardShader
 {
 public:
 	CDepthRenderShader() {}
-	CDepthRenderShader(CMissonOBJ** ppObjects, LIGHT* pLights);
+	CDepthRenderShader(CGameObject** ppObjects, CGameObject** ppfloor, LIGHT* pLights, int nObject);
 	virtual ~CDepthRenderShader();
 
 	virtual D3D12_DEPTH_STENCIL_DESC CreateDepthStencilState();
@@ -294,7 +298,7 @@ public:
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext = NULL);
 	virtual void ReleaseObjects();
 
-	void PrepareShadowMap(BoundingBox* pBoundingBoxs, ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	void PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
@@ -312,22 +316,22 @@ protected:
 
 	XMMATRIX						m_xmProjectionToTexture;
 
-	
-
 public:
 	CTexture* GetDepthTexture() { return(m_pDepthFromLightTexture); }
 	ID3D12Resource* GetDepthTextureResource(UINT nIndex) { return(m_pDepthFromLightTexture->GetResource(nIndex)); }
 
-	CMissonOBJ**	m_ppObjects = NULL;
+	CGameObject**	m_ppObjects = NULL;
+	int				m_nObject = 5;
 
+	CGameObject** m_ppFloorObj = NULL;
 
 protected:
 	LIGHT* m_pLights = NULL;
 
-	TOLIGHTSPACEINFO* m_pToLightSpaces;
+	TOLIGHTSPACES* ToLightSpaces;
 
 	ID3D12Resource* m_pd3dcbToLightSpaces = NULL;
-	TOLIGHTSPACEINFO* m_pcbMappedToLightSpaces = NULL;
+	TOLIGHTSPACES* m_pcbMappedToLightSpaces = NULL;
 };
 
 class CShadowMapShader : public CStandardShader

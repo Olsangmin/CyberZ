@@ -42,7 +42,7 @@ public:
 public:
 	char							m_pstrMeshName[64] = { 0 };
 
-	BoundingBox						 m_xmBoundingBox = BoundingBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f));
+	BoundingOrientedBox				m_xmBoundingBox = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 
 protected:
 	UINT							m_nType = 0x00;
@@ -272,7 +272,7 @@ public:
 	D3D12_VERTEX_BUFFER_VIEW		m_d3dColorBufferView;
 
 
-	void UpdateVertexPosition(BoundingBox* pxmBoundingBox);
+	void UpdateVertexPosition(BoundingOrientedBox* pxmBoundingBox);
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList);
 };
 

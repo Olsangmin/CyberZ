@@ -441,16 +441,6 @@ void CGameObject::MoveBBToParent(CGameObject* pTargetLv)
 	else return;
 }
 
-void CGameObject::CalculateBoundingBox()
-{
-	m_xmBoundingBox = m_pMesh->m_xmBoundingBox;
-	BoundingBox::CreateMerged(m_xmBoundingBox, m_xmBoundingBox, m_pMesh->m_xmBoundingBox);
-	m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&m_xmf4x4World));
-
-	if (m_pSibling)m_pSibling->CalculateBoundingBox();
-	if (m_pChild)m_pChild->CalculateBoundingBox();
-}
-
 void CGameObject::SetMesh(CMesh* pMesh)
 {
 	if (m_pMesh) m_pMesh->Release();
@@ -976,7 +966,7 @@ bool CGameObject::IsVisible(CCamera* pCamera)
 {
 	OnPrepareRender();
 	bool bIsVisible = false;
-	BoundingBox xmBoundingBox = m_pMesh->m_xmBoundingBox;
+	BoundingOrientedBox xmBoundingBox = m_pMesh->m_xmBoundingBox;
 	if (pCamera) bIsVisible = reinterpret_cast<CThirdPersonCamera*>(pCamera)->IsInFrustum(xmBoundingBox);
 	return(bIsVisible);
 }

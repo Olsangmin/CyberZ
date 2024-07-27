@@ -193,16 +193,13 @@ public:
 	CAnimationController*			m_pSkinnedAnimationController = NULL;
 
 
-	BoundingBox						m_xmBoundingBox = BoundingBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f));
-	CBoundingBoxMesh				*m_pBoundingBoxMesh = NULL;
+	BoundingOrientedBox				m_xmBoundingBox = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f)); CBoundingBoxMesh				*m_pBoundingBoxMesh = NULL;
 	bool							m_bCheckBB = false;
 	
 	void SetBoundingBoxMesh(CBoundingBoxMesh* pMesh);
 	void UpdateBoundingBox(XMFLOAT3 xmf3NextPos);
 	virtual void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList);
 	void MoveBBToParent(CGameObject* pTargetLv);
-	
-	void CalculateBoundingBox();
 
 
 	void SetCbvGPUDescriptorHandle(D3D12_GPU_DESCRIPTOR_HANDLE d3dCbvGPUDescriptorHandle) { m_d3dCbvGPUDescriptorHandle = d3dCbvGPUDescriptorHandle; }
@@ -433,7 +430,6 @@ public:
 	CStandardOBJ() {};
 	CStandardOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel);
 	virtual ~CStandardOBJ();
-
 };
 
 class CMissonOBJ : public CGameObject
@@ -442,9 +438,9 @@ public:
 	CMissonOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, XMFLOAT3 f3MissionRange, int nCategory);
 	virtual ~CMissonOBJ();
 
-	BoundingBox						m_xmMissionRange = BoundingBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f));
 	CBoundingBoxMesh*				m_pMissionRangeMesh = NULL;
-
+	BoundingOrientedBox				m_xmMissionRange = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	
 	// 미션 종류
 	// 0 - 점령미션, 1 - 보안키 미션
 	int		m_nCategory = 0;
@@ -473,7 +469,8 @@ public:
 	CFloorObj(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel);
 	virtual ~CFloorObj();
 
-	BoundingBox				m_xmMissionRange = BoundingBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f));
+	BoundingOrientedBox				m_xmBoundingBox = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	
 	CBoundingBoxMesh* m_pMissionRangeMesh = NULL;
 
 };
