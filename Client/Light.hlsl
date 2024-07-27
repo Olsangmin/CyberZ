@@ -39,8 +39,8 @@ cbuffer cbLights : register(b4)
 #define FRAME_BUFFER_WIDTH		1960
 #define FRAME_BUFFER_HEIGHT		1080
 
-#define _DEPTH_BUFFER_WIDTH		(FRAME_BUFFER_WIDTH*8)
-#define _DEPTH_BUFFER_HEIGHT	(FRAME_BUFFER_HEIGHT*8)
+#define _DEPTH_BUFFER_WIDTH		(FRAME_BUFFER_WIDTH)
+#define _DEPTH_BUFFER_HEIGHT	(FRAME_BUFFER_HEIGHT)
 
 #define DELTA_X					(1.0f / _DEPTH_BUFFER_WIDTH)
 #define DELTA_Y					(1.0f / _DEPTH_BUFFER_HEIGHT)
@@ -178,9 +178,10 @@ float4 Lighting(float3 vPosition, float3 vNormal, bool bShadow, float4 shadowMap
 	{
 		if (gLights[i].m_bEnable)
 		{
-			float fShadowFactor = 1.0f;
+			float fShadowFactor = 0.0f;
 			//if (bShadow) fShadowFactor = Compute3x3ShadowFactor(shadowMapUVs[i].xy, shadowMapUVs[i].z, i);
             if (bShadow) fShadowFactor = gtxtDepthTextures[i].SampleCmpLevelZero(gssComparisonPCFShadow, shadowMapUVs[i].xy, shadowMapUVs[i].z).r;
+			
 			
 			if (gLights[i].m_nType == DIRECTIONAL_LIGHT)
 			{

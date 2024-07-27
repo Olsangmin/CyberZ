@@ -186,7 +186,7 @@ VS_STANDARD_OUTPUT VSSkinnedAnimationStandard(VS_SKINNED_STANDARD_INPUT input)
     for (int j = 0; j < MAX_LIGHTS; j++)
     {
         if (gcbToLightSpaces[j].f4Position.w != 0.0f) 
-        output.shadowMapUVs[j] = mul(positionW, gcbToLightSpaces[j].mtxToTextureSpace);
+            output.shadowMapUVs[j] = mul(positionW, gcbToLightSpaces[j].mtxToTextureSpace);
     }
     
 	return(output);
