@@ -276,3 +276,34 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList);
 };
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+
+class ParticleMesh : public CMesh
+{
+public:
+	ParticleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4 xm4Color);
+	virtual ~ParticleMesh();
+	virtual void OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
+
+	XMFLOAT3 position;
+	XMFLOAT3 direction;
+	FLOAT speed;
+	FLOAT lifeTime;
+	FLOAT time;
+
+
+	XMFLOAT3* m_pcbMappedPositions = NULL;
+	FLOAT m_pcbMappedTimes = NULL;
+
+	ID3D12Resource* m_pd3dDirectionBuffer = NULL;
+	ID3D12Resource* m_pd3dSpeedBuffer = NULL;
+	ID3D12Resource* m_pd3dLifeTimeBuffer = NULL;
+	ID3D12Resource* m_pd3dTimeBuffer = NULL;
+
+	ID3D12Resource* m_pd3dDirectionUploadBuffer = NULL;
+	ID3D12Resource* m_pd3dSpeedUploadBuffer = NULL;
+	ID3D12Resource* m_pd3dLifeTimeUploadBuffer = NULL;
+	ID3D12Resource* m_pd3dTimeUploadBuffer = NULL;
+
+};

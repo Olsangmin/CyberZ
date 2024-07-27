@@ -47,10 +47,10 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CreateRtvAndDsvDescriptorHeaps();
 
 	CreateSwapChain();
+	ChangeSwapChainState();
 	CreateSwapChainRenderTargetViews();
 	CreateDepthStencilView();
 	
-	//ChangeSwapChainState();
 	
 	CoInitialize(NULL);
 

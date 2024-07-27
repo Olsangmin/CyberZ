@@ -1245,19 +1245,39 @@ void CRobotObject::Update(float fTimeElapsed)
 void CRobotObject::MoveToTarget()
 {
 	XMFLOAT3 xmfVel = Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()));
-	float fLength = xmfVel.x * xmfVel.x + xmfVel.z * xmfVel.z;
+	float fLength = sqrt(xmfVel.x * xmfVel.x + xmfVel.z * xmfVel.z);
 
-	if (fLength < 1.0f)
+	if (fLength < 1.0f) {
 		m_xmf3Target = XMFLOAT3(0, 0, 0);
+	}
+	
 
 
 
-	Vector3::IsZero(m_xmf3Target) ?
-		m_pasNextAni = IDLE : RotateDirection(20.f, m_xmf3Target), m_pasNextAni = WALK;
+	/*Vector3::IsZero(m_xmf3Target) ?
+		m_pasNextAni = IDLE : RotateDirection(5.f, m_xmf3Target), m_pasNextAni = WALK;
 	if (!Vector3::IsZero(m_xmf3Target))
 		Vector3::IsZero(Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()))) ?
-		m_pasNextAni = IDLE : MoveForward(0.33f), m_pasNextAni = WALK;
-	else { m_pasNextAni = IDLE; }
+		m_pasNextAni = IDLE : MoveForward(0.4f), m_pasNextAni = WALK;
+	else { m_pasNextAni = IDLE; }*/
+
+
+	if (Vector3::IsZero(m_xmf3Target)) {
+		m_pasNextAni = IDLE;
+	}
+	else  {
+		if (Vector3::IsZero(Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition())))) {
+			m_pasNextAni = IDLE;
+		}
+		else {
+			RotateDirection(10.f, m_xmf3Target);
+			MoveForward(0.5f);
+			m_pasNextAni = WALK;
+		}
+		// 
+		m_pasNextAni = WALK;
+	}
+
 
 }
 
@@ -1267,7 +1287,7 @@ bool CRobotObject::RotateDirection(float fAngle, XMFLOAT3& xmf3Target)
 	if (Vector3::IsZero(xmfVel))xmf3Target = XMFLOAT3(0.f, 0.f, 0.f);
 
 	float fCurrentAngle = Vector3::Angle(Vector3::Normalize(xmfVel), GetLook());
-	if (fCurrentAngle > 1) {
+	if (fCurrentAngle > 5.f) {
 
 		XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&GetUp()), XMConvertToRadians(fAngle));
 		XMFLOAT3 xmf3Look = Vector3::TransformNormal(GetLook(), xmmtxRotate);
@@ -1484,19 +1504,22 @@ void CBossRobotObject::Update(float fTimeElapsed)
 void CBossRobotObject::MoveToTarget()
 {
 	XMFLOAT3 xmfVel = Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()));
-	float fLength = xmfVel.x * xmfVel.x + xmfVel.z * xmfVel.z;
+	float fLength = sqrt(xmfVel.x * xmfVel.x + xmfVel.z * xmfVel.z);
 
-	if (fLength < 1.0f)
-		m_xmf3Target = XMFLOAT3(0, 0, 0);
+	if (fLength < 1.f) {
+		m_xmf3Target = XMFLOAT3(0.f, 0.f, 0.f);
+	}
 
 
 
 	Vector3::IsZero(m_xmf3Target) ?
-		m_pasNextAni = IDLE : RotateDirection(20.f), m_pasNextAni = WALK;
+		m_pasNextAni = IDLE : RotateDirection(5.f), m_pasNextAni = WALK;
 	if (!Vector3::IsZero(m_xmf3Target))
 		Vector3::IsZero(Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()))) ?
-		m_pasNextAni = IDLE : MoveForward(0.34f), m_pasNextAni = WALK;
+		m_pasNextAni = IDLE : MoveForward(0.25f), m_pasNextAni = WALK;
 	else { m_pasNextAni = IDLE; }
+
+
 }
 
 void CBossRobotObject::RotateDirection(float fAngle)
@@ -1506,7 +1529,7 @@ void CBossRobotObject::RotateDirection(float fAngle)
 
 	float fCurrentAngle = Vector3::Angle(Vector3::Normalize(xmfVel), GetLook());
 
-	if (fCurrentAngle > 0) {
+	if (fCurrentAngle > 5.f) {
 
 		XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&GetUp()), XMConvertToRadians(fAngle));
 		XMFLOAT3 xmf3Look = Vector3::TransformNormal(GetLook(), xmmtxRotate);
@@ -1567,4 +1590,38 @@ bool CBossRobotObject::IsAttackP(Player_Animation_ST status)
 		return true;
 	}
 	return false;
+}
+
+CParticle::CParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, wchar_t* pszFileName) : CGameObject(1)
+{
+	ParticleMesh* pParticleMesh = new ParticleMesh(pd3dDevice, pd3dCommandList, XMFLOAT4(10,10,10,1));
+	SetMesh(pParticleMesh);
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CTexture* pParticleTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
+	pParticleTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"SkyBox/SkyBox_0.dds", RESOURCE_TEXTURE2D, 0);
+
+	ParticleShader* pParticleShader = new ParticleShader();
+	pParticleShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	pParticleShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CScene::CreateShaderResourceViews(pd3dDevice, pParticleTexture, 0, 19);
+
+	CMaterial* pParticleMaterial = new CMaterial(1);
+	pParticleMaterial->SetTexture(pParticleTexture,0);
+	pParticleMaterial->SetShader(pParticleShader);
+
+	SetMaterial(0, pParticleMaterial);
+}
+
+CParticle::~CParticle()
+{
+}
+
+void CParticle::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	XMFLOAT3 xmf3CameraPos = pCamera->GetPosition();
+	SetPosition(xmf3CameraPos.x, xmf3CameraPos.y, xmf3CameraPos.z);
+	CGameObject::Render(pd3dCommandList, pCamera);
 }

@@ -170,6 +170,9 @@ public:
 	int									m_nFloorObj = 0;
 	CGameObject**						m_ppFloorObj = NULL;
 
+	int m_nParticleObj = 0;
+	CParticle** m_ppParticleObj = NULL;
+
 public:
 	virtual bool AllPlayerReady() { return false; }
 	virtual int GetModelInfo() { return 0; }

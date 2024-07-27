@@ -9,7 +9,7 @@
 // Windows 헤더 파일:
 #include <windows.h>
 
-#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+//#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 
 // C의 런타임 헤더 파일입니다.
 #include <stdlib.h>
@@ -35,7 +35,6 @@ using namespace std;
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>
 #include <DirectXCollision.h>
-
 #include <Mmsystem.h>
 
 //dxd2D
@@ -83,7 +82,7 @@ using Microsoft::WRL::ComPtr;
 
 extern HINSTANCE						ghAppInstance;
 
- //#define SMALL_WINDOW_SCREEN
+//#define SMALL_WINDOW_SCREEN
 
 #ifdef SMALL_WINDOW_SCREEN
 

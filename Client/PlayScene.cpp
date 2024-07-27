@@ -335,6 +335,17 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 			send_packet(&p);
 			break;
 		}
+
+		case 'K':
+		{
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->SetAttackStatus(true);
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->SetTarget(m_pMyPlayer->GetPosition());
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[1])->SetAttackStatus(true);
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[1])->SetTarget(m_pMyPlayer->GetPosition());
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[2])->SetAttackStatus(true);
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[2])->SetTarget(m_pMyPlayer->GetPosition());
+			break;
+		}
 		case 'F': {
 			Player_Interaction_Type InteractionType = CheckInteraction();
 			Interaction(InteractionType);
@@ -620,6 +631,7 @@ void CFirstRoundScene::ProcessPacket(char* p)
 		SC_MOVE_NPC_PACKET* packet = reinterpret_cast<SC_MOVE_NPC_PACKET*>(p);
 
 		int n_id = packet->id - 100;
+		// reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetPosition(reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->GetTarget());
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(packet->next_pos);
 		// std::cout << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << std::endl;
 		// std::cout << packet->next_pos.x << "," << packet->next_pos.z << std::endl;
@@ -640,8 +652,9 @@ void CFirstRoundScene::ProcessPacket(char* p)
 		//------------------------
 		int n_id = packet->n_id - 100;
 		//
-		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(xmf3);
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetAttackStatus(true);
+		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(xmf3);
+		cout << "°ø°Ý" << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << endl;
 		
 	}break;
 
@@ -670,6 +683,8 @@ void CFirstRoundScene::ProcessPacket(char* p)
 
 			Player_Character_Type type = it->second;
 			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->SetCrawl(true);
+			cout << "»ç¸Á" << m_ppEnemy[0]->GetPosition().x << "," << m_ppEnemy[0]->GetPosition().z << endl;
+
 		}
 
 	}break;
@@ -835,7 +850,15 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 		if (pRobotModel) delete pRobotModel;
 	}
-	 
+
+
+	//===============================//
+	m_nParticleObj = 1;
+	m_ppParticleObj = new CParticle * [m_nParticleObj];
+
+	for (int i = 0; i < m_nParticleObj; ++i) {
+		m_ppParticleObj[i] = new CParticle(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL);
+	}
 
 	//===============================//
 	// SHADER OBJ (NULL)
@@ -919,6 +942,10 @@ void CSecondRoundScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 			m_ppFloorObj[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
+	for (int i = 0; i < m_nParticleObj; ++i) {
+		if (m_ppParticleObj[i])
+			m_ppParticleObj[i]->Render(pd3dCommandList, pCamera);
+	}
 }
 
 void CSecondRoundScene::ReleaseUploadBuffers()
@@ -976,8 +1003,8 @@ bool CSecondRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 				p.state = sstate;
 				send_packet(&p);
 			}
-
-			m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
+			if (!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCrawl)
+				m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
 		}
 	}
 
@@ -1006,7 +1033,23 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 			break;
 		}
 		case 'L': {
+			CS_ALIVE_PLAYER_PACKET p;
+			p.size = sizeof(p);
+			p.type = CS_ALIVE_PLAYER;
+			p.id = my_id;
+			send_packet(&p);
+			break;
+		}
+		case '1': {
 			reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetAttackStatus(true, 0);
+			break;
+		}
+		case '2': {
+			reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetAttackStatus(true, 1);
+			break;
+		}
+		case '3': {
+			reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetAttackStatus(true, 2);
 			break;
 		}
 		case 'F':
@@ -1216,8 +1259,9 @@ void CSecondRoundScene::ProcessPacket(char* p)
 
 	case SC_ADD_NPC: {
 		SC_ADD_NPC_PACKET* packet = reinterpret_cast<SC_ADD_NPC_PACKET*>(p);
-		int n_id = packet->id - 100;
-		m_ppEnemy[n_id]->SetPosition(packet->position);
+		int n_id = packet->id - 200;
+		XMFLOAT3 half_pos{ packet->position.x / 2, 0.f, packet->position.z / 2 };
+		reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetPosition(half_pos);
 		// reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(m_ppEnemy[n_id]->GetPosition());
 
 	}
@@ -1226,16 +1270,54 @@ void CSecondRoundScene::ProcessPacket(char* p)
 	case SC_MOVE_NPC: {
 		SC_MOVE_NPC_PACKET* packet = reinterpret_cast<SC_MOVE_NPC_PACKET*>(p);
 
-		int n_id = packet->id - 100;
-		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(packet->next_pos);
-		// std::cout << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << std::endl;
-		// std::cout << packet->next_pos.x << "," << packet->next_pos.z << std::endl;
+		int n_id = packet->id - 200;
+		XMFLOAT3 half_pos{ packet->next_pos.x / 2, 0.f, packet->next_pos.z / 2 };
+		reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetTarget(half_pos);
 	}
 					break;
 
 	case SC_ATTACK_NPC: {
 		SC_ATTACK_NPC_PACKET* packet = reinterpret_cast<SC_ATTACK_NPC_PACKET*>(p);
-		cout << "[" << packet->p_id << "] »ç¸Á" << endl;
+		
+
+		/*int id = packet->p_id;
+		auto& it = idANDtype.find(id);
+		XMFLOAT3 xmf3{};
+		if (it == idANDtype.end()) break;
+		else {
+			Player_Character_Type type = it->second;
+			xmf3 = reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->GetPosition();
+		}
+		*/
+		reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetAttackStatus(true, 2);
+
+
+	}break;
+
+	case SC_PLAYER_DEATH: {
+		SC_PLAYER_DEATH_PACKET* packet = reinterpret_cast<SC_PLAYER_DEATH_PACKET*>(p);
+
+		int id = packet->id;
+		auto& it = idANDtype.find(id);
+		if (it == idANDtype.end()) break;
+		else {
+
+			Player_Character_Type type = it->second;
+			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->SetCrawl(true);
+		}
+
+	}break;
+
+	case SC_PLAYER_ALIVE: {
+		SC_PLAYER_ALIVE_PACKET* packet = reinterpret_cast<SC_PLAYER_ALIVE_PACKET*>(p);
+		int id = packet->id;
+		auto& it = idANDtype.find(id);
+		if (it == idANDtype.end()) break;
+		else {
+
+			Player_Character_Type type = it->second;
+			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->SetCrawl(false);
+		}
 	}break;
 
 	case SC_CHANGE_COMST: {

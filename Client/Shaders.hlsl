@@ -351,7 +351,8 @@ struct VS_BOUNDINGBOX_OUTPUT
 VS_BOUNDINGBOX_OUTPUT VSBoundingBox(VS_BOUNDINGBOX_INPUT input)
 {
     VS_BOUNDINGBOX_OUTPUT output;
-    output.positionH = mul(mul(float4(input.position, 1.0f), gmtxView), gmtxProjection);
+    float3 pos = { input.position.x, input.position.y, input.position.z };
+    output.positionH = mul(mul(float4(pos, 1.0f), gmtxView), gmtxProjection);
     output.color = input.colorIn;
     return (output);
 }
@@ -361,6 +362,76 @@ float4 PSBoundingBox(VS_BOUNDINGBOX_OUTPUT input) : SV_TARGET1
     return (input.color);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+
+Texture2D gtxtParticleTexture : register(t25);
+//SamplerState gssSet : register(s3);
+struct VS_PARTICLE_INPUT
+{
+    float3 position : POSITION;
+    float3 direction : DIRECTION;
+    float  speed : SPEED;
+    float  lifeTime : LIFETIME;
+    float  time : TIME;
+};
+
+struct VS_PARTICLE_OUTPUT
+{
+    float4 positionH : SV_POSITION;
+    float2 uv : COLOR;
+    float lifeTime : LIFETIME;
+    float time : TIME;
+};
+
+#define LENGTH 1.0f
+
+VS_PARTICLE_OUTPUT VSParticle(VS_PARTICLE_INPUT input)
+{
+    
+    VS_PARTICLE_OUTPUT output;
+    float3 pos = input.position;
+
+    float3 up = (gmtxView._13, gmtxView._23, gmtxView._33);
+    float3 look = (gmtxView._12, gmtxView._22, gmtxView._32);
+    float3 right = (gmtxView._11,gmtxView._21,gmtxView._31);
+    up = normalize(cross(look, right));
+    
+    float hw = 0.5f * LENGTH;
+    float hh = 0.5f * LENGTH;
+    
+    float4 position[4] =
+    {
+        float4(pos + (hw * right) - (hh * up), 1.0f), // LB
+        float4(pos + (hw * right) + (hh * up), 1.0f), // LT
+        float4(pos - (hw * right) - (hh * up), 1.0f), // RB
+        float4(pos - (hw * right) + (hh * up), 1.0f) // RT
+    };
+    
+    float2 uv[4] =
+    {
+        float2(0.0f, 1.0f),
+        float2(0.0f, 0.0f),
+        float2(1.0f, 1.0f),
+        float2(1.0f, 0.0f)
+    };
+    for (int i = 0; i < 4; ++i)
+    {
+        output.positionH = mul(mul(position[i], gmtxView), gmtxProjection);
+        output.uv = uv[i];
+        output.lifeTime = input.lifeTime;
+        output.time = input.time;
+    }
+    return (output);
+}
+
+float4 PSParticle(VS_PARTICLE_OUTPUT input) : SV_TARGET1
+{
+    float4 cColor = gtxtParticleTexture.Sample(gssWrap, input.uv);
+    return (cColor);
+    //return (input.color);
+
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -148,6 +148,7 @@ public:
 	static CShader					*m_pStandardShader;
 	static CShader					*m_pSkinnedAnimationShader;
 	static CShader					*m_pBoundingBoxShader;
+	static CShader					*m_pParticleShader;
 
 
 	static void CMaterial::PrepareShaders(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
@@ -330,6 +331,17 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+class CParticle : public CGameObject
+{
+public:
+	CParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, wchar_t* pszFileName);
+	virtual ~CParticle();
+
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 class CAngrybotAnimationController : public CAnimationController
 {
 public:
@@ -382,6 +394,7 @@ public:
 	void AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2);
 
 	void SetTarget(XMFLOAT3 xmf3Target) { m_xmf3Target = xmf3Target; }
+	XMFLOAT3 GetTarget() { return m_xmf3Target; }
 	virtual void IsMove(Player_Animation_ST CheckAni);
 	virtual void IsIdle();
 	bool IsAttackP();
@@ -406,7 +419,7 @@ public:
 
 	virtual void Update(float fTimeElapsed);
 
-	void SetAttackStatus(bool status, int AttackType) { m_bAttackStatus = status;  AttackType = AttackType;
+	void SetAttackStatus(bool status, int _AttackType) { m_bAttackStatus = status;  AttackType = _AttackType;
 	}
 	void MoveToTarget();
 	void RotateDirection(float fAngle);
@@ -414,6 +427,7 @@ public:
 	void AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2);
 
 	void SetTarget(XMFLOAT3 xmf3Target) { m_xmf3Target = xmf3Target; }
+	XMFLOAT3 GetTarget() { return m_xmf3Target; }
 	virtual void IsMove(Player_Animation_ST CheckAni);
 	bool IsAttackP(Player_Animation_ST Status);
 
