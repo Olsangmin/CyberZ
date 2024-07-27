@@ -224,7 +224,7 @@ public:
         }
     }
 
-
+    bool cool_down{ false };
     std::vector<std::vector<CELL>> cells;
 private:
     float mapWidth, mapDepth;

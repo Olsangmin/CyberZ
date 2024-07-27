@@ -270,6 +270,11 @@ void Server::Worker_thread()
 			delete ex_over;
 		}break;
 
+		case OP_COOL_DOWN: {
+			gMap.cool_down = false;
+			delete ex_over;
+		}break;
+
 		default:
 			break;
 		}

@@ -1252,12 +1252,29 @@ void CRobotObject::MoveToTarget()
 
 
 
-	Vector3::IsZero(m_xmf3Target) ?
+	/*Vector3::IsZero(m_xmf3Target) ?
 		m_pasNextAni = IDLE : RotateDirection(5.f, m_xmf3Target), m_pasNextAni = WALK;
 	if (!Vector3::IsZero(m_xmf3Target))
 		Vector3::IsZero(Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()))) ?
 		m_pasNextAni = IDLE : MoveForward(0.4f), m_pasNextAni = WALK;
-	else { m_pasNextAni = IDLE; }
+	else { m_pasNextAni = IDLE; }*/
+
+
+	if (Vector3::IsZero(m_xmf3Target)) {
+		m_pasNextAni = IDLE;
+	}
+	else  {
+		if (Vector3::IsZero(Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition())))) {
+			m_pasNextAni = IDLE;
+		}
+		else {
+			RotateDirection(10.f, m_xmf3Target);
+			MoveForward(0.5f);
+			m_pasNextAni = WALK;
+		}
+		// 
+		m_pasNextAni = WALK;
+	}
 
 
 }
@@ -1494,11 +1511,13 @@ void CBossRobotObject::MoveToTarget()
 
 
 	Vector3::IsZero(m_xmf3Target) ?
-		m_pasNextAni = IDLE : RotateDirection(2.5f), m_pasNextAni = WALK;
+		m_pasNextAni = IDLE : RotateDirection(5.f), m_pasNextAni = WALK;
 	if (!Vector3::IsZero(m_xmf3Target))
 		Vector3::IsZero(Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()))) ?
-		m_pasNextAni = IDLE : MoveForward(0.4f), m_pasNextAni = WALK;
+		m_pasNextAni = IDLE : MoveForward(0.25f), m_pasNextAni = WALK;
 	else { m_pasNextAni = IDLE; }
+
+
 }
 
 void CBossRobotObject::RotateDirection(float fAngle)
@@ -1508,7 +1527,7 @@ void CBossRobotObject::RotateDirection(float fAngle)
 
 	float fCurrentAngle = Vector3::Angle(Vector3::Normalize(xmfVel), GetLook());
 
-	if (fCurrentAngle > 0) {
+	if (fCurrentAngle > 5.f) {
 
 		XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&GetUp()), XMConvertToRadians(fAngle));
 		XMFLOAT3 xmf3Look = Vector3::TransformNormal(GetLook(), xmmtxRotate);

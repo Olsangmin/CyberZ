@@ -427,6 +427,7 @@ void GameMap::Update(int tick)
 
 void GameMap::UpdateS1()
 {
+	if (cool_down == true) return;
 	Server& server = Server::GetInstance();
 	auto& players = server.clients;
 
@@ -493,14 +494,15 @@ void GameMap::UpdateS1()
 
 void GameMap::UpdateS2()
 {
+	BossNpc.UpdateBB();
 	Server& server = Server::GetInstance();
 	auto& players = server.clients;
 
-	BossNpc.UpdateBB();
+	if (cool_down == true) return;
+	if (BossNpc.IsAttack) return;
 
 	float closed_dis = 100000.f;
 
-	if (BossNpc.IsAttack) return;
 
 	for (auto ids : cl_ids) {
 		if (players[ids].anim == CREEP) continue;

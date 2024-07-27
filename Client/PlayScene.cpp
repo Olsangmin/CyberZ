@@ -654,7 +654,7 @@ void CFirstRoundScene::ProcessPacket(char* p)
 		//
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetAttackStatus(true);
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(xmf3);
-		
+		cout << "°ø°Ý" << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << endl;
 		
 	}break;
 
@@ -683,6 +683,8 @@ void CFirstRoundScene::ProcessPacket(char* p)
 
 			Player_Character_Type type = it->second;
 			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->SetCrawl(true);
+			cout << "»ç¸Á" << m_ppEnemy[0]->GetPosition().x << "," << m_ppEnemy[0]->GetPosition().z << endl;
+
 		}
 
 	}break;

@@ -70,7 +70,6 @@ void NPC::Move()
 
 void NPC::Patrol()
 {
-	return;
 	if (n_path.empty()) {
 		return;
 	}
@@ -120,8 +119,12 @@ void NPC::Attack()
 		p.p_id = near_player;
 		server.clients[id].do_send(&p);
 	}
-	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(900), EV_NPC_ATTACK };
-	server.timer_queue.push(ev);
+	TIMER_EVENT ev_cool{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(2500), EV_COOL_DOWN };
+	TIMER_EVENT ev_atk{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(900), EV_NPC_ATTACK };
+	
+	server.timer_queue.push(ev_cool);
+	server.timer_queue.push(ev_atk);
+
 }
 
 void NPC::PathClear()

@@ -3,7 +3,7 @@
 // #include "Protocol.h"
 constexpr int BUF_SIZE = 4096;
 
-enum COMP_TYPE { OP_ACCEPT, OP_RECV, OP_SEND, OP_NPC_MOVE, OP_NPC_ATTACK
+enum COMP_TYPE { OP_ACCEPT, OP_RECV, OP_SEND, OP_NPC_MOVE, OP_NPC_ATTACK, OP_COOL_DOWN
 };
 class OVER_EXP {
 	// overlapped 확장 클래스
