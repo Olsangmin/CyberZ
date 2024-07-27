@@ -282,9 +282,12 @@ public:
 class ParticleMesh : public CMesh
 {
 public:
-	ParticleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4 xm4Color);
+	ParticleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT3 xmf3Pos);
 	virtual ~ParticleMesh();
 	virtual void OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, void* pContext);
+	void UpdatePosTime(XMFLOAT3 pos);
+	virtual void ReleaseUploadBuffers();
+	int Random(int min, int max);
 
 	XMFLOAT3 position;
 	XMFLOAT3 direction;
@@ -292,9 +295,11 @@ public:
 	FLOAT lifeTime;
 	FLOAT time;
 
+	random_device m_RandomDevice;
+	mt19937_64 m_m64RandomEngine{ m_RandomDevice() };
 
 	XMFLOAT3* m_pcbMappedPositions = NULL;
-	FLOAT m_pcbMappedTimes = NULL;
+	FLOAT* m_pcbMappedTimes = NULL;
 
 	ID3D12Resource* m_pd3dDirectionBuffer = NULL;
 	ID3D12Resource* m_pd3dSpeedBuffer = NULL;

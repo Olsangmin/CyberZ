@@ -1567,9 +1567,11 @@ bool CBossRobotObject::IsAttackP(Player_Animation_ST status)
 	return false;
 }
 
-CParticle::CParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, wchar_t* pszFileName) : CGameObject(1)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+CParticle::CParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Pos) : CGameObject(1)
 {
-	ParticleMesh* pParticleMesh = new ParticleMesh(pd3dDevice, pd3dCommandList, XMFLOAT4(10,10,10,1));
+	ParticleMesh* pParticleMesh = new ParticleMesh(pd3dDevice, pd3dCommandList, xmf3Pos);
 	SetMesh(pParticleMesh);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -1598,5 +1600,6 @@ void CParticle::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCam
 {
 	XMFLOAT3 xmf3CameraPos = pCamera->GetPosition();
 	SetPosition(xmf3CameraPos.x, xmf3CameraPos.y, xmf3CameraPos.z);
+	reinterpret_cast<ParticleMesh*>(m_pMesh)->UpdatePosTime(GetPosition());
 	CGameObject::Render(pd3dCommandList, pCamera);
 }

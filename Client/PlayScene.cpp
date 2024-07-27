@@ -842,7 +842,7 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppParticleObj = new CParticle * [m_nParticleObj];
 
 	for (int i = 0; i < m_nParticleObj; ++i) {
-		m_ppParticleObj[i] = new CParticle(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL);
+		m_ppParticleObj[i] = new CParticle(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, PlayerInitPos_Stage2[0]);
 	}
 
 	//===============================//
