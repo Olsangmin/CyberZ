@@ -987,7 +987,7 @@ bool CSecondRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 				p.comNum = m_nDoingMachine;
 				p.state = sstate;
 				send_packet(&p);
-				m_nDoingMachine = -1;
+				//m_nDoingMachine = -1;
 			}
 			m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
 		}
