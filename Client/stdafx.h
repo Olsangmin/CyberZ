@@ -86,8 +86,8 @@ extern HINSTANCE						ghAppInstance;
 
 #ifdef SMALL_WINDOW_SCREEN
 
-	#define FRAME_BUFFER_WIDTH				1280//640
-	#define FRAME_BUFFER_HEIGHT				720 //360
+	#define FRAME_BUFFER_WIDTH				1280
+	#define FRAME_BUFFER_HEIGHT				720 
 
 	#define FRAME_POS_X						CW_USEDEFAULT   //CW_USEDEFAULT == 화면위치 자동 배치
 	#define FRAME_POS_Y						CW_USEDEFAULT

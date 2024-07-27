@@ -619,13 +619,11 @@ float4 PSScreenRectSamplingTextured(VS_SCREEN_RECT_TEXTURED_OUTPUT input) : SV_T
     float depth =  gtxtDepthTextures[0].Load(int3(input.position.xy, 0)).r;
     
     // Calculate lighting
-    float4 light = 1;
-
-    light = gtxtIlluminationTexture.Sample(gssWrap, uv);
+    float4 light = gtxtIlluminationTexture.Sample(gssWrap, uv);
     
     // Combine albedo and light
     float4 outcolor = lerp(color, light, 0.4f);
-    return (outcolor);
+    return (light);
 
 }
 
