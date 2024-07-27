@@ -55,6 +55,12 @@ public:
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	void ReleaseUploadBuffers();
 
+	bool CheckMissionObj();
+	bool CheckHeal();
+	bool CheckFinalMission();
+	Player_Interaction_Type CheckInteraction();
+	void Interaction(Player_Interaction_Type type);
+
 	bool ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer);
 	bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 	bool OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);

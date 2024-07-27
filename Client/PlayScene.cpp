@@ -327,6 +327,12 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 			if (m_pMyPlayer->GetStaminer())m_pMyPlayer->SetCreep();
 			break;
 		}
+		case 'K': {
+			/*reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->SetAttackStatus(true);
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[1])->SetAttackStatus(true);
+			reinterpret_cast<CRobotObject*>(m_ppEnemy[2])->SetAttackStatus(true);
+			break;*/
+		}
 		case 'L': {
 			CS_ALIVE_PLAYER_PACKET p;
 			p.size = sizeof(p);
@@ -838,12 +844,12 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 
 	//===============================//
-	m_nParticleObj = 1;
-	m_ppParticleObj = new CParticle * [m_nParticleObj];
+	//m_nParticleObj = 1;
+	//m_ppParticleObj = new CParticle * [m_nParticleObj];
 
-	for (int i = 0; i < m_nParticleObj; ++i) {
-		m_ppParticleObj[i] = new CParticle(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, PlayerInitPos_Stage2[0]);
-	}
+	//for (int i = 0; i < m_nParticleObj; ++i) {
+	//	m_ppParticleObj[i] = new CParticle(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, PlayerInitPos_Stage2[0]);
+	//}
 
 	//===============================//
 	// SHADER OBJ (NULL)
@@ -927,10 +933,10 @@ void CSecondRoundScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 			m_ppFloorObj[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
-	for (int i = 0; i < m_nParticleObj; ++i) {
-		if (m_ppParticleObj[i])
-			m_ppParticleObj[i]->Render(pd3dCommandList, pCamera);
-	}
+	//for (int i = 0; i < m_nParticleObj; ++i) {
+	//	if (m_ppParticleObj[i])
+	//		m_ppParticleObj[i]->Render(pd3dCommandList, pCamera);
+	//}
 }
 
 void CSecondRoundScene::ReleaseUploadBuffers()
