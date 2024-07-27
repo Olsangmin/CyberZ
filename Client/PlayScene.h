@@ -55,7 +55,6 @@ public:
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	void ReleaseUploadBuffers();
 
-	bool CheckMissionObj();
 	bool CheckHeal();
 	bool CheckFinalMission();
 	Player_Interaction_Type CheckInteraction();

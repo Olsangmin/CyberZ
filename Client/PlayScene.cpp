@@ -1002,7 +1002,7 @@ bool CSecondRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 				p.comNum = m_nDoingMachine;
 				p.state = sstate;
 				send_packet(&p);
-				//m_nDoingMachine = -1;
+				m_nDoingMachine = -1;
 			}
 			if (!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCrawl)
 				m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
@@ -1134,19 +1134,6 @@ bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPA
 			::ReleaseCapture();
 		}
 		break;
-	}
-	return false;
-}
-
-bool CSecondRoundScene::CheckMissionObj()
-{
-	for (int i = 3; i < m_nMissionObj; i++)
-	{
-		if (m_ppMissionObj[i]->m_bMissionflag)
-		{
-			if (!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetSecurityKey())
-				return true;
-		}
 	}
 	return false;
 }
