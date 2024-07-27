@@ -649,9 +649,9 @@ void CSecondRoundSceneUI::MissionUI()
 	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
 	m_pd2dDeviceContext->FillRectangle(missionbackground, m_pd2dbrBorder);
 
-
+	//tag rect
 	m_ppTagButton[0]->SetPosition(400, 500);
-	m_ppTagButton[0]->SetSize(70, 70);
+	m_ppTagButton[0]->SetSize(m_fRecSizeX, m_fRecSizeY);
 	RecMove(missionbackground);
 	m_ppTagButton[0]->Draw(m_pd2dDeviceContext, m_pd2dbrBorder, 0);
 
@@ -663,8 +663,8 @@ void CSecondRoundSceneUI::RecMove(D2D1_RECT_F mssionBox)
 	tempRec.left += dx;
 	tempRec.top += dy;
 
-	if (tempRec.left < mssionBox.left || tempRec.left + 70 > mssionBox.right) dx = -dx;
-	if (tempRec.top  < mssionBox.top || tempRec.top + 70 > mssionBox.bottom) dy = -dy;
+	if (tempRec.left < mssionBox.left || tempRec.left + m_fRecSizeX > mssionBox.right) dx = -dx;
+	if (tempRec.top  < mssionBox.top || tempRec.top + m_fRecSizeY > mssionBox.bottom) dy = -dy;
 
 	m_ppTagButton[0]->SetPosition(tempRec.left, tempRec.top);
 }
