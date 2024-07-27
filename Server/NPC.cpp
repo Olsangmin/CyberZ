@@ -57,6 +57,7 @@ void NPC::DoWork()
 
 void NPC::Move()
 {
+	if (IsAttack) return;
 	if (n_path.empty())
 		return;
 
@@ -69,13 +70,14 @@ void NPC::Move()
 
 void NPC::Patrol()
 {
+	return;
 	if (n_path.empty()) {
 		return;
 	}
 	DirectX::XMFLOAT3 next = n_path.front();
 	// std::cout << "[" << id << "] Patrol" << std::endl;
 	
-	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now()+std::chrono::milliseconds(250), EV_NPC_MOVE};
+	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now()+std::chrono::milliseconds(220), EV_NPC_MOVE};
 	auto& server = Server::GetInstance();
 	server.timer_queue.push(ev);
 
@@ -87,14 +89,13 @@ void NPC::Patrol()
 
 void NPC::Chase()
 {
-	
 	if (n_path.empty()) {
 		return;
 	}
 	DirectX::XMFLOAT3 next = n_path.front();
 	std::cout << "[" << id << "] Chase [" << near_player << "] - " << distance_near << std::endl;
 
-	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(100), EV_NPC_MOVE };
+	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(220), EV_NPC_MOVE };
 	auto& server = Server::GetInstance();
 	server.timer_queue.push(ev);
 	
@@ -119,7 +120,7 @@ void NPC::Attack()
 		p.p_id = near_player;
 		server.clients[id].do_send(&p);
 	}
-	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(600), EV_NPC_ATTACK };
+	TIMER_EVENT ev{ id, near_player, std::chrono::system_clock::now() + std::chrono::milliseconds(900), EV_NPC_ATTACK };
 	server.timer_queue.push(ev);
 }
 

@@ -382,6 +382,7 @@ public:
 	void AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2);
 
 	void SetTarget(XMFLOAT3 xmf3Target) { m_xmf3Target = xmf3Target; }
+	XMFLOAT3 GetTarget() { return m_xmf3Target; }
 	virtual void IsMove(Player_Animation_ST CheckAni);
 	virtual void IsIdle();
 	bool IsAttackP();
@@ -414,6 +415,7 @@ public:
 	void AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2);
 
 	void SetTarget(XMFLOAT3 xmf3Target) { m_xmf3Target = xmf3Target; }
+	XMFLOAT3 GetTarget() { return m_xmf3Target; }
 	virtual void IsMove(Player_Animation_ST CheckAni);
 	bool IsAttackP(Player_Animation_ST Status);
 

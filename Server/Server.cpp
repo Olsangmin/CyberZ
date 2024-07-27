@@ -244,7 +244,9 @@ void Server::Worker_thread()
 				auto& npc = gMap.npcs[key - 100];
 				npc.o_lock.lock();
 				if (npc.IsAttack && (gMap.Distance_float(clients[npc.near_player].GetPos(), npc.GetPos()) < AttackRange)) {
-					std::cout << npc.near_player << "»ç¸Á" << std::endl;
+					std::cout << npc.near_player << "»ç¸Á" << gMap.Distance_float(clients[npc.near_player].GetPos(), npc.GetPos()) << std::endl;
+					std::cout << clients[npc.near_player].GetPos().x << ", " << clients[npc.near_player].GetPos().z << " - " << npc.GetPos().x << "," << npc.GetPos().z << std::endl;
+					clients[npc.near_player].anim = CRAWL;
 					for (int id : gMap.cl_ids) {
 						clients[id].send_player_death_packet(npc.near_player);
 					}
@@ -257,6 +259,7 @@ void Server::Worker_thread()
 				gMap.BossNpc.o_lock.lock();
 				if (gMap.BossNpc.IsAttack && (gMap.Distance_float(clients[gMap.BossNpc.near_player].GetPos(), gMap.BossNpc.GetPos()) < (AttackRange + 5.f))) {
 					std::cout << gMap.BossNpc.near_player << "»ç¸Á" << std::endl;
+					clients[gMap.BossNpc.near_player].anim = CRAWL;
 					for (int id : gMap.cl_ids) {
 						clients[id].send_player_death_packet(gMap.BossNpc.near_player);
 					}
