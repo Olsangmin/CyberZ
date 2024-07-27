@@ -9,7 +9,7 @@
 // Windows 헤더 파일:
 #include <windows.h>
 
-#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+//#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 
 // C의 런타임 헤더 파일입니다.
 #include <stdlib.h>
@@ -71,7 +71,7 @@ using namespace std;
 #include "Network.h"
 
 // 주석하면 서버없이 가능@@@@@@@@@
-//#define USE_NETWORK 
+#define USE_NETWORK 
 
 // =================================================
 
@@ -82,7 +82,7 @@ using Microsoft::WRL::ComPtr;
 
 extern HINSTANCE						ghAppInstance;
 
-#define SMALL_WINDOW_SCREEN
+//#define SMALL_WINDOW_SCREEN
 
 #ifdef SMALL_WINDOW_SCREEN
 
