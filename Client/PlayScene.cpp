@@ -327,12 +327,6 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 			if (m_pMyPlayer->GetStaminer())m_pMyPlayer->SetCreep();
 			break;
 		}
-		case 'K': {
-			/*reinterpret_cast<CRobotObject*>(m_ppEnemy[0])->SetAttackStatus(true);
-			reinterpret_cast<CRobotObject*>(m_ppEnemy[1])->SetAttackStatus(true);
-			reinterpret_cast<CRobotObject*>(m_ppEnemy[2])->SetAttackStatus(true);
-			break;*/
-		}
 		case 'L': {
 			CS_ALIVE_PLAYER_PACKET p;
 			p.size = sizeof(p);
@@ -981,9 +975,9 @@ bool CSecondRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) {
-			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn=false;
-
 			if (m_nDoingMachine != -1) {
+				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = false;
+				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(TURNOFF);
 				S2_COM_STATE sstate{};
 				sstate = TURNOFF;
 
@@ -993,8 +987,8 @@ bool CSecondRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 				p.comNum = m_nDoingMachine;
 				p.state = sstate;
 				send_packet(&p);
+				m_nDoingMachine = -1;
 			}
-
 			m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
 		}
 	}
@@ -1027,17 +1021,13 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 			reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetAttackStatus(true, 0);
 			break;
 		}
-		case 'F':
+		case 'M':
 		{
-			for (int i = 0; i < m_nMissionObj; i++)
-			{
-				if (m_ppMissionObj[i]->m_bMissionflag)
-				{
-					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = true;
-					m_nDoingMachine = i;
-
-				}
-			}
+			break;
+		}
+		case 'F': {
+			Player_Interaction_Type InteractionType = CheckInteraction();
+			Interaction(InteractionType);
 			break;
 		}
 		break;
@@ -1089,26 +1079,107 @@ bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPA
 			S2_COM_STATE sstate{};
 			if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppTagButton[0]->CheckMouseOn(hWnd, m_ptOldCursorPos))
 			{
-				sstate = TURNON;
-				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(sstate);
+				if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->GetState() == TURNOFF) {
+					sstate = TURNON;
+					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(sstate);
+					CS_CHANGE_COMST_PACKET p;
+					p.size = sizeof(&p);
+					p.type = CS_CHANGE_COMST;
+					p.comNum = m_nDoingMachine;
+					p.state = sstate;
+					send_packet(&p);
+				}
 			}
-			else 
-			{
-				sstate = TURNOFF;
-				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(sstate);
+			else{
+				if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->GetState() == TURNON) {
+					sstate = TURNOFF;
+					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(sstate);
+					CS_CHANGE_COMST_PACKET p;
+					p.size = sizeof(&p);
+					p.type = CS_CHANGE_COMST;
+					p.comNum = m_nDoingMachine;
+					p.state = sstate;
+					send_packet(&p);
+				}
 			}
-			CS_CHANGE_COMST_PACKET p;
-			p.size = sizeof(&p);
-			p.type = CS_CHANGE_COMST;
-			p.comNum = m_nDoingMachine;
-			p.state = sstate;
-			send_packet(&p);
 
 			::ReleaseCapture();
 		}
 		break;
 	}
 	return false;
+}
+
+bool CSecondRoundScene::CheckMissionObj()
+{
+	for (int i = 3; i < m_nMissionObj; i++)
+	{
+		if (m_ppMissionObj[i]->m_bMissionflag)
+		{
+			if (!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetSecurityKey())
+				return true;
+		}
+	}
+	return false;
+}
+
+bool CSecondRoundScene::CheckHeal()
+{
+	for (int i = 0; i < m_nPlayer; ++i) {
+		if (m_pMyPlayer != m_ppPlayer[i] && m_pMyPlayer->m_xmBoundingBox.Intersects(m_ppPlayer[i]->m_xmBoundingBox)) {
+			if (reinterpret_cast<CyborgPlayer*>(m_ppPlayer[i])->GetCurrentAni() == CRAWL) {
+				reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->SetHealTarget(m_ppPlayer[i]->p_id);
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool CSecondRoundScene::CheckFinalMission()
+{
+	for (int i = 0; i < m_nMissionObj; i++)
+	{
+		if (m_ppMissionObj[i]->m_bMissionflag)
+		{
+			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = true;
+			m_nDoingMachine = i;
+			return true;
+
+		}
+	}
+	return false;
+}
+
+Player_Interaction_Type CSecondRoundScene::CheckInteraction()
+{
+	//if (CheckMissionObj())return CardMission;
+	if (CheckHeal())return Heal;
+	if (CheckFinalMission())return FinalMission;
+	return NON;
+}
+
+void CSecondRoundScene::Interaction(Player_Interaction_Type type)
+{
+	switch (type) {
+	case CardMission: {
+		//reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(0);
+		break;
+	}
+	case Heal: {
+		int id = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetHealTarget();
+		CS_ALIVE_PLAYER_PACKET p;
+		p.size = sizeof(p);
+		p.type = CS_ALIVE_PLAYER;
+		p.id = id;
+		send_packet(&p);
+		break;
+	}
+	case FinalMission: {
+		break;
+	}
+	}
 }
 
 void CSecondRoundScene::AnimateObjects(float fTimeElapsed)
