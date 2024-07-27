@@ -1161,7 +1161,6 @@ bool CSecondRoundScene::CheckFinalMission()
 			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = true;
 			m_nDoingMachine = i;
 			return true;
-
 		}
 	}
 	return false;
@@ -1217,7 +1216,7 @@ void CSecondRoundScene::AnimateObjects(float fTimeElapsed)
 		{
 			Missionflag = true;
 		}
-		m_ppMissionObj[i]->m_bMissionflag = Missionflag;
+			m_ppMissionObj[i]->m_bMissionflag = Missionflag;
 	}
 
 	int check = 0;
