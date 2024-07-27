@@ -196,8 +196,9 @@ public:
     }
 
     std::array<NPC, NUM_NPC> npcs;
-
     NPC BossNpc;
+
+
     std::array<S2_COM_STATE, 5> coms = { TURNOFF };
 
     std::vector<int> cl_ids;
@@ -206,7 +207,7 @@ public:
     {
         int num{};
         int x = static_cast<int>((pos.x + 0.5f) / (mapWidth / 3));
-        int z = static_cast<int>((pos.z + 0.5f) / (mapWidth / 3));
+        int z = static_cast<int>((pos.z + 0.5f) / (mapDepth / 3));
         
         switch (z)
         {
