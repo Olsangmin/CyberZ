@@ -149,8 +149,13 @@ public:
 	void MissionUI();
 	void SetProgress(int progressNum, float figure) { m_fMissionRange[progressNum] = m_fMissionRange[progressNum] + figure; }
 
+
+public:
 	void RecMove(D2D1_RECT_F mssionBox);
-	float dx = 3, dy = 3;
+	float dx = 2, dy = 2;
+
+	float m_fRecSizeX = 85;
+	float m_fRecSizeY = 85;
 
 public:
 	void DrawUI(UINT m_nSwapChainBufferIndex);

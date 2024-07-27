@@ -226,22 +226,52 @@ void Server::Worker_thread()
 		}
 
 		case OP_NPC_MOVE: {
-			auto& npc = gMap.npcs[key - 100];
-			npc.Move();
-
+			if (key < 200)
+			{
+				NPC& npc = gMap.npcs[key - 100];
+				npc.Move();
+			}
+			else
+			{
+				gMap.BossNpc.Move();
+			}
 			delete ex_over;
 		}
 						break;
 
 		case OP_NPC_ATTACK: {
-			auto& npc = gMap.npcs[key - 100];
-			if (npc.IsAttack && (gMap.Distance_float(clients[npc.near_player].GetPos(), npc.GetPos()) < AttackRange)) {
-				std::cout << npc.near_player << "»ç¸Á" << std::endl;
-				for (int id : gMap.cl_ids) {
-					clients[id].send_player_death_packet(npc.near_player);
+			if (key < 200) {
+				auto& npc = gMap.npcs[key - 100];
+				npc.o_lock.lock();
+				if (npc.IsAttack && (gMap.Distance_float(clients[npc.near_player].GetPos(), npc.GetPos()) < AttackRange)) {
+					std::cout << npc.near_player << "»ç¸Á" << gMap.Distance_float(clients[npc.near_player].GetPos(), npc.GetPos()) << std::endl;
+					std::cout << clients[npc.near_player].GetPos().x << ", " << clients[npc.near_player].GetPos().z << " - " << npc.GetPos().x << "," << npc.GetPos().z << std::endl;
+					clients[npc.near_player].anim = CRAWL;
+					for (int id : gMap.cl_ids) {
+						clients[id].send_player_death_packet(npc.near_player);
+					}
 				}
+				npc.IsAttack = false;
+				npc.o_lock.unlock();
 			}
-			npc.IsAttack = false;
+			else
+			{
+				gMap.BossNpc.o_lock.lock();
+				if (gMap.BossNpc.IsAttack && (gMap.Distance_float(clients[gMap.BossNpc.near_player].GetPos(), gMap.BossNpc.GetPos()) < (AttackRange + 5.f))) {
+					std::cout << gMap.BossNpc.near_player << "»ç¸Á" << std::endl;
+					clients[gMap.BossNpc.near_player].anim = CRAWL;
+					for (int id : gMap.cl_ids) {
+						clients[id].send_player_death_packet(gMap.BossNpc.near_player);
+					}
+				}
+				gMap.BossNpc.IsAttack = false;
+				gMap.BossNpc.o_lock.unlock();
+			}
+			delete ex_over;
+		}break;
+
+		case OP_COOL_DOWN: {
+			gMap.cool_down = false;
 			delete ex_over;
 		}break;
 
@@ -393,15 +423,17 @@ void Server::Process_packet(int c_id, char* packet)
 			for (auto& pl : players) {
 				clients[pl].SetPos(PlayerInitPos_Stage2[clients[pl].GetType()]);
 			}
+			gMap.ChangeToMap2();
+			gMap.SetStage(STAGE2);
 			for (auto& pl : players) {
 
 				for (auto& others : gMap.cl_ids) {
 					clients[pl].send_add_player_packet(others,
 						clients[others].GetPos(), clients[others].GetRotation(), clients[others].GetType());
+					clients[pl].send_add_npc_packet(gMap.BossNpc.GetId(), gMap.BossNpc.GetPos(), gMap.BossNpc.GetRotation());
 				}
 			}
-			gMap.ChangeToMap2();
-			gMap.SetStage(STAGE2);
+			
 		}
 
 		break;

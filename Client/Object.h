@@ -394,6 +394,7 @@ public:
 	void AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2);
 
 	void SetTarget(XMFLOAT3 xmf3Target) { m_xmf3Target = xmf3Target; }
+	XMFLOAT3 GetTarget() { return m_xmf3Target; }
 	virtual void IsMove(Player_Animation_ST CheckAni);
 	virtual void IsIdle();
 	bool IsAttackP();
@@ -418,7 +419,7 @@ public:
 
 	virtual void Update(float fTimeElapsed);
 
-	void SetAttackStatus(bool status, int AttackType) { m_bAttackStatus = status;  AttackType = AttackType;
+	void SetAttackStatus(bool status, int _AttackType) { m_bAttackStatus = status;  AttackType = _AttackType;
 	}
 	void MoveToTarget();
 	void RotateDirection(float fAngle);
@@ -426,6 +427,7 @@ public:
 	void AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2);
 
 	void SetTarget(XMFLOAT3 xmf3Target) { m_xmf3Target = xmf3Target; }
+	XMFLOAT3 GetTarget() { return m_xmf3Target; }
 	virtual void IsMove(Player_Animation_ST CheckAni);
 	bool IsAttackP(Player_Animation_ST Status);
 
