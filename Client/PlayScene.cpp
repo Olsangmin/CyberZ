@@ -1115,12 +1115,12 @@ bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPA
 			if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppTagButton[0]->CheckMouseOn(hWnd, m_ptOldCursorPos))
 			{
 				sstate = TURNON;
-				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(sstate);
+				// reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(sstate);
 			}
 			else 
 			{
 				sstate = TURNOFF;
-				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(sstate);
+				// reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(sstate);
 			}
 			CS_CHANGE_COMST_PACKET p;
 			p.size = sizeof(&p);

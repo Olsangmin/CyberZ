@@ -70,7 +70,9 @@ public:
 	int							m_nMissionLevel = 0;
 	bool						m_nRiseProgress = false;
 	
-	int							m_nDoingMachine = -1;
+	int							m_nDoingMachine{};
+
+	
 
 public:
 	void ProcessPacket(char* p);

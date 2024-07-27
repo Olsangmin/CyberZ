@@ -110,6 +110,21 @@ void Server::Network()
 
 		if (fps.count() < 1) continue;
 
+		if (frame_count.count() < 60) {
+			for (auto id : gMap.cl_ids)
+			{
+				for (int i = 0; i < gMap.coms.size(); ++i) {
+					SC_CHANGE_COMST_PACKET comst;
+					comst.size = sizeof(comst);
+					comst.type = SC_CHANGE_COMST;
+					comst.comNum = i;
+					comst.state = gMap.coms[i];
+
+					clients[id].do_send(&comst);
+				}
+			}
+		}
+
 
 		if (frame_count.count() == 0) {
 			// std::cout << "PLAYER UPDATE" << std::endl;
@@ -551,17 +566,6 @@ void Server::Process_packet(int c_id, char* packet)
 	case CS_CHANGE_COMST: {
 		CS_CHANGE_COMST_PACKET* p = reinterpret_cast<CS_CHANGE_COMST_PACKET*>(packet);
 		gMap.coms[p->comNum] = p->state;
-
-		for (auto id : gMap.cl_ids)
-		{
-			SC_CHANGE_COMST_PACKET comst;
-			comst.size = sizeof(comst);
-			comst.type = SC_CHANGE_COMST;
-			comst.comNum = p->comNum;
-			comst.state = p->state;
-
-			clients[id].do_send(&comst);
-		}
 
 	}break;
 
