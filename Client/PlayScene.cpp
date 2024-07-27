@@ -1308,6 +1308,7 @@ void CSecondRoundScene::ProcessPacket(char* p)
 	case SC_CHANGE_COMST: {
 		SC_CHANGE_COMST_PACKET* packet = reinterpret_cast<SC_CHANGE_COMST_PACKET*>(p);
 		reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[packet->comNum]->SetState(packet->state);
+		cout << "d" << endl;
 	}break;
 
 	default:
