@@ -1148,9 +1148,9 @@ void CDepthRenderShader::PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID
 	{
 		if (m_pLights[j].m_bEnable)
 		{
-			XMFLOAT3 xmf3Position = m_pLights[j].m_xmf3Position;
+			XMFLOAT3 xmf3Position =XMFLOAT3( m_pLights[j].m_xmf3Position.x + 1000, m_pLights[j].m_xmf3Position.y, m_pLights[j].m_xmf3Position.z+500);
 			XMFLOAT3 xmf3Look = XMFLOAT3(0.0f, -1.0f, 0.0f);
-			XMFLOAT3 xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+			XMFLOAT3 xmf3Up = XMFLOAT3(0.0f, 0.0f, 1.0f);
 
 			 xmf3Look = m_pLights[j].m_xmf3Direction;
 
