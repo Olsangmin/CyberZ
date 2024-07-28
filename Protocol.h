@@ -15,7 +15,7 @@ using namespace DirectX;
 
 static std::array<DirectX::XMFLOAT3, MAX_USER> PlayerInitPos = {
 	XMFLOAT3(700.f, 0.f, 200.f), XMFLOAT3(900.f, 0.f, 400.f),
-	XMFLOAT3(200.f, 0.f, 800.f) };
+	XMFLOAT3(400.f, 0.f, 500.f) };
 
 static std::array<DirectX::XMFLOAT3, MAX_USER> PlayerInitPos_Stage2 = {
 	XMFLOAT3(300.f, 0.f, 100.f), XMFLOAT3(80.f, 0.f, 440.f),

@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "PlayScene.h"
 
-void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum)
+void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, int myPlayernum)
 {
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
 
@@ -41,20 +41,20 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CLoadedModelInfo* pfenceModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Fence.bin", NULL);
 	m_ppHierarchicalGameObjects[0] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pfenceModel);
 	if (pfenceModel) delete pfenceModel;
-	
+
 	CLoadedModelInfo* pMapModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MAP1_Modified.bin", NULL);
 	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel);
 	if (pMapModel) delete pMapModel;
-	
+
 	CLoadedModelInfo* pMapModel2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/MAP2_Modified.bin", NULL);
 	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel2);
 	if (pMapModel2) delete pMapModel2;
-	
-	
+
+
 	CLoadedModelInfo* pMapModel3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Section1_modify.bin", NULL);
 	m_ppHierarchicalGameObjects[3] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel3);
 	if (pMapModel3) delete pMapModel3;
-	
+
 	CLoadedModelInfo* pMapModel4 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/First_section.bin", NULL);
 	m_ppHierarchicalGameObjects[4] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMapModel4);
 	if (pMapModel4) delete pMapModel4;
@@ -79,14 +79,14 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	for (int i = 0; i < 4; i++)
 	{
 
-		m_ppFloorObj[3+i*4] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMainFloormodel);
-		m_ppFloorObj[3+i*4]->SetScale(3.f, 0.f, 3.f);
-		m_ppFloorObj[3+i*4]->SetPosition(-200.f, 0.3f, i*400-200.f);
+		m_ppFloorObj[3 + i * 4] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMainFloormodel);
+		m_ppFloorObj[3 + i * 4]->SetScale(3.f, 0.f, 3.f);
+		m_ppFloorObj[3 + i * 4]->SetPosition(-200.f, 0.3f, i * 400 - 200.f);
 
 		m_ppFloorObj[4 + i * 4] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMainFloormodel);
 		m_ppFloorObj[4 + i * 4]->SetScale(3.f, 0.f, 3.f);
 		m_ppFloorObj[4 + i * 4]->SetPosition(200.f, 0.3f, i * 400 - 200.f);
-		
+
 		m_ppFloorObj[5 + i * 4] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMainFloormodel);
 		m_ppFloorObj[5 + i * 4]->SetScale(3.f, 0.f, 3.f);
 		m_ppFloorObj[5 + i * 4]->SetPosition(600.f, 0.3f, i * 400 - 200.f);
@@ -107,7 +107,7 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	// 미션 범위
 	XMFLOAT3 OccMissionRange = XMFLOAT3(37.f, 30.f, 37.f);
 	XMFLOAT3 MissionRange = XMFLOAT3(10.f, 20.f, 10.f);
-	
+
 	// 점령미션
 	CLoadedModelInfo* pMachine = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/Occ_Machine.bin", NULL);
 	m_ppMissionObj[0] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine, OccMissionRange, 0);
@@ -127,7 +127,7 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	// 보안키 미션
 	CLoadedModelInfo* pMssionMachine1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine_2.bin", NULL);
 	m_ppMissionObj[3] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine1, MissionRange, 1);
-	m_ppMissionObj[3]->Rotate(0.f,0.f,0.f);
+	m_ppMissionObj[3]->Rotate(0.f, 0.f, 0.f);
 	m_ppMissionObj[3]->SetPosition(525.f, -5.f, 260.f);
 	if (pMssionMachine1) delete pMssionMachine1;
 
@@ -136,7 +136,7 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppMissionObj[4]->Rotate(0.f, -90.f, 0.f);
 	m_ppMissionObj[4]->SetPosition(780.f, -5.f, 750.f);
 	if (pMssionMachine2) delete pMssionMachine2;
-	
+
 	CLoadedModelInfo* pMssionMachine3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine_2.bin", NULL);
 	m_ppMissionObj[5] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine3, MissionRange, 1);
 	m_ppMissionObj[5]->Rotate(0.f, -90.f, 0.f);
@@ -299,7 +299,7 @@ bool CFirstRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* 
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) {
 			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(-1);
-			if(!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCrawl)
+			if (!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCrawl)
 				m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
 		}
 	}
@@ -316,7 +316,7 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 	switch (nMessageID)
 	{
 
-	//============ KeyDown ============//
+		//============ KeyDown ============//
 	case WM_KEYDOWN: {
 		switch (wParam) {
 		case VK_SHIFT: {
@@ -366,7 +366,7 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 		break;
 	}
 
-	//============ KeyUP ============//
+				   //============ KeyUP ============//
 
 	case WM_KEYUP: {
 		switch (wParam) {
@@ -376,11 +376,11 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 		}
 		case 'C': {
 			m_pMyPlayer->SetCreepFlag();
-			
+
 			break;
 		}
 		case '9': { // 스테이지 2로 변경
-			
+
 			break;
 		}
 		}
@@ -395,7 +395,7 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 int CFirstRoundScene::IsCrawlPlayer()
 {
 	for (int i = 0; i < m_nPlayer; ++i) {
-		if (m_ppPlayer[i]->m_xmBoundingBox.Intersects(m_pMyPlayer->m_xmBoundingBox)&& reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetCrawl()) {
+		if (m_ppPlayer[i]->m_xmBoundingBox.Intersects(m_pMyPlayer->m_xmBoundingBox) && reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetCrawl()) {
 			CS_ALIVE_PLAYER_PACKET p;
 			p.size = sizeof(p);
 			p.type = CS_ALIVE_PLAYER;
@@ -449,7 +449,7 @@ void CFirstRoundScene::Interaction(Player_Interaction_Type type)
 	}
 	case Heal: {
 		int id = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetHealTarget();
-		cout<<"<Heal>" << my_id << "->" << id << endl;
+		cout << "<Heal>" << my_id << "->" << id << endl;
 		CS_ALIVE_PLAYER_PACKET p;
 		p.size = sizeof(p);
 		p.type = CS_ALIVE_PLAYER;
@@ -472,13 +472,13 @@ void CFirstRoundScene::AnimateObjects(float fTimeElapsed)
 		Missionflag = false;
 		if (m_ppMissionObj[i]->m_nCategory == 0) {
 			for (int j = 0; j < m_nPlayer; j++) if (m_ppPlayer[j]) {
-				if (CheckMissionBound(m_ppPlayer[j], m_ppMissionObj[i]) && reinterpret_cast<CyborgPlayer*>(m_ppPlayer[j])->GetSecurityKey()) 
+				if (CheckMissionBound(m_ppPlayer[j], m_ppMissionObj[i]) && reinterpret_cast<CyborgPlayer*>(m_ppPlayer[j])->GetSecurityKey())
 				{
 					Missionflag = true;
 				}
 			}
 		}
-		else{
+		else {
 			for (int j = 0; j < m_nPlayer; j++) if (m_ppPlayer[j]) {
 				if (CheckMissionBound(m_ppPlayer[j], m_ppMissionObj[i]))
 				{
@@ -517,7 +517,7 @@ void CFirstRoundScene::AnimateObjects(float fTimeElapsed)
 	}
 
 	m_pUI->m_bcard = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetSecurityKey();
-	
+
 	if (reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fStaminer < reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_fMaxStaminer)
 	{
 		reinterpret_cast<CFirstRoundSceneUI*>(m_pUI)->m_bStaminaBarOn = true;
@@ -655,14 +655,14 @@ void CFirstRoundScene::ProcessPacket(char* p)
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetAttackStatus(true);
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(xmf3);
 		// cout << "공격" << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << endl;
-		
+
 		CS_NPC_UPDATE_PACKET nup;
 		nup.size = sizeof(nup);
 		nup.type = CS_NPC_UPDATE;
 		nup.n_id = packet->n_id;
 		nup.position = m_ppEnemy[n_id]->GetPosition();
 		send_packet(&nup);
-		
+
 
 	}break;
 
@@ -674,10 +674,10 @@ void CFirstRoundScene::ProcessPacket(char* p)
 
 	case SC_GETKEY: {
 		SC_GETKEY_PACKET* packet = reinterpret_cast<SC_GETKEY_PACKET*>(p);
-		
+
 		int id = packet->p_id;
 		auto& it = idANDtype.find(id);
-	
+
 		if (it == idANDtype.end()) break;
 		else {
 
@@ -689,7 +689,7 @@ void CFirstRoundScene::ProcessPacket(char* p)
 
 	case SC_PLAYER_DEATH: {
 		SC_PLAYER_DEATH_PACKET* packet = reinterpret_cast<SC_PLAYER_DEATH_PACKET*>(p);
-		
+
 		int id = packet->id;
 		auto& it = idANDtype.find(id);
 		if (it == idANDtype.end()) break;
@@ -697,10 +697,10 @@ void CFirstRoundScene::ProcessPacket(char* p)
 
 			Player_Character_Type type = it->second;
 			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->SetCrawl(true);
-			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(-1);
 			cout << "사망" << m_ppEnemy[0]->GetPosition().x << "," << m_ppEnemy[0]->GetPosition().z << endl;
-
 		}
+		if (packet->id == my_id)
+			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(-1);
 
 	}break;
 
@@ -721,7 +721,7 @@ void CFirstRoundScene::ProcessPacket(char* p)
 	{
 		m_bChangeScene = true;
 	}break;
-						
+
 
 	default: {
 		printf("Scene[Stage1] - Unknown PACKET type [%d]\n", p[1]);
@@ -765,7 +765,7 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	// 0 -	내부 사물			|| OBJ
 	// 1 - 외벽 바운딩 박스		|| OBJ
 	// 2 - 외벽&깃발			|| OBJ
-	
+
 	m_nHierarchicalGameObjects = 3;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
@@ -777,7 +777,7 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CLoadedModelInfo* pOutlineBBModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2OutBB.bin", NULL);
 	m_ppHierarchicalGameObjects[1] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pOutlineBBModel);
 	if (pOutlineBBModel) delete pOutlineBBModel;
-	
+
 	CLoadedModelInfo* pMainModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2.bin", NULL);
 	m_ppHierarchicalGameObjects[2] = new CStandardOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMainModel);
 	if (pMainModel) delete pMainModel;
@@ -792,13 +792,13 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppFloorObj[0]->SetScale(3, 0, 3);
 	m_ppFloorObj[0]->SetPosition(-100, 0.5, -500);
 	if (pFloormodel) delete pFloormodel;
-	
+
 	CLoadedModelInfo* pOutmodel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/map/Stage2OutLine.bin", NULL);
 	m_ppFloorObj[1] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pOutmodel);
 	if (pOutmodel) delete pOutmodel;
 
 
-	
+
 	//===============================//
 	// Mission Obj
 	m_nMissionObj = 5;
@@ -1005,7 +1005,7 @@ bool CSecondRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) {
-			
+
 
 			if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn == true) {
 				CS_CHANGE_COMST_PACKET p;
@@ -1035,7 +1035,7 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 	switch (nMessageID)
 	{
 
-	//============ KeyDown ============//
+		//============ KeyDown ============//
 	case WM_KEYDOWN: {
 		switch (wParam) {
 		case VK_SHIFT: {
@@ -1049,7 +1049,7 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 		case 'K': {
 			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = false;
 			m_pMyPlayer->m_bClear = true;
-			m_pMyPlayer->m_xmf3BossPos = XMFLOAT3(m_pBoss->GetPosition().x*2-10,10, m_pBoss->GetPosition().z * 2+10);
+			m_pMyPlayer->m_xmf3BossPos = XMFLOAT3(m_pBoss->GetPosition().x * 2 - 10, 10, m_pBoss->GetPosition().z * 2 + 10);
 			reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetDiying(true);
 			break;
 		}
@@ -1086,7 +1086,7 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 		break;
 	}
 
-	//============ KeyUP ============//
+				   //============ KeyUP ============//
 	case WM_KEYUP: {
 		switch (wParam) {
 		case VK_SHIFT: {
@@ -1138,7 +1138,7 @@ bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPA
 			{
 				sstate = TURNOFF;
 			}
-			
+
 
 			if (cur_state != sstate) {
 				CS_CHANGE_COMST_PACKET p;
@@ -1238,7 +1238,7 @@ void CSecondRoundScene::AnimateObjects(float fTimeElapsed)
 	//	}
 	//	m_ppMissionObj[i]->m_bMissionflag = Missionflag;
 	//}
-	
+
 	if (reinterpret_cast<CBossRobotObject*> (m_pBoss)->GetDiy() == 2) {
 		reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bEnd = true;
 	}
@@ -1256,7 +1256,7 @@ void CSecondRoundScene::AnimateObjects(float fTimeElapsed)
 		reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetDiying(true);
 	}
 
-	if(check > 1 && m_nMissionLevel < 3){
+	if (check > 1 && m_nMissionLevel < 3) {
 		if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMissionRange[m_nMissionLevel] < 650)
 		{
 			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->SetProgress(m_nMissionLevel, 1.5f);
@@ -1266,7 +1266,7 @@ void CSecondRoundScene::AnimateObjects(float fTimeElapsed)
 			m_nMissionLevel += 1;
 		}
 	}
-	else{
+	else {
 		if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMissionRange[m_nMissionLevel] > 0 && reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_fMissionRange[m_nMissionLevel] < 650)
 		{
 			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->SetProgress(m_nMissionLevel, -0.7f);
@@ -1369,7 +1369,7 @@ void CSecondRoundScene::ProcessPacket(char* p)
 
 	case SC_ATTACK_NPC: {
 		SC_ATTACK_NPC_PACKET* packet = reinterpret_cast<SC_ATTACK_NPC_PACKET*>(p);
-		
+
 
 		int id = packet->p_id;
 		auto& it = idANDtype.find(id);
@@ -1379,9 +1379,9 @@ void CSecondRoundScene::ProcessPacket(char* p)
 			Player_Character_Type type = it->second;
 			xmf3 = reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->GetPosition();
 		}
-		
+
 		reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetAttackStatus(true, 2);
-		XMFLOAT3 double_pos{ m_pBoss->GetPosition().x * 2.f, 0.f, m_pBoss->GetPosition().z * 2.f};
+		XMFLOAT3 double_pos{ m_pBoss->GetPosition().x * 2.f, 0.f, m_pBoss->GetPosition().z * 2.f };
 
 		CS_NPC_UPDATE_PACKET nup;
 		nup.size = sizeof(nup);
@@ -1408,8 +1408,11 @@ void CSecondRoundScene::ProcessPacket(char* p)
 
 			Player_Character_Type type = it->second;
 			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->SetCrawl(true);
-			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = false;
 		}
+
+		if (packet->id == my_id)
+			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = false;
+
 
 	}break;
 
@@ -1429,7 +1432,7 @@ void CSecondRoundScene::ProcessPacket(char* p)
 		SC_CHANGE_COMST_PACKET* packet = reinterpret_cast<SC_CHANGE_COMST_PACKET*>(p);
 		S2_COM_STATE st = static_cast<S2_COM_STATE>(packet->state);
 		reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[packet->comNum]->SetState(st);
-		
+
 	}break;
 
 	default:
