@@ -7,6 +7,7 @@
 
 #include "Machine.h"
 
+
 class CUI
 {
 public:
@@ -83,6 +84,10 @@ public:
 
 	void DrawUI(UINT m_nSwapChainBufferIndex);
 	void UISet(UINT m_nSwapChainBufferIndex);
+
+	
+
+	std::wstring m_text[3];
 
 	bool m_bPlayerOn[3] = {false};
 

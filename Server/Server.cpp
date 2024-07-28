@@ -44,35 +44,35 @@ void Server::Network()
 
 	gMap.printMap();
 
-	//if (false == m_DBConnectionPool->Connect(1, L"Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=CyberZDB;Trusted_Connection=Yes;"))
-	//{
-	//	std::cout << "DB Connect 오류 !" << std::endl;
-	//	exit(-1);
-	//}
-	//else
-	//{
-	//	std::cout << "DB 서버 Connected" << std::endl;
+	if (false == m_DBConnectionPool->Connect(1, L"Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=CyberZDB;Trusted_Connection=Yes;"))
+	{
+		std::cout << "DB Connect 오류 !" << std::endl;
+		exit(-1);
+	}
+	else
+	{
+		std::cout << "DB 서버 Connected" << std::endl;
 
-	//	// Creat Table
-	//	// 
-	//	// DROP TABLE IF EXISTS[dbo].[User_Account];			
-	//	{
-	//		/*auto query = L"									\
-	//		CREATE TABLE [dbo].[User_Account]					\
-	//		(											\
-	//			[id] INT NOT NULL PRIMARY KEY IDENTITY, \
-	//			[account_id] NVARCHAR(20) NOT NULL UNIQUE, \
-	//			[password] NVARCHAR(20) NOT NULL,						\
-	//			[createDate] DATETIME NULL				\
-	//		);";
+		// Creat Table
+		// 
+		// DROP TABLE IF EXISTS[dbo].[User_Account];			
+		{
+			/*auto query = L"									\
+			CREATE TABLE [dbo].[User_Account]					\
+			(											\
+				[id] INT NOT NULL PRIMARY KEY IDENTITY, \
+				[account_id] NVARCHAR(20) NOT NULL UNIQUE, \
+				[password] NVARCHAR(20) NOT NULL,						\
+				[createDate] DATETIME NULL				\
+			);";
 
-	//		DBConnection* dbConn = m_DBConnectionPool->Pop();
-	//		if (false == dbConn->Execute(query)) {
-	//			return;
-	//		}
-	//		m_DBConnectionPool->Push(dbConn);*/
-	//	}
-	//}
+			DBConnection* dbConn = m_DBConnectionPool->Pop();
+			if (false == dbConn->Execute(query)) {
+				return;
+			}
+			m_DBConnectionPool->Push(dbConn);*/
+		}
+	}
 
 
 
@@ -109,6 +109,21 @@ void Server::Network()
 		// 아직 1/60초가 안지났으면 패스
 
 		if (fps.count() < 1) continue;
+
+		/*if (frame_count.count() < 60) {
+			for (auto id : gMap.cl_ids)
+			{
+				for (int i = 0; i < gMap.coms.size(); ++i) {
+					SC_CHANGE_COMST_PACKET comst;
+					comst.size = sizeof(comst);
+					comst.type = SC_CHANGE_COMST;
+					comst.comNum = i;
+					comst.state = gMap.coms[i];
+
+					clients[id].do_send(&comst);
+				}
+			}
+		}*/
 
 
 		if (frame_count.count() == 0) {
@@ -294,10 +309,10 @@ void Server::Process_packet(int c_id, char* packet)
 		{
 			strcpy_s(clients[c_id].name, p->name);
 			strcpy_s(clients[c_id].password, p->PW);
-			/*if (false == TryLogin(clients[c_id].name, clients[c_id].password))
+			if (false == TryLogin(clients[c_id].name, clients[c_id].password))
 			{
 				return;
-			}*/
+			}
 
 		}
 		std::cout << "Client[" << c_id << "] Login.\n" << std::endl;
@@ -316,8 +331,8 @@ void Server::Process_packet(int c_id, char* packet)
 			for (auto& cl : clients) {
 				if (ST_LOBBY != cl.state) continue;
 				// if (cl.GetId() == c_id) continue;
-				cl.send_change_Character_type_packet(c_id, clients[c_id].GetType());
-				clients[c_id].send_change_Character_type_packet(cl.GetId(), cl.GetType());
+				cl.send_change_Character_type_packet(c_id, clients[c_id].GetType(), clients[c_id].name);
+				clients[c_id].send_change_Character_type_packet(cl.GetId(), cl.GetType(), cl.name);
 			}
 		}
 	}break;
@@ -498,7 +513,7 @@ void Server::Process_packet(int c_id, char* packet)
 
 		for (auto& cl : clients) {
 			if (cl.state != ST_LOBBY) continue;
-			cl.send_change_Character_type_packet(c_id, clients[c_id].GetType());
+			cl.send_change_Character_type_packet(c_id, clients[c_id].GetType(), clients[c_id].name);
 		}
 	}
 							break;
@@ -526,7 +541,7 @@ void Server::Process_packet(int c_id, char* packet)
 		alivePacket.type = SC_PLAYER_ALIVE;
 		alivePacket.id = p->id;
 
-		for (auto id : gMap.cl_ids) {
+		for (int id : gMap.cl_ids) {
 			clients[id].do_send(&alivePacket);
 		}
 
@@ -543,7 +558,7 @@ void Server::Process_packet(int c_id, char* packet)
 			packet.type = SC_GO_STAGE2;
 			clients[id].do_send(&packet);
 		}
-
+		
 		gMap.SetStage(GAME_STATE::LOADING);
 
 	}break;
@@ -552,14 +567,14 @@ void Server::Process_packet(int c_id, char* packet)
 		CS_CHANGE_COMST_PACKET* p = reinterpret_cast<CS_CHANGE_COMST_PACKET*>(packet);
 		gMap.coms[p->comNum] = p->state;
 
-		for (auto id : gMap.cl_ids)
-		{
-			SC_CHANGE_COMST_PACKET comst;
-			comst.size = sizeof(comst);
-			comst.type = SC_CHANGE_COMST;
-			comst.comNum = p->comNum;
-			comst.state = p->state;
+		SC_CHANGE_COMST_PACKET comst;
+		comst.size = sizeof(comst);
+		comst.type = SC_CHANGE_COMST;
+		comst.comNum = p->comNum;
+		comst.state = p->state;
 
+		for (int id : gMap.cl_ids)
+		{
 			clients[id].do_send(&comst);
 		}
 
@@ -631,6 +646,13 @@ void Server::TimerThread()
 				//OVER_EXP* overE = new OVER_EXP;
 				//// overE->comp_type
 				//PostQueuedCompletionStatus(h_iocp, 1, ev.pl_id, &overE->over);
+			}
+
+			case EV_COOL_DOWN: {
+				OVER_EXP* overE = new OVER_EXP;
+				overE->comp_type = OP_COOL_DOWN;
+				PostQueuedCompletionStatus(h_iocp, 1, ev.npc_id, &overE->over);
+				break;
 			}
 
 

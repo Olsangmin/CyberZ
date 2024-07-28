@@ -59,7 +59,7 @@ public:
 	void send_move_packet(int c_id, DirectX::XMFLOAT3 cid_dir, float cid_yaw, bool is_valid);
 	void send_update_packet(int c_id, DirectX::XMFLOAT3 cid_pos, DirectX::XMFLOAT3 cid_rotation);
 	void send_changeAnimation_packet(int c_id, Player_Animation_ST ch_ani);
-	void send_change_Character_type_packet(int c_id, Player_Character_Type type);
+	void send_change_Character_type_packet(int c_id, Player_Character_Type type, std::string _name);
 
 	void send_add_npc_packet(int n_id, DirectX::XMFLOAT3 nid_pos, DirectX::XMFLOAT3 nid_rotation);
 	void send_move_npc_packet(int n_id, DirectX::XMFLOAT3 pos);

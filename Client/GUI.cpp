@@ -259,22 +259,22 @@ void CPrepareRoomSceneUI::CheckEnter()
 	
 	if (m_bPlayerOn[0])
 	{
-		WCHAR InfoText[] = L"Player 1";
+		// WCHAR InfoText[] = L"Player 1";
 		D2D1_RECT_F rcPlayer0 = D2D1::RectF(left, top, left + width, top + height);
-		m_pd2dDeviceContext->DrawTextW(InfoText, (UINT32)wcslen(InfoText), m_pdwFont, &rcPlayer0, m_pd2dbrText);
+		m_pd2dDeviceContext->DrawTextW(m_text[0].c_str(), static_cast<UINT32>(m_text[0].length()), m_pdwFont, &rcPlayer0, m_pd2dbrText);
 	}
 
 	if (m_bPlayerOn[1])
 	{
-		WCHAR InfoText1[] = L"Player 2";
+		// WCHAR InfoText1[] = L"Player 2";
 		D2D1_RECT_F rcPlayer1 = D2D1::RectF(left + gab, top, left + width + gab, top + height);
-		m_pd2dDeviceContext->DrawTextW(InfoText1, (UINT32)wcslen(InfoText1), m_pdwFont, &rcPlayer1, m_pd2dbrText);
+		m_pd2dDeviceContext->DrawTextW(m_text[1].c_str(), static_cast<UINT32>(m_text[1].length()), m_pdwFont, &rcPlayer1, m_pd2dbrText);
 	}
 
 	if (m_bPlayerOn[2])
 	{
 		D2D1_RECT_F rcPlayer2 = D2D1::RectF(left + gab * 2, top, left + width + gab * 2, top + height);
-		m_pd2dDeviceContext->DrawTextW(m_text.c_str(), static_cast<UINT32>(m_text.length()), m_pdwFont, &rcPlayer2, m_pd2dbrText);
+		m_pd2dDeviceContext->DrawTextW(m_text[2].c_str(), static_cast<UINT32>(m_text[2].length()), m_pdwFont, &rcPlayer2, m_pd2dbrText);
 	}
 
 }
