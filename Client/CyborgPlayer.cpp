@@ -28,17 +28,17 @@ CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	m_pSkinnedAnimationController->SetCallbackKey(1, 0.5f, _T("Footstep02"));
 	m_pSkinnedAnimationController->SetCallbackKey(2, 0.9f, _T("Footstep03"));
 #else
-	m_pSkinnedAnimationController->SetCallbackKey(1, 0, 0.3f, _T("Sound/Footstep01.wav"));
-	m_pSkinnedAnimationController->SetCallbackKey(1, 1, 0.8f, _T("Sound/Footstep02.wav"));	
+	//m_pSkinnedAnimationController->SetCallbackKey(1, 0, 0.3f, _T("Sound/Footstep01.wav"));
+	//m_pSkinnedAnimationController->SetCallbackKey(1, 1, 0.8f, _T("Sound/Footstep02.wav"));	
 
-	m_pSkinnedAnimationController->SetCallbackKey(2, 0, 0.15f, _T("Sound/Footstep01.wav"));
-	m_pSkinnedAnimationController->SetCallbackKey(2, 1, 0.5f, _T("Sound/Footstep02.wav"));
+	//m_pSkinnedAnimationController->SetCallbackKey(2, 0, 0.15f, _T("Sound/Footstep01.wav"));
+	//m_pSkinnedAnimationController->SetCallbackKey(2, 1, 0.5f, _T("Sound/Footstep02.wav"));
 		//m_pSkinnedAnimationController->SetCallbackKey(1, 2, 0.39f, _T("Sound/Footstep03.wav"));
 #endif
-	CAnimationCallbackHandler* pAnimationCallbackHandler = new CSoundCallbackHandler();
-	//CAnimationCallbackHandler* pAnimationCallbackHandler1 = new CSoundCallbackHandler();
-	m_pSkinnedAnimationController->SetAnimationCallbackHandler(1, pAnimationCallbackHandler);
-	m_pSkinnedAnimationController->SetAnimationCallbackHandler(2, pAnimationCallbackHandler);
+	//CAnimationCallbackHandler* pAnimationCallbackHandler = new CSoundCallbackHandler();
+	////CAnimationCallbackHandler* pAnimationCallbackHandler1 = new CSoundCallbackHandler();
+	//m_pSkinnedAnimationController->SetAnimationCallbackHandler(1, pAnimationCallbackHandler);
+	//m_pSkinnedAnimationController->SetAnimationCallbackHandler(2, pAnimationCallbackHandler);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 

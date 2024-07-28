@@ -1,21 +1,29 @@
 #pragma once
-#include <fmod.hpp>
-#include <fmod_errors.h>
+#include "stdafx.h"
 
 class CGameSound
 {
-public:
-	FMOD::System* soundSystem;
-	FMOD::Sound* BackGroundSound;
-	FMOD::Channel* BackGroundChannel;
-	FMOD_RESULT  result;
-	void* extradriverdata = 0;
-public:
-	CGameSound();
-	~CGameSound();
-public:
-	bool m_bStopSound = false;
-	void PauseOpeningSound();
-	void PlayOpeningSound();
+//private:
+//    FMOD::System* soundSystem;
+//
+//    FMOD::Sound* BackGroundSound;
+//    FMOD::Channel* BackGroundChannel;
+//
+//    FMOD_RESULT  result;
+//    void* extradriverdata = 0;
+//
+//public:
+//    CGameSound(const char* path, bool loop);
+//    ~CGameSound();
+
+    //static int Init();
+    //static int Release();
+
+    //int play();
+    //int pause();
+    //int resume();
+    //int stop();
+
+    //int Update();
 };
 

@@ -48,6 +48,15 @@ using namespace std;
 #include <d2d1effects.h>
 #include <wincodec.h>
 
+#include <mmsystem.h>
+#pragma comment(lib,"winmm.lib")
+
+//#include "inc/fmod.hpp"
+//#include "inc/fmod_errors.h"
+//
+//#pragma comment(lib, "library/fmodex_vc.lib")
+//#pragma comment(lib, "library/fmodexL_vc.lib")
+
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dwrite.lib")
@@ -71,7 +80,7 @@ using namespace std;
 #include "Network.h"
 
 // 주석하면 서버없이 가능@@@@@@@@@
-// #define USE_NETWORK 
+ #define USE_NETWORK 
 
 // =================================================
 
