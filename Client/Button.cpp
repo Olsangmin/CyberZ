@@ -91,8 +91,17 @@ bool CButton::CheckChlick(HWND hWnd, POINT CursorPos)
 	GetWindowRect(hWnd, &WindowRect);
 
 	POINT mousePos;
+#ifdef FULL_SCREEN
+
+	mousePos.x = CursorPos.x - WindowRect.left;
+	mousePos.y = CursorPos.y - WindowRect.top;
+
+#else
+
 	mousePos.x = CursorPos.x - WindowRect.left;
 	mousePos.y = CursorPos.y - WindowRect.top - 30;
+
+#endif // FULL_SCREEN
 
 	// 충돌확인
 	if (mousePos.x > m_fLeft && mousePos.x < m_fRight)
