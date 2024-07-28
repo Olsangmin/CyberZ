@@ -9,6 +9,9 @@
 #include <algorithm>
 #include <wincrypt.h>
 
+#include <locale>
+#include <codecvt>
+
 
 class CPrepareRoomScene : public CScene
 {
@@ -29,6 +32,15 @@ public:
 	void SetPlayer();
 
 	void ChangeModel(int nPlayer, int nModel);
+
+	std::wstring string_to_wstring(const std::string& str) {
+		int len;
+		int strLength = static_cast<int>(str.length()) + 1;
+		len = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), strLength, 0, 0);
+		std::wstring wstr(len, L'\0');
+		MultiByteToWideChar(CP_UTF8, 0, str.c_str(), strLength, &wstr[0], len);
+		return wstr;
+	}
 
 public:
 	void ProcessPacket(char* p);
