@@ -189,6 +189,7 @@ void GameMap::ChangeToMap2()
 	mapDepth = 650.f;
 	cellWidth = 35;
 	cellDepth = 65;
+	cool_down = false;
 
 	BossNpc.n_state = NPC_INGAME;
 	BossNpc.SetId(200);
@@ -389,8 +390,6 @@ void GameMap::Update(int tick)
 
 	}
 	else return;
-	
-	if (cool_down == true) return;
 
 	switch (game_state)
 	{
@@ -409,7 +408,7 @@ void GameMap::Update(int tick)
 
 void GameMap::UpdateS1()
 {
-	// if (cool_down == true) return;
+	if (cool_down == true) return;
 	Server& server = Server::GetInstance();
 	auto& players = server.clients;
 
@@ -417,8 +416,8 @@ void GameMap::UpdateS1()
 		npc.UpdateBB();
 		bool patrol = true;
 		float closed_dis = 100000.f;
-		if ((npc.IsAttack == true) && (AttackRange >= Distance_float(npc.GetPos(), players[npc.near_player].GetPos()))) continue;
-		else npc.IsAttack = false;
+		if ((npc.IsAttack == true)) continue;
+		
 		for (auto ids : cl_ids) {
 			if (players[ids].anim == CREEP) continue;
 			if (players[ids].anim == CRAWL) continue;
@@ -451,7 +450,7 @@ void GameMap::UpdateS1()
 			if (closed_dis < AttackRange)
 			{
 				npc.current_behavior = ATTACK;
-				std::cout << "ÄðÅ¸ÀÔ ½ÃÀÛ" << std::endl;
+				// std::cout << "ÄðÅ¸ÀÓ ½ÃÀÛ" << std::endl;
 				cool_lock.lock();
 				cool_down = true;
 				cool_lock.unlock();
@@ -484,7 +483,7 @@ void GameMap::UpdateS2()
 	Server& server = Server::GetInstance();
 	auto& players = server.clients;
 
-	// if (cool_down == true) return;
+	if (cool_down == true) return;
 	if (BossNpc.IsAttack) return;
 
 	float closed_dis = 100000.f;
@@ -504,10 +503,10 @@ void GameMap::UpdateS2()
 
 	}
 
-	if (closed_dis < (AttackRange + 5.f))
+	if (closed_dis < (AttackRange + 2.f))
 	{
 		BossNpc.current_behavior = ATTACK;
-		std::cout << "ÄðÅ¸ÀÔ ½ÃÀÛ" << std::endl;
+		// std::cout << "ÄðÅ¸ÀÓ ½ÃÀÛ" << std::endl;
 		cool_lock.lock();
 		cool_down = true;
 		cool_lock.unlock();

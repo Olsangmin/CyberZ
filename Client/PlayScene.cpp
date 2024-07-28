@@ -1367,7 +1367,7 @@ void CSecondRoundScene::ProcessPacket(char* p)
 		SC_ATTACK_NPC_PACKET* packet = reinterpret_cast<SC_ATTACK_NPC_PACKET*>(p);
 		
 
-		/*int id = packet->p_id;
+		int id = packet->p_id;
 		auto& it = idANDtype.find(id);
 		XMFLOAT3 xmf3{};
 		if (it == idANDtype.end()) break;
@@ -1375,20 +1375,23 @@ void CSecondRoundScene::ProcessPacket(char* p)
 			Player_Character_Type type = it->second;
 			xmf3 = reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->GetPosition();
 		}
-		*/
+		
 		reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetAttackStatus(true, 2);
+		XMFLOAT3 double_pos{ m_pBoss->GetPosition().x * 2.f, 0.f, m_pBoss->GetPosition().z * 2.f};
+
 		CS_NPC_UPDATE_PACKET nup;
 		nup.size = sizeof(nup);
 		nup.type = CS_NPC_UPDATE;
 		nup.n_id = packet->n_id;
-		nup.position = m_pBoss->GetPosition();
+		nup.position = double_pos;
 		send_packet(&nup);
 
 	}break;
 
 	case SC_NPC_UPDATE: {
 		SC_NPC_UPDATE_PACKET* packet = reinterpret_cast<SC_NPC_UPDATE_PACKET*>(p);
-		m_pBoss->SetPosition(packet->position);
+		XMFLOAT3 half_pos{ packet->position.x / 2.f, 0.f, packet->position.z / 2.f };
+		m_pBoss->SetPosition(half_pos);
 	}break;
 
 	case SC_PLAYER_DEATH: {

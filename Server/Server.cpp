@@ -264,6 +264,7 @@ void Server::Worker_thread()
 						clients[id].send_player_death_packet(gMap.BossNpc.near_player);
 					}
 				}
+				// std::cout << clients[gMap.BossNpc.near_player].GetPos().x << ", " << clients[gMap.BossNpc.near_player].GetPos().z << " - " << gMap.BossNpc.GetPos().x << "," << gMap.BossNpc.GetPos().z << std::endl;
 				gMap.BossNpc.IsAttack = false;
 				gMap.BossNpc.o_lock.unlock();
 			}
@@ -274,7 +275,7 @@ void Server::Worker_thread()
 			gMap.cool_lock.lock();
 			gMap.cool_down = false;
 			gMap.cool_lock.unlock();
-			std::cout << "ÄðÅ¸ÀÔ ³¡" << std::endl;
+			// std::cout << "ÄðÅ¸ÀÔ ³¡" << std::endl;
 			delete ex_over;
 		}break;
 
@@ -505,7 +506,7 @@ void Server::Process_packet(int c_id, char* packet)
 	}
 							break;
 	case CS_NPC_UPDATE: {
-		if (c_id != gMap.cl_ids[0]) break;
+		if (c_id != gMap.cl_ids[1]) break;
 		CS_NPC_UPDATE_PACKET* p = reinterpret_cast<CS_NPC_UPDATE_PACKET*>(packet);
 		
 		if (p->n_id < 200) {
@@ -527,14 +528,12 @@ void Server::Process_packet(int c_id, char* packet)
 			SC_NPC_UPDATE_PACKET nup;
 			nup.size = sizeof(nup);
 			nup.type = SC_NPC_UPDATE;
-			nup.n_id = n_id;
+			nup.n_id = p->n_id;
 			nup.position = gMap.BossNpc.GetPos();
 			for (int id : gMap.cl_ids) {
 				clients[id].do_send(&nup);
 			}
 		}
-		
-		
 
 	}break;
 	case CS_GETKEY: {

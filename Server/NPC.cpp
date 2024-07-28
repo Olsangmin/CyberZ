@@ -104,9 +104,9 @@ void NPC::Chase()
 
 void NPC::Attack()
 {
-	if (IsAttack == true) return;
-
+	o_lock.lock();
 	IsAttack = true;
+	o_lock.unlock();
 	PathClear();
 	std::cout << "[" << id << "] Attack½ÃÀÛ [" << near_player << "] " << std::endl;
 	auto& server = Server::GetInstance();
