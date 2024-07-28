@@ -990,20 +990,18 @@ bool CSecondRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) {
-			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn=false;
+			
 
-			if (m_nDoingMachine != -1) {
-				S2_COM_STATE sstate{};
-				sstate = TURNOFF;
-
+			if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn == true) {
 				CS_CHANGE_COMST_PACKET p;
 				p.size = sizeof(&p);
 				p.type = CS_CHANGE_COMST;
 				p.comNum = m_nDoingMachine;
-				p.state = sstate;
+				p.state = S2_COM_STATE::TURNOFF;
 				send_packet(&p);
-				m_nDoingMachine = -1;
+				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = false;
 			}
+
 			if (!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCrawl)
 				m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
 		}
