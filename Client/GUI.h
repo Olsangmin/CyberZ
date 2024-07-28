@@ -147,12 +147,15 @@ public:
 	int					m_nMachine = 0;
 	CMachine**			m_ppMachine = NULL;
 
+	bool				m_bEnd = false;
+
 	void ItemUI();
 	void StaminaBarUI();
 
 	void BossUI();
 	void MachineUI();
 	void MissionUI();
+	void Ending();
 	void SetProgress(int progressNum, float figure) { m_fMissionRange[progressNum] = m_fMissionRange[progressNum] + figure; }
 
 

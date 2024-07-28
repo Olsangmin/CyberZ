@@ -521,7 +521,7 @@ void CSecondRoundSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 	MachineUI();
 
 	if (m_bMyOn) MissionUI();
-
+	if (m_bEnd) Ending();
 }
 
 
@@ -708,6 +708,24 @@ void CSecondRoundSceneUI::MissionUI()
 	m_ppTagButton[0]->SetSize(m_fRecSizeX, m_fRecSizeY);
 	RecMove(missionbackground);
 	m_ppTagButton[0]->Draw(m_pd2dDeviceContext, m_pd2dbrBorder, 0);
+
+}
+
+void CSecondRoundSceneUI::Ending()
+{
+
+	D2D1_RECT_F background = { 0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT };
+
+	//BG
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::Black, 0.78f));
+	m_pd2dDeviceContext->FillRectangle(background, m_pd2dbrBorder);
+
+
+	D2D1_RECT_F rcEndingRect = { 0.0f, 0.0f, 1920.0f, 1080.0f };
+	D2D_POINT_2F f2EndPoint = { 0.f, 0.f };
+	LoadUIImage(L"Image/end.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
+	m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &f2EndPoint, &rcEndingRect);
+
 
 }
 

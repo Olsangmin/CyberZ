@@ -413,6 +413,8 @@ private:
 	bool					m_bAttackStatus = false;
 	bool					m_bDiyingStatus = false;
 
+	int						m_nDiyCheck = 0;
+
 public:
 	CBossRobotObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,
 		ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks);
@@ -433,7 +435,9 @@ public:
 	XMFLOAT3 GetTarget() { return m_xmf3Target; }
 	virtual void IsMove(Player_Animation_ST CheckAni);
 	bool IsAttackP(Player_Animation_ST Status);
-	bool IsDiying();
+	int IsDiying();
+
+	int GetDiy() { return m_nDiyCheck; }
 
 	Player_Animation_ST m_pasCurrentAni;
 	Player_Animation_ST m_pasNextAni;

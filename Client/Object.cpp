@@ -1495,7 +1495,8 @@ void CBossRobotObject::Update(float fTimeElapsed)
 	CGameObject::Update(fTimeElapsed);
 	if (m_pSkinnedAnimationController) {
 		AnimationBlending(m_pasCurrentAni, m_pasNextAni);
-		if (!IsDiying()) {
+		m_nDiyCheck = IsDiying();
+		if (m_nDiyCheck == 0) {
 			IsAttackP(CREEP) ? 0 : MoveToTarget(), IsMove(m_pasNextAni);
 		}
 
@@ -1600,7 +1601,7 @@ bool CBossRobotObject::IsAttackP(Player_Animation_ST status)
 	return false;
 }
 
-bool CBossRobotObject::IsDiying()
+int CBossRobotObject::IsDiying()
 {
 	if (m_bDiyingStatus == true) {
 		if (m_pasCurrentAni != HIT && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
@@ -1616,11 +1617,11 @@ bool CBossRobotObject::IsDiying()
 			//m_pSkinnedAnimationController->m_pAnimationTracks[HIT].m_fPosition = fTrackLength-0.4f;
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 			m_pasNextAni = NONE;
-			return true;
+			return 2;
 		}
-		return true;
+		return 1;
 	}
-	return false;
+	return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1226,6 +1226,10 @@ void CSecondRoundScene::AnimateObjects(float fTimeElapsed)
 	//	}
 	//	m_ppMissionObj[i]->m_bMissionflag = Missionflag;
 	//}
+	
+	if (reinterpret_cast<CBossRobotObject*> (m_pBoss)->GetDiy() == 2) {
+		reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bEnd = true;
+	}
 
 	int check = 0;
 	for (int i = 0; i < m_nMissionObj; i++)
