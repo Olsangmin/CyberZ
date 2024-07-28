@@ -110,21 +110,6 @@ void Server::Network()
 
 		if (fps.count() < 1) continue;
 
-		/*if (frame_count.count() < 60) {
-			for (auto id : gMap.cl_ids)
-			{
-				for (int i = 0; i < gMap.coms.size(); ++i) {
-					SC_CHANGE_COMST_PACKET comst;
-					comst.size = sizeof(comst);
-					comst.type = SC_CHANGE_COMST;
-					comst.comNum = i;
-					comst.state = gMap.coms[i];
-
-					clients[id].do_send(&comst);
-				}
-			}
-		}*/
-
 
 		if (frame_count.count() == 0) {
 			// std::cout << "PLAYER UPDATE" << std::endl;
@@ -286,7 +271,10 @@ void Server::Worker_thread()
 		}break;
 
 		case OP_COOL_DOWN: {
+			gMap.cool_lock.lock();
 			gMap.cool_down = false;
+			gMap.cool_lock.unlock();
+			std::cout << "ÄðÅ¸ÀÔ ³¡" << std::endl;
 			delete ex_over;
 		}break;
 
@@ -419,7 +407,7 @@ void Server::Process_packet(int c_id, char* packet)
 		std::vector<int> players = gMap.cl_ids;
 		if (gMap.GetStage() == NOGAME) {
 			auto& npcs = gMap.npcs;
-			for (auto& pl : players) { // 012
+			for (auto& pl : players) { 
 				for (auto& others : gMap.cl_ids) {
 					clients[pl].send_add_player_packet(others,
 						clients[others].GetPos(), clients[others].GetRotation(), clients[others].GetType());
@@ -427,7 +415,7 @@ void Server::Process_packet(int c_id, char* packet)
 
 				for (auto& npc : npcs) {
 					clients[pl].send_add_npc_packet(npc.GetId(), npc.GetPos(), npc.GetRotation());
-					std::cout << pl << " to " << npc.GetId() << std::endl;
+					// std::cout << pl << " to " << npc.GetId() << std::endl;
 				}
 			}
 			gMap.PlayGame();
@@ -516,7 +504,39 @@ void Server::Process_packet(int c_id, char* packet)
 		}
 	}
 							break;
+	case CS_NPC_UPDATE: {
+		if (c_id != gMap.cl_ids[0]) break;
+		CS_NPC_UPDATE_PACKET* p = reinterpret_cast<CS_NPC_UPDATE_PACKET*>(packet);
+		
+		if (p->n_id < 200) {
+			int n_id = p->n_id - 100;
+			gMap.npcs[n_id].SetPos(p->position);
 
+			SC_NPC_UPDATE_PACKET nup;
+			nup.size = sizeof(nup);
+			nup.type = SC_NPC_UPDATE;
+			nup.n_id = p->n_id;
+			nup.position = gMap.npcs[n_id].GetPos();
+			for (int id : gMap.cl_ids) {
+				clients[id].do_send(&nup);
+			}
+		}
+		else {
+			int n_id = p->n_id - 200;
+			gMap.BossNpc.SetPos(p->position);
+			SC_NPC_UPDATE_PACKET nup;
+			nup.size = sizeof(nup);
+			nup.type = SC_NPC_UPDATE;
+			nup.n_id = n_id;
+			nup.position = gMap.BossNpc.GetPos();
+			for (int id : gMap.cl_ids) {
+				clients[id].do_send(&nup);
+			}
+		}
+		
+		
+
+	}break;
 	case CS_GETKEY: {
 		// CS_GETKEY_PACKET* p = reinterpret_cast<CS_GETKEY_PACKET*>(packet);
 		std::cout << c_id << "Å°È¹µæ" << std::endl;
@@ -569,8 +589,6 @@ void Server::Process_packet(int c_id, char* packet)
 		
 		gMap.coms[p->comNum] = st;
 
-		std::cout << "[" << c_id << "] -> com" << p->comNum << "À» " << st << "·Î º¯°æ" << std::endl;
-
 		SC_CHANGE_COMST_PACKET comst;
 		comst.size = sizeof(comst);
 		comst.type = SC_CHANGE_COMST;
@@ -587,6 +605,7 @@ void Server::Process_packet(int c_id, char* packet)
 		{
 			std::cout << gMap.coms[i] << " ";
 		}
+		std::cout << std::endl;
 
 	}break;
 
@@ -656,6 +675,7 @@ void Server::TimerThread()
 				//OVER_EXP* overE = new OVER_EXP;
 				//// overE->comp_type
 				//PostQueuedCompletionStatus(h_iocp, 1, ev.pl_id, &overE->over);
+				break;
 			}
 
 			case EV_COOL_DOWN: {

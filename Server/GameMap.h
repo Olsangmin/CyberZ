@@ -225,6 +225,7 @@ public:
     }
 
     bool cool_down{ false };
+    std::mutex cool_lock;
     std::vector<std::vector<CELL>> cells;
 private:
     float mapWidth, mapDepth;

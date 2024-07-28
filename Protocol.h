@@ -56,6 +56,7 @@ constexpr char CS_CHANGE_CHARACTER = 5; // 캐릭터 변경
 constexpr char CS_ALLPLAYER_READY = 6; // 게임 시작(방장)
 constexpr char CS_GAME_START = 7; // 게임 시작(서버)
 constexpr char CS_ALIVE_PLAYER = 8;
+constexpr char CS_NPC_UPDATE = 9;
 
 
 constexpr char CS_GETKEY = 21;
@@ -80,6 +81,7 @@ constexpr char SC_MOVE_NPC = 8;
 constexpr char SC_ATTACK_NPC = 9;
 constexpr char SC_PLAYER_DEATH = 10;
 constexpr char SC_PLAYER_ALIVE = 11;
+constexpr char SC_NPC_UPDATE = 12;
 
 
 constexpr char SC_GETKEY = 21;
@@ -196,6 +198,13 @@ struct CS_CHANGE_COMST_PACKET {
 	S2_COM_STATE state;
 };
 
+struct CS_NPC_UPDATE_PACKET {
+	unsigned char size;
+	char	type;
+	int n_id;
+	DirectX::XMFLOAT3 position;
+};
+
 // ------------------------------------------
 struct SC_LOGIN_INFO_PACKET {
 	unsigned char size;
@@ -303,6 +312,13 @@ struct SC_PLAYER_ALIVE_PACKET {
 	unsigned char size;
 	char	type;
 	int id;
+};
+
+struct SC_NPC_UPDATE_PACKET {
+	unsigned char size;
+	char	type;
+	int n_id;
+	DirectX::XMFLOAT3 position;
 };
 
 struct SC_CHANGE_COMST_PACKET {

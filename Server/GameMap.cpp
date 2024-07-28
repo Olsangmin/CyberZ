@@ -192,6 +192,7 @@ void GameMap::ChangeToMap2()
 
 	BossNpc.n_state = NPC_INGAME;
 	BossNpc.SetId(200);
+	BossNpc.cool_time = 3000;
 	BossNpc.SetPos(XMFLOAT3(170.f, 0.f, 225.f));
 	CELL& cell = GetCurrentCell(BossNpc.GetPos());
 	BossNpc.boundingBox.Center = BossNpc.GetPos();
@@ -287,15 +288,6 @@ void GameMap::ChangeToMap2()
 
 		}
 
-
-		/*for (const auto& pair : data) {
-			std::cout << "Object Name: " << pair.first << std::endl;
-			const DirectX::BoundingOrientedBox& box = pair.second;
-			std::cout << "Center: (" << box.Center.x << ", " << box.Center.y << ", " << box.Center.z << ")" << std::endl;
-			std::cout << "Orientation: (" << box.Orientation.x << ", " << box.Orientation.y << ", " << box.Orientation.z << ") - " << box.Orientation.w << std::endl;
-		}*/
-
-
 	}
 
 
@@ -319,16 +311,6 @@ void GameMap::ChangeToMap2()
 		for (int y = 0; y < cellDepth; ++y) {
 			for (auto& datas : data) {
 				if (cells[x][y].InCell(datas.second)) {
-					/*if (x >= 40 && x <= 55 && y >= 30 && y < 60) {
-						cells[x][y].cellType = CONT;
-						cells[x][y].isObstacle = true;
-						std::cout << "[" << x << "," << y << "] ";
-						std::cout << "Center: (" << datas.second.Center.x << ", " << datas.second.Center.y << ", " << datas.second.Center.z << ")" << std::endl;
-						std::cout << "Extexts: (" << datas.second.Extents.x << ", " << datas.second.Extents.y << ", " << datas.second.Extents.z << ")" << std::endl;
-
-						std::cout << "Orientation: (" << datas.second.Orientation.x << ", " << datas.second.Orientation.y << ", " << datas.second.Orientation.z << ") - " << datas.second.Orientation.w << std::endl << std::endl;
-						break;
-					}*/
 					cells[x][y].cellType = CONT;
 					cells[x][y].isObstacle = true;
 					break;
@@ -339,8 +321,6 @@ void GameMap::ChangeToMap2()
 	}
 	std::cout << "Map2 loading 완료\n";
 
-	
-
 }
 
 void GameMap::StartGame()
@@ -349,7 +329,7 @@ void GameMap::StartGame()
 	std::cout << "size" << cl_ids.size() << std::endl;
 	for (auto& cl : cl_ids) {
 		server.clients[cl].SetPos(PlayerInitPos[cl]);
-		std::cout << "player[" << cl << "]의 캐릭터 " << server.clients[cl].GetType()<< " ";
+		// std::cout << "player[" << cl << "]의 캐릭터 " << server.clients[cl].GetType()<< " ";
 		SC_GAME_START_PACKET p;
 		p.size = sizeof(p);
 		p.type = SC_GAME_START;
@@ -410,6 +390,8 @@ void GameMap::Update(int tick)
 	}
 	else return;
 	
+	if (cool_down == true) return;
+
 	switch (game_state)
 	{
 	case NOGAME:
@@ -427,7 +409,7 @@ void GameMap::Update(int tick)
 
 void GameMap::UpdateS1()
 {
-	if (cool_down == true) return;
+	// if (cool_down == true) return;
 	Server& server = Server::GetInstance();
 	auto& players = server.clients;
 
@@ -469,6 +451,10 @@ void GameMap::UpdateS1()
 			if (closed_dis < AttackRange)
 			{
 				npc.current_behavior = ATTACK;
+				std::cout << "쿨타입 시작" << std::endl;
+				cool_lock.lock();
+				cool_down = true;
+				cool_lock.unlock();
 			}
 			else
 			{
@@ -494,12 +480,11 @@ void GameMap::UpdateS1()
 
 void GameMap::UpdateS2()
 {
-	return;
 	BossNpc.UpdateBB();
 	Server& server = Server::GetInstance();
 	auto& players = server.clients;
 
-	if (cool_down == true) return;
+	// if (cool_down == true) return;
 	if (BossNpc.IsAttack) return;
 
 	float closed_dis = 100000.f;
@@ -522,6 +507,10 @@ void GameMap::UpdateS2()
 	if (closed_dis < (AttackRange + 5.f))
 	{
 		BossNpc.current_behavior = ATTACK;
+		std::cout << "쿨타입 시작" << std::endl;
+		cool_lock.lock();
+		cool_down = true;
+		cool_lock.unlock();
 	}
 	else
 	{
@@ -565,11 +554,11 @@ void GameMap::InitializeNPC()
 		npcs[i].n_state = NPC_INGAME;
 		npcs[i].SetId(i + 100);
 		npcs[i].SetPos(NPCInitPos[i]);
+		npcs[i].cool_time = 2500;
 		npcs[i].my_sector = getSector(npcs[i].GetPos());
 		CELL& cell = GetCurrentCell(npcs[i].GetPos());
 		npcs[i].boundingBox.Center = npcs[i].GetPos();
 		npcs[i].boundingBox.Extents = DirectX::XMFLOAT3(3.f, 20.f, 3.f);
-		// cell.cellType = CT_NPC;
 	}
 
 	/*auto path = BFS(npcs[0].GetPos(), PlayerInitPos[0]);

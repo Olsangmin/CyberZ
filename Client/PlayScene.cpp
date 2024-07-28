@@ -622,8 +622,6 @@ void CFirstRoundScene::ProcessPacket(char* p)
 		SC_ADD_NPC_PACKET* packet = reinterpret_cast<SC_ADD_NPC_PACKET*>(p);
 		int n_id = packet->id - 100;
 		m_ppEnemy[n_id]->SetPosition(packet->position);
-		// reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(m_ppEnemy[n_id]->GetPosition());
-
 	}
 				   break;
 
@@ -654,8 +652,22 @@ void CFirstRoundScene::ProcessPacket(char* p)
 		//
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetAttackStatus(true);
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(xmf3);
-		cout << "공격" << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << endl;
+		// cout << "공격" << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << endl;
 		
+		CS_NPC_UPDATE_PACKET nup;
+		nup.size = sizeof(nup);
+		nup.type = CS_NPC_UPDATE;
+		nup.n_id = packet->n_id;
+		nup.position = m_ppEnemy[n_id]->GetPosition();
+		send_packet(&nup);
+		
+
+	}break;
+
+	case SC_NPC_UPDATE: {
+		SC_NPC_UPDATE_PACKET* packet = reinterpret_cast<SC_NPC_UPDATE_PACKET*>(p);
+		int n_id = packet->n_id - 100;
+		m_ppEnemy[n_id]->SetPosition(packet->position);
 	}break;
 
 	case SC_GETKEY: {
@@ -1365,8 +1377,18 @@ void CSecondRoundScene::ProcessPacket(char* p)
 		}
 		*/
 		reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetAttackStatus(true, 2);
+		CS_NPC_UPDATE_PACKET nup;
+		nup.size = sizeof(nup);
+		nup.type = CS_NPC_UPDATE;
+		nup.n_id = packet->n_id;
+		nup.position = m_pBoss->GetPosition();
+		send_packet(&nup);
 
+	}break;
 
+	case SC_NPC_UPDATE: {
+		SC_NPC_UPDATE_PACKET* packet = reinterpret_cast<SC_NPC_UPDATE_PACKET*>(p);
+		m_pBoss->SetPosition(packet->position);
 	}break;
 
 	case SC_PLAYER_DEATH: {
