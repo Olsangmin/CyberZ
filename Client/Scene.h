@@ -165,7 +165,6 @@ public:
 	DWORD								m_dwLastDirection;
 
 	CDepthRenderShader*					m_pDepthRenderShader = NULL;
-	CShadowMapShader*					m_pShadowShader = NULL;
 
 	int									m_nFloorObj = 0;
 	CGameObject**						m_ppFloorObj = NULL;

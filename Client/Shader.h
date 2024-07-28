@@ -302,8 +302,10 @@ class CDepthRenderShader : public CStandardShader
 {
 public:
 	CDepthRenderShader() {}
-	CDepthRenderShader(CGameObject** ppObjects, CGameObject** ppfloor, LIGHT* pLights, int nObject);
+	CDepthRenderShader(CGameObject** ppObjects, CMissonOBJ** ppMission, LIGHT* pLights, int nObject, int nMissionObj);
 	virtual ~CDepthRenderShader();
+
+	void SetShadowObject(CPlayer** ppPlayer, int nPlayer, CGameObject** ppEnemy, int nEnemy, CGameObject** ppFloor, int nFloor);
 
 	virtual D3D12_DEPTH_STENCIL_DESC CreateDepthStencilState();
 	virtual D3D12_RASTERIZER_DESC CreateRasterizerState();
@@ -340,10 +342,21 @@ public:
 	CTexture* GetDepthTexture() { return(m_pDepthFromLightTexture); }
 	ID3D12Resource* GetDepthTextureResource(UINT nIndex) { return(m_pDepthFromLightTexture->GetResource(nIndex)); }
 
-	CGameObject**	m_ppObjects = NULL;
-	int				m_nObject = 5;
+	CGameObject**			m_ppObjects = NULL;
+	int						m_nObject = 5;
 
-	CGameObject** m_ppFloorObj = NULL;
+	CMissonOBJ**			m_ppMissionObj = NULL;
+	int						m_nMissionObject = 0;
+
+	int						m_nFloorObj = 0;
+	CGameObject**			m_ppFloorObj = NULL;
+
+	int						m_nEnemy = 0;
+	CGameObject**			m_ppEnemy = NULL;
+
+	CPlayer**				m_ppPlayer = NULL;				// 모든 플레이어 정보
+	int						m_nPlayer;						// 플레이어 갯수
+
 
 protected:
 	LIGHT* m_pLights = NULL;
@@ -352,32 +365,4 @@ protected:
 
 	ID3D12Resource* m_pd3dcbToLightSpaces = NULL;
 	TOLIGHTSPACES* m_pcbMappedToLightSpaces = NULL;
-};
-
-class CShadowMapShader : public CStandardShader
-{
-public:
-	CShadowMapShader();
-	virtual ~CShadowMapShader();
-
-	virtual D3D12_DEPTH_STENCIL_DESC CreateDepthStencilState();
-
-	virtual D3D12_SHADER_BYTECODE CreateVertexShader();
-	virtual D3D12_SHADER_BYTECODE CreatePixelShader();
-
-	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
-	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
-	virtual void ReleaseShaderVariables();
-
-	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext = NULL);
-	virtual void AnimateObjects(float fTimeElapsed) { }
-	virtual void ReleaseObjects();
-
-	virtual void ReleaseUploadBuffers();
-
-	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
-
-public:
-
-	CTexture* m_pDepthFromLightTexture = NULL;
 };

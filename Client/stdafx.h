@@ -9,7 +9,7 @@
 // Windows 헤더 파일:
 #include <windows.h>
 
-//#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 
 // C의 런타임 헤더 파일입니다.
 #include <stdlib.h>
@@ -114,8 +114,8 @@ extern HINSTANCE						ghAppInstance;
 #define DIRECTIONAL_LIGHT				3
 
 #define MAX_DEPTH_TEXTURES		MAX_LIGHTS
-#define _DEPTH_BUFFER_WIDTH		(FRAME_BUFFER_WIDTH)
-#define _DEPTH_BUFFER_HEIGHT	(FRAME_BUFFER_HEIGHT)
+#define _DEPTH_BUFFER_WIDTH		(FRAME_BUFFER_WIDTH*2)
+#define _DEPTH_BUFFER_HEIGHT	(FRAME_BUFFER_HEIGHT*2)
 #define _WITH_DEPTH_TO_TEXTURE
 
 #define _WITH_RENDER_SHADOW

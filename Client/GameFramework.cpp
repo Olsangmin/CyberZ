@@ -47,7 +47,7 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CreateRtvAndDsvDescriptorHeaps();
 
 	CreateSwapChain();
-	ChangeSwapChainState();
+	//ChangeSwapChainState();
 	CreateSwapChainRenderTargetViews();
 	CreateDepthStencilView();
 	
@@ -274,8 +274,8 @@ void CGameFramework::CreateDepthStencilView()
 	m_d3dDsvDescriptorCPUHandle = m_pd3dDsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	
 	//여기
-	m_pd3dDevice->CreateDepthStencilView(m_pd3dDepthStencilBuffer, &d3dDepthStencilViewDesc, m_d3dDsvDescriptorCPUHandle);
-	//m_pd3dDevice->CreateDepthStencilView(m_pd3dDepthStencilBuffer, NULL, m_d3dDsvDescriptorCPUHandle);
+	//m_pd3dDevice->CreateDepthStencilView(m_pd3dDepthStencilBuffer, &d3dDepthStencilViewDesc, m_d3dDsvDescriptorCPUHandle);
+	m_pd3dDevice->CreateDepthStencilView(m_pd3dDepthStencilBuffer, NULL, m_d3dDsvDescriptorCPUHandle);
 }
 
 void CGameFramework::ChangeSwapChainState()
@@ -288,7 +288,7 @@ void CGameFramework::ChangeSwapChainState()
 
 
 	DXGI_MODE_DESC dxgiTargetParameters;
-	dxgiTargetParameters.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	dxgiTargetParameters.Format = DXGI_FORMAT_R32_FLOAT;
 	dxgiTargetParameters.Width = FRAME_BUFFER_WIDTH;
 	dxgiTargetParameters.Height = FRAME_BUFFER_HEIGHT;
 	dxgiTargetParameters.RefreshRate.Numerator = 60;
@@ -453,7 +453,7 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 
 	// 디퍼드 렌더링용 PostProcessing 쉐이더 만들어주기
 	m_pPostProcessingShader = new CTextureDeferdShader();
-	m_pPostProcessingShader->CreateShader(m_pd3dDevice, m_pScene->GetGraphicsRootSignature(), 1, NULL, DXGI_FORMAT_D32_FLOAT);
+	m_pPostProcessingShader->CreateShader(m_pd3dDevice, m_pScene->GetGraphicsRootSignature(), 1, NULL, DXGI_FORMAT_R32_FLOAT);
 	
 	D3D12_CPU_DESCRIPTOR_HANDLE d3dRtvCPUDescriptorHandle = m_pd3dRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	d3dRtvCPUDescriptorHandle.ptr += (::gnRtvDescriptorIncrementSize * m_nSwapChainBuffers);
@@ -556,14 +556,14 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 
 
 	m_pPostProcessingShader = new CTextureDeferdShader();
-	m_pPostProcessingShader->CreateShader(m_pd3dDevice, m_pScene->GetGraphicsRootSignature(), 1, NULL, DXGI_FORMAT_D32_FLOAT);
+	m_pPostProcessingShader->CreateShader(m_pd3dDevice, m_pScene->GetGraphicsRootSignature(), 1, NULL, DXGI_FORMAT_R32_FLOAT);
 	m_pPostProcessingShader->CreateShaderVariables(m_pd3dDevice, m_pd3dCommandList);
 
 
 	D3D12_CPU_DESCRIPTOR_HANDLE d3dRtvCPUDescriptorHandle = m_pd3dRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	d3dRtvCPUDescriptorHandle.ptr += (::gnRtvDescriptorIncrementSize * m_nSwapChainBuffers);
 
-	DXGI_FORMAT pdxgiRtvFormats[4] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R32_FLOAT };
+	DXGI_FORMAT pdxgiRtvFormats[4] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R16G16B16A16_UNORM, DXGI_FORMAT_R16G16B16A16_UNORM, DXGI_FORMAT_R32_FLOAT };
 	m_pPostProcessingShader->CreateResourcesAndRtvsSrvs(m_pd3dDevice, m_pd3dCommandList, 4, pdxgiRtvFormats, d3dRtvCPUDescriptorHandle); //SRV to (Render Targets) + (Depth Buffer)
 
 

@@ -38,7 +38,7 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[0].m_nType = DIRECTIONAL_LIGHT;
 	m_pLights[0].m_fRange = 1000.0f;
 
-	m_pLights[0].m_xmf4Ambient = XMFLOAT4(0.5f, 1.0f, 0.9f, 1.0f);
+	m_pLights[0].m_xmf4Ambient = XMFLOAT4(0.5f, 1.0f, 0.3f, 1.0f);
 	m_pLights[0].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.3f, 0.6f, 0.0f);
 	m_pLights[0].m_xmf4Specular = XMFLOAT4(0.7f, 0.6f, 0.5f, 0.0f);
 
@@ -119,14 +119,11 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 void CScene::CreateShadowShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	m_pDepthRenderShader = new CDepthRenderShader(m_ppHierarchicalGameObjects, m_ppFloorObj, m_pLights, m_nHierarchicalGameObjects);
+	m_pDepthRenderShader = new CDepthRenderShader(m_ppHierarchicalGameObjects, m_ppMissionObj, m_pLights, m_nHierarchicalGameObjects, m_nMissionObj);
+	m_pDepthRenderShader->SetShadowObject(m_ppPlayer, m_nPlayer, m_ppEnemy, m_nEnemy, m_ppFloorObj, m_nFloorObj);
 	DXGI_FORMAT pdxgiRtvFormats[1] = { DXGI_FORMAT_R32_FLOAT };
 	m_pDepthRenderShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 1, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
 	m_pDepthRenderShader->BuildObjects(pd3dDevice, pd3dCommandList, NULL);
-
-	m_pShadowShader = new CShadowMapShader();
-	m_pShadowShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_D24_UNORM_S8_UINT);
-	m_pShadowShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pDepthRenderShader->GetDepthTexture());
 
 }
 
@@ -202,13 +199,6 @@ void CScene::ReleaseObjects()
 		m_pDepthRenderShader->ReleaseShaderVariables();
 		m_pDepthRenderShader->ReleaseObjects();
 		m_pDepthRenderShader->Release();
-	}
-
-	if (m_pShadowShader)
-	{
-		m_pShadowShader->ReleaseShaderVariables();
-		//m_pShadowShader->ReleaseObjects();
-		m_pShadowShader->Release();
 	}
 
 	ReleaseShaderVariables();
@@ -502,7 +492,6 @@ void CScene::ReleaseUploadBuffers()
 	for (int i = 0; i < m_nEnemy; i++) m_ppEnemy[i]->ReleaseUploadBuffers();
 	if (m_pBoss) m_pBoss->ReleaseUploadBuffers();
 
-	if (m_pShadowShader) m_pShadowShader->ReleaseUploadBuffers();
 	if (m_pDepthRenderShader) m_pDepthRenderShader->ReleaseUploadBuffers();
 
 }

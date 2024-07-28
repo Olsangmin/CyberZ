@@ -55,6 +55,7 @@ SamplerComparisonState gssComparisonPCFShadow : register(s2);
 
 float Compute3x3ShadowFactor(float2 uv, float fDepth, uint nIndex)
 {
+   //float fPercentLit = 0.0f;
     float fPercentLit = gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv, fDepth).r;
     fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(-DELTA_X, 0.0f), fDepth).r;
     fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(+DELTA_X, 0.0f), fDepth).r;
@@ -65,7 +66,31 @@ float Compute3x3ShadowFactor(float2 uv, float fDepth, uint nIndex)
     fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(+DELTA_X, -DELTA_Y), fDepth).r;
     fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(+DELTA_X, +DELTA_Y), fDepth).r;
 
-    return (fPercentLit / 9.0f);
+	//¿Þ 5
+    fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(-DELTA_X * 2.f, +DELTA_Y * 2.f), fDepth).r;
+    fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(-DELTA_X * 2.f, +DELTA_Y), fDepth).r;
+    fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(-DELTA_X * 2.f, 0.0f), fDepth).r;
+    fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(-DELTA_X * 2.f, -DELTA_Y), fDepth).r;
+    fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(-DELTA_X * 2.f, -DELTA_Y * 2.f), fDepth).r;
+	
+	//¿À 5
+    fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(+DELTA_X * 2.f, +DELTA_Y * 2.f), fDepth).r;
+    fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(+DELTA_X * 2.f, +DELTA_Y), fDepth).r;
+    fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(+DELTA_X * 2.f, 0.0f), fDepth).r;
+    fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(+DELTA_X * 2.f, -DELTA_Y), fDepth).r;
+    fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(+DELTA_X * 2.f, -DELTA_Y * 2.f), fDepth).r;
+	
+	//¾Æ 3
+    fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(-DELTA_X, -DELTA_Y * 2.f), fDepth).r;
+    fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(0.0f, -DELTA_Y * 2.f), fDepth).r;
+    fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(+DELTA_X, -DELTA_Y * 2.f), fDepth).r;
+	
+	//À§ 3
+    fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(-DELTA_X, +DELTA_Y * 2.f), fDepth).r;
+    fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(0.0f, +DELTA_Y * 2.f), fDepth).r;
+    fPercentLit += gtxtDepthTextures[nIndex].SampleCmpLevelZero(gssComparisonPCFShadow, uv + float2(+DELTA_X, +DELTA_Y * 2.f), fDepth).r;
+
+    return (fPercentLit / 25.0f);
 }
 
 float4 DirectionalLight(int nIndex, float3 vNormal, float3 vToCamera)
@@ -179,9 +204,9 @@ float4 Lighting(float3 vPosition, float3 vNormal, bool bShadow, float4 shadowMap
 		if (gLights[i].m_bEnable)
 		{
 			float fShadowFactor = 0.0f;
-            if (bShadow) fShadowFactor = Compute3x3ShadowFactor(shadowMapUVs[i].xy, shadowMapUVs[i].z, i);
-			
-			if (gLights[i].m_nType == DIRECTIONAL_LIGHT)
+            if (bShadow)
+                fShadowFactor = Compute3x3ShadowFactor(shadowMapUVs[i].xy / shadowMapUVs[i].ww, shadowMapUVs[i].z/shadowMapUVs[i].w, i);
+           if (gLights[i].m_nType == DIRECTIONAL_LIGHT)
 			{
                 cColor += DirectionalLight(i, vNormal, vToCamera) * fShadowFactor;
             }
@@ -193,11 +218,44 @@ float4 Lighting(float3 vPosition, float3 vNormal, bool bShadow, float4 shadowMap
 			{
                 cColor += SpotLight(i, vPosition, vNormal, vToCamera) * fShadowFactor;
             }
-            cColor += gLights[i].m_cAmbient * gMaterial.m_cAmbient;
         }
 	}
 	cColor += (gcGlobalAmbientLight * gMaterial.m_cAmbient);
 	cColor.a = gMaterial.m_cDiffuse.a;
+
+    return (cColor);
+}
+
+
+float4 Light(float3 vPosition, float3 vNormal)
+{
+    float3 vCameraPosition = float3(gvCameraPosition.x, gvCameraPosition.y, gvCameraPosition.z);
+    float3 vToCamera = normalize(vCameraPosition - vPosition);
+
+    float4 cColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	[unroll(MAX_LIGHTS)] 
+    for (int i = 0; i < gnLights; i++)
+    {
+        if (gLights[i].m_bEnable)
+        {
+         		
+            if (gLights[i].m_nType == DIRECTIONAL_LIGHT)
+            {
+                cColor += DirectionalLight(i, vNormal, vToCamera);
+            }
+            else if (gLights[i].m_nType == POINT_LIGHT)
+            {
+                cColor += PointLight(i, vPosition, vNormal, vToCamera);
+            }
+            else if (gLights[i].m_nType == SPOT_LIGHT)
+            {
+                cColor += SpotLight(i, vPosition, vNormal, vToCamera);
+            }
+            cColor += gLights[i].m_cAmbient * gMaterial.m_cAmbient;
+        }
+    }
+    cColor += (gcGlobalAmbientLight * gMaterial.m_cAmbient);
+    cColor.a = gMaterial.m_cDiffuse.a;
 
     return (cColor);
 }

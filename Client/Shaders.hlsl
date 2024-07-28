@@ -251,10 +251,16 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTexturedLightingToMultipleRTs(VS_STANDARD_OU
         normalW = normalize(input.normalW);
     }
 
-    output.normal = float4(normalW * 0.5f + 0.5f, 1.0f); // Convert to [0, 1]
-    output.cIllumination = Lighting(input.positionW, 1 /* normalize(normalW)*/, true, input.shadowMapUVs);
-    output.depth = input.position.z;
-    output.color = cColor;
+    //output.normal = float4(normalW * 0.5f + 0.5f, 1.0f); // Convert to [0, 1]
+    
+    float4 normalLight = Light(input.positionW, normalize(normalW));
+    float4 lightWithShadows = Lighting(input.positionW, 1, true, input.shadowMapUVs);
+    
+    output.cIllumination = normalLight;
+        
+    output.normal = lightWithShadows;
+    output.depth = input.positionW.z;
+    
     
     return output;
   }
@@ -454,45 +460,6 @@ PS_DEPTH_OUTPUT PSDepthWriteShader(VS_STANDARD_OUTPUT input)
     return (output);
 }
 
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-struct VS_SHADOW_MAP_OUTPUT
-{
-    float4 position : SV_POSITION;
-    float3 positionW : POSITION;
-    float3 normalW : NORMAL;
-
-    float4 shadowMapUVs[MAX_LIGHTS] : TEXCOORD0;
-};
-
-VS_SHADOW_MAP_OUTPUT VSShadowMapShadow(VS_STANDARD_INPUT input)
-{
-    VS_SHADOW_MAP_OUTPUT output = (VS_SHADOW_MAP_OUTPUT) 0;
-
-    
-    float4 positionW = mul(float4(input.position, 1.0f), gmtxGameObject);
-    output.positionW = mul(float4(input.position, 1.0f), gmtxGameObject).xyz;
-    output.normalW = mul(input.normal, (float3x3) gmtxGameObject);
-    output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
-    
-    for (int i = 0; i < MAX_LIGHTS; i++)
-    {
-        if (gcbToLightSpaces[i].f4Position.w != 0.0f) output.shadowMapUVs[i] = mul(positionW, gcbToLightSpaces[i].mtxToTextureSpace);
-    }
-
-    return (output);
-}
-
-float4 PSShadowMapShadow(VS_SHADOW_MAP_OUTPUT input) : SV_TARGET
-{
-    
-    float4 cIllumination = Lighting(input.positionW, normalize(input.normalW), true, input.shadowMapUVs);
-
-    return (cIllumination);
-}
-
-
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //
 Texture2D<float4> gtxtTextureTexture : register(t14);
@@ -609,21 +576,21 @@ float3 ReconstructPosition(float2 uv, float depth)
 
 float4 PSScreenRectSamplingTextured(VS_SCREEN_RECT_TEXTURED_OUTPUT input) : SV_Target
 {
-
     float2 uv = input.uv;
 
     // Sample G-Buffer
     float4 color = gtxtTextureTexture.Sample(gssWrap, uv);
     float4 normalData = gtxtNormalTexture2.Sample(gssWrap, uv);
     float4 specular = gtxtSpecularTexture.Sample(gssWrap, uv);
-    float depth =  gtxtDepthTextures[0].Load(int3(input.position.xy, 0)).r;
-    
-    // Calculate lighting
-    float4 light = gtxtIlluminationTexture.Sample(gssWrap, uv);
+    float depth = gtxtDepthTextures[0].Load(uint3((uint) input.position.x, (uint) input.position.y, 0));
     
     // Combine albedo and light
+    float4 light = gtxtIlluminationTexture.Sample(gssWrap, uv);
+    
     float4 outcolor = lerp(color, light, 0.4f);
-    return (light);
-
+    if (normalData.x < 0.2) outcolor = outcolor - 0.3;
+     
+    return (outcolor);
+    
 }
 
