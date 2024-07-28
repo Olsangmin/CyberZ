@@ -42,8 +42,8 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[0].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.3f, 0.6f, 0.0f);
 	m_pLights[0].m_xmf4Specular = XMFLOAT4(0.7f, 0.6f, 0.5f, 0.0f);
 
-	m_pLights[0].m_xmf3Position = XMFLOAT3(500.f, 40.0f, 500.f);
-	m_pLights[0].m_xmf3Direction = XMFLOAT3(0.0f, -1.0f, 0.0f);
+	m_pLights[0].m_xmf3Position = XMFLOAT3(500.f, 200.0f, 500.f);
+	m_pLights[0].m_xmf3Direction = XMFLOAT3(0.3f, -0.8f, 0.0f);
 
 	// Player Flash Light 
 	m_pLights[1].m_bEnable = false;
@@ -117,11 +117,11 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 }
 
-void CScene::CreateShadowShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void CScene::CreateShadowShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList , bool bBoss)
 {
 	m_pDepthRenderShader = new CDepthRenderShader(m_ppHierarchicalGameObjects, m_ppMissionObj, m_pLights, m_nHierarchicalGameObjects, m_nMissionObj);
-	m_pDepthRenderShader->SetShadowObject(m_ppPlayer, m_nPlayer, m_ppEnemy, m_nEnemy, m_ppFloorObj, m_nFloorObj);
-	DXGI_FORMAT pdxgiRtvFormats[1] = { DXGI_FORMAT_R32_FLOAT };
+	m_pDepthRenderShader->SetShadowObject(m_ppModelInfoPlayer, m_nPlayer, m_ppEnemy, m_nEnemy, m_ppFloorObj, m_nFloorObj, m_pBoss, bBoss);
+	DXGI_FORMAT pdxgiRtvFormats[1] = { DXGI_FORMAT_D32_FLOAT };
 	m_pDepthRenderShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature, 1, pdxgiRtvFormats, DXGI_FORMAT_D32_FLOAT);
 	m_pDepthRenderShader->BuildObjects(pd3dDevice, pd3dCommandList, NULL);
 
@@ -274,7 +274,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	pd3dDescriptorRanges[9].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	pd3dDescriptorRanges[10].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	pd3dDescriptorRanges[10].NumDescriptors = 4;
+	pd3dDescriptorRanges[10].NumDescriptors = 5;
 	pd3dDescriptorRanges[10].BaseShaderRegister = 14; //t14~t18: Texture2D<float4>
 	pd3dDescriptorRanges[10].RegisterSpace = 0;
 	pd3dDescriptorRanges[10].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;

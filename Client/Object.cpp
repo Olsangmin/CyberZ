@@ -1253,7 +1253,6 @@ void CRobotObject::MoveToTarget()
 	
 
 
-
 	/*Vector3::IsZero(m_xmf3Target) ?
 		m_pasNextAni = IDLE : RotateDirection(5.f, m_xmf3Target), m_pasNextAni = WALK;
 	if (!Vector3::IsZero(m_xmf3Target))

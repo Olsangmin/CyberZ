@@ -90,7 +90,9 @@ public:
 	std::wstring m_text[3];
 
 	bool m_bPlayerOn[3] = {false};
+
 	void CheckEnter();
+	void InfoText();
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,7 +112,6 @@ public:
 	void MissionText();
 	void MissionProgressBar(int MissionNum);
 	void kyecardUI();
-	void ItemUI();
 	void StaminaBarUI();
 
 public:

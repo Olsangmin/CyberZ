@@ -47,10 +47,14 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CreateRtvAndDsvDescriptorHeaps();
 
 	CreateSwapChain();
-	//ChangeSwapChainState();
+
+#ifdef FULL_SCREEN
+		ChangeSwapChainState();
+#endif // FULL_SCREEN
+
+
 	CreateSwapChainRenderTargetViews();
 	CreateDepthStencilView();
-	
 	
 	CoInitialize(NULL);
 
@@ -358,11 +362,6 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 					m_bRenderBoundingBox = !m_bRenderBoundingBox;
 					break;
 
-				case 'T':
-					m_bRenderBoundingBox = !m_bRenderBoundingBox;
-					break;
-
-					
 				default:
 					break;
 			}
@@ -444,7 +443,7 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 	m_nSceneNum = START_SCENE;
 	m_pScene = new CStartScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
-	if(m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
+	if(m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList, false);
 
 #ifdef USE_NETWORK
 	if (m_pScene) m_pScene->InitNetwork();
@@ -507,7 +506,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			m_pSound = new CGameSound("Sound/Start_Scene.mp3");
 			m_pSound->PlayOpeningSound();*/
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
-			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
+			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList, false);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
 			break;
@@ -517,7 +516,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			PlaySound(NULL, 0, SND_FILENAME | SND_ASYNC | SND_LOOP);
 			m_pScene = new CLoadingScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
-			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
+			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList, false);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = false;
 			break;
@@ -527,7 +526,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			m_nSceneNum = nScene;
 			m_pScene = new CPrepareRoomScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);	
-			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
+			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList, false);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
 			PlaySound(L"Sound/Prepare.wav", 0, SND_FILENAME | SND_ASYNC | SND_LOOP);
@@ -540,7 +539,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			m_nSceneNum = nScene;
 			m_pScene = new CFirstRoundScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
-			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
+			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList, false);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
 			PlaySound(L"Sound/First.wav", 0, SND_FILENAME | SND_ASYNC | SND_LOOP);
@@ -551,7 +550,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			m_nSceneNum = nScene;
 			m_pScene = new CSecondRoundScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
-			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
+			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList, true);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
 			PlaySound(L"Sound/Second.wav", 0, SND_FILENAME | SND_ASYNC | SND_LOOP);

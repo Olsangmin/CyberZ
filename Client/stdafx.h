@@ -93,7 +93,9 @@ using Microsoft::WRL::ComPtr;
 
 extern HINSTANCE						ghAppInstance;
 
-// #define SMALL_WINDOW_SCREEN
+//#define	 FULL_SCREEN
+
+#define SMALL_WINDOW_SCREEN
 
 #ifdef SMALL_WINDOW_SCREEN
 
