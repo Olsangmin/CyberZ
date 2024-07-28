@@ -494,6 +494,7 @@ void GameMap::UpdateS1()
 
 void GameMap::UpdateS2()
 {
+	return;
 	BossNpc.UpdateBB();
 	Server& server = Server::GetInstance();
 	auto& players = server.clients;

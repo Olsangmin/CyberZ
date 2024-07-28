@@ -330,7 +330,6 @@ void Server::Process_packet(int c_id, char* packet)
 			clients[c_id].state = ST_LOBBY;
 			for (auto& cl : clients) {
 				if (ST_LOBBY != cl.state) continue;
-				// if (cl.GetId() == c_id) continue;
 				cl.send_change_Character_type_packet(c_id, clients[c_id].GetType(), clients[c_id].name);
 				clients[c_id].send_change_Character_type_packet(cl.GetId(), cl.GetType(), cl.name);
 			}
@@ -373,7 +372,7 @@ void Server::Process_packet(int c_id, char* packet)
 
 		if (dbConn->Execute(L"INSERT INTO [dbo].[User_Account]([account_id], [password], [createDate]) VALUES(?, ?, ?)"))
 		{
-
+			std::cout << "Sign Up" << std::endl;
 		}
 		m_DBConnectionPool->Push(dbConn);
 
@@ -565,17 +564,28 @@ void Server::Process_packet(int c_id, char* packet)
 
 	case CS_CHANGE_COMST: {
 		CS_CHANGE_COMST_PACKET* p = reinterpret_cast<CS_CHANGE_COMST_PACKET*>(packet);
-		gMap.coms[p->comNum] = p->state;
+
+		S2_COM_STATE st = static_cast<S2_COM_STATE>(p->state);
+		
+		gMap.coms[p->comNum] = st;
+
+		std::cout << "[" << c_id << "] -> com" << p->comNum << "을 " << st << "로 변경" << std::endl;
 
 		SC_CHANGE_COMST_PACKET comst;
 		comst.size = sizeof(comst);
 		comst.type = SC_CHANGE_COMST;
 		comst.comNum = p->comNum;
-		comst.state = p->state;
+		comst.state = st;
 
 		for (int id : gMap.cl_ids)
 		{
 			clients[id].do_send(&comst);
+		}
+
+		std::cout << "현재 COM 상태 ";
+		for (int i = 0; i < gMap.coms.size(); ++i)
+		{
+			std::cout << gMap.coms[i] << " ";
 		}
 
 	}break;

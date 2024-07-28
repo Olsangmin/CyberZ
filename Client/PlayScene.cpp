@@ -1,4 +1,4 @@
-
+Ôªø
 #include "stdafx.h"
 #include "PlayScene.h"
 
@@ -29,10 +29,10 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	//===============================//
 	// Map (4)
 	// [Present Setting]
-	// 1 - øÔ≈∏∏Æ				|| OBJ
-	// 2 - ∏  1(øÏªÛ¥‹)			|| OBJ
-	// 3 - ∏  2(¡¬«œ¥‹)			|| OBJ
-	// 4 - ¡°∑… πÃº«øÎ obj		|| OBJ
+	// 1 - Ïö∏ÌÉÄÎ¶¨				|| OBJ
+	// 2 - Îßµ 1(Ïö∞ÏÉÅÎã®)			|| OBJ
+	// 3 - Îßµ 2(Ï¢åÌïòÎã®)			|| OBJ
+	// 4 - Ï†êÎ†π ÎØ∏ÏÖòÏö© obj		|| OBJ
 
 	m_nHierarchicalGameObjects = 5;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
@@ -104,11 +104,11 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_nMissionObj = 6;
 	m_ppMissionObj = new CMissonOBJ * [m_nMissionObj];
 
-	// πÃº« π¸¿ß
+	// ÎØ∏ÏÖò Î≤îÏúÑ
 	XMFLOAT3 OccMissionRange = XMFLOAT3(37.f, 30.f, 37.f);
 	XMFLOAT3 MissionRange = XMFLOAT3(10.f, 20.f, 10.f);
 	
-	// ¡°∑…πÃº«
+	// Ï†êÎ†πÎØ∏ÏÖò
 	CLoadedModelInfo* pMachine = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/Occ_Machine.bin", NULL);
 	m_ppMissionObj[0] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMachine, OccMissionRange, 0);
 	m_ppMissionObj[0]->SetPosition(100.f, 0.0f, 930.f);
@@ -124,7 +124,7 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppMissionObj[2]->SetPosition(500.f, 0.f, 500.f);
 	if (pMachine3) delete pMachine3;
 
-	// ∫∏æ»≈∞ πÃº«
+	// Î≥¥ÏïàÌÇ§ ÎØ∏ÏÖò
 	CLoadedModelInfo* pMssionMachine1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine_2.bin", NULL);
 	m_ppMissionObj[3] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine1, MissionRange, 1);
 	m_ppMissionObj[3]->Rotate(0.f,0.f,0.f);
@@ -190,7 +190,7 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
 
-	// ¿˙¿Âµ» ∏µ® πŸ≤‹ ºˆ ¿÷¿Ω
+	// Ï†ÄÏû•Îêú Î™®Îç∏ Î∞îÍøÄ Ïàò ÏûàÏùå
 	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
 	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
 	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
@@ -276,14 +276,14 @@ bool CFirstRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* 
 	if (pKeysBuffer['D'] & 0xF0) dwDirection1 |= DIR_RIGHT;
 
 	// Player unable
-	// m_ppPlayer[ø¯«œ¥¬ ƒ≥∏Ø≈Õ]->m_bUnable = true ∏È¿∫ ADD_OBJ(Ω«¡¶∑Œ ª˝º∫¿Ã æ∆¥— ∑ª¥ı&øÚ¡˜¿” ∞°¥… ªÛ≈¬)
+	// m_ppPlayer[ÏõêÌïòÎäî Ï∫êÎ¶≠ÌÑ∞]->m_bUnable = true Î©¥ÏùÄ ADD_OBJ(Ïã§Ï†úÎ°ú ÏÉùÏÑ±Ïù¥ ÏïÑÎãå Î†åÎçî&ÏõÄÏßÅÏûÑ Í∞ÄÎä• ÏÉÅÌÉú)
 
 	if (pKeysBuffer['7'] & 0xF0) m_pMyPlayer->m_bUnable = true;
 
 	// Decide whether to blend
-	// ¿¸ø° ¿‘∑¬«— ≈∞øÕ ¥Ÿ∏£¥Ÿ∏È ∫Ì∑ªµ˘≈∏¿”¿ª 0¿∏∑Œ º≥¡§
-	// ∫Ì∑ªµ˘ ≈∏¿”¿Ã 0 -> ∫Ì∑ªµ˘ Ω√¿€
-	// ∫Ì∑ªµ˘ ≈∏¿”¿Ã 1 -> ∫Ì∑ªµ˘ øœ∑·
+	// Ï†ÑÏóê ÏûÖÎ†•Ìïú ÌÇ§ÏôÄ Îã§Î•¥Îã§Î©¥ Î∏îÎ†åÎî©ÌÉÄÏûÑÏùÑ 0ÏúºÎ°ú ÏÑ§Ï†ï
+	// Î∏îÎ†åÎî© ÌÉÄÏûÑÏù¥ 0 -> Î∏îÎ†åÎî© ÏãúÏûë
+	// Î∏îÎ†åÎî© ÌÉÄÏûÑÏù¥ 1 -> Î∏îÎ†åÎî© ÏôÑÎ£å
 
 	//if (m_dwLastDirection != dwDirection1) {
 	//	m_pMyPlayer->m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
@@ -377,7 +377,7 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 			
 			break;
 		}
-		case '9': { // Ω∫≈◊¿Ã¡ˆ 2∑Œ ∫Ø∞Ê
+		case '9': { // Ïä§ÌÖåÏù¥ÏßÄ 2Î°ú Î≥ÄÍ≤Ω
 			
 			break;
 		}
@@ -492,7 +492,7 @@ void CFirstRoundScene::AnimateObjects(float fTimeElapsed)
 
 	for (int i = 0; i < m_nMissionObj; i++)
 	{
-		if (m_ppMissionObj[i]->m_nCategory == 0)	// ¡°∑…πÃº«
+		if (m_ppMissionObj[i]->m_nCategory == 0)	// Ï†êÎ†πÎØ∏ÏÖò
 		{
 			if (m_pUI->m_fMissionGauge[i] < 370)
 			{
@@ -654,7 +654,7 @@ void CFirstRoundScene::ProcessPacket(char* p)
 		//
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetAttackStatus(true);
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(xmf3);
-		cout << "∞¯∞›" << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << endl;
+		cout << "Í≥µÍ≤©" << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << endl;
 		
 	}break;
 
@@ -683,7 +683,7 @@ void CFirstRoundScene::ProcessPacket(char* p)
 
 			Player_Character_Type type = it->second;
 			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->SetCrawl(true);
-			cout << "ªÁ∏¡" << m_ppEnemy[0]->GetPosition().x << "," << m_ppEnemy[0]->GetPosition().z << endl;
+			cout << "ÏÇ¨Îßù" << m_ppEnemy[0]->GetPosition().x << "," << m_ppEnemy[0]->GetPosition().z << endl;
 
 		}
 
@@ -747,9 +747,9 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	//===============================//
 	// Map (3)
 	// [Present Setting]
-	// 0 -	≥ª∫Œ ªÁπ∞			|| OBJ
-	// 1 - ø‹∫Æ πŸøÓµ˘ π⁄Ω∫		|| OBJ
-	// 2 - ø‹∫Æ&±Íπﬂ			|| OBJ
+	// 0 -	ÎÇ¥Î∂Ä ÏÇ¨Î¨º			|| OBJ
+	// 1 - Ïô∏Î≤Ω Î∞îÏö¥Îî© Î∞ïÏä§		|| OBJ
+	// 2 - Ïô∏Î≤Ω&ÍπÉÎ∞ú			|| OBJ
 	
 	m_nHierarchicalGameObjects = 3;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
@@ -789,10 +789,10 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_nMissionObj = 5;
 	m_ppMissionObj = new CMissonOBJ * [m_nMissionObj];
 
-	// πÃº« ¿ŒΩƒ π¸¿ß
+	// ÎØ∏ÏÖò Ïù∏Ïãù Î≤îÏúÑ
 	XMFLOAT3 MissionRange = XMFLOAT3(10.f, 20.f, 10.f);
 
-	// «˘µø πÃº«
+	// ÌòëÎèô ÎØ∏ÏÖò
 	CLoadedModelInfo* pMssionMachine1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/MissionMachine.bin", NULL);
 	m_ppMissionObj[0] = new CMissonOBJ(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pMssionMachine1, MissionRange, 1);
 	m_ppMissionObj[0]->Rotate(0.f, 180.f, 0.f);
@@ -882,7 +882,7 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	m_ppModelInfoPlayer = new CLoadedModelInfo * [m_nPlayer];
 
-	// ¿˙¿Âµ» ∏µ® πŸ≤‹ ºˆ ¿÷¿Ω
+	// Ï†ÄÏû•Îêú Î™®Îç∏ Î∞îÍøÄ Ïàò ÏûàÏùå
 	m_ppModelInfoPlayer[FIRST_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_1.bin", NULL);
 	m_ppModelInfoPlayer[SECOND_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_2.bin", NULL);
 	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
@@ -990,20 +990,18 @@ bool CSecondRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) {
-			if (m_nDoingMachine != -1) {
-				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = false;
-				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(TURNOFF);
-				S2_COM_STATE sstate{};
-				sstate = TURNOFF;
+			
 
+			if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn == true) {
 				CS_CHANGE_COMST_PACKET p;
-				p.size = sizeof(&p);
+				p.size = sizeof(p);
 				p.type = CS_CHANGE_COMST;
 				p.comNum = m_nDoingMachine;
-				p.state = sstate;
+				p.state = S2_COM_STATE::TURNOFF;
 				send_packet(&p);
-				m_nDoingMachine = -1;
+				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = false;
 			}
+
 			if (!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCrawl)
 				m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
 		}
@@ -1068,16 +1066,12 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = true;
 					m_nDoingMachine = i;
 
-
-					S2_COM_STATE sstate{};
-					sstate = TURNON;
-
-					CS_CHANGE_COMST_PACKET p;
-					p.size = sizeof(&p);
+					/*CS_CHANGE_COMST_PACKET p;
+					p.size = sizeof(p);
 					p.type = CS_CHANGE_COMST;
 					p.comNum = m_nDoingMachine;
-					p.state = sstate;
-					send_packet(&p);
+					p.state = S2_COM_STATE::TURNON;
+					send_packet(&p);*/
 				}
 			}
 			break;
@@ -1123,6 +1117,36 @@ bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPA
 		::ReleaseCapture();
 		break;
 	case WM_MOUSEMOVE:
+		if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn) //  ÔøΩÃºÔøΩÔøΩÔøΩ ÔøΩÔøΩÔøΩ∆∞ÔøΩÔøΩÔøΩÔøΩÔøΩ on
+		{
+			::SetCapture(hWnd);
+			::GetCursorPos(&m_ptOldCursorPos);
+
+			S2_COM_STATE cur_state = reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->GetState();
+
+			S2_COM_STATE sstate = cur_state;
+			if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppTagButton[0]->CheckMouseOn(hWnd, m_ptOldCursorPos))
+			{
+				sstate = TURNON;
+			}
+			else
+			{
+				sstate = TURNOFF;
+			}
+			
+
+			if (cur_state != sstate) {
+				CS_CHANGE_COMST_PACKET p;
+				p.size = sizeof(p);
+				p.type = CS_CHANGE_COMST;
+				p.comNum = m_nDoingMachine;
+				p.state = static_cast<S2_COM_STATE>(sstate);
+				send_packet(&p);
+			}
+
+
+			::ReleaseCapture();
+		}
 		break;
 	}
 	return false;
@@ -1373,7 +1397,8 @@ void CSecondRoundScene::ProcessPacket(char* p)
 
 	case SC_CHANGE_COMST: {
 		SC_CHANGE_COMST_PACKET* packet = reinterpret_cast<SC_CHANGE_COMST_PACKET*>(p);
-		reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[packet->comNum]->SetState(packet->state);
+		S2_COM_STATE st = static_cast<S2_COM_STATE>(packet->state);
+		reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[packet->comNum]->SetState(st);
 		
 	}break;
 
