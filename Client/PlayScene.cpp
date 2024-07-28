@@ -1033,6 +1033,12 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 			if (m_pMyPlayer->GetStaminer())m_pMyPlayer->SetCreep();
 			break;
 		}
+		case 'K': {
+			m_pMyPlayer->m_bClear = true;
+			m_pMyPlayer->m_xmf3BossPos = XMFLOAT3(m_pBoss->GetPosition().x*2-10,10, m_pBoss->GetPosition().z * 2+10);
+			reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetDiying(true);
+			break;
+		}
 		case 'L': {
 			CS_ALIVE_PLAYER_PACKET p;
 			p.size = sizeof(p);

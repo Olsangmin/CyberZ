@@ -1496,7 +1496,9 @@ void CBossRobotObject::Update(float fTimeElapsed)
 	CGameObject::Update(fTimeElapsed);
 	if (m_pSkinnedAnimationController) {
 		AnimationBlending(m_pasCurrentAni, m_pasNextAni);
-		IsAttackP(CREEP) ? 0 : MoveToTarget(), IsMove(m_pasNextAni);
+		if (!IsDiying()) {
+			IsAttackP(CREEP) ? 0 : MoveToTarget(), IsMove(m_pasNextAni);
+		}
 
 	}
 }
@@ -1586,6 +1588,29 @@ bool CBossRobotObject::IsAttackP(Player_Animation_ST status)
 			m_pasNextAni = IDLE;
 			m_bAttackStatus = false;
 			return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+bool CBossRobotObject::IsDiying()
+{
+	if (m_bDiyingStatus == true) {
+		if (m_pasCurrentAni != HIT && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+			m_pasNextAni = HIT;
+			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			m_pSkinnedAnimationController->SetTrackType(HIT, ANIMATION_TYPE_ONCE);
+		}
+		CAnimationTrack AnimationTrack = m_pSkinnedAnimationController->m_pAnimationTracks[HIT];
+		CAnimationSet* pAnimationSet = m_pSkinnedAnimationController->m_pAnimationSets->m_pAnimationSets[AnimationTrack.m_nAnimationSet];
+		float fTrackPosition = AnimationTrack.m_fPosition;
+		float fTrackLength = pAnimationSet->m_fLength;
+		if (fTrackPosition >= fTrackLength-0.4f) {
+			//m_pSkinnedAnimationController->m_pAnimationTracks[HIT].m_fPosition = fTrackLength-0.4f;
+			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			m_pasNextAni = NONE;
+			return true;
 		}
 		return true;
 	}

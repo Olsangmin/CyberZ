@@ -1223,15 +1223,15 @@ void CDepthRenderShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCam
 		m_ppObjects[i]->Render(pd3dCommandList, pCamera);
 	}
 
-	for (int i = 0; i < 1; i++)
-	{
-		if (m_ppFloorObj[i])
-		{
-			if (!m_ppFloorObj[i]->m_pSkinnedAnimationController) m_ppFloorObj[i]->UpdateTransform(NULL);
-			m_ppFloorObj[i]->Animate(m_fElapsedTime);
-			m_ppFloorObj[i]->Render(pd3dCommandList, pCamera);
-		}
-	}
+	//for (int i = 0; i < 1; i++)
+	//{
+	//	if (m_ppFloorObj[i])
+	//	{
+	//		if (!m_ppFloorObj[i]->m_pSkinnedAnimationController) m_ppFloorObj[i]->UpdateTransform(NULL);
+	//		m_ppFloorObj[i]->Animate(m_fElapsedTime);
+	//		m_ppFloorObj[i]->Render(pd3dCommandList, pCamera);
+	//	}
+	//}
 
 	UpdateShaderVariables(pd3dCommandList);
 }
