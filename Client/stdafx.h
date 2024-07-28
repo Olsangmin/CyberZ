@@ -17,6 +17,7 @@
 #include <memory.h>
 #include <tchar.h>
 #include <math.h>
+#include <chrono>
 
 #include <string>
 #include <wrl.h>
@@ -47,6 +48,15 @@ using namespace std;
 #include <d2d1effects.h>
 #include <wincodec.h>
 
+#include <mmsystem.h>
+#pragma comment(lib,"winmm.lib")
+
+//#include "inc/fmod.hpp"
+//#include "inc/fmod_errors.h"
+//
+//#pragma comment(lib, "library/fmodex_vc.lib")
+//#pragma comment(lib, "library/fmodexL_vc.lib")
+
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dwrite.lib")
@@ -64,7 +74,6 @@ using namespace std;
 
 #pragma comment(lib, "dxguid.lib")
 
-
 // =================================================
 #include "../Protocol.h"
 #include "../Common.h"
@@ -76,6 +85,8 @@ using namespace std;
 // =================================================
 
 using namespace DirectX;
+
+
 using namespace DirectX::PackedVector;
 
 using Microsoft::WRL::ComPtr;

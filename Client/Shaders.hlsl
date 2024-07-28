@@ -396,44 +396,54 @@ VS_PARTICLE_OUTPUT VSParticle(VS_PARTICLE_INPUT input)
 {
     
     VS_PARTICLE_OUTPUT output;
+    float3 velocity = input.direction * (10.f* (sin(input.speed * input.time * input.time))*10);
     float3 pos = input.position;
+    //float3 pos = /*{ input.position.x+velocity.x,input.position.y+velocity.y, input.position.z+velocity.z };*/input.position + velocity;
+    //if (velocity.x * velocity.y * velocity.z <= 0)
+    //{
+    //    pos = input.position;
+        
+    //}
+   // float3 gravity = float3(0.f, -20.f, 0.f);
+   // velocity = velocity * gravity;
 
-    float3 up = (gmtxView._13, gmtxView._23, gmtxView._33);
-    float3 look = (gmtxView._12, gmtxView._22, gmtxView._32);
-    float3 right = (gmtxView._11,gmtxView._21,gmtxView._31);
-    up = normalize(cross(look, right));
+    //float3 up = (gmtxView._13, gmtxView._23, gmtxView._33);
+    //float3 look = (gmtxView._12, gmtxView._22, gmtxView._32);
+    //float3 right = (gmtxView._11, gmtxView._21, gmtxView._31);
+    //up = normalize(cross(look, right));
     
-    float hw = 0.5f * LENGTH;
-    float hh = 0.5f * LENGTH;
+    //float hw = 5.0f * LENGTH;
+    //float hh = 5.0f * LENGTH;
     
-    float4 position[4] =
-    {
-        float4(pos + (hw * right) - (hh * up), 1.0f), // LB
-        float4(pos + (hw * right) + (hh * up), 1.0f), // LT
-        float4(pos - (hw * right) - (hh * up), 1.0f), // RB
-        float4(pos - (hw * right) + (hh * up), 1.0f) // RT
-    };
+    //float4 position[4] =
+    //{
+    //    float4(pos + (hw * right) - (hh * up), 1.0f), // LB
+    //    float4(pos + (hw * right) + (hh * up), 1.0f), // LT
+    //    float4(pos - (hw * right) - (hh * up), 1.0f), // RB
+    //    float4(pos - (hw * right) + (hh * up), 1.0f) // RT 
+    //};
     
-    float2 uv[4] =
-    {
-        float2(0.0f, 1.0f),
-        float2(0.0f, 0.0f),
-        float2(1.0f, 1.0f),
-        float2(1.0f, 0.0f)
-    };
-    for (int i = 0; i < 4; ++i)
-    {
-        output.positionH = mul(mul(position[i], gmtxView), gmtxProjection);
-        output.uv = uv[i];
-        output.lifeTime = input.lifeTime;
-        output.time = input.time;
-    }
+    //float2 uv[4] =
+    //{
+    //    float2(0.0f, 1.0f),
+    //    float2(0.0f, 0.0f),
+    //    float2(1.0f, 1.0f),
+    //    float2(1.0f, 0.0f)
+    //};
+    //for (int i = 0; i < 4; ++i)
+    //{
+    output.positionH = mul(mul(float4(pos,1.f), gmtxView), gmtxProjection);
+    output.uv = float2(0, 0);
+    output.lifeTime = input.lifeTime;
+    output.time = input.time;
+   // }
     return (output);
 }
 
 float4 PSParticle(VS_PARTICLE_OUTPUT input) : SV_TARGET1
 {
-    float4 cColor = gtxtParticleTexture.Sample(gssWrap, input.uv);
+    //float4 cColor = gtxtParticleTexture.Sample(gssWrap, input.positionH.xy);
+    float4 cColor = float4(0.8f, 0.2f, 0.1, 1);
     return (cColor);
     //return (input.color);
 

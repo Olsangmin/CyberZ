@@ -334,7 +334,7 @@ public:
 class CParticle : public CGameObject
 {
 public:
-	CParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, wchar_t* pszFileName);
+	CParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Pos);
 	virtual ~CParticle();
 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
@@ -411,6 +411,7 @@ private:
 
 	XMFLOAT3				m_xmf3Target{ 0.0f, 0.0f, 0.0f };
 	bool					m_bAttackStatus = false;
+	bool					m_bDiyingStatus = false;
 
 public:
 	CBossRobotObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,
@@ -419,6 +420,8 @@ public:
 
 	virtual void Update(float fTimeElapsed);
 
+
+	void SetDiying(bool IsDie) { m_bDiyingStatus = IsDie; }
 	void SetAttackStatus(bool status, int _AttackType) { m_bAttackStatus = status;  AttackType = _AttackType;
 	}
 	void MoveToTarget();
@@ -430,6 +433,7 @@ public:
 	XMFLOAT3 GetTarget() { return m_xmf3Target; }
 	virtual void IsMove(Player_Animation_ST CheckAni);
 	bool IsAttackP(Player_Animation_ST Status);
+	bool IsDiying();
 
 	Player_Animation_ST m_pasCurrentAni;
 	Player_Animation_ST m_pasNextAni;

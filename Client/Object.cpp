@@ -1496,7 +1496,9 @@ void CBossRobotObject::Update(float fTimeElapsed)
 	CGameObject::Update(fTimeElapsed);
 	if (m_pSkinnedAnimationController) {
 		AnimationBlending(m_pasCurrentAni, m_pasNextAni);
-		IsAttackP(CREEP) ? 0 : MoveToTarget(), IsMove(m_pasNextAni);
+		if (!IsDiying()) {
+			IsAttackP(CREEP) ? 0 : MoveToTarget(), IsMove(m_pasNextAni);
+		}
 
 	}
 }
@@ -1599,9 +1601,34 @@ bool CBossRobotObject::IsAttackP(Player_Animation_ST status)
 	return false;
 }
 
-CParticle::CParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, wchar_t* pszFileName) : CGameObject(1)
+bool CBossRobotObject::IsDiying()
 {
-	ParticleMesh* pParticleMesh = new ParticleMesh(pd3dDevice, pd3dCommandList, XMFLOAT4(10,10,10,1));
+	if (m_bDiyingStatus == true) {
+		if (m_pasCurrentAni != HIT && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+			m_pasNextAni = HIT;
+			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			m_pSkinnedAnimationController->SetTrackType(HIT, ANIMATION_TYPE_ONCE);
+		}
+		CAnimationTrack AnimationTrack = m_pSkinnedAnimationController->m_pAnimationTracks[HIT];
+		CAnimationSet* pAnimationSet = m_pSkinnedAnimationController->m_pAnimationSets->m_pAnimationSets[AnimationTrack.m_nAnimationSet];
+		float fTrackPosition = AnimationTrack.m_fPosition;
+		float fTrackLength = pAnimationSet->m_fLength;
+		if (fTrackPosition >= fTrackLength-0.4f) {
+			//m_pSkinnedAnimationController->m_pAnimationTracks[HIT].m_fPosition = fTrackLength-0.4f;
+			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			m_pasNextAni = NONE;
+			return true;
+		}
+		return true;
+	}
+	return false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+CParticle::CParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Pos) : CGameObject(1)
+{
+	ParticleMesh* pParticleMesh = new ParticleMesh(pd3dDevice, pd3dCommandList, xmf3Pos);
 	SetMesh(pParticleMesh);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -1630,5 +1657,6 @@ void CParticle::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCam
 {
 	XMFLOAT3 xmf3CameraPos = pCamera->GetPosition();
 	SetPosition(xmf3CameraPos.x, xmf3CameraPos.y, xmf3CameraPos.z);
+	reinterpret_cast<ParticleMesh*>(m_pMesh)->UpdatePosTime(GetPosition());
 	CGameObject::Render(pd3dCommandList, pCamera);
 }

@@ -440,8 +440,9 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 
 	// Make Scene
 	// Ã³À½ ¾À ºôµå
-	m_nSceneNum = FIRST_ROUND_SCENE;
-	m_pScene = new CFirstRoundScene();
+	PlaySound(L"Sound/Start.wav", 0, SND_FILENAME | SND_ASYNC | SND_LOOP);
+	m_nSceneNum = START_SCENE;
+	m_pScene = new CStartScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
 	if(m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 
@@ -502,7 +503,9 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 		case START_SCENE:
 		{
 			m_nSceneNum = nScene;
-			m_pScene = new CStartScene();
+			/*m_pScene = new CStartScene();
+			m_pSound = new CGameSound("Sound/Start_Scene.mp3");
+			m_pSound->PlayOpeningSound();*/
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
 			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
@@ -511,6 +514,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 		}
 		case LOADING_SCENE:
 		{
+			PlaySound(NULL, 0, SND_FILENAME | SND_ASYNC | SND_LOOP);
 			m_pScene = new CLoadingScene();
 			if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, myPlayerNum);
 			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
@@ -526,6 +530,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
+			PlaySound(L"Sound/Prepare.wav", 0, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
 	
 			break;
@@ -538,6 +543,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
+			PlaySound(L"Sound/First.wav", 0, SND_FILENAME | SND_ASYNC | SND_LOOP);
 			break;
 		}
 		case SECOND_ROUND_SCENE:
@@ -548,6 +554,7 @@ void CGameFramework::ChangeScene(SCENENUM nScene, int myPlayerNum)
 			if (m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList);
 			m_pCamera = m_pScene->m_pMyPlayer->GetCamera();
 			m_bLoading = true;
+			PlaySound(L"Sound/Second.wav", 0, SND_FILENAME | SND_ASYNC | SND_LOOP);
 			break;
 		}
 

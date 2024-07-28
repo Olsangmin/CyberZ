@@ -9,7 +9,6 @@ void CStartScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 
 	m_pUI = new CStartSceneUI();
 
-
 	//===============================//
 	// SKY BOX (1)
 	m_pSkyBox = NULL;

@@ -853,12 +853,12 @@ void CSecondRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 
 	//===============================//
-	m_nParticleObj = 1;
-	m_ppParticleObj = new CParticle * [m_nParticleObj];
+	//m_nParticleObj = 1;
+	//m_ppParticleObj = new CParticle * [m_nParticleObj];
 
-	for (int i = 0; i < m_nParticleObj; ++i) {
-		m_ppParticleObj[i] = new CParticle(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL);
-	}
+	//for (int i = 0; i < m_nParticleObj; ++i) {
+	//	m_ppParticleObj[i] = new CParticle(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, PlayerInitPos_Stage2[0]);
+	//}
 
 	//===============================//
 	// SHADER OBJ (NULL)
@@ -942,10 +942,10 @@ void CSecondRoundScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCame
 			m_ppFloorObj[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
-	for (int i = 0; i < m_nParticleObj; ++i) {
-		if (m_ppParticleObj[i])
-			m_ppParticleObj[i]->Render(pd3dCommandList, pCamera);
-	}
+	//for (int i = 0; i < m_nParticleObj; ++i) {
+	//	if (m_ppParticleObj[i])
+	//		m_ppParticleObj[i]->Render(pd3dCommandList, pCamera);
+	//}
 }
 
 void CSecondRoundScene::ReleaseUploadBuffers()
@@ -990,9 +990,9 @@ bool CSecondRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 
 
 		if (dwDirection1 && m_pMyPlayer->m_bUnable) {
-			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn=false;
-
 			if (m_nDoingMachine != -1) {
+				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = false;
+				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(TURNOFF);
 				S2_COM_STATE sstate{};
 				sstate = TURNOFF;
 
@@ -1031,6 +1031,12 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 		}
 		case 'C': {
 			if (m_pMyPlayer->GetStaminer())m_pMyPlayer->SetCreep();
+			break;
+		}
+		case 'K': {
+			m_pMyPlayer->m_bClear = true;
+			m_pMyPlayer->m_xmf3BossPos = XMFLOAT3(m_pBoss->GetPosition().x*2-10,10, m_pBoss->GetPosition().z * 2+10);
+			reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetDiying(true);
 			break;
 		}
 		case 'L': {
@@ -1120,6 +1126,64 @@ bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPA
 		break;
 	}
 	return false;
+}
+
+bool CSecondRoundScene::CheckHeal()
+{
+	for (int i = 0; i < m_nPlayer; ++i) {
+		if (m_pMyPlayer != m_ppPlayer[i] && m_pMyPlayer->m_xmBoundingBox.Intersects(m_ppPlayer[i]->m_xmBoundingBox)) {
+			if (reinterpret_cast<CyborgPlayer*>(m_ppPlayer[i])->GetCurrentAni() == CRAWL) {
+				reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->SetHealTarget(m_ppPlayer[i]->p_id);
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+bool CSecondRoundScene::CheckFinalMission()
+{
+	for (int i = 0; i < m_nMissionObj; i++)
+	{
+		if (m_ppMissionObj[i]->m_bMissionflag)
+		{
+			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = true;
+			m_nDoingMachine = i;
+			return true;
+		}
+	}
+	return false;
+}
+
+Player_Interaction_Type CSecondRoundScene::CheckInteraction()
+{
+	//if (CheckMissionObj())return CardMission;
+	if (CheckHeal())return Heal;
+	if (CheckFinalMission())return FinalMission;
+	return NON;
+}
+
+void CSecondRoundScene::Interaction(Player_Interaction_Type type)
+{
+	switch (type) {
+	case CardMission: {
+		//reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(0);
+		break;
+	}
+	case Heal: {
+		int id = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetHealTarget();
+		CS_ALIVE_PLAYER_PACKET p;
+		p.size = sizeof(p);
+		p.type = CS_ALIVE_PLAYER;
+		p.id = id;
+		send_packet(&p);
+		break;
+	}
+	case FinalMission: {
+		break;
+	}
+	}
 }
 
 void CSecondRoundScene::AnimateObjects(float fTimeElapsed)

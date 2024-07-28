@@ -51,6 +51,8 @@ public:
 	bool						m_bUnable = false;
 	bool						m_bReady = false;
 	bool						m_bSliding = false;
+	bool						m_bClear = false;
+	XMFLOAT3					m_xmf3BossPos{};
 
 	XMFLOAT3					m_xmf3BeforeColliedPosition = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
@@ -106,7 +108,7 @@ public:
 	void UpdateGravity(float& fLength);
 	void UpdateAcceleration(float& fLength);
 	void UpdatePlayerPostion(float fTimeElapsed);
-	void UpdateCameraPosition(float fTimeElapsed);
+	void UpdateCameraPosition(float fTimeElapsed, XMFLOAT3 xmf3Pos);
 	void UpdateFriction(float fTimeElapsed);
 
 	virtual void OnPlayerUpdateCallback(float fTimeElapsed) { }

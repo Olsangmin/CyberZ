@@ -236,7 +236,9 @@ void CPlayer::Update(float fTimeElapsed)
 	UpdateGravity(fLength);
 	RotateDirection(20.f);
 	UpdatePlayerPostion(fTimeElapsed);
-	UpdateCameraPosition(fTimeElapsed);
+	m_bClear ? 
+		m_pCamera->ChangeView(false), m_pCamera->SetOffset(XMFLOAT3(40.0f, 23.0f, 20.0f)), UpdateCameraPosition(fTimeElapsed, m_xmf3BossPos): 
+		UpdateCameraPosition(fTimeElapsed, m_xmf3Position);
 	UpdateFriction(fTimeElapsed);
 
 #ifdef USE_NETWORK
@@ -294,12 +296,12 @@ void CPlayer::UpdatePlayerPostion(float fTimeElapsed)
 	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
 }
 
-void CPlayer::UpdateCameraPosition(float fTimeElapsed)
+void CPlayer::UpdateCameraPosition(float fTimeElapsed, XMFLOAT3 xmf3Pos)
 {
 	DWORD nCurrentCameraMode = m_pCamera->GetMode();
-	if (nCurrentCameraMode == THIRD_PERSON_CAMERA) m_pCamera->Update(m_xmf3Position, fTimeElapsed);
+	if (nCurrentCameraMode == THIRD_PERSON_CAMERA) m_pCamera->Update(xmf3Pos, fTimeElapsed);
 	if (m_pCameraUpdatedContext) OnCameraUpdateCallback(fTimeElapsed);
-	if (nCurrentCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
+	if (nCurrentCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(xmf3Pos);
 	m_pCamera->RegenerateViewMatrix();
 
 }
