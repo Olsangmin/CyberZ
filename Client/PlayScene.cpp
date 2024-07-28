@@ -347,8 +347,10 @@ bool CFirstRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, W
 			break;
 		}
 		case 'F': {
-			Player_Interaction_Type InteractionType = CheckInteraction();
-			Interaction(InteractionType);
+			if (!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCrawl) {
+				Player_Interaction_Type InteractionType = CheckInteraction();
+				Interaction(InteractionType);
+			}
 			break;
 		}
 		case '1':
@@ -1059,7 +1061,10 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 		}
 		case 'F':
 		{
-			CheckInteraction();
+			if (!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCrawl) {
+				Player_Interaction_Type InteractionType = CheckInteraction();
+				Interaction(InteractionType);
+			}
 			break;
 		}
 		break;
