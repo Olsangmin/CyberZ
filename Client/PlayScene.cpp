@@ -1117,7 +1117,7 @@ bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPA
 		::ReleaseCapture();
 		break;
 	case WM_MOUSEMOVE:
-		if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn) //  �̼��� ���ư����� on
+		if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn) //
 		{
 			::SetCapture(hWnd);
 			::GetCursorPos(&m_ptOldCursorPos);
