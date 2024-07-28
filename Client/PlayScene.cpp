@@ -1377,6 +1377,7 @@ void CSecondRoundScene::ProcessPacket(char* p)
 
 			Player_Character_Type type = it->second;
 			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->SetCrawl(true);
+			if()
 		}
 
 	}break;
