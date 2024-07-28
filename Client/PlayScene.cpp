@@ -1062,15 +1062,11 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = true;
 					m_nDoingMachine = i;
 
-
-					S2_COM_STATE sstate{};
-					sstate = TURNON;
-
 					CS_CHANGE_COMST_PACKET p;
 					p.size = sizeof(&p);
 					p.type = CS_CHANGE_COMST;
 					p.comNum = m_nDoingMachine;
-					p.state = sstate;
+					p.state = S2_COM_STATE::TURNON;
 					send_packet(&p);
 				}
 			}
@@ -1309,7 +1305,8 @@ void CSecondRoundScene::ProcessPacket(char* p)
 
 	case SC_CHANGE_COMST: {
 		SC_CHANGE_COMST_PACKET* packet = reinterpret_cast<SC_CHANGE_COMST_PACKET*>(p);
-		reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[packet->comNum]->SetState(packet->state);
+		S2_COM_STATE st = static_cast<S2_COM_STATE>(packet->state);
+		reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[packet->comNum]->SetState(st);
 		
 	}break;
 
