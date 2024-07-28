@@ -43,6 +43,7 @@ public:
 	bool IsAttack = false;
 	std::queue<DirectX::XMFLOAT3> n_path;
 
+	int cool_time{};
 	DirectX::BoundingOrientedBox boundingBox;
 };
 

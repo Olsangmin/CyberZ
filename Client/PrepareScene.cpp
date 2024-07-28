@@ -343,7 +343,7 @@ void CPrepareRoomScene::ProcessPacket(char* p)
 
 	case SC_CHANGE_CHARACTER: {
 		SC_CHANGE_CHARACTER_PACKET* packet = reinterpret_cast<SC_CHANGE_CHARACTER_PACKET*>(p);
-		cout << packet->id << " -> " << packet->c_type << endl;
+		// cout << packet->id << " -> " << packet->c_type << endl;
 		ChangeModel(packet->id, packet->c_type);
 		reinterpret_cast<CPrepareRoomSceneUI*>(m_pUI)->m_bPlayerOn[packet->id] = true;
 		reinterpret_cast<CPrepareRoomSceneUI*>(m_pUI)->m_text[packet->id] = string_to_wstring(packet->name);

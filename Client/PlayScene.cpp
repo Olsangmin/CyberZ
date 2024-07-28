@@ -624,8 +624,6 @@ void CFirstRoundScene::ProcessPacket(char* p)
 		SC_ADD_NPC_PACKET* packet = reinterpret_cast<SC_ADD_NPC_PACKET*>(p);
 		int n_id = packet->id - 100;
 		m_ppEnemy[n_id]->SetPosition(packet->position);
-		// reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(m_ppEnemy[n_id]->GetPosition());
-
 	}
 				   break;
 
@@ -656,8 +654,22 @@ void CFirstRoundScene::ProcessPacket(char* p)
 		//
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetAttackStatus(true);
 		reinterpret_cast<CRobotObject*>(m_ppEnemy[n_id])->SetTarget(xmf3);
-		cout << "공격" << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << endl;
+		// cout << "공격" << m_ppEnemy[n_id]->GetPosition().x << "," << m_ppEnemy[n_id]->GetPosition().z << endl;
 		
+		CS_NPC_UPDATE_PACKET nup;
+		nup.size = sizeof(nup);
+		nup.type = CS_NPC_UPDATE;
+		nup.n_id = packet->n_id;
+		nup.position = m_ppEnemy[n_id]->GetPosition();
+		send_packet(&nup);
+		
+
+	}break;
+
+	case SC_NPC_UPDATE: {
+		SC_NPC_UPDATE_PACKET* packet = reinterpret_cast<SC_NPC_UPDATE_PACKET*>(p);
+		int n_id = packet->n_id - 100;
+		m_ppEnemy[n_id]->SetPosition(packet->position);
 	}break;
 
 	case SC_GETKEY: {
@@ -1359,7 +1371,7 @@ void CSecondRoundScene::ProcessPacket(char* p)
 		SC_ATTACK_NPC_PACKET* packet = reinterpret_cast<SC_ATTACK_NPC_PACKET*>(p);
 		
 
-		/*int id = packet->p_id;
+		int id = packet->p_id;
 		auto& it = idANDtype.find(id);
 		XMFLOAT3 xmf3{};
 		if (it == idANDtype.end()) break;
@@ -1367,10 +1379,23 @@ void CSecondRoundScene::ProcessPacket(char* p)
 			Player_Character_Type type = it->second;
 			xmf3 = reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->GetPosition();
 		}
-		*/
+		
 		reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetAttackStatus(true, 2);
+		XMFLOAT3 double_pos{ m_pBoss->GetPosition().x * 2.f, 0.f, m_pBoss->GetPosition().z * 2.f};
 
+		CS_NPC_UPDATE_PACKET nup;
+		nup.size = sizeof(nup);
+		nup.type = CS_NPC_UPDATE;
+		nup.n_id = packet->n_id;
+		nup.position = double_pos;
+		send_packet(&nup);
 
+	}break;
+
+	case SC_NPC_UPDATE: {
+		SC_NPC_UPDATE_PACKET* packet = reinterpret_cast<SC_NPC_UPDATE_PACKET*>(p);
+		XMFLOAT3 half_pos{ packet->position.x / 2.f, 0.f, packet->position.z / 2.f };
+		m_pBoss->SetPosition(half_pos);
 	}break;
 
 	case SC_PLAYER_DEATH: {

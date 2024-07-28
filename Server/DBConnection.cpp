@@ -103,7 +103,7 @@ bool DBConnection::BindCol(int columnIndex, int* value, SQLLEN* index)
 
 bool DBConnection::BindCol(int columnIndex, TIMESTAMP_STRUCT* value, SQLLEN* index)
 {
-	BindCol(columnIndex, SQL_C_TYPE_TIMESTAMP, sizeof(TIMESTAMP_STRUCT), value, index);
+	return BindCol(columnIndex, SQL_C_TYPE_TIMESTAMP, sizeof(TIMESTAMP_STRUCT), value, index);
 }
 
 bool DBConnection::BindCol(int columnIndex, WCHAR* str, int size, SQLLEN* index)
@@ -113,7 +113,7 @@ bool DBConnection::BindCol(int columnIndex, WCHAR* str, int size, SQLLEN* index)
 
 bool DBConnection::BindCol(int columnIndex, float* value, SQLLEN* index)
 {
-	BindCol(columnIndex, SQL_C_FLOAT, sizeof(float), value, index);
+	return BindCol(columnIndex, SQL_C_FLOAT, sizeof(float), value, index);
 }
 
 bool DBConnection::BindParam(SQLUSMALLINT paramIndex, SQLSMALLINT cType, SQLSMALLINT sqlType, SQLULEN len, SQLPOINTER ptr, SQLLEN* index)
