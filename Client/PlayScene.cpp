@@ -1002,6 +1002,7 @@ bool CSecondRoundScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 				p.comNum = m_nDoingMachine;
 				p.state = sstate;
 				send_packet(&p);
+				m_nDoingMachine = -1;
 			}
 			if (!reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->m_bIsCrawl)
 				m_pMyPlayer->Move(dwDirection1, m_pMyPlayer->GetVelocitySpeed(), true);
@@ -1056,11 +1057,21 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 		{
 			for (int i = 0; i < m_nMissionObj; i++)
 			{
-				if (m_ppMissionObj[i]->m_bMissionflag)
+				if (m_pMyPlayer->m_xmBoundingBox.Intersects(m_ppMissionObj[i]->m_xmMissionRange))
 				{
 					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = true;
 					m_nDoingMachine = i;
 
+
+					S2_COM_STATE sstate{};
+					sstate = TURNON;
+
+					CS_CHANGE_COMST_PACKET p;
+					p.size = sizeof(&p);
+					p.type = CS_CHANGE_COMST;
+					p.comNum = m_nDoingMachine;
+					p.state = sstate;
+					send_packet(&p);
 				}
 			}
 			break;
@@ -1106,31 +1117,6 @@ bool CSecondRoundScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPA
 		::ReleaseCapture();
 		break;
 	case WM_MOUSEMOVE:
-		if (m_nDoingMachine !=-1 && reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn) //  미션이 돌아갈때만 on
-		{
-			::SetCapture(hWnd);
-			::GetCursorPos(&m_ptOldCursorPos);
-			
-			S2_COM_STATE sstate{};
-			if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppTagButton[0]->CheckMouseOn(hWnd, m_ptOldCursorPos))
-			{
-				sstate = TURNON;
-				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(sstate);
-			}
-			else 
-			{
-				sstate = TURNOFF;
-				reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[m_nDoingMachine]->SetState(sstate);
-			}
-			CS_CHANGE_COMST_PACKET p;
-			p.size = sizeof(&p);
-			p.type = CS_CHANGE_COMST;
-			p.comNum = m_nDoingMachine;
-			p.state = sstate;
-			send_packet(&p);
-
-			::ReleaseCapture();
-		}
 		break;
 	}
 	return false;
@@ -1148,16 +1134,17 @@ void CSecondRoundScene::AnimateObjects(float fTimeElapsed)
 	else reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bStaminaBarOn = false;
 
 
-	for (int i = 0; i < m_nMissionObj; i++)
-	{
-		Missionflag = false;
-		
-		if (CheckMissionBound(m_pMyPlayer, m_ppMissionObj[i]))
-		{
-			Missionflag = true;
-		}
-		m_ppMissionObj[i]->m_bMissionflag = Missionflag;
-	}
+	//for (int i = 0; i < m_nMissionObj; i++)
+	//{
+	//	Missionflag = false;
+	//	
+	//	if (CheckMissionBound(m_pMyPlayer, m_ppMissionObj[i]))
+	//	{
+	//		Missionflag = true;
+	//		
+	//	}
+	//	m_ppMissionObj[i]->m_bMissionflag = Missionflag;
+	//}
 
 	int check = 0;
 	for (int i = 0; i < m_nMissionObj; i++)
@@ -1323,6 +1310,7 @@ void CSecondRoundScene::ProcessPacket(char* p)
 	case SC_CHANGE_COMST: {
 		SC_CHANGE_COMST_PACKET* packet = reinterpret_cast<SC_CHANGE_COMST_PACKET*>(p);
 		reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[packet->comNum]->SetState(packet->state);
+		
 	}break;
 
 	default:

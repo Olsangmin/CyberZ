@@ -503,6 +503,8 @@ void GameMap::UpdateS2()
 
 	float closed_dis = 100000.f;
 
+	
+
 
 	for (auto ids : cl_ids) {
 		if (players[ids].anim == CREEP) continue;

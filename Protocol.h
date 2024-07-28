@@ -244,6 +244,7 @@ struct SC_CHANGE_CHARACTER_PACKET {
 	unsigned char size;
 	char	type;
 	int id;
+	std::string name;
 	Player_Character_Type c_type;
 };
 

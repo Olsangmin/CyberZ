@@ -346,7 +346,7 @@ void CPrepareRoomScene::ProcessPacket(char* p)
 		cout << packet->id << " -> " << packet->c_type << endl;
 		ChangeModel(packet->id, packet->c_type);
 		reinterpret_cast<CPrepareRoomSceneUI*>(m_pUI)->m_bPlayerOn[packet->id] = true;
-
+		reinterpret_cast<CPrepareRoomSceneUI*>(m_pUI)->m_text[packet->id] = string_to_wstring(packet->name);
 	}break;
 
 	case SC_GAME_START: {
