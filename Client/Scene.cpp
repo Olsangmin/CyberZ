@@ -117,7 +117,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 }
 
-void CScene::CreateShadowShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void CScene::CreateShadowShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList , bool bBoss)
 {
 	m_pDepthRenderShader = new CDepthRenderShader(m_ppHierarchicalGameObjects, m_ppMissionObj, m_pLights, m_nHierarchicalGameObjects, m_nMissionObj);
 	m_pDepthRenderShader->SetShadowObject(m_ppModelInfoPlayer, m_nPlayer, m_ppEnemy, m_nEnemy, m_ppFloorObj, m_nFloorObj, m_pBoss, bBoss);
