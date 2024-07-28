@@ -1059,21 +1059,7 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 		}
 		case 'F':
 		{
-			for (int i = 0; i < m_nMissionObj; i++)
-			{
-				if (m_pMyPlayer->m_xmBoundingBox.Intersects(m_ppMissionObj[i]->m_xmMissionRange))
-				{
-					reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = true;
-					m_nDoingMachine = i;
-
-					/*CS_CHANGE_COMST_PACKET p;
-					p.size = sizeof(p);
-					p.type = CS_CHANGE_COMST;
-					p.comNum = m_nDoingMachine;
-					p.state = S2_COM_STATE::TURNON;
-					send_packet(&p);*/
-				}
-			}
+			CheckInteraction();
 			break;
 		}
 		break;
@@ -1170,7 +1156,7 @@ bool CSecondRoundScene::CheckFinalMission()
 {
 	for (int i = 0; i < m_nMissionObj; i++)
 	{
-		if (m_ppMissionObj[i]->m_bMissionflag)
+		if (m_pMyPlayer->m_xmBoundingBox.Intersects(m_ppMissionObj[i]->m_xmMissionRange))
 		{
 			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = true;
 			m_nDoingMachine = i;
@@ -1238,6 +1224,13 @@ void CSecondRoundScene::AnimateObjects(float fTimeElapsed)
 	for (int i = 0; i < m_nMissionObj; i++)
 	{
 		if (reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_ppMachine[i]->GetState() == TURNON) check += 1;
+	}
+
+	if (m_nMissionLevel == 3) {
+		reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = false;
+		m_pMyPlayer->m_bClear = true;
+		m_pMyPlayer->m_xmf3BossPos = XMFLOAT3(m_pBoss->GetPosition().x * 2 - 10, 10, m_pBoss->GetPosition().z * 2 + 10);
+		reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetDiying(true);
 	}
 
 	if(check > 1 && m_nMissionLevel < 3){
