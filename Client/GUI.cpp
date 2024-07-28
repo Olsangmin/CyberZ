@@ -418,32 +418,26 @@ void CFirstRoundSceneUI::StaminaBarUI()
 	//게이지 바
 	D2D1_RECT_F* rcStaminaBar;
 	rcStaminaBar = new D2D1_RECT_F;
-	rcStaminaBar->top = FRAME_BUFFER_HEIGHT - 230.f;
-	rcStaminaBar->left = FRAME_BUFFER_WIDTH - 270.0f;
-	rcStaminaBar->right = FRAME_BUFFER_WIDTH - 270.0f + m_fStaminaRange;
-	rcStaminaBar->bottom = FRAME_BUFFER_HEIGHT - 210.0f;
+	rcStaminaBar->top = FRAME_BUFFER_HEIGHT - 90.f;
+	rcStaminaBar->left = FRAME_BUFFER_WIDTH - 240.0f - m_fStaminaRange * 3;
+	rcStaminaBar->right = FRAME_BUFFER_WIDTH - 240.0f;
+	rcStaminaBar->bottom = FRAME_BUFFER_HEIGHT - 40.0f;
 
-	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::RoyalBlue, 1.0f));
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::LightGoldenrodYellow, 1.0f));
 	m_pd2dDeviceContext->FillRectangle(rcStaminaBar, m_pd2dbrBorder);
 
 	// 게이지 바 프레임
 	D2D1_RECT_F* rcStaminaBarFrame;
 	rcStaminaBarFrame = new D2D1_RECT_F;
-	rcStaminaBarFrame->top = FRAME_BUFFER_HEIGHT - 230.f;
-	rcStaminaBarFrame->left = FRAME_BUFFER_WIDTH - 270.0f;
-	rcStaminaBarFrame->right = FRAME_BUFFER_WIDTH - 270.0f + m_fMaxStamina;
-	rcStaminaBarFrame->bottom = FRAME_BUFFER_HEIGHT - 210.0f;
+	rcStaminaBarFrame->top = FRAME_BUFFER_HEIGHT - 90.f;
+	rcStaminaBarFrame->left = FRAME_BUFFER_WIDTH - 240.0f - m_fMaxStamina * 3;
+	rcStaminaBarFrame->right = FRAME_BUFFER_WIDTH - 240.0f;
+	rcStaminaBarFrame->bottom = FRAME_BUFFER_HEIGHT - 40.0f;
 
 	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::AliceBlue, 1.0f));
 	m_pd2dDeviceContext->DrawRectangle(rcStaminaBarFrame, m_pd2dbrBorder);
 
 #else
-
-	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 40.0f, L"en-US", &m_pdwFont);
-	D2D1_RECT_F rcUpperText = D2D1::RectF(100.f, 30.f, 0.f, 40.f);
-	WCHAR MissionText[] = L"STAMINA";
-	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
-	m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
 
 	//게이지 바
 	D2D1_RECT_F* rcStaminaBar;
@@ -534,7 +528,6 @@ void CSecondRoundSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 
 void CSecondRoundSceneUI::ItemUI()
 {
-
 	D2D1_RECT_F* rcItemFrame;
 	rcItemFrame = new D2D1_RECT_F;
 	rcItemFrame->top = FRAME_BUFFER_HEIGHT - 200.f;

@@ -91,8 +91,6 @@ public:
 
 	bool m_bPlayerOn[3] = {false};
 
-	std::wstring			m_text;
-
 	void CheckEnter();
 	void InfoText();
 };

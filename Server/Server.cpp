@@ -44,35 +44,35 @@ void Server::Network()
 
 	gMap.printMap();
 
-	if (false == m_DBConnectionPool->Connect(1, L"Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=CyberZDB;Trusted_Connection=Yes;"))
-	{
-		std::cout << "DB Connect 오류 !" << std::endl;
-		exit(-1);
-	}
-	else
-	{
-		std::cout << "DB 서버 Connected" << std::endl;
-
-		// Creat Table
-		// 
-		// DROP TABLE IF EXISTS[dbo].[User_Account];			
-		{
-			/*auto query = L"									\
-			CREATE TABLE [dbo].[User_Account]					\
-			(											\
-				[id] INT NOT NULL PRIMARY KEY IDENTITY, \
-				[account_id] NVARCHAR(20) NOT NULL UNIQUE, \
-				[password] NVARCHAR(20) NOT NULL,						\
-				[createDate] DATETIME NULL				\
-			);";
-
-			DBConnection* dbConn = m_DBConnectionPool->Pop();
-			if (false == dbConn->Execute(query)) {
-				return;
-			}
-			m_DBConnectionPool->Push(dbConn);*/
-		}
-	}
+	//if (false == m_DBConnectionPool->Connect(1, L"Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=CyberZDB;Trusted_Connection=Yes;"))
+	//{
+	//	std::cout << "DB Connect 오류 !" << std::endl;
+	//	exit(-1);
+	//}
+	//else
+	//{
+	//	std::cout << "DB 서버 Connected" << std::endl;
+	//
+	//	// Creat Table
+	//	// 
+	//	// DROP TABLE IF EXISTS[dbo].[User_Account];			
+	//	{
+	//		/*auto query = L"									\
+	//		CREATE TABLE [dbo].[User_Account]					\
+	//		(											\
+	//			[id] INT NOT NULL PRIMARY KEY IDENTITY, \
+	//			[account_id] NVARCHAR(20) NOT NULL UNIQUE, \
+	//			[password] NVARCHAR(20) NOT NULL,						\
+	//			[createDate] DATETIME NULL				\
+	//		);";
+	//
+	//		DBConnection* dbConn = m_DBConnectionPool->Pop();
+	//		if (false == dbConn->Execute(query)) {
+	//			return;
+	//		}
+	//		m_DBConnectionPool->Push(dbConn);*/
+	//	}
+	//}
 
 
 
@@ -309,10 +309,10 @@ void Server::Process_packet(int c_id, char* packet)
 		{
 			strcpy_s(clients[c_id].name, p->name);
 			strcpy_s(clients[c_id].password, p->PW);
-			if (false == TryLogin(clients[c_id].name, clients[c_id].password))
-			{
-				return;
-			}
+			//if (false == TryLogin(clients[c_id].name, clients[c_id].password))
+			//{
+			//	return;
+			//}
 
 		}
 		std::cout << "Client[" << c_id << "] Login.\n" << std::endl;
