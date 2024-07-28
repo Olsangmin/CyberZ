@@ -1035,6 +1035,7 @@ bool CSecondRoundScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 			break;
 		}
 		case 'K': {
+			reinterpret_cast<CSecondRoundSceneUI*>(m_pUI)->m_bMyOn = false;
 			m_pMyPlayer->m_bClear = true;
 			m_pMyPlayer->m_xmf3BossPos = XMFLOAT3(m_pBoss->GetPosition().x*2-10,10, m_pBoss->GetPosition().z * 2+10);
 			reinterpret_cast<CBossRobotObject*>(m_pBoss)->SetDiying(true);
