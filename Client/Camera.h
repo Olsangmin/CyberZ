@@ -39,8 +39,8 @@ protected:
 	XMFLOAT3						m_xmf3Offset;
 	float           				m_fTimeLag;
 
-	XMFLOAT4X4						m_xmf4x4View;
-	XMFLOAT4X4						m_xmf4x4Projection;
+//	XMFLOAT4X4						m_xmf4x4View;
+//	XMFLOAT4X4						m_xmf4x4Projection;
 
 	D3D12_VIEWPORT					m_d3dViewport;
 	D3D12_RECT						m_d3dScissorRect;
@@ -53,6 +53,11 @@ protected:
 	BoundingFrustum					m_xmFrustum;
 
 public:
+
+
+	XMFLOAT4X4						m_xmf4x4View;
+	XMFLOAT4X4						m_xmf4x4Projection;
+
 	CCamera();
 	CCamera(CCamera *pCamera);
 	virtual ~CCamera();
@@ -89,6 +94,7 @@ public:
 
 	XMFLOAT3& GetRightVector() { return(m_xmf3Right); }
 	XMFLOAT3& GetUpVector() { return(m_xmf3Up); }
+	void SetLookVector(XMFLOAT3 xmf3Look) { m_xmf3Look = xmf3Look; }
 	XMFLOAT3& GetLookVector() { return(m_xmf3Look); }
 
 	float& GetPitch() { return(m_fPitch); }

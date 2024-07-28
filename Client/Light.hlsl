@@ -39,8 +39,8 @@ cbuffer cbLights : register(b4)
 #define FRAME_BUFFER_WIDTH		1960
 #define FRAME_BUFFER_HEIGHT		1080
 
-#define _DEPTH_BUFFER_WIDTH		(FRAME_BUFFER_WIDTH * 4)
-#define _DEPTH_BUFFER_HEIGHT	(FRAME_BUFFER_HEIGHT * 4)
+#define _DEPTH_BUFFER_WIDTH		(FRAME_BUFFER_WIDTH)
+#define _DEPTH_BUFFER_HEIGHT	(FRAME_BUFFER_HEIGHT)
 
 #define DELTA_X					(1.0f / _DEPTH_BUFFER_WIDTH)
 #define DELTA_Y					(1.0f / _DEPTH_BUFFER_HEIGHT)
@@ -173,31 +173,32 @@ float4 Lighting(float3 vPosition, float3 vNormal, bool bShadow, float4 shadowMap
 	float3 vToCamera = normalize(vCameraPosition - vPosition);
 
 	float4 cColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	[unroll(MAX_LIGHTS)] for (int i = 0; i < gnLights; i++)
+	[unroll(MAX_LIGHTS)] 
+		for (int i = 0; i < gnLights; i++)
 	{
 		if (gLights[i].m_bEnable)
 		{
-			//float fShadowFactor = 1.0f;
-			//if (bShadow) fShadowFactor = Compute3x3ShadowFactor(shadowMapUVs[i].xy, shadowMapUVs[i].z, i);
+			float fShadowFactor = 0.0f;
+            if (bShadow) fShadowFactor = Compute3x3ShadowFactor(shadowMapUVs[i].xy, shadowMapUVs[i].z, i);
 			
 			if (gLights[i].m_nType == DIRECTIONAL_LIGHT)
 			{
-                cColor += DirectionalLight(i, vNormal, vToCamera);
+                cColor += DirectionalLight(i, vNormal, vToCamera) * fShadowFactor;
             }
 			else if (gLights[i].m_nType == POINT_LIGHT)
 			{
-                cColor += PointLight(i, vPosition, vNormal, vToCamera);
+                cColor += PointLight(i, vPosition, vNormal, vToCamera) * fShadowFactor;
             }
 			else if (gLights[i].m_nType == SPOT_LIGHT)
 			{
-                cColor += SpotLight(i, vPosition, vNormal, vToCamera);
+                cColor += SpotLight(i, vPosition, vNormal, vToCamera) * fShadowFactor;
             }
-			
+            cColor += gLights[i].m_cAmbient * gMaterial.m_cAmbient;
         }
 	}
 	cColor += (gcGlobalAmbientLight * gMaterial.m_cAmbient);
 	cColor.a = gMaterial.m_cDiffuse.a;
 
-	return(cColor);
+    return (cColor);
 }
 

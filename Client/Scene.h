@@ -65,7 +65,8 @@ public:
 	// Render
 	void OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList);
 	void OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
-    virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+	void OtherRender(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
 
 
 	//bounding Box
@@ -167,7 +168,7 @@ public:
 	CShadowMapShader*					m_pShadowShader = NULL;
 
 	int									m_nFloorObj = 0;
-	CFloorObj**							m_ppFloorObj = NULL;
+	CGameObject**						m_ppFloorObj = NULL;
 
 	int m_nParticleObj = 0;
 	CParticle** m_ppParticleObj = NULL;
