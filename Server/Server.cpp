@@ -309,10 +309,10 @@ void Server::Process_packet(int c_id, char* packet)
 		{
 			strcpy_s(clients[c_id].name, p->name);
 			strcpy_s(clients[c_id].password, p->PW);
-			if (false == TryLogin(clients[c_id].name, clients[c_id].password))
-			{
-				return;
-			}
+			//if (false == TryLogin(clients[c_id].name, clients[c_id].password))
+			//{
+			//	return;
+			//}
 
 		}
 		std::cout << "Client[" << c_id << "] Login.\n" << std::endl;

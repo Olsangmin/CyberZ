@@ -242,7 +242,7 @@ void CFirstPersonCamera::Rotate(float x, float y, float z)
 
 void CFirstPersonCamera::Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed)
 {
-	if (m_pPlayer)
+	/*if (m_pPlayer)
 	{
 		XMFLOAT4X4 xmf4x4Rotate = Matrix4x4::Identity();
 		XMFLOAT3 xmf3Right = m_pPlayer->GetCRightVector();
@@ -274,7 +274,7 @@ void CFirstPersonCamera::Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed)
 			SetLookAt(xmf3LookAt);
 		}
 		RegenerateViewMatrix();
-	}
+	}*/
 }
 
 
