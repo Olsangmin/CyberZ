@@ -873,11 +873,16 @@ CDepthRenderShader::~CDepthRenderShader()
 {
 }
 
-void CDepthRenderShader::SetShadowObject(CPlayer** ppPlayer, int nPlayer, CGameObject** ppEnemy, int nEnemy, CGameObject** ppFloor, int nFloor)
+void CDepthRenderShader::SetShadowObject(CLoadedModelInfo** ppPlayer, int nPlayer, CGameObject** ppEnemy, int nEnemy, CGameObject** ppFloor, int nFloor, CGameObject* pBoss, bool bBoss)
 {
-	m_ppPlayer = ppPlayer; m_nPlayer = nPlayer;
+	m_nPlayer = nPlayer;
+	m_ppPlayer =  ppPlayer;
+	
 	m_ppEnemy = ppEnemy; m_nEnemy = nEnemy;
 	m_ppFloorObj = ppFloor; m_nFloorObj = nFloor;
+
+	m_pBoss = pBoss;
+	m_bBoss = bBoss;
 }
 
 D3D12_SHADER_BYTECODE CDepthRenderShader::CreatePixelShader()
@@ -915,7 +920,7 @@ D3D12_RASTERIZER_DESC CDepthRenderShader::CreateRasterizerState()
 	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_BACK;
 	d3dRasterizerDesc.FrontCounterClockwise = FALSE;
 #ifdef _WITH_RASTERIZER_DEPTH_BIAS
-	d3dRasterizerDesc.DepthBias = 250000;
+	d3dRasterizerDesc.DepthBias = 13000;
 #endif
 	d3dRasterizerDesc.DepthBiasClamp = 0.0f;
 	d3dRasterizerDesc.SlopeScaledDepthBias = 1.0f;
@@ -1083,49 +1088,15 @@ struct TRIANGLECULLING
 	BOOL culled;
 };
 
-XMMATRIX CreateOrthographicProjectionMatrix(XMMATRIX& xmmtxLightView, BoundingOrientedBox* pxmSceneBoundingBox)
-{
-	XMFLOAT3 pxmf3SceneAABBPoints[8];
-	pxmSceneBoundingBox->GetCorners(pxmf3SceneAABBPoints);
-
-	XMVECTOR xmvLightSpaceSceneAABBMin = g_XMFltMax;
-	XMVECTOR xmvLightSpaceSceneAABBMax = g_XMFltMin;
-
-	for (int i = 0; i < 8; i++)
-	{
-		XMFLOAT4 xmf4SceneAABBPoint = XMFLOAT4(pxmf3SceneAABBPoints[i].x, pxmf3SceneAABBPoints[i].y, pxmf3SceneAABBPoints[i].z, 1.0f);
-		XMVECTOR xmvSceneAABBPoint = XMLoadFloat4(&xmf4SceneAABBPoint);
-		XMVECTOR xmvTransformedPoint = XMVector4Transform(xmvSceneAABBPoint, xmmtxLightView);
-
-		xmvLightSpaceSceneAABBMin = XMVectorMin(xmvLightSpaceSceneAABBMin, xmvTransformedPoint);
-		xmvLightSpaceSceneAABBMax = XMVectorMax(xmvLightSpaceSceneAABBMax, xmvTransformedPoint);
-	}
-
-	float fNearPlaneDistance = XMVectorGetZ(xmvLightSpaceSceneAABBMin);
-	float fFarPlaneDistance = XMVectorGetZ(xmvLightSpaceSceneAABBMax);
-
-	return XMMatrixOrthographicOffCenterLH(
-		XMVectorGetX(xmvLightSpaceSceneAABBMin),
-		XMVectorGetX(xmvLightSpaceSceneAABBMax),
-		XMVectorGetY(xmvLightSpaceSceneAABBMin),
-		XMVectorGetY(xmvLightSpaceSceneAABBMax),
-		fNearPlaneDistance,
-		fFarPlaneDistance
-	);
-}
-
 void CDepthRenderShader::PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-	BoundingOrientedBox xmpBoundingBox;
-	
-	//if (m_nObject>1) xmpBoundingBox = m_ppObjects[0]->m_xmBoundingBox;
 	for (int j = 0; j < MAX_LIGHTS; j++)
 	{
 		if (m_pLights[j].m_bEnable)
 		{
 			XMFLOAT3 xmf3Position = XMFLOAT3( m_pLights[j].m_xmf3Position.x, m_pLights[j].m_xmf3Position.y, m_pLights[j].m_xmf3Position.z);
 			XMFLOAT3 xmf3Look = XMFLOAT3(0.0f, -1.0f, 0.0f);
-			XMFLOAT3 xmf3Up = XMFLOAT3(0.0f, 0.0f, -1.0f);
+			XMFLOAT3 xmf3Up = XMFLOAT3(0.0f, 0.0f, 1.0f);
 
 			 xmf3Look = m_pLights[j].m_xmf3Direction;
 
@@ -1158,7 +1129,7 @@ void CDepthRenderShader::PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID
 			XMStoreFloat4x4(&m_ppDepthRenderCameras[j]->m_xmf4x4View, xmmtxLightView);
 			XMStoreFloat4x4(&m_ppDepthRenderCameras[j]->m_xmf4x4Projection, xmmtxProjection);
 
-
+			
 			XMMATRIX xmmtxToTexture = XMMatrixTranspose(xmmtxLightView * xmmtxProjection * m_xmProjectionToTexture);
 	
 			XMStoreFloat4x4(&ToLightSpaces->ToLightSpaces[j].m_xmf4x4ToTexture, xmmtxToTexture);
@@ -1218,12 +1189,11 @@ void CDepthRenderShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCam
 	}
 
 
-	if (m_ppPlayer) {
-		for (int i = 0; i < m_nPlayer; ++i) {
-			if (m_ppPlayer[i]->m_bUnable)m_ppPlayer[i]->Render(pd3dCommandList, pCamera);
-		}
+	
+	for (int i = 0; i < m_nPlayer; ++i) {
+		m_ppPlayer[i]->m_pModelRootObject->Render(pd3dCommandList,pCamera);
 	}
-
+	
 	for (int i = 0; i < m_nFloorObj; i++)
 	{
 		if (m_ppFloorObj[i])
@@ -1234,6 +1204,11 @@ void CDepthRenderShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCam
 		}
 	}
 
+	if (m_pBoss) {
+		if (!m_pBoss->m_pSkinnedAnimationController)m_pBoss->UpdateTransform(NULL);
+		m_pBoss->Animate(m_fElapsedTime);
+		m_pBoss->Render(pd3dCommandList, pCamera);
+	}
 	UpdateShaderVariables(pd3dCommandList);
 }
 

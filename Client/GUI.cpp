@@ -229,6 +229,7 @@ void CPrepareRoomSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 
 	CheckEnter();
+	InfoText();
 }
 
 void CPrepareRoomSceneUI::CheckEnter()
@@ -238,11 +239,11 @@ void CPrepareRoomSceneUI::CheckEnter()
 	//Small window
 	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 20.0f, L"en-US", &m_pdwFont);
 	
-	top = FRAME_BUFFER_HEIGHT / 3 + 95;
-	left = FRAME_BUFFER_WIDTH / 3 - 90;
+	top = FRAME_BUFFER_HEIGHT / 3 + 130;
+	left = FRAME_BUFFER_WIDTH / 3 - 45;
 	width = 80;
 	height = 10;
-	gab = 165;
+	gab = 220;
 
 #else
 	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 40.0f, L"en-US", &m_pdwFont);
@@ -272,10 +273,38 @@ void CPrepareRoomSceneUI::CheckEnter()
 
 	if (m_bPlayerOn[2])
 	{
-		WCHAR InfoText2[] = L"Player 3";
 		D2D1_RECT_F rcPlayer2 = D2D1::RectF(left + gab * 2, top, left + width + gab * 2, top + height);
 		m_pd2dDeviceContext->DrawTextW(m_text[2].c_str(), static_cast<UINT32>(m_text[2].length()), m_pdwFont, &rcPlayer2, m_pd2dbrText);
 	}
+
+}
+
+void CPrepareRoomSceneUI::InfoText()
+{
+	m_pdwFont->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+	m_pdwFont->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+
+#ifdef SMALL_WINDOW_SCREEN
+
+	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 25.0f, L"en-US", &m_pdwFont);
+	top = 12;
+	left = FRAME_BUFFER_WIDTH / 2 - 300;
+	width = 1000;
+	height = 20;
+#else
+	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 40.0f, L"en-US", &m_pdwFont);
+
+	top = 23;
+	left = FRAME_BUFFER_WIDTH / 2 - 480;
+	width = 1400;
+	height = 55;
+
+#endif // SMALL_WINDOW_SCREEN
+
+	WCHAR selectText2[] = L"캐릭터를 선택해 주세요. / 플레이어1 R키 입력시 시작";
+	D2D1_RECT_F rcPlayer2 = D2D1::RectF(left, top, left + width, top + height);
+	m_pd2dDeviceContext->DrawTextW(selectText2, (UINT32)wcslen(selectText2), m_pdwFont, &rcPlayer2, m_pd2dbrText);
+
 
 }
 
@@ -309,7 +338,6 @@ void CFirstRoundSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 	for (int i = 0; i < 3; i++)	MissionProgressBar(i);
 	if (m_bStaminaBarOn) StaminaBarUI();
 	kyecardUI();
-	ItemUI();
 	
 }
 
@@ -381,57 +409,59 @@ void CFirstRoundSceneUI::kyecardUI()
 
 }
 
-void CFirstRoundSceneUI::ItemUI()
-{
-	D2D1_RECT_F* rcMissionBarFrame;
-	rcMissionBarFrame = new D2D1_RECT_F;
-	rcMissionBarFrame->top = FRAME_BUFFER_HEIGHT - 200.f;
-	rcMissionBarFrame->left = FRAME_BUFFER_WIDTH - 270.0f;
-	rcMissionBarFrame->right = FRAME_BUFFER_WIDTH - 50.f;
-	rcMissionBarFrame->bottom = FRAME_BUFFER_HEIGHT - 50.0f;
-
-	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
-	m_pd2dDeviceContext->DrawRectangle(rcMissionBarFrame, m_pd2dbrBorder);
-
-	delete rcMissionBarFrame;
-
-	float top = 1650.f;
-	float left = 850.f;
-	float gab = 100.f;
-
-	D2D1_RECT_F rcUpperText = D2D1::RectF(top, left, top+gab,left+gab);
-	WCHAR MissionText[] = L"ITEM";
-	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::GreenYellow, 1.0f));
-	m_pd2dDeviceContext->DrawTextW(MissionText, (UINT32)wcslen(MissionText), m_pdwFont, &rcUpperText, m_pd2dbrText);
-
-
-}
-
 void CFirstRoundSceneUI::StaminaBarUI()
 {
 	float halfsize = m_fMaxStamina / 2;
 
+
+#ifdef SMALL_WINDOW_SCREEN
 	//게이지 바
 	D2D1_RECT_F* rcStaminaBar;
 	rcStaminaBar = new D2D1_RECT_F;
-	rcStaminaBar->top = FRAME_BUFFER_HEIGHT - 230.f;
-	rcStaminaBar->left = FRAME_BUFFER_WIDTH - 270.0f;
-	rcStaminaBar->right = FRAME_BUFFER_WIDTH - 270.0f + m_fStaminaRange;
-	rcStaminaBar->bottom = FRAME_BUFFER_HEIGHT - 210.0f;
+	rcStaminaBar->top = FRAME_BUFFER_HEIGHT - 90.f;
+	rcStaminaBar->left = FRAME_BUFFER_WIDTH - 240.0f - m_fStaminaRange * 3;
+	rcStaminaBar->right = FRAME_BUFFER_WIDTH - 240.0f;
+	rcStaminaBar->bottom = FRAME_BUFFER_HEIGHT - 40.0f;
 
-	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::RoyalBlue, 1.0f));
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::LightGoldenrodYellow, 1.0f));
 	m_pd2dDeviceContext->FillRectangle(rcStaminaBar, m_pd2dbrBorder);
 
 	// 게이지 바 프레임
 	D2D1_RECT_F* rcStaminaBarFrame;
 	rcStaminaBarFrame = new D2D1_RECT_F;
-	rcStaminaBarFrame->top = FRAME_BUFFER_HEIGHT - 230.f;
-	rcStaminaBarFrame->left = FRAME_BUFFER_WIDTH - 270.0f;
-	rcStaminaBarFrame->right = FRAME_BUFFER_WIDTH - 270.0f + m_fMaxStamina;
-	rcStaminaBarFrame->bottom = FRAME_BUFFER_HEIGHT - 210.0f;
+	rcStaminaBarFrame->top = FRAME_BUFFER_HEIGHT - 90.f;
+	rcStaminaBarFrame->left = FRAME_BUFFER_WIDTH - 240.0f - m_fMaxStamina * 3;
+	rcStaminaBarFrame->right = FRAME_BUFFER_WIDTH - 240.0f;
+	rcStaminaBarFrame->bottom = FRAME_BUFFER_HEIGHT - 40.0f;
 
 	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::AliceBlue, 1.0f));
 	m_pd2dDeviceContext->DrawRectangle(rcStaminaBarFrame, m_pd2dbrBorder);
+
+#else
+
+	//게이지 바
+	D2D1_RECT_F* rcStaminaBar;
+	rcStaminaBar = new D2D1_RECT_F;
+	rcStaminaBar->top = FRAME_BUFFER_HEIGHT - 90.f;
+	rcStaminaBar->left = FRAME_BUFFER_WIDTH - 240.0f - m_fStaminaRange*3;
+	rcStaminaBar->right = FRAME_BUFFER_WIDTH - 240.0f ;
+	rcStaminaBar->bottom = FRAME_BUFFER_HEIGHT - 40.0f;
+
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::LightGoldenrodYellow, 1.0f));
+	m_pd2dDeviceContext->FillRectangle(rcStaminaBar, m_pd2dbrBorder);
+
+	// 게이지 바 프레임
+	D2D1_RECT_F* rcStaminaBarFrame;
+	rcStaminaBarFrame = new D2D1_RECT_F;
+	rcStaminaBarFrame->top = FRAME_BUFFER_HEIGHT - 90.f;
+	rcStaminaBarFrame->left = FRAME_BUFFER_WIDTH - 240.0f - m_fMaxStamina*3;
+	rcStaminaBarFrame->right = FRAME_BUFFER_WIDTH - 240.0f;
+	rcStaminaBarFrame->bottom = FRAME_BUFFER_HEIGHT - 40.0f;
+
+	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::AliceBlue, 1.0f));
+	m_pd2dDeviceContext->DrawRectangle(rcStaminaBarFrame, m_pd2dbrBorder);
+
+#endif //SMALL_WINDOW_SCREEN
 
 	delete rcStaminaBar;
 	delete rcStaminaBarFrame;
@@ -498,7 +528,6 @@ void CSecondRoundSceneUI::UISet(UINT m_nSwapChainBufferIndex)
 
 void CSecondRoundSceneUI::ItemUI()
 {
-
 	D2D1_RECT_F* rcItemFrame;
 	rcItemFrame = new D2D1_RECT_F;
 	rcItemFrame->top = FRAME_BUFFER_HEIGHT - 200.f;
@@ -924,22 +953,25 @@ void CLoadingUI::UISet(UINT m_nSwapChainBufferIndex)
 {
 	D2D1_SIZE_F szRenderTarget = m_ppd2dRenderTargets[m_nSwapChainBufferIndex]->GetSize();
 
-	// Background Image
-	D2D1_RECT_F		PartitionRect = { 0.f , 0.f, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT };
-	m_pd2dbrBorder->SetColor(D2D1::ColorF(0x000000, 1.0f));
-	m_pd2dDeviceContext->FillRectangle(PartitionRect, m_pd2dbrBorder);
+
+#ifdef SMALL_WINDOW_SCREEN
+
+	D2D1_RECT_F rcTitleRect = { 0.0f, 0.0f, 1344.0f, 756.0f };
+	D2D_POINT_2F lTitle_Position = { 0.f, 0.f };
+
+	LoadUIImage(L"Image/Loading_s.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
+	m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &lTitle_Position, &rcTitleRect);
+
+#else
+
+	D2D1_RECT_F rcTitleRect = { 0.0f, 0.0f, 1920.0f, 1080.0f };
+	D2D_POINT_2F lTitle_Position = { 0.f, 0.f };
+
+	LoadUIImage(L"Image/Loading.png", m_pwicImagingFactory, m_pd2dfxBitmapSource);
+	m_pd2dDeviceContext->DrawImage(m_pd2dfxBitmapSource, &lTitle_Position, &rcTitleRect);
 
 
-	m_pdWriteFactory->CreateTextFormat(L"ComicSans", NULL, DWRITE_FONT_WEIGHT_DEMI_BOLD, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, 40.0f, L"en-US", &m_pdwFont);
-	float width = 700.f;
-	float height = 200.f;
-	float left = FRAME_BUFFER_WIDTH / 2 - 100;
-	float top = FRAME_BUFFER_HEIGHT / 2;
-	
+#endif // SMALL_WINDOW_SCREEN
 
-	D2D1_RECT_F rcPressText = D2D1::RectF(left, top, left + width, top + height);
-	WCHAR PressA[] = L"Now Loading...";
-	m_pd2dbrText->SetColor(D2D1::ColorF(D2D1::ColorF::White, 1.0f));
-	m_pd2dDeviceContext->DrawTextW(PressA, (UINT32)wcslen(PressA), m_pdwFont, &rcPressText, m_pd2dbrText);
 }
 
