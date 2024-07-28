@@ -524,7 +524,6 @@ void CyborgPlayer::IsCreep()
 void CyborgPlayer::IsCrawl()
 {
 	if (m_pasCurrentAni != CRAWL && m_bIsCrawl && !m_bIsRun && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
-		StartKeyMission(-1);
 		SetVelocity(XMFLOAT3(0.f, 0.f, 0.f));
 		m_bIsCreep = false;
 		m_bIsRun = false;

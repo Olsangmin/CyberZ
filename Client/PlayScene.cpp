@@ -685,6 +685,7 @@ void CFirstRoundScene::ProcessPacket(char* p)
 
 			Player_Character_Type type = it->second;
 			reinterpret_cast<CyborgPlayer*>(m_ppPlayer[type])->SetCrawl(true);
+			reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(-1);
 			cout << "사망" << m_ppEnemy[0]->GetPosition().x << "," << m_ppEnemy[0]->GetPosition().z << endl;
 
 		}
