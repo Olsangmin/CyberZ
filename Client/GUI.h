@@ -85,7 +85,11 @@ public:
 	void UISet(UINT m_nSwapChainBufferIndex);
 
 	bool m_bPlayerOn[3] = {false};
+
+	std::wstring			m_text;
+
 	void CheckEnter();
+	void InfoText();
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,7 +109,6 @@ public:
 	void MissionText();
 	void MissionProgressBar(int MissionNum);
 	void kyecardUI();
-	void ItemUI();
 	void StaminaBarUI();
 
 public:

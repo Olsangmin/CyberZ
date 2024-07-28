@@ -81,12 +81,18 @@ bool CTextInput::CheckChlick(HWND hWnd, POINT CursorPos)
 	GetWindowRect(hWnd, &WindowRect);
 
 	POINT mousePos;
+
+#ifdef FULL_SCREEN
+	
+	mousePos.x = CursorPos.x - WindowRect.left;
+	mousePos.y = CursorPos.y - WindowRect.top;
+
+#else
+	
 	mousePos.x = CursorPos.x - WindowRect.left;
 	mousePos.y = CursorPos.y - WindowRect.top - 30;
-	
-	//위치 확인용 
-	//std::cout <<"Mouse:" << mousePos.x << "," << mousePos.y << endl;
-	//std::cout << "Box:" << m_rButtonBox.left << "," << m_rButtonBox.right << "," << m_rButtonBox.top << "," << m_rButtonBox.bottom << endl;
+
+#endif // FULL_SCREEN
 
 	// 충돌확인
 	if (mousePos.x > m_fLeft && mousePos.x < m_fRight)
