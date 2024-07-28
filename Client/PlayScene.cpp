@@ -196,8 +196,8 @@ void CFirstRoundScene ::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppModelInfoPlayer[THIRD_PLAYER] = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), "Model/Player_3.bin", NULL);
 
 	for (int i = 0; i < m_nPlayer; ++i) {
-		CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i], THIRD_PERSON_CAMERA);
-		m_ppPlayer[i] = pPlayer;
+		//CyborgPlayer* pPlayer = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i], THIRD_PERSON_CAMERA);
+		m_ppPlayer[i] = new CyborgPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature(), m_pTerrain, m_ppModelInfoPlayer[i], THIRD_PERSON_CAMERA);
 		m_ppPlayer[i]->SetPlayerData(i);
 	}
 

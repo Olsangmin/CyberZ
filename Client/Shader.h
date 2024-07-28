@@ -221,7 +221,6 @@ public:
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 class CPostProcessingShader : public CShader
@@ -305,7 +304,7 @@ public:
 	CDepthRenderShader(CGameObject** ppObjects, CMissonOBJ** ppMission, LIGHT* pLights, int nObject, int nMissionObj);
 	virtual ~CDepthRenderShader();
 
-	void SetShadowObject(CPlayer** ppPlayer, int nPlayer, CGameObject** ppEnemy, int nEnemy, CGameObject** ppFloor, int nFloor);
+	void SetShadowObject(CLoadedModelInfo** ppPlayer, int nPlayer, CGameObject** ppEnemy, int nEnemy, CGameObject** ppFloor, int nFloor, CGameObject* pBoss, bool bBoss);
 
 	virtual D3D12_DEPTH_STENCIL_DESC CreateDepthStencilState();
 	virtual D3D12_RASTERIZER_DESC CreateRasterizerState();
@@ -343,7 +342,7 @@ public:
 	ID3D12Resource* GetDepthTextureResource(UINT nIndex) { return(m_pDepthFromLightTexture->GetResource(nIndex)); }
 
 	CGameObject**			m_ppObjects = NULL;
-	int						m_nObject = 5;
+	int						m_nObject = 0;
 
 	CMissonOBJ**			m_ppMissionObj = NULL;
 	int						m_nMissionObject = 0;
@@ -354,9 +353,11 @@ public:
 	int						m_nEnemy = 0;
 	CGameObject**			m_ppEnemy = NULL;
 
-	CPlayer**				m_ppPlayer = NULL;				// 모든 플레이어 정보
-	int						m_nPlayer;						// 플레이어 갯수
+	CLoadedModelInfo**		m_ppPlayer = NULL;
+	int						m_nPlayer = 0;				
 
+	CGameObject*			m_pBoss = NULL;
+	bool					m_bBoss = FALSE;
 
 protected:
 	LIGHT* m_pLights = NULL;

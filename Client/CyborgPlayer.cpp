@@ -72,8 +72,6 @@ CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 	CLoadedModelInfo* pMission = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Mission_1/CardKey.bin", NULL);
 	m_ppMissionObjects[8] = new Mission(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, pMission);
 	m_ppMissionObjects[8]->Rotate(0, 0, 70);
-
-	if (pPlayerModel) delete pPlayerModel;
 }
 
 CyborgPlayer::~CyborgPlayer()

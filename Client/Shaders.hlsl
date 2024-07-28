@@ -256,9 +256,9 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTexturedLightingToMultipleRTs(VS_STANDARD_OU
     float4 normalLight = Light(input.positionW, normalize(normalW));
     float4 lightWithShadows = Lighting(input.positionW, 1, true, input.shadowMapUVs);
     
-    output.cIllumination = normalLight;
+    output.cIllumination = lightWithShadows;
         
-    output.normal = lightWithShadows;
+    output.normal = normalLight;
     output.depth = input.positionW.z;
     
     
@@ -467,6 +467,7 @@ Texture2D<float4> gtxtIlluminationTexture : register(t15);
 Texture2D<float4> gtxtNormalTexture2 : register(t16);
 
 Texture2D<float> gtxtzDepthTexture : register(t17);
+Texture2D<float> gtxttemp : register(t18);
 
 
 struct VS_TEXTURED_INPUT
@@ -580,15 +581,16 @@ float4 PSScreenRectSamplingTextured(VS_SCREEN_RECT_TEXTURED_OUTPUT input) : SV_T
 
     // Sample G-Buffer
     float4 color = gtxtTextureTexture.Sample(gssWrap, uv);
-    float4 normalData = gtxtNormalTexture2.Sample(gssWrap, uv);
+    float4 normallight = gtxtNormalTexture2.Sample(gssWrap, uv);
     float4 specular = gtxtSpecularTexture.Sample(gssWrap, uv);
-    float depth = gtxtDepthTextures[0].Load(uint3((uint) input.position.x, (uint) input.position.y, 0));
-    
+    float depth = gtxtDepthTextures[0].Sample(gssWrap, input.uv).r;
+        
     // Combine albedo and light
     float4 light = gtxtIlluminationTexture.Sample(gssWrap, uv);
     
-    float4 outcolor = lerp(color, light, 0.4f);
-    if (normalData.x < 0.2) outcolor = outcolor - 0.3;
+    float4 outcolor = lerp(color, normallight, 0.4f);
+   // outcolor = lerp(color, light, 0.5f);
+    if (light.x < 0.2) outcolor = outcolor - 0.4;
      
     return (outcolor);
     
