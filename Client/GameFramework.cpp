@@ -440,8 +440,9 @@ void CGameFramework::BuildObjects(int myPlayerNum)
 	// Make Scene
 	// Ã³À½ ¾À ºôµå
 	PlaySound(L"Sound/Start.wav", 0, SND_FILENAME | SND_ASYNC | SND_LOOP);
-	m_nSceneNum = START_SCENE;
-	m_pScene = new CStartScene();
+
+	m_nSceneNum = SECOND_ROUND_SCENE;
+	m_pScene = new CSecondRoundScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList, 0);
 	if(m_pScene) m_pScene->CreateShadowShader(m_pd3dDevice, m_pd3dCommandList, false);
 
