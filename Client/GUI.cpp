@@ -689,7 +689,6 @@ void CSecondRoundSceneUI::MissionUI()
 	Missionfontsize = 40;
 	rcMissionInfoText = { x_mission, y_mission-40, x_mission + width_mission, y_mission };
 
-
 	//BG
 	m_pd2dbrBorder->SetColor(D2D1::ColorF(D2D1::ColorF::RoyalBlue, 0.85f));
 	m_pd2dDeviceContext->FillRectangle(background, m_pd2dbrBorder);
@@ -709,6 +708,8 @@ void CSecondRoundSceneUI::MissionUI()
 	RecMove(missionbackground);
 	m_ppTagButton[0]->Draw(m_pd2dDeviceContext, m_pd2dbrBorder, 0);
 
+
+	CirclesMove(missionbackground);
 }
 
 void CSecondRoundSceneUI::Ending()
@@ -729,16 +730,65 @@ void CSecondRoundSceneUI::Ending()
 
 }
 
-void CSecondRoundSceneUI::RecMove(D2D1_RECT_F mssionBox)
+void CSecondRoundSceneUI::RecMove(D2D1_RECT_F missionBox)
 {
 	D2D1_RECT_F tempRec= m_ppTagButton[0]->GetRect();
 	tempRec.left += dx;
 	tempRec.top += dy;
 
-	if (tempRec.left < mssionBox.left || tempRec.left + m_fRecSizeX > mssionBox.right) dx = -dx;
-	if (tempRec.top  < mssionBox.top || tempRec.top + m_fRecSizeY > mssionBox.bottom) dy = -dy;
+	if (tempRec.left < missionBox.left || tempRec.left + m_fRecSizeX > missionBox.right) dx = -dx;
+	if (tempRec.top  < missionBox.top || tempRec.top + m_fRecSizeY > missionBox.bottom) dy = -dy;
 
 	m_ppTagButton[0]->SetPosition(tempRec.left, tempRec.top);
+}
+
+void CSecondRoundSceneUI::CirclesMove(D2D1_RECT_F missionBox)
+{
+
+	float speedMultiplie = 15;
+
+	if (mCircles.empty()) {
+		float margin = 50.0f; 
+		D2D1_RECT_F spawnBox = {
+			missionBox.left + margin,
+			missionBox.top + margin,
+			missionBox.right - margin,
+			missionBox.bottom - margin
+		};
+
+		for (int i = 0; i < 10; ++i) {
+			MovCircle circle;
+			circle.position = {
+				spawnBox.left + (rand() % (int)(spawnBox.right - spawnBox.left)),
+				spawnBox.top + (rand() % (int)(spawnBox.bottom - spawnBox.top))
+			};
+			circle.velocity = {
+				static_cast<float>((rand() % 200 - 100) / 100.0f) * speedMultiplie, // 속도는 -1.0f ~ 1.0f 곱하기 speedMultiplier
+				static_cast<float>((rand() % 200 - 100) / 100.0f) * speedMultiplie
+			};
+			circle.radius = 35.0f;
+			mCircles.push_back(circle);
+		}
+	}
+
+	for (auto& circle : mCircles) {
+		// 원의 위치 업데이트
+		circle.position.x += circle.velocity.x;
+		circle.position.y += circle.velocity.y;
+
+		// 벽과 충돌 처리 (missionBox 범위를 벗어나면 반사)
+		if (circle.position.x - circle.radius < missionBox.left || circle.position.x + circle.radius > missionBox.right) {
+			circle.velocity.x *= -1; // x축 속도 반전
+		}
+		if (circle.position.y - circle.radius < missionBox.top || circle.position.y + circle.radius > missionBox.bottom) {
+			circle.velocity.y *= -1; // y축 속도 반전
+		}
+
+		// 원 그리기
+		D2D1_ELLIPSE mCircle = { circle.position, circle.radius, circle.radius };
+		m_pd2dbrBorder->SetColor(D2D1::ColorF(0.0f, 0.5f, 0.5f, 0.85f));
+		m_pd2dDeviceContext->FillEllipse(mCircle, m_pd2dbrBorder);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

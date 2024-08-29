@@ -121,6 +121,13 @@ public:
 };
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///
+struct MovCircle {
+	D2D1_POINT_2F position;  // 위치
+	D2D1_POINT_2F velocity;  // 이동 속도
+	float radius;            // 반지름
+};
 
 class CSecondRoundSceneUI : public CUI
 {
@@ -141,6 +148,8 @@ public:
 	int					m_ntagButton = 0;
 	CTagButton			**m_ppTagButton = NULL;
 
+	std::vector<MovCircle> mCircles;
+
 	int					m_nProgressBar = 0;
 	CProgressBar**		m_ppProgressBar = NULL;
 
@@ -160,7 +169,8 @@ public:
 
 
 public:
-	void RecMove(D2D1_RECT_F mssionBox);
+	void RecMove(D2D1_RECT_F missionBox);
+	void CirclesMove(D2D1_RECT_F missionBox);
 	float dx = 2, dy = 2;
 
 	float m_fRecSizeX = 85;
