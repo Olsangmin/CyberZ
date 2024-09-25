@@ -435,18 +435,14 @@ bool CFirstRoundScene::CheckHeal()
 
 Player_Interaction_Type CFirstRoundScene::CheckInteraction()
 {
-	if (CheckMissionObj())return CardMission;
 	if (CheckHeal())return Heal;
+	if (CheckMissionObj())return CardMission;
 	return NON;
 }
 
 void CFirstRoundScene::Interaction(Player_Interaction_Type type)
 {
 	switch (type) {
-	case CardMission: {
-		reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(0);
-		break;
-	}
 	case Heal: {
 		int id = reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->GetHealTarget();
 		cout << "<Heal>" << my_id << "->" << id << endl;
@@ -455,6 +451,10 @@ void CFirstRoundScene::Interaction(Player_Interaction_Type type)
 		p.type = CS_ALIVE_PLAYER;
 		p.id = id;
 		send_packet(&p);
+		break;
+	}
+	case CardMission: {
+		reinterpret_cast<CyborgPlayer*>(m_pMyPlayer)->StartKeyMission(0);
 		break;
 	}
 	case FinalMission: {
