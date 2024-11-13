@@ -97,7 +97,6 @@ public:
 
     void InitializeNPC();
 
-    std::vector<DirectX::XMFLOAT3> PathFind(const DirectX::XMFLOAT3& startPos, const DirectX::XMFLOAT3& targetPos);
     std::vector<DirectX::XMFLOAT3> BFS(const DirectX::XMFLOAT3& startPos, const DirectX::XMFLOAT3& targetPos);
 
 
@@ -105,20 +104,6 @@ public:
         int dx = nodeA.x - nodeB.x;
         int dz = nodeA.z - nodeB.z;
         return static_cast<int>(std::sqrt(dx * dx + dz * dz));
-    }
-
-    
-
-    bool IsInOpenSet(Node* node, const std::priority_queue<Node*, std::vector<Node*>, CompareNodes>& openSet) {
-        std::priority_queue<Node*, std::vector<Node*>, CompareNodes> tempOpenSet = openSet; // 복사본 생성
-        while (!tempOpenSet.empty()) {
-            Node* currentNode = tempOpenSet.top();
-            tempOpenSet.pop();
-            if (*currentNode == *node) {
-                return true;
-            }
-        }
-        return false;
     }
 
     DirectX::XMFLOAT3 GetRandomPos(DirectX::XMFLOAT3 pos)
@@ -155,33 +140,6 @@ public:
     }
 
     std::vector<Node> GetNeighbors(const Node& node) const;
-
-    std::vector<Node> GetNeighbors(const Node& node, const Node& targetNode) const {
-        std::vector<Node> neighbors;
-
-        int Cell_x = node.x;
-        int Cell_z = node.z;
-
-        for (int dz = -1; dz <= 1; ++dz) {
-            for (int dx = -1; dx <= 1; ++dx) {
-                if (dz == 0 && dx == 0) {
-                    continue;
-                }
-
-                int newX = Cell_x + dx;
-                int newZ = Cell_z + dz;
-
-                if (newX >= 0 && newX < cellWidth && newZ >= 0 && newZ < cellDepth &&
-                    !cells[newX][newZ].isObstacle) {
-                    float g = node.gCost + 1.0f; // 시작 노드로부터의 거리는 항상 1
-                    float h = CalculateHeuristic(newX, newZ, targetNode);
-                    neighbors.emplace_back(newX, newZ, g, h, nullptr);
-                }
-            }
-        }
-
-        return neighbors;
-    }
 
     float CalculateHeuristic(int x, int z, const Node& targetNode) const {
         // 맨해튼 거리를 사용하거나 유클리드 거리를 사용할 수 있음

@@ -52,12 +52,9 @@ void Server::Network()
 	else
 	{
 		std::cout << "DB 서버 Connected" << std::endl;
-
-		// Creat Table
-		// 
-		// DROP TABLE IF EXISTS[dbo].[User_Account];			
+	
 		{
-			/*auto query = L"									\
+			auto query = L"									\
 			CREATE TABLE [dbo].[User_Account]					\
 			(											\
 				[id] INT NOT NULL PRIMARY KEY IDENTITY, \
@@ -70,14 +67,9 @@ void Server::Network()
 			if (false == dbConn->Execute(query)) {
 				return;
 			}
-			m_DBConnectionPool->Push(dbConn);*/
+			m_DBConnectionPool->Push(dbConn);
 		}
 	}
-
-
-
-	// 데이터 Read
-
 
 
 	std::cout << "Server Start" << std::endl;
@@ -103,14 +95,12 @@ void Server::Network()
 			continue;
 		}
 
-
 		fps = duration_cast<frame>(std::chrono::steady_clock::now() - fps_timer);
 
 		// 아직 1/60초가 안지났으면 패스
-
 		if (fps.count() < 1) continue;
 
-
+		// 1초에 한번 보정 처리
 		if (frame_count.count() == 0) {
 			// std::cout << "PLAYER UPDATE" << std::endl;
 			SC_UPDATE_PLAYER_PACKET uPackets[MAX_USER];
@@ -132,17 +122,13 @@ void Server::Network()
 			}
 		}
 
-
 		gMap.Update(frame_count.count());
-
 
 		frame_count = duration_cast<frame>(frame_count + fps);
 		if (frame_count.count() >= MAX_FRAME) {
-			// std::cout << num++ << "초" << std::endl;
 			frame_count = frame::zero();
 		}
-		else {
-		}
+
 		fps_timer = std::chrono::steady_clock::now();
 	}
 
@@ -199,9 +185,9 @@ void Server::Worker_thread()
 			ZeroMemory(&ac_over.over, sizeof(ac_over.over));
 			int addr_size = sizeof(SOCKADDR_IN);
 			AcceptEx(s_socket, c_socket, ac_over.send_buf, 0, addr_size + 16, addr_size + 16, 0, &ac_over.over);
-			break;
+			
 		}
-
+					  break;
 		case OP_RECV: {
 			int remain_data = num_bytes + clients[key].Get_prev_remain();
 			char* p = ex_over->send_buf;
@@ -238,7 +224,6 @@ void Server::Worker_thread()
 			delete ex_over;
 		}
 						break;
-
 		case OP_NPC_ATTACK: {
 			if (key < 200) {
 				auto& npc = gMap.npcs[key - 100];
@@ -269,8 +254,8 @@ void Server::Worker_thread()
 				gMap.BossNpc.o_lock.unlock();
 			}
 			delete ex_over;
-		}break;
-
+		}
+						  break;
 		case OP_COOL_DOWN: {
 			gMap.cool_lock.lock();
 			gMap.cool_down = false;
@@ -282,7 +267,6 @@ void Server::Worker_thread()
 		default:
 			break;
 		}
-
 
 	}
 }
@@ -537,7 +521,6 @@ void Server::Process_packet(int c_id, char* packet)
 
 	}break;
 	case CS_GETKEY: {
-		// CS_GETKEY_PACKET* p = reinterpret_cast<CS_GETKEY_PACKET*>(packet);
 		std::cout << c_id << "키획득" << std::endl;
 		SC_GETKEY_PACKET keyPacket;
 		keyPacket.size = sizeof(keyPacket);
@@ -647,13 +630,11 @@ void Server::TimerThread()
 		TIMER_EVENT ev;
 		auto current_time = std::chrono::system_clock::now();
 		if (timer_queue.try_pop(ev)) { // 비었거나, 팝성공
-
 			if (ev.wakeup_time > current_time) {
 				timer_queue.push(ev);
 				std::this_thread::sleep_for(std::chrono::milliseconds(1));
 				continue;
 			}
-
 			// 성공했을때
 			switch (ev.ev_type)
 			{
@@ -676,15 +657,12 @@ void Server::TimerThread()
 				//PostQueuedCompletionStatus(h_iocp, 1, ev.pl_id, &overE->over);
 				break;
 			}
-
 			case EV_COOL_DOWN: {
 				OVER_EXP* overE = new OVER_EXP;
 				overE->comp_type = OP_COOL_DOWN;
 				PostQueuedCompletionStatus(h_iocp, 1, ev.npc_id, &overE->over);
 				break;
 			}
-
-
 			default:
 				break;
 			}
@@ -714,10 +692,8 @@ bool Server::TryLogin(char* cl_name, char* cl_password)
 	WCHAR name[20] = {};
 	MultiByteToWideChar(CP_ACP, 0, cl_name, -1, name, 20);
 	SQLLEN nameLen = 0;
-	if (dbConn->BindParam(1, name, &nameLen))
-	{
 
-	}
+	dbConn->BindParam(1, name, &nameLen);
 
 
 	int outId = 0;

@@ -101,15 +101,6 @@ void GameMap::initializeMap()
 				
 		}
 
-
-		/*for (const auto& pair : data) {
-			std::cout << "Object Name: " << pair.first << std::endl;
-			const DirectX::BoundingOrientedBox& box = pair.second;
-			std::cout << "Center: (" << box.Center.x << ", " << box.Center.y << ", " << box.Center.z << ")" << std::endl;
-			std::cout << "Orientation: (" << box.Orientation.x << ", " << box.Orientation.y << ", " << box.Orientation.z << ") - " << box.Orientation.w << std::endl;
-		}*/
-
-
 	}
 
 
@@ -154,16 +145,6 @@ void GameMap::initializeMap()
 		for (int y = 0; y < cellDepth; ++y) {
 			for (auto& datas : data) {
 				if (cells[x][y].InCell(datas.second)) {
-					/*if (x >= 40 && x <= 55 && y >= 30 && y < 60) {
-						cells[x][y].cellType = CONT;
-						cells[x][y].isObstacle = true;
-						std::cout << "[" << x << "," << y << "] ";
-						std::cout << "Center: (" << datas.second.Center.x << ", " << datas.second.Center.y << ", " << datas.second.Center.z << ")" << std::endl;
-						std::cout << "Extexts: (" << datas.second.Extents.x << ", " << datas.second.Extents.y << ", " << datas.second.Extents.z << ")" << std::endl;
-						
-						std::cout << "Orientation: (" << datas.second.Orientation.x << ", " << datas.second.Orientation.y << ", " << datas.second.Orientation.z << ") - " << datas.second.Orientation.w << std::endl << std::endl;
-						break;
-					}*/
 					cells[x][y].cellType = CONT;
 					cells[x][y].isObstacle = true;
 					break;
@@ -372,19 +353,6 @@ void GameMap::Update(int tick)
 {
 	if (!InGame) return;
 
-	//Remain_time = End_time - std::chrono::steady_clock::now();
-
-	//if (Remain_time.count() < 0.f) {
-	//	std::cout << "게임 종료" << std::endl;
-	//	EndGame();
-	//	cl_ids.clear(); // 게임 리셋
-	//	return;
-	//}
-
-	//if(tick == 0)
-	//	std::cout << "남은시간 : " << Remain_time.count() << " 초" << std::endl;
-	
-	
 	
 	if (tick == 0 || tick == 15 || tick == 30 || tick == 45) {
 
@@ -560,83 +528,7 @@ void GameMap::InitializeNPC()
 		npcs[i].boundingBox.Extents = DirectX::XMFLOAT3(3.f, 20.f, 3.f);
 	}
 
-	/*auto path = BFS(npcs[0].GetPos(), PlayerInitPos[0]);
-	for (auto& pos : path) {
-		npcs[0].n_path.push(pos);
-		std::cout << pos.x << ", " << pos.z << std::endl;
-	}
-	std::cout << "경로 크기 : " << npcs[0].n_path.size() << std::endl;*/
-
 }
-
-std::vector<DirectX::XMFLOAT3> GameMap::PathFind(const DirectX::XMFLOAT3& startPos, const DirectX::XMFLOAT3& targetPos) {
-	std::pair<int, int> startIndex = CoordsToIndex(startPos);
-	std::pair<int, int> targetIndex = CoordsToIndex(targetPos);
-
-	Node startNode(startIndex.first, startIndex.second, 0, 0, nullptr);
-	Node targetNode(targetIndex.first, targetIndex.second, 0, 0, nullptr);
-
-	std::vector<std::vector<bool>> visited(cellWidth, std::vector<bool>(cellDepth, false));
-	std::vector<DirectX::XMFLOAT3> path;
-
-	std::priority_queue<Node*> openList;
-	openList.push(new Node(startIndex.first, startIndex.second, 0, 0, nullptr));
-	visited[startIndex.first][startIndex.second] = true;
-
-	std::vector<Node*> closedList;
-
-	while (!openList.empty()) {
-		Node* currentNode = openList.top();
-		openList.pop();
-
-		if (*currentNode == targetNode) {
-			// 경로를 재구성합니다.
-			while (currentNode != nullptr) {
-				path.push_back(cells[currentNode->x][currentNode->z].center);
-				Node* temp = currentNode;
-				currentNode = currentNode->parent;
-				// 이미 방문한 노드의 리스트에서 제거합니다.
-				closedList.erase(std::remove(closedList.begin(), closedList.end(), temp), closedList.end());
-				delete temp; // 더 이상 필요하지 않은 노드를 해제합니다.
-			}
-			std::reverse(path.begin(), path.end());
-			break;
-		}
-
-		std::vector<Node> neighbors = GetNeighbors(*currentNode, targetNode);
-		for (const Node& neighbor : neighbors) {
-			int x = neighbor.x;
-			int z = neighbor.z;
-
-			if (!visited[x][z]&&!cells[x][z].isObstacle) {
-				visited[x][z] = true;
-
-				Node* newNode = nullptr;
-				for (Node* visitedNode : closedList) {
-					if (visitedNode->x == x && visitedNode->z == z) {
-						newNode = visitedNode;
-						break;
-					}
-				}
-
-				if (newNode == nullptr) {
-					// 새로운 노드를 생성하여 큐에 추가합니다.
-					newNode = new Node(x, z, neighbor.gCost, neighbor.hCost, currentNode);
-					closedList.push_back(newNode);
-				}
-
-				openList.push(newNode);
-			}
-		}
-	}
-
-	for (Node* node : closedList) {
-		delete node;
-	}
-
-	return path;
-}
-
 
 std::vector<Node> GameMap::GetNeighbors(const Node& node) const {
 	std::vector<Node> neighbors;
