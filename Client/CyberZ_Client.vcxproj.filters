@@ -19,9 +19,6 @@
     <Filter Include="02. GameFramework">
       <UniqueIdentifier>{abb79112-e362-45c3-b5a5-535d84ca3d66}</UniqueIdentifier>
     </Filter>
-    <Filter Include="03. Network">
-      <UniqueIdentifier>{90e808db-1448-471e-b839-9c7d76e62aca}</UniqueIdentifier>
-    </Filter>
     <Filter Include="04. Mesh">
       <UniqueIdentifier>{415035b6-0122-484c-b7a0-72a0c5351bec}</UniqueIdentifier>
     </Filter>
@@ -70,6 +67,9 @@
     <Filter Include="11. GUI\11-02. UIobj">
       <UniqueIdentifier>{694f5bac-4b33-4148-9ff6-0d5731f2a32f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="02. GameFramework\03. Network">
+      <UniqueIdentifier>{90e808db-1448-471e-b839-9c7d76e62aca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="CyberZ_Client.rc">
@@ -98,7 +98,7 @@
       <Filter>10. TextureLoader</Filter>
     </ClCompile>
     <ClCompile Include="Network.cpp">
-      <Filter>03. Network</Filter>
+      <Filter>02. GameFramework\03. Network</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>00. stdafx</Filter>
@@ -187,10 +187,10 @@
       <Filter>10. TextureLoader</Filter>
     </ClInclude>
     <ClInclude Include="Network.h">
-      <Filter>03. Network</Filter>
+      <Filter>02. GameFramework\03. Network</Filter>
     </ClInclude>
     <ClInclude Include="..\Protocol.h">
-      <Filter>03. Network</Filter>
+      <Filter>02. GameFramework\03. Network</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
       <Filter>00. stdafx</Filter>

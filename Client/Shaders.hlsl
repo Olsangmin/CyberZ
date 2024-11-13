@@ -96,10 +96,8 @@ VS_STANDARD_OUTPUT VSStandard(VS_STANDARD_INPUT input)
     {
         if (gcbToLightSpaces[i].f4Position.w != 0.0f) 
             output.shadowMapUVs[i] = mul(positionW, gcbToLightSpaces[i].mtxToTextureSpace);
-        
     }
 
-    
 	return(output);
 }
 
@@ -236,7 +234,6 @@ PS_MULTIPLE_RENDER_TARGETS_OUTPUT PSTexturedLightingToMultipleRTs(VS_STANDARD_OU
     output.color = cColor;
 
     output.cTexture = cColor;
-    
     
     float3 normalW;
 
@@ -452,7 +449,6 @@ float4 PSParticle(VS_PARTICLE_OUTPUT input) : SV_TARGET1
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-
 
 struct PS_DEPTH_OUTPUT
 {

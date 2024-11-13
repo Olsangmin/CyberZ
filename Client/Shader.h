@@ -300,7 +300,7 @@ struct TOLIGHTSPACES
 class CDepthRenderShader : public CStandardShader
 {
 public:
-	CDepthRenderShader() {}
+	CDepthRenderShader();
 	CDepthRenderShader(CGameObject** ppObjects, CMissonOBJ** ppMission, LIGHT* pLights, int nObject, int nMissionObj);
 	virtual ~CDepthRenderShader();
 
