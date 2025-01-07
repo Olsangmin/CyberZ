@@ -1113,11 +1113,15 @@ void CDepthRenderShader::PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID
 			XMMATRIX xmmtxProjection = XMMatrixIdentity();
 			if (m_pLights[j].m_nType == DIRECTIONAL_LIGHT)
 			{
-				float fWidth = 1000, fHeight = 1000;
+				//float fWidth = 1000, fHeight = 1000;
+
+				float fFovAngle = 120.0f; // m_pLights->m_pLights[j].m_fPhi = cos(60.0f);
+				float fAspectRatio = float(_DEPTH_BUFFER_WIDTH) / float(_DEPTH_BUFFER_HEIGHT);
+
 
 				// 방향성 라이트의 투영 행렬 생성
 				//xmmtxProjection = XMMatrixOrthographicLH(fWidth, fHeight, fNearPlaneDistance, fFarPlaneDistance);
-				xmmtxProjection = XMMatrixPerspectiveFovLH(fWidth, fHeight, fNearPlaneDistance, fFarPlaneDistance);
+				xmmtxProjection = XMMatrixPerspectiveFovLH(XMConvertToRadians(fFovAngle), fAspectRatio, fNearPlaneDistance, fFarPlaneDistance);
 			}
 			else if (m_pLights[j].m_nType == SPOT_LIGHT)
 			{
