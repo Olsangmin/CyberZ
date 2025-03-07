@@ -60,8 +60,8 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	if (pMapModel4) delete pMapModel4;
 
 
-	m_nFloorObj = 0;
-	/*
+	m_nFloorObj = 19;
+	
 	m_ppFloorObj = new CGameObject * [m_nFloorObj];
 
 	CLoadedModelInfo* pFloormodel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/Mission/Occ_Range.bin", NULL);
@@ -99,7 +99,7 @@ void CFirstRoundScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 	}
 
 	if (pMainFloormodel) delete pMainFloormodel;
-	*/
+	
 
 	//===============================//
 	// Mission Obj(1)

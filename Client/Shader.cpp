@@ -1095,8 +1095,45 @@ struct TRIANGLECULLING
 	BOOL culled;
 };
 
+
+// 직각투영 만드는 함수
+XMMATRIX CreateOrthographicProjectionMatrix(XMMATRIX& xmmtxLightView, CCamera* pSceneCamera, BoundingOrientedBox* pxmSceneBoundingBox)
+{
+	XMMATRIX xmmtxProjection;
+
+	XMFLOAT3 pxmf3SceneAABBPoints[8];
+	pxmSceneBoundingBox->GetCorners(pxmf3SceneAABBPoints);
+
+	XMVECTOR xmvLightSpaceSceneAABBMin = g_XMFltMax;
+	XMVECTOR xmvLightSpaceSceneAABBMax = g_XMFltMin;
+
+	XMVECTOR pxmvLightSpaceSceneAABBPoints[8];
+	for (int i = 0; i < 8; i++)
+	{
+		XMFLOAT4 xmf4SceneAABBPoint = XMFLOAT4(pxmf3SceneAABBPoints[i].x, pxmf3SceneAABBPoints[i].y, pxmf3SceneAABBPoints[i].z, 1.0f);
+		pxmvLightSpaceSceneAABBPoints[i] = XMVector4Transform(XMLoadFloat4(&xmf4SceneAABBPoint), xmmtxLightView);
+		xmvLightSpaceSceneAABBMin = XMVectorMin(pxmvLightSpaceSceneAABBPoints[i], xmvLightSpaceSceneAABBMin);
+		xmvLightSpaceSceneAABBMax = XMVectorMax(pxmvLightSpaceSceneAABBPoints[i], xmvLightSpaceSceneAABBMax);
+	}
+
+	float fNearPlaneDistance = XMVectorGetZ(xmvLightSpaceSceneAABBMin);
+	float fFarPlaneDistance = XMVectorGetZ(xmvLightSpaceSceneAABBMax);
+	xmmtxProjection = XMMatrixOrthographicOffCenterLH(XMVectorGetX(xmvLightSpaceSceneAABBMin), XMVectorGetX(xmvLightSpaceSceneAABBMax), XMVectorGetY(xmvLightSpaceSceneAABBMin), XMVectorGetY(xmvLightSpaceSceneAABBMax), fNearPlaneDistance, fFarPlaneDistance);
+
+
+	return(xmmtxProjection);
+}
+
+
 void CDepthRenderShader::PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
+	BoundingOrientedBox xmBoundingBox;
+
+	for (int i = 0; i < m_nObject; i++)
+	{
+		xmBoundingBox = m_ppObjects[i]->m_xmBoundingBox;
+	}
+
 	for (int j = 0; j < MAX_LIGHTS; j++)
 	{
 		if (m_pLights[j].m_bEnable)
@@ -1107,6 +1144,8 @@ void CDepthRenderShader::PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID
 
 			 xmf3Look = m_pLights[j].m_xmf3Direction;
 
+
+
 			XMMATRIX xmmtxLightView = XMMatrixLookToLH(XMLoadFloat3(&xmf3Position), XMLoadFloat3(&xmf3Look), XMLoadFloat3(&xmf3Up));
 			float fNearPlaneDistance = 1.0f, fFarPlaneDistance = m_pLights[j].m_fRange;
 
@@ -1114,14 +1153,10 @@ void CDepthRenderShader::PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID
 			if (m_pLights[j].m_nType == DIRECTIONAL_LIGHT)
 			{
 				//float fWidth = 1000, fHeight = 1000;
-
-				float fFovAngle = 120.0f; // m_pLights->m_pLights[j].m_fPhi = cos(60.0f);
-				float fAspectRatio = float(_DEPTH_BUFFER_WIDTH) / float(_DEPTH_BUFFER_HEIGHT);
-
-
-				// 방향성 라이트의 투영 행렬 생성
 				//xmmtxProjection = XMMatrixOrthographicLH(fWidth, fHeight, fNearPlaneDistance, fFarPlaneDistance);
-				xmmtxProjection = XMMatrixPerspectiveFovLH(XMConvertToRadians(fFovAngle), fAspectRatio, fNearPlaneDistance, fFarPlaneDistance);
+				
+				xmmtxProjection = CreateOrthographicProjectionMatrix(xmmtxLightView, pCamera, &xmBoundingBox);
+
 			}
 			else if (m_pLights[j].m_nType == SPOT_LIGHT)
 			{
