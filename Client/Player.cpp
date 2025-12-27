@@ -265,7 +265,7 @@ void CPlayer::RotateDirection(float angle)
 
 		float fNextAngle = Vector3::Angle(Vector3::Normalize(xmfVel), xmf3Look);
 
-		fCurrentAngle >= fNextAngle ? Rotate(0.0f, (fCurrentAngle-fNextAngle)/1.5, 0.0f) : Rotate(0.0f, -(fNextAngle - fCurrentAngle) / 1.5, 0.0f);
+		fCurrentAngle >= fNextAngle ? Rotate(0.0f, (fCurrentAngle - fNextAngle) / 1.5, 0.0f) : Rotate(0.0f, -(fNextAngle - fCurrentAngle) / 1.5, 0.0f);
 	}
 }
 
@@ -284,8 +284,13 @@ void CPlayer::UpdatePlayerPostion(float fTimeElapsed)
 	m_xmf3NextPos = xmf3Velocity;
 	if(!m_bIntersects)Move(xmf3Velocity, false);
 	else {
-		XMFLOAT3 slidingVec = Vector3::XMVectorToFloat3(XMLoadFloat3(&xmf3Velocity) - 
-			XMVector3Dot(XMLoadFloat3(&xmf3Velocity), XMLoadFloat3(&m_xmf3ContactNormal)) * XMLoadFloat3(&m_xmf3ContactNormal));
+		XMVECTOR NormalVec = XMLoadFloat3(&m_xmf3ContactNormal);
+		XMVECTOR VelocityVec = XMLoadFloat3(&xmf3Velocity);
+
+		XMVECTOR VelocityNormal = XMVector3Dot(VelocityVec, NormalVec) * NormalVec;
+
+		XMFLOAT3 slidingVec = Vector3::XMVectorToFloat3(VelocityVec - VelocityNormal);
+
 		Move(slidingVec, false);
 	}
 	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
@@ -368,7 +373,7 @@ void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamer
 {
 
 	DWORD nCameraMode = (pCamera) ? pCamera->GetMode() : 0x00;
-	if (nCameraMode == THIRD_PERSON_CAMERA|| nCameraMode == FIRST_PERSON_CAMERA) CGameObject::Render(pd3dCommandList, pCamera);
+	if (nCameraMode == THIRD_PERSON_CAMERA || nCameraMode == FIRST_PERSON_CAMERA) CGameObject::Render(pd3dCommandList, pCamera);
 }
 
 void CPlayer::Release()
