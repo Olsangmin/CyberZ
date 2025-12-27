@@ -12,6 +12,8 @@ Server::Server()
 	for (int i = 0; i < MAX_USER; ++i) {
 		clients[i].SetId(-1);
 	}
+
+	m_DBConnectionPool = new DBConnectionPool();
 }
 
 void Server::Network()
@@ -42,6 +44,42 @@ void Server::Network()
 
 	gMap.printMap();
 
+	//if (false == m_DBConnectionPool->Connect(1, L"Driver={ODBC Driver 17 for SQL Server};Server=(localdb)\\MSSQLLocalDB;Database=CyberZDB;Trusted_Connection=Yes;"))
+	//{
+	//	std::cout << "DB Connect 오류 !" << std::endl;
+	//	exit(-1);
+	//}
+	//else
+	//{
+	//	std::cout << "DB 서버 Connected" << std::endl;
+
+	//	// Creat Table
+	//	// 
+	//	// DROP TABLE IF EXISTS[dbo].[User_Account];			
+	//	{
+	//		/*auto query = L"									\
+	//		CREATE TABLE [dbo].[User_Account]					\
+	//		(											\
+	//			[id] INT NOT NULL PRIMARY KEY IDENTITY, \
+	//			[account_id] NVARCHAR(20) NOT NULL UNIQUE, \
+	//			[password] NVARCHAR(20) NOT NULL,						\
+	//			[createDate] DATETIME NULL				\
+	//		);";
+
+	//		DBConnection* dbConn = m_DBConnectionPool->Pop();
+	//		if (false == dbConn->Execute(query)) {
+	//			return;
+	//		}
+	//		m_DBConnectionPool->Push(dbConn);*/
+	//	}
+	//}
+
+
+
+	// 데이터 Read
+
+
+
 	std::cout << "Server Start" << std::endl;
 
 
@@ -50,6 +88,7 @@ void Server::Network()
 	for (int i = 0; i < num_threads; ++i)
 		worker_threads.emplace_back(&Server::Worker_thread, this);
 	std::thread timer_thread{ &Server::TimerThread, this };
+	// std::thread db_thread{ &Server::DBThread, this };
 
 
 	using frame = std::chrono::duration<int, std::ratio<1, MAX_FRAME>>;
@@ -68,11 +107,27 @@ void Server::Network()
 		fps = duration_cast<frame>(std::chrono::steady_clock::now() - fps_timer);
 
 		// 아직 1/60초가 안지났으면 패스
-		
+
 		if (fps.count() < 1) continue;
 
+		/*if (frame_count.count() < 60) {
+			for (auto id : gMap.cl_ids)
+			{
+				for (int i = 0; i < gMap.coms.size(); ++i) {
+					SC_CHANGE_COMST_PACKET comst;
+					comst.size = sizeof(comst);
+					comst.type = SC_CHANGE_COMST;
+					comst.comNum = i;
+					comst.state = gMap.coms[i];
 
-		if (frame_count.count() & 1) {
+					clients[id].do_send(&comst);
+				}
+			}
+		}*/
+
+
+		if (frame_count.count() == 0) {
+			// std::cout << "PLAYER UPDATE" << std::endl;
 			SC_UPDATE_PLAYER_PACKET uPackets[MAX_USER];
 			for (int i = 0; auto id : gMap.cl_ids) {
 				uPackets[i].size = sizeof(SC_UPDATE_PLAYER_PACKET);
@@ -80,6 +135,7 @@ void Server::Network()
 				uPackets[i].id = clients[id].GetId();
 				uPackets[i].position = clients[id].GetPos();
 				uPackets[i].rotation = clients[id].GetRotation();
+				uPackets[i].ani_st = clients[id].anim;
 				++i;
 			}
 
@@ -185,19 +241,52 @@ void Server::Worker_thread()
 		}
 
 		case OP_NPC_MOVE: {
-			auto& npc = gMap.npcs[key - 100];
-			npc.Move();
-
+			if (key < 200)
+			{
+				NPC& npc = gMap.npcs[key - 100];
+				npc.Move();
+			}
+			else
+			{
+				gMap.BossNpc.Move();
+			}
 			delete ex_over;
 		}
-					  break;
+						break;
 
 		case OP_NPC_ATTACK: {
-			auto& npc = gMap.npcs[key - 100];
-			if (npc.current_behavior == ATTACK) {
-				std::cout << npc.near_player << "사망" << std::endl;
+			if (key < 200) {
+				auto& npc = gMap.npcs[key - 100];
+				npc.o_lock.lock();
+				if (npc.IsAttack && (gMap.Distance_float(clients[npc.near_player].GetPos(), npc.GetPos()) < AttackRange)) {
+					std::cout << npc.near_player << "사망" << gMap.Distance_float(clients[npc.near_player].GetPos(), npc.GetPos()) << std::endl;
+					std::cout << clients[npc.near_player].GetPos().x << ", " << clients[npc.near_player].GetPos().z << " - " << npc.GetPos().x << "," << npc.GetPos().z << std::endl;
+					clients[npc.near_player].anim = CRAWL;
+					for (int id : gMap.cl_ids) {
+						clients[id].send_player_death_packet(npc.near_player);
+					}
+				}
+				npc.IsAttack = false;
+				npc.o_lock.unlock();
 			}
-			npc.IsAttack = false;
+			else
+			{
+				gMap.BossNpc.o_lock.lock();
+				if (gMap.BossNpc.IsAttack && (gMap.Distance_float(clients[gMap.BossNpc.near_player].GetPos(), gMap.BossNpc.GetPos()) < (AttackRange + 5.f))) {
+					std::cout << gMap.BossNpc.near_player << "사망" << std::endl;
+					clients[gMap.BossNpc.near_player].anim = CRAWL;
+					for (int id : gMap.cl_ids) {
+						clients[id].send_player_death_packet(gMap.BossNpc.near_player);
+					}
+				}
+				gMap.BossNpc.IsAttack = false;
+				gMap.BossNpc.o_lock.unlock();
+			}
+			delete ex_over;
+		}break;
+
+		case OP_COOL_DOWN: {
+			gMap.cool_down = false;
 			delete ex_over;
 		}break;
 
@@ -215,29 +304,79 @@ void Server::Process_packet(int c_id, char* packet)
 	{
 	case CS_LOGIN: {
 		CS_LOGIN_PACKET* p = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
-		strcpy_s(clients[c_id].name, p->name);
+
+		std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
 		{
-			std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
-			clients[c_id].state = ST_LOBBY;
-			// gMap.StartGame();
+			strcpy_s(clients[c_id].name, p->name);
+			strcpy_s(clients[c_id].password, p->PW);
+			/*if (false == TryLogin(clients[c_id].name, clients[c_id].password))
+			{
+				return;
+			}*/
+
 		}
 		std::cout << "Client[" << c_id << "] Login.\n" << std::endl;
 		clients[c_id].send_login_info_packet();
-		
-		if(gMap.cl_ids.size() <= 3)
+
+
+	} break;
+
+	case CS_ENTER_ROOM: {
+		if (gMap.cl_ids.size() <= 3)
 			gMap.cl_ids.push_back(c_id);
 
-		for (auto& cl : clients) {
-			{
-				std::lock_guard<std::mutex> ll(cl.o_lock);
+		std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
+		{
+			clients[c_id].state = ST_LOBBY;
+			for (auto& cl : clients) {
 				if (ST_LOBBY != cl.state) continue;
+				cl.send_change_Character_type_packet(c_id, clients[c_id].GetType(), clients[c_id].name);
+				clients[c_id].send_change_Character_type_packet(cl.GetId(), cl.GetType(), cl.name);
 			}
-			if (cl.GetId() == c_id) continue;
-			cl.send_change_Character_type_packet(c_id, clients[c_id].GetType());
-			clients[c_id].send_change_Character_type_packet(cl.GetId(), cl.GetType());
 		}
-	}
-				 break;
+	}break;
+
+	case CS_SIGNUP: {
+		CS_SIGNUP_PACKET* p = reinterpret_cast<CS_SIGNUP_PACKET*>(packet);
+
+
+		DBConnection* dbConn = m_DBConnectionPool->Pop();
+		dbConn->Unbind();
+
+		WCHAR name[20] = {};
+		MultiByteToWideChar(CP_ACP, 0, p->name, -1, name, 20);
+		SQLLEN nameLen = 0;
+
+		if (dbConn->BindParam(1, name, &nameLen))
+		{
+
+		}
+
+		WCHAR password[20] = {};
+		MultiByteToWideChar(CP_ACP, 0, p->PW, -1, password, 20);
+		SQLLEN passwordLen = 0;
+
+		if (dbConn->BindParam(2, password, &passwordLen))
+		{
+
+		}
+
+		TIMESTAMP_STRUCT ts = { 2024, 07, 01 };
+		SQLLEN tsLen = 0;
+
+		if (dbConn->BindParam(3, &ts, &tsLen))
+		{
+
+		}
+
+
+		if (dbConn->Execute(L"INSERT INTO [dbo].[User_Account]([account_id], [password], [createDate]) VALUES(?, ?, ?)"))
+		{
+			std::cout << "Sign Up" << std::endl;
+		}
+		m_DBConnectionPool->Push(dbConn);
+
+	}break;
 
 	case CS_ALLPLAYER_READY: {
 		if (c_id != gMap.cl_ids[0]) break;
@@ -246,7 +385,7 @@ void Server::Process_packet(int c_id, char* packet)
 		std::sort(gMap.cl_ids.begin(), gMap.cl_ids.end());
 		auto u = std::unique(gMap.cl_ids.begin(), gMap.cl_ids.end());
 		gMap.cl_ids.erase(u, gMap.cl_ids.end());
-		
+
 		std::set<int> types;
 		for (auto id : gMap.cl_ids)
 			types.insert(clients[id].GetType());
@@ -255,7 +394,7 @@ void Server::Process_packet(int c_id, char* packet)
 			std::cout << "캐릭터 중복 " << std::endl;
 			break;
 		}
-		
+
 
 		for (auto& cl : clients) {
 			{
@@ -268,7 +407,7 @@ void Server::Process_packet(int c_id, char* packet)
 			}
 			// if (cl.GetId() == c_id) continue;
 		}
-		
+
 		std::cout << "방장[" << c_id << "] - " << std::endl;
 		gMap.StartGame();
 		break;
@@ -278,20 +417,39 @@ void Server::Process_packet(int c_id, char* packet)
 		if (c_id != gMap.cl_ids[0]) break;
 
 		std::vector<int> players = gMap.cl_ids;
-		auto& npcs = gMap.npcs;
-		for (auto& pl : players) { // 012
-			for (auto& others : gMap.cl_ids) {
-				clients[pl].send_add_player_packet(others,
-					clients[others].GetPos(), clients[others].GetRotation(), clients[others].GetType());
-			}
+		if (gMap.GetStage() == NOGAME) {
+			auto& npcs = gMap.npcs;
+			for (auto& pl : players) { // 012
+				for (auto& others : gMap.cl_ids) {
+					clients[pl].send_add_player_packet(others,
+						clients[others].GetPos(), clients[others].GetRotation(), clients[others].GetType());
+				}
 
-			for (auto& npc : npcs) {
-				clients[pl].send_add_npc_packet(npc.GetId(), npc.GetPos(), npc.GetRotation());
-				std::cout << pl << " to " << npc.GetId() << std::endl;
+				for (auto& npc : npcs) {
+					clients[pl].send_add_npc_packet(npc.GetId(), npc.GetPos(), npc.GetRotation());
+					std::cout << pl << " to " << npc.GetId() << std::endl;
+				}
 			}
+			gMap.PlayGame();
 		}
-		gMap.PlayGame();
-		
+
+		else if (gMap.GetStage() == LOADING) {
+			for (auto& pl : players) {
+				clients[pl].SetPos(PlayerInitPos_Stage2[clients[pl].GetType()]);
+			}
+			gMap.ChangeToMap2();
+			gMap.SetStage(STAGE2);
+			for (auto& pl : players) {
+
+				for (auto& others : gMap.cl_ids) {
+					clients[pl].send_add_player_packet(others,
+						clients[others].GetPos(), clients[others].GetRotation(), clients[others].GetType());
+					clients[pl].send_add_npc_packet(gMap.BossNpc.GetId(), gMap.BossNpc.GetPos(), gMap.BossNpc.GetRotation());
+				}
+			}
+			
+		}
+
 		break;
 	}
 	case CS_LOGOUT: {
@@ -318,6 +476,8 @@ void Server::Process_packet(int c_id, char* packet)
 
 	case CS_UPDATE_PLAYER: {
 		CS_UPDATE_PLAYER_PACKET* p = reinterpret_cast<CS_UPDATE_PLAYER_PACKET*>(packet);
+		if (gMap.GetStage() == NOGAME || gMap.GetStage() == LOADING)
+			break;
 		{
 			std::lock_guard<std::mutex> ll{ clients[c_id].o_lock };
 			clients[c_id].SetPos(p->position);
@@ -338,12 +498,6 @@ void Server::Process_packet(int c_id, char* packet)
 		// std::cout << "Client[" << c_id << "] Anim_Change. \n";
 	}
 					   break;
-	case CS_TEST: {
-		CS_TEST_PACKET* p = reinterpret_cast<CS_TEST_PACKET*>(packet);
-		// gMap.StartGame();
-
-	}
-				break;
 
 	case CS_CHANGE_CHARACTER: {
 		CS_CHANGE_CHARACTER_PACKET* p = reinterpret_cast<CS_CHANGE_CHARACTER_PACKET*>(packet);
@@ -358,7 +512,7 @@ void Server::Process_packet(int c_id, char* packet)
 
 		for (auto& cl : clients) {
 			if (cl.state != ST_LOBBY) continue;
-			cl.send_change_Character_type_packet(c_id, clients[c_id].GetType());
+			cl.send_change_Character_type_packet(c_id, clients[c_id].GetType(), clients[c_id].name);
 		}
 	}
 							break;
@@ -377,6 +531,69 @@ void Server::Process_packet(int c_id, char* packet)
 		}
 
 	}break;
+
+	case CS_ALIVE_PLAYER: {
+		CS_ALIVE_PLAYER_PACKET* p = reinterpret_cast<CS_ALIVE_PLAYER_PACKET*>(packet);
+		clients[c_id].anim = IDLE;
+		SC_PLAYER_ALIVE_PACKET alivePacket;
+		alivePacket.size = sizeof(alivePacket);
+		alivePacket.type = SC_PLAYER_ALIVE;
+		alivePacket.id = p->id;
+
+		for (int id : gMap.cl_ids) {
+			clients[id].do_send(&alivePacket);
+		}
+
+	}break;
+
+	case CS_GO_STAGE2: {
+		CS_GO_STAGE2_PACKET* p = reinterpret_cast<CS_GO_STAGE2_PACKET*>(packet);
+		if (c_id != gMap.cl_ids[0]) break;
+
+		for (int id : gMap.cl_ids) {
+			if (clients[id].state != ST_INGAME) continue;
+			SC_GO_STAGE2_PACKET packet;
+			packet.size = sizeof(packet);
+			packet.type = SC_GO_STAGE2;
+			clients[id].do_send(&packet);
+		}
+		
+		gMap.SetStage(GAME_STATE::LOADING);
+
+	}break;
+
+	case CS_CHANGE_COMST: {
+		CS_CHANGE_COMST_PACKET* p = reinterpret_cast<CS_CHANGE_COMST_PACKET*>(packet);
+
+		S2_COM_STATE st = static_cast<S2_COM_STATE>(p->state);
+		
+		gMap.coms[p->comNum] = st;
+
+		std::cout << "[" << c_id << "] -> com" << p->comNum << "을 " << st << "로 변경" << std::endl;
+
+		SC_CHANGE_COMST_PACKET comst;
+		comst.size = sizeof(comst);
+		comst.type = SC_CHANGE_COMST;
+		comst.comNum = p->comNum;
+		comst.state = st;
+
+		for (int id : gMap.cl_ids)
+		{
+			clients[id].do_send(&comst);
+		}
+
+		std::cout << "현재 COM 상태 ";
+		for (int i = 0; i < gMap.coms.size(); ++i)
+		{
+			std::cout << gMap.coms[i] << " ";
+		}
+
+	}break;
+
+	case CS_TEST: {
+		CS_TEST_PACKET* p = reinterpret_cast<CS_TEST_PACKET*>(packet);
+
+	} break;
 
 	default: {
 		std::cout << "정의되지 않은 패킷 - " << packet[1] << "\n" << std::endl;
@@ -426,7 +643,7 @@ void Server::TimerThread()
 				OVER_EXP* overE = new OVER_EXP;
 				overE->comp_type = OP_NPC_MOVE;
 				PostQueuedCompletionStatus(h_iocp, 1, ev.npc_id, &overE->over);
-		
+
 				break;
 			}
 			case EV_NPC_ATTACK: {
@@ -441,6 +658,13 @@ void Server::TimerThread()
 				//PostQueuedCompletionStatus(h_iocp, 1, ev.pl_id, &overE->over);
 			}
 
+			case EV_COOL_DOWN: {
+				OVER_EXP* overE = new OVER_EXP;
+				overE->comp_type = OP_COOL_DOWN;
+				PostQueuedCompletionStatus(h_iocp, 1, ev.npc_id, &overE->over);
+				break;
+			}
+
 
 			default:
 				break;
@@ -450,4 +674,77 @@ void Server::TimerThread()
 		// 비었을 때의 작업
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
+}
+
+void Server::DBThread()
+{
+	using namespace std::chrono;
+	while (true)
+	{
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
+}
+
+bool Server::TryLogin(char* cl_name, char* cl_password)
+{
+	DBConnection* dbConn = m_DBConnectionPool->Pop();
+	dbConn->Unbind();
+
+
+	WCHAR name[20] = {};
+	MultiByteToWideChar(CP_ACP, 0, cl_name, -1, name, 20);
+	SQLLEN nameLen = 0;
+	if (dbConn->BindParam(1, name, &nameLen))
+	{
+
+	}
+
+
+	int outId = 0;
+	SQLLEN outIdlen = 0;
+	dbConn->BindCol(1, &outId, &outIdlen);
+
+	WCHAR outName[20] = {};
+	SQLLEN outNameLen = 0;
+	dbConn->BindCol(2, outName, static_cast<int>(sizeof(outName) / sizeof(outName[0])), &outNameLen);
+
+
+	WCHAR outpassword[20] = {};
+	SQLLEN outpasswordLen = 0;
+	dbConn->BindCol(3, outpassword, static_cast<int>(sizeof(outpassword) / sizeof(outpassword[0])), &outpasswordLen);
+
+
+	if (dbConn->Execute(L"SELECT id, account_id, password FROM [dbo].[User_Account] WHERE account_id = (?)"))
+	{
+
+	}
+
+	bool result = false;
+	if (dbConn->Fetch())
+	{
+		// TODO
+		WCHAR clpassword[20] = {};
+		MultiByteToWideChar(CP_ACP, 0, cl_password, -1, clpassword, 20);
+		if (lstrcmpW(clpassword, outpassword) == 0)
+		{
+			std::cout << "로그인 성공" << std::endl;
+			result = true;
+		}
+		else
+		{
+			std::cout << "비밀번호가 다릅니다." << std::endl;
+			result = false;
+		}
+	}
+	else
+	{
+		std::cout << "없는 아이디" << std::endl;
+		result = false;
+	}
+
+	m_DBConnectionPool->Push(dbConn);
+
+	return result;
+
 }

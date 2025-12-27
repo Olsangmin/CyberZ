@@ -74,12 +74,13 @@ void Session::send_changeAnimation_packet(int c_id, Player_Animation_ST ch_ani)
 	do_send(&p);
 }
 
-void Session::send_change_Character_type_packet(int c_id, Player_Character_Type type)
+void Session::send_change_Character_type_packet(int c_id, Player_Character_Type type, std::string _name)
 {
 	SC_CHANGE_CHARACTER_PACKET p;
 	p.size = sizeof(p);
 	p.type = SC_CHANGE_CHARACTER;
 	p.id = c_id;
+	p.name = _name;
 	p.c_type = type;
 	do_send(&p);
 }
@@ -102,6 +103,15 @@ void Session::send_move_npc_packet(int n_id, DirectX::XMFLOAT3 pos)
 	p.type = SC_MOVE_NPC;
 	p.id = n_id;
 	p.next_pos = pos;
+	do_send(&p);
+}
+
+void Session::send_player_death_packet(int p_id)
+{
+	SC_PLAYER_DEATH_PACKET p;
+	p.size = sizeof(p);
+	p.type = SC_PLAYER_DEATH;
+	p.id = p_id;
 	do_send(&p);
 }
 

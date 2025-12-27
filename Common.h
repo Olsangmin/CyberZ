@@ -5,6 +5,7 @@
 #include <iostream>
 #include <WS2tcpip.h>
 #include <MSWSock.h>
+#include <Windows.h>
 #include <thread>
 #include <vector>
 #include <mutex>

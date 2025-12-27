@@ -9,13 +9,6 @@
 #include "GUI.h"
 
 
-#define MAX_LIGHTS						16 
-#define MAX_MATERIALS					16
-
-#define POINT_LIGHT						1
-#define SPOT_LIGHT						2
-#define DIRECTIONAL_LIGHT				3
-
 struct LIGHT
 {
 	XMFLOAT4							m_xmf4Ambient;
@@ -47,29 +40,41 @@ public:
     CScene();
     ~CScene();
 
-	bool OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
-	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
-
 	virtual void CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void ReleaseObjects();
 	virtual void ReleaseShaderVariables();
+	virtual void ReleaseUploadBuffers();
 
 	virtual void BuildDefaultLightsAndMaterials();
 	virtual void BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int myPlayernum);
-	virtual void ReleaseObjects();
+	void CreateShadowShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+
 
 	ID3D12RootSignature *CreateGraphicsRootSignature(ID3D12Device *pd3dDevice);
 	ID3D12RootSignature *GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
 
+	//Input
 	virtual bool ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer);
-    virtual void AnimateObjects(float fTimeElapsed);
-    virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
+	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
+	virtual bool OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
+	//Onject Update & Animation
+	virtual void AnimateObjects(float fTimeElapsed);
+	
+	// Render
+	void OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList);
+	void OnPreRender(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+	void OtherRender(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
+
+
+	//bounding Box
 	virtual void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	bool CheckObjByObjCollition(CGameObject* pBase, CGameObject* pTarget, XMFLOAT3& out);
 	bool CheckMissionBound(CGameObject* pBase, CMissonOBJ* pTarget);
+	BoundingOrientedBox CalculateBoundingBox();
 
-	virtual void ReleaseUploadBuffers();
 public:
 	// @@서버코드@@서버코드@@
 	void InitNetwork();
@@ -144,6 +149,7 @@ public:
 	
 	CUI*								m_pUI = NULL;
 	bool								m_bUIOn = true;
+	bool								m_bCaps = false;
 
 	bool								m_bChangeScene = false;
 	bool								Missionflag = false;
@@ -156,8 +162,15 @@ public:
 	ID3D12Resource*						m_pd3dcbLights = NULL;
 	LIGHTS*								m_pcbMappedLights = NULL;
 
-
 	DWORD								m_dwLastDirection;
+
+	CDepthRenderShader*					m_pDepthRenderShader = NULL;
+
+	int									m_nFloorObj = 0;
+	CGameObject**						m_ppFloorObj = NULL;
+
+	int m_nParticleObj = 0;
+	CParticle** m_ppParticleObj = NULL;
 
 public:
 	virtual bool AllPlayerReady() { return false; }

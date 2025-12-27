@@ -52,6 +52,8 @@ struct CELL
 };
 
 
+enum GAME_STATE {NOGAME, LOADING, STAGE1, STAGE2};
+
 class GameMap
 {
 public:
@@ -67,20 +69,27 @@ public:
 
     void initializeMap();
 
+    void ChangeToMap2();
+
+    
     void StartGame();
     void EndGame() { InGame = false; }
     void PlayGame() { 
+        SetStage(GAME_STATE::STAGE1);
         InGame = true; 
         Start_time = std::chrono::steady_clock::now();
         End_time = Start_time + std::chrono::seconds(10);
-
-        
     }
+    void SetStage(GAME_STATE state) { game_state = state; }
+    GAME_STATE GetStage() { return game_state; }
     bool is_InGame() const { return InGame; }
 
     void printMap() const;
 
     void Update(int tick);
+
+    void UpdateS1();
+    void UpdateS2();
 
     CELL& GetCurrentCell(DirectX::XMFLOAT3 in_pos);
 
@@ -187,6 +196,10 @@ public:
     }
 
     std::array<NPC, NUM_NPC> npcs;
+    NPC BossNpc;
+
+
+    std::array<S2_COM_STATE, 5> coms = { TURNOFF };
 
     std::vector<int> cl_ids;
 
@@ -194,7 +207,7 @@ public:
     {
         int num{};
         int x = static_cast<int>((pos.x + 0.5f) / (mapWidth / 3));
-        int z = static_cast<int>((pos.z + 0.5f) / (mapWidth / 3));
+        int z = static_cast<int>((pos.z + 0.5f) / (mapDepth / 3));
         
         switch (z)
         {
@@ -211,7 +224,7 @@ public:
         }
     }
 
-
+    bool cool_down{ false };
     std::vector<std::vector<CELL>> cells;
 private:
     float mapWidth, mapDepth;
@@ -227,6 +240,7 @@ private:
     std::chrono::steady_clock::time_point End_time;
 
     std::chrono::duration<double> Remain_time;
+    GAME_STATE game_state;
 };
 
 

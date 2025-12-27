@@ -1,5 +1,13 @@
 #pragma once
 
+#include "Button.h"
+#include "TextInput.h"
+#include "TagButton.h"
+#include "ProgressBar.h"
+
+#include "Machine.h"
+
+
 class CUI
 {
 public:
@@ -45,19 +53,26 @@ public:
 
 	bool m_bcard = false;
 
+	int				m_nButton = 0;
+	CButton**		m_ppButton = NULL;
+
+	int				m_nTextInputBox = 0;
+	CTextInput**	m_ppTextInputBox = NULL;
+
 public:
 	void CreateDirect2DDevice(HWND m_hWnd, ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12CommandQueue* m_pd3dCommandQueue, ID3D12Resource* m_ppd3dSwapChainBackBuffers[m_nSwapChainBuffers]);
-	void LoadUIImage(const wchar_t* filename, IWICImagingFactory* pwicImagingFactory, ID2D1Effect* pd2dfxBitmapSource);
 	virtual void DrawUI(UINT m_nSwapChainBufferIndex);
+
+	void LoadUIImage(const wchar_t* filename, IWICImagingFactory* pwicImagingFactory, ID2D1Effect* pd2dfxBitmapSource);
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class CFirstSceneUI : public CUI
+class CPrepareRoomSceneUI : public CUI
 {
 public:
-	CFirstSceneUI() {}
-	~CFirstSceneUI() {}
+	CPrepareRoomSceneUI() {}
+	~CPrepareRoomSceneUI() {}
 
 public:
 
@@ -69,6 +84,10 @@ public:
 
 	void DrawUI(UINT m_nSwapChainBufferIndex);
 	void UISet(UINT m_nSwapChainBufferIndex);
+
+	
+
+	std::wstring m_text[3];
 
 	bool m_bPlayerOn[3] = {false};
 	void CheckEnter();
@@ -90,6 +109,7 @@ public:
 
 	void MissionText();
 	void MissionProgressBar(int MissionNum);
+	void kyecardUI();
 	void ItemUI();
 	void StaminaBarUI();
 
@@ -99,22 +119,48 @@ public:
 
 };
 
+
+
 class CSecondRoundSceneUI : public CUI
 {
 public:
-	CSecondRoundSceneUI() {}
-	~CSecondRoundSceneUI() {}
+	CSecondRoundSceneUI();
+	~CSecondRoundSceneUI();
 
 public:
 
 	float		m_fStaminaRange = 100.f;
 	float		m_fMaxStamina = 100.f;
 	bool		m_bStaminaBarOn = true;
+	bool		m_bMyOn = false;
 
-	//void MissionText();
-	//void MissionProgressBar(int MissionNum);
+
+	float		m_fMissionRange[3] = { 0 };
+
+	int					m_ntagButton = 0;
+	CTagButton			**m_ppTagButton = NULL;
+
+	int					m_nProgressBar = 0;
+	CProgressBar**		m_ppProgressBar = NULL;
+
+	int					m_nMachine = 0;
+	CMachine**			m_ppMachine = NULL;
+
 	void ItemUI();
 	void StaminaBarUI();
+
+	void BossUI();
+	void MachineUI();
+	void MissionUI();
+	void SetProgress(int progressNum, float figure) { m_fMissionRange[progressNum] = m_fMissionRange[progressNum] + figure; }
+
+
+public:
+	void RecMove(D2D1_RECT_F mssionBox);
+	float dx = 2, dy = 2;
+
+	float m_fRecSizeX = 85;
+	float m_fRecSizeY = 85;
 
 public:
 	void DrawUI(UINT m_nSwapChainBufferIndex);
@@ -123,16 +169,28 @@ public:
 };
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///
+enum IDnPW_INPUT_STATE
+{
+	EMPTY,
+	ALL_CORRET,
+	ID_ERROR,
+	PW_ERROR,
+};
 
 class CStartSceneUI : public CUI
 {
 public:
-	CStartSceneUI() {}
+	CStartSceneUI();
 	~CStartSceneUI() {}
 
+	std::wstring			m_ID = L"testID";
+	std::wstring			m_PW = L"testPW";
+
+	IDnPW_INPUT_STATE					m_CheckInfo = EMPTY;
 public:
 	void DrawUI(UINT m_nSwapChainBufferIndex);
-	void UISet(UINT m_nSwapChainBufferIndex);
+	void UISet_Small(UINT m_nSwapChainBufferIndex);
+	void UISet_Full(UINT m_nSwapChainBufferIndex);
 
 
 };

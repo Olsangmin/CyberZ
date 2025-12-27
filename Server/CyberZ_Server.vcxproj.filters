@@ -33,6 +33,12 @@
     <ClCompile Include="GameMap.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="DBConnection.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="DBConnectionPool.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Object.h">
@@ -57,6 +63,12 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="GameMap.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="DBConnection.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="DBConnectionPool.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

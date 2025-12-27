@@ -7,6 +7,8 @@
 #include "Object.h"
 #include "Camera.h"
 
+struct LIGHT;
+
 class CShader
 {
 public:
@@ -31,13 +33,13 @@ public:
 	D3D12_SHADER_BYTECODE CompileShaderFromFile(WCHAR *pszFileName, LPCSTR pszShaderName, LPCSTR pszShaderProfile, ID3DBlob **ppd3dShaderBlob);
 	D3D12_SHADER_BYTECODE ReadCompiledShaderFromFile(WCHAR *pszFileName, ID3DBlob **ppd3dShaderBlob=NULL);
 
-	//virtual void CreateShader(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
 	virtual void CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, D3D12_PRIMITIVE_TOPOLOGY_TYPE d3dPrimitiveTopologyType);
 	virtual void CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature, UINT nRenderTargets, DXGI_FORMAT* pdxgiRtvFormats, DXGI_FORMAT dxgiDsvFormat);
 
 
 	virtual ID3D12RootSignature* CreateGraphicsRootSignature(ID3D12Device* pd3dDevice) { return(NULL); }
 	ID3D12RootSignature* GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
+
 
 	virtual void CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList) { }
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList) { }
@@ -58,6 +60,7 @@ public:
 protected:
 	ID3DBlob							*m_pd3dVertexShaderBlob = NULL;
 	ID3DBlob							*m_pd3dPixelShaderBlob = NULL;
+	ID3DBlob							*m_pd3dGeometryShaderBlob = NULL;
 
 	ID3D12PipelineState					*m_pd3dPipelineState = NULL;
 	ID3D12RootSignature					*m_pd3dGraphicsRootSignature = NULL;
@@ -180,6 +183,25 @@ public:
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+class ParticleShader : public CStandardShader
+{
+public:
+	ParticleShader();
+	virtual ~ParticleShader();
+
+	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout();
+	virtual D3D12_RASTERIZER_DESC CreateRasterizerState();
+	virtual D3D12_DEPTH_STENCIL_DESC CreateDepthStencilState();
+	virtual D3D12_SHADER_BYTECODE CreateVertexShader();
+	virtual D3D12_SHADER_BYTECODE CreatePixelShader();
+
+	virtual void CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 class CBoundingBoxShader : public CStandardShader
 {
 public:
@@ -263,3 +285,84 @@ protected:
 
 };
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+struct TOOBJECTSPACEINFO
+{
+	XMFLOAT4X4						m_xmf4x4ToTexture;//조명좌표계로 바꾸는 행렬
+	XMFLOAT4						m_xmf4Position;//조명위치
+};
+
+struct TOLIGHTSPACES
+{
+	TOOBJECTSPACEINFO				ToLightSpaces[MAX_LIGHTS];
+};
+
+class CDepthRenderShader : public CStandardShader
+{
+public:
+	CDepthRenderShader() {}
+	CDepthRenderShader(CGameObject** ppObjects, CMissonOBJ** ppMission, LIGHT* pLights, int nObject, int nMissionObj);
+	virtual ~CDepthRenderShader();
+
+	void SetShadowObject(CPlayer** ppPlayer, int nPlayer, CGameObject** ppEnemy, int nEnemy, CGameObject** ppFloor, int nFloor);
+
+	virtual D3D12_DEPTH_STENCIL_DESC CreateDepthStencilState();
+	virtual D3D12_RASTERIZER_DESC CreateRasterizerState();
+
+	virtual D3D12_SHADER_BYTECODE CreatePixelShader();
+
+	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void UpdateTextureShader(ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void ReleaseShaderVariables();
+
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext = NULL);
+	virtual void ReleaseObjects();
+
+	void PrepareShadowMap(BoundingOrientedBox* pBoundingBoxs, ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+
+protected:
+	CTexture* m_pDepthFromLightTexture = NULL;
+
+	CCamera* m_ppDepthRenderCameras[MAX_DEPTH_TEXTURES];
+
+	ID3D12DescriptorHeap* m_pd3dRtvDescriptorHeap = NULL;
+	D3D12_CPU_DESCRIPTOR_HANDLE		m_pd3dRtvCPUDescriptorHandles[MAX_DEPTH_TEXTURES];
+
+	ID3D12DescriptorHeap* m_pd3dDsvDescriptorHeap = NULL;
+	ID3D12Resource* m_pd3dDepthBuffer = NULL;
+	D3D12_CPU_DESCRIPTOR_HANDLE		m_d3dDsvDescriptorCPUHandle;
+
+	XMMATRIX						m_xmProjectionToTexture;
+
+public:
+	CTexture* GetDepthTexture() { return(m_pDepthFromLightTexture); }
+	ID3D12Resource* GetDepthTextureResource(UINT nIndex) { return(m_pDepthFromLightTexture->GetResource(nIndex)); }
+
+	CGameObject**			m_ppObjects = NULL;
+	int						m_nObject = 5;
+
+	CMissonOBJ**			m_ppMissionObj = NULL;
+	int						m_nMissionObject = 0;
+
+	int						m_nFloorObj = 0;
+	CGameObject**			m_ppFloorObj = NULL;
+
+	int						m_nEnemy = 0;
+	CGameObject**			m_ppEnemy = NULL;
+
+	CPlayer**				m_ppPlayer = NULL;				// 모든 플레이어 정보
+	int						m_nPlayer;						// 플레이어 갯수
+
+
+protected:
+	LIGHT* m_pLights = NULL;
+
+	TOLIGHTSPACES* ToLightSpaces;
+
+	ID3D12Resource* m_pd3dcbToLightSpaces = NULL;
+	TOLIGHTSPACES* m_pcbMappedToLightSpaces = NULL;
+};

@@ -131,6 +131,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DBConnection.cpp" />
+    <ClCompile Include="DBConnectionPool.cpp" />
     <ClCompile Include="GameMap.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NPC.cpp" />
@@ -140,6 +142,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Protocol.h" />
+    <ClInclude Include="DBConnection.h" />
+    <ClInclude Include="DBConnectionPool.h" />
     <ClInclude Include="GameMap.h" />
     <ClInclude Include="Node.h" />
     <ClInclude Include="NPC.h" />

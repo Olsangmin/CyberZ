@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "CyborgPlayer.h"
 
-CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, CLoadedModelInfo* pModel, DWORD dCamera)
+CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, CLoadedModelInfo* pModel, DWORD dCamera, int nMaxAni)
 {
 	m_pCamera = ChangeCamera(dCamera, 0.0f);
 
@@ -9,10 +9,10 @@ CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 
 	SetChild(pPlayerModel->m_pModelRootObject, true);
 
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, MAX_ANIMATION_TYPE, pPlayerModel);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nMaxAni, pPlayerModel);
 
 	// Animation Setting
-	for (int i = 0; i < MAX_ANIMATION_TYPE; ++i)
+	for (int i = 0; i < nMaxAni; ++i)
 		m_pSkinnedAnimationController->SetTrackAnimationSet(i, i);
 
 	// Default animation setting
@@ -22,17 +22,23 @@ CyborgPlayer::CyborgPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* 
 
 	// Sound setting
 	m_pSkinnedAnimationController->SetCallbackKeys(1, 2);
+	m_pSkinnedAnimationController->SetCallbackKeys(2, 2);
 #ifdef _WITH_SOUND_RESOURCE
 	m_pSkinnedAnimationController->SetCallbackKey(0, 0.1f, _T("Footstep01"));
 	m_pSkinnedAnimationController->SetCallbackKey(1, 0.5f, _T("Footstep02"));
 	m_pSkinnedAnimationController->SetCallbackKey(2, 0.9f, _T("Footstep03"));
 #else
-	//m_pSkinnedAnimationController->SetCallbackKey(1, 0, 0.2f, _T("Sound/Footstep01.wav"));
-	//m_pSkinnedAnimationController->SetCallbackKey(1, 1, 0.5f, _T("Sound/Footstep02.wav"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 2, 0.39f, _T("Sound/Footstep03.wav"));
+	//m_pSkinnedAnimationController->SetCallbackKey(1, 0, 0.3f, _T("Sound/Footstep01.wav"));
+	//m_pSkinnedAnimationController->SetCallbackKey(1, 1, 0.8f, _T("Sound/Footstep02.wav"));	
+
+	//m_pSkinnedAnimationController->SetCallbackKey(2, 0, 0.15f, _T("Sound/Footstep01.wav"));
+	//m_pSkinnedAnimationController->SetCallbackKey(2, 1, 0.5f, _T("Sound/Footstep02.wav"));
+		//m_pSkinnedAnimationController->SetCallbackKey(1, 2, 0.39f, _T("Sound/Footstep03.wav"));
 #endif
-	CAnimationCallbackHandler* pAnimationCallbackHandler = new CSoundCallbackHandler();
-	m_pSkinnedAnimationController->SetAnimationCallbackHandler(1, pAnimationCallbackHandler);
+	//CAnimationCallbackHandler* pAnimationCallbackHandler = new CSoundCallbackHandler();
+	////CAnimationCallbackHandler* pAnimationCallbackHandler1 = new CSoundCallbackHandler();
+	//m_pSkinnedAnimationController->SetAnimationCallbackHandler(1, pAnimationCallbackHandler);
+	//m_pSkinnedAnimationController->SetAnimationCallbackHandler(2, pAnimationCallbackHandler);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -283,6 +289,16 @@ void CyborgPlayer::Update(float fTimeElapsed)
 	SetBuffer(&Upacket, Upacket.size);
 }
 
+void CyborgPlayer::Release()
+{
+	CPlayer::Release();
+	if (m_ppMissionObjects) {
+		for (int i = 0; i < m_nMissionObject; ++i)
+			m_ppMissionObjects[i]->Release();
+		//delete[] m_ppMissionObjects;
+	}
+}
+
 void CyborgPlayer::UpdateBB()
 {
 	if (m_pSibling)m_pSibling->UpdateBoundingBox(m_xmf3Velocity);
@@ -426,7 +442,7 @@ void CyborgPlayer::MissionCheck(int num)
 void CyborgPlayer::ExhaustionStaminer()
 {
 	if (m_bIsRun)
-		if(m_fStaminer>0)m_fStaminer-=0.2f;
+		if(m_fStaminer>0)m_fStaminer-=0.1f;
 	if (m_bIsCreep)
 		if (m_fStaminer > 0)m_fStaminer -= 0.1f;
 	if (m_fStaminer <= 0.0f) {
@@ -466,6 +482,12 @@ void CyborgPlayer::SetCreepFlag()
 
 void CyborgPlayer::SetJump()
 {
+}
+
+void CyborgPlayer::SetCrawl(bool IsCrawl)
+{
+	m_bIsCrawl = IsCrawl;
+	m_xmBoundingBox = BoundingOrientedBox(GetPosition(), XMFLOAT3(0.3f, 0.3f, 0.3f), XMFLOAT4(0.f, 0.f, 0.f, 1.0f));;
 }
 
 void CyborgPlayer::IsIdle()

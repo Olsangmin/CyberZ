@@ -7,7 +7,9 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	CScene::BuildObjects(pd3dDevice, pd3dCommandList, myPlayernum);
 
 
-	m_pUI = new CFirstSceneUI();
+
+
+	m_pUI = new CPrepareRoomSceneUI();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -46,6 +48,15 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	if (pMiddleContainer) delete pMiddleContainer;
 
 
+	// Floor
+	m_nFloorObj = 1;
+	m_ppFloorObj = new CGameObject * [m_nFloorObj];
+
+	CLoadedModelInfo* pFloormodel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/ObjModel/StandardFloor.bin", NULL);
+	m_ppFloorObj[0] = new CFloorObj(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pFloormodel);
+	m_ppFloorObj[0]->SetScale(3.f, 0.f, 3.f);
+	m_ppFloorObj[0]->SetPosition(-30, 0.2, -10);
+	if (pFloormodel) delete pFloormodel;
 
 	//===============================//
 	// Player
@@ -77,6 +88,14 @@ void CPrepareRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	m_pMyPlayer = m_ppPlayer[4];
 	m_pMyPlayer->ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+
+#ifdef USE_NETWORK
+	CS_ENTER_ROOM_PACKET p;
+	p.size = sizeof(p);
+	p.type = CS_ENTER_ROOM;
+	send_packet(&p);
+#endif // USE_NETWORK
+
 }
 
 bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR* pKeysBuffer)
@@ -94,7 +113,7 @@ bool CPrepareRoomScene::ProcessInput(HWND m_hWnd, POINT m_ptOldCursorPos, UCHAR*
 		SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
 
-	if (pKeysBuffer['9'] & 0xF0) m_pMyPlayer->m_bUnable = true;
+	if (pKeysBuffer['9'] & 0xF0) m_pMyPlayer->m_bUnable = true; 
 	if (pKeysBuffer['0'] & 0xF0) m_pMyPlayer->m_bUnable = false;
 
 	//if (pKeysBuffer['4'] & 0xF0) ChangeModel(0, Evan);
@@ -201,31 +220,47 @@ bool CPrepareRoomScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, 
 
 		default:
 			break;
-
-
 		}
 
 	}
 	}
-
-
 	CScene::OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 	return false;
 }
 
 void CPrepareRoomScene::ReleaseObjects()
 {
+	if (m_ppFloorObj)
+	{
+		for (int i = 0; i < m_nFloorObj; i++) if (m_ppFloorObj[i])
+		{
+			m_ppFloorObj[i]->ReleaseUploadBuffers();
+			m_ppFloorObj[i]->Release();
+		}
+		delete[] m_ppFloorObj;
+	}
 	CScene::ReleaseObjects();
 }
 
 void CPrepareRoomScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	CScene::Render(pd3dCommandList, pCamera);
+	for (int i = 0; i < m_nFloorObj; i++)
+	{
+		if (m_ppFloorObj[i])
+		{
+			if (!m_ppFloorObj[i]->m_pSkinnedAnimationController) m_ppFloorObj[i]->UpdateTransform(NULL);
+			m_ppFloorObj[i]->Animate(m_fElapsedTime);
+			m_ppFloorObj[i]->Render(pd3dCommandList, pCamera);
+		}
+	}
 }
 
 void CPrepareRoomScene::ReleaseUploadBuffers()
 {
 	CScene::ReleaseUploadBuffers();
+	for (int i = 0; i < m_nFloorObj; i++) m_ppFloorObj[i]->ReleaseUploadBuffers();
+
 
 }
 
@@ -297,21 +332,21 @@ void CPrepareRoomScene::ProcessPacket(char* p)
 {
 	switch (p[1])
 	{
-	case SC_LOGIN_INFO:
-	{
-		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
-		my_id = packet->id;
-		cout << "My ID is " << my_id << " !" << endl;
-		reinterpret_cast<CFirstSceneUI*>(m_pUI)->m_bPlayerOn[my_id] = true;
+	//case SC_LOGIN_INFO:
+	//{
+	//	/*SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(p);
+	//	my_id = packet->id;
+	//	cout << "My ID is " << my_id << " !" << endl;
+	//	reinterpret_cast<CFirstSceneUI*>(m_pUI)->m_bPlayerOn[my_id] = true;*/
 
-	} break;
+	//} break;
 
 	case SC_CHANGE_CHARACTER: {
 		SC_CHANGE_CHARACTER_PACKET* packet = reinterpret_cast<SC_CHANGE_CHARACTER_PACKET*>(p);
 		cout << packet->id << " -> " << packet->c_type << endl;
 		ChangeModel(packet->id, packet->c_type);
-		reinterpret_cast<CFirstSceneUI*>(m_pUI)->m_bPlayerOn[packet->id] = true;
-
+		reinterpret_cast<CPrepareRoomSceneUI*>(m_pUI)->m_bPlayerOn[packet->id] = true;
+		reinterpret_cast<CPrepareRoomSceneUI*>(m_pUI)->m_text[packet->id] = string_to_wstring(packet->name);
 	}break;
 
 	case SC_GAME_START: {

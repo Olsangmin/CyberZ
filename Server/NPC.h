@@ -2,6 +2,8 @@
 #include "Object.h"
 #include "Timer.h"
 #include <queue>
+#include <DirectXCollision.h>
+
 
 enum NPC_STATE {NPC_FREE, NPC_INGAME};
 
@@ -23,6 +25,8 @@ public:
 	void Attack();
 
 	void PathClear();
+	
+	void UpdateBB();
 
 public:
 	NPC_STATE n_state;
@@ -38,5 +42,7 @@ public:
 
 	bool IsAttack = false;
 	std::queue<DirectX::XMFLOAT3> n_path;
+
+	DirectX::BoundingOrientedBox boundingBox;
 };
 

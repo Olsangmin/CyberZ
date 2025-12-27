@@ -148,6 +148,7 @@ D3D12_SHADER_RESOURCE_VIEW_DESC CTexture::GetShaderResourceViewDesc(int nIndex)
 	case RESOURCE_TEXTURE2D: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE2D)(d3dResourceDesc.DepthOrArraySize == 1)
 	case RESOURCE_TEXTURE2D_ARRAY: //[]
 		d3dShaderResourceViewDesc.Format = d3dResourceDesc.Format;
+		if (d3dResourceDesc.Format == DXGI_FORMAT_D32_FLOAT) d3dShaderResourceViewDesc.Format = DXGI_FORMAT_R32_FLOAT;
 		d3dShaderResourceViewDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 		d3dShaderResourceViewDesc.Texture2D.MipLevels = -1;
 		d3dShaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
@@ -237,16 +238,19 @@ CShader* CMaterial::m_pBoundingBoxShader = NULL;
 
 void CMaterial::PrepareShaders(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
+	DXGI_FORMAT pdxgiRtvFormats[5] = { DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_FORMAT_R16G16B16A16_UNORM, DXGI_FORMAT_R16G16B16A16_UNORM, DXGI_FORMAT_R16G16B16A16_UNORM, DXGI_FORMAT_R32_FLOAT };
+
+
 	m_pStandardShader = new CStandardShader();
-	m_pStandardShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_R8G8B8A8_UNORM);
+	m_pStandardShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 5, pdxgiRtvFormats, DXGI_FORMAT_R32_FLOAT);
 	m_pStandardShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	m_pSkinnedAnimationShader = new CSkinnedAnimationStandardShader();
-	m_pSkinnedAnimationShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_R8G8B8A8_UNORM);
+	m_pSkinnedAnimationShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 5, pdxgiRtvFormats, DXGI_FORMAT_R32_FLOAT);
 	m_pSkinnedAnimationShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	m_pBoundingBoxShader = new CBoundingBoxShader();
-	m_pBoundingBoxShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_R8G8B8A8_UNORM);
+	m_pBoundingBoxShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_R32_FLOAT);
 
 }
 
@@ -345,7 +349,7 @@ CGameObject::~CGameObject()
 {
 	if (m_pMesh) m_pMesh->Release();
 
-	if (m_nMaterials > 0)
+	if (m_nMaterials > 0&&m_ppMaterials)
 	{
 		for (int i = 0; i < m_nMaterials; i++)
 		{
@@ -408,7 +412,7 @@ void CGameObject::UpdateBoundingBox(XMFLOAT3 xmf3NextPos)
 		xmf4x4World._41 += xmf3NextPos.x * 0.1;
 		xmf4x4World._43 += xmf3NextPos.z * 0.1;
 		m_pMesh->m_xmBoundingBox.Transform(m_xmBoundingBox, XMLoadFloat4x4(&xmf4x4World));
-		XMStoreFloat4(&m_xmBoundingBox.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmBoundingBox.Orientation)));
+		//XMStoreFloat4(&m_xmBoundingBox.Orientation, XMQuaternionNormalize(XMLoadFloat4(&m_xmBoundingBox.Orientation)));
 		MoveBBToParent(this);
 		return;
 	}
@@ -582,7 +586,9 @@ void CGameObject::ReleaseShaderVariables()
 
 void CGameObject::ReleaseUploadBuffers()
 {
-	if (m_pMesh) m_pMesh->ReleaseUploadBuffers();
+	if (m_pMesh) {
+		m_pMesh->ReleaseUploadBuffers();
+	}
 
 	for (int i = 0; i < m_nMaterials; i++)
 	{
@@ -1114,8 +1120,9 @@ CHeightMapTerrain::CHeightMapTerrain(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	pTerrainDetailTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Terrain/Detail_Texture_8.dds", RESOURCE_TEXTURE2D, 0);
 
 	CTerrainShader* pTerrainShader = new CTerrainShader();
-	pTerrainShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_R8G8B8A8_UNORM);
+	pTerrainShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_D32_FLOAT);
 	pTerrainShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
 
 	CScene::CreateShaderResourceViews(pd3dDevice, pTerrainBaseTexture, 0, 13);
 	CScene::CreateShaderResourceViews(pd3dDevice, pTerrainDetailTexture, 0, 14);
@@ -1146,7 +1153,7 @@ CSkyBox::CSkyBox(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	pSkyBoxTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, pszFileName, RESOURCE_TEXTURE_CUBE, 0);
 
 	CSkyBoxShader* pSkyBoxShader = new CSkyBoxShader();
-	pSkyBoxShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_R8G8B8A8_UNORM);
+	pSkyBoxShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature, 1, NULL, DXGI_FORMAT_D32_FLOAT);
 	pSkyBoxShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	CScene::CreateShaderResourceViews(pd3dDevice, pSkyBoxTexture, 0, 10);
@@ -1238,19 +1245,39 @@ void CRobotObject::Update(float fTimeElapsed)
 void CRobotObject::MoveToTarget()
 {
 	XMFLOAT3 xmfVel = Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()));
-	float fLength = xmfVel.x * xmfVel.x + xmfVel.z * xmfVel.z;
+	float fLength = sqrt(xmfVel.x * xmfVel.x + xmfVel.z * xmfVel.z);
 
-	if (fLength < 1.0f)
+	if (fLength < 1.0f) {
 		m_xmf3Target = XMFLOAT3(0, 0, 0);
+	}
+	
 
 
 
-	Vector3::IsZero(m_xmf3Target) ?
-		m_pasNextAni = IDLE : RotateDirection(20.f, m_xmf3Target), m_pasNextAni = WALK;
+	/*Vector3::IsZero(m_xmf3Target) ?
+		m_pasNextAni = IDLE : RotateDirection(5.f, m_xmf3Target), m_pasNextAni = WALK;
 	if (!Vector3::IsZero(m_xmf3Target))
 		Vector3::IsZero(Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()))) ?
-		m_pasNextAni = IDLE : MoveForward(0.34f), m_pasNextAni = WALK;
-	else { m_pasNextAni = IDLE; }
+		m_pasNextAni = IDLE : MoveForward(0.4f), m_pasNextAni = WALK;
+	else { m_pasNextAni = IDLE; }*/
+
+
+	if (Vector3::IsZero(m_xmf3Target)) {
+		m_pasNextAni = IDLE;
+	}
+	else  {
+		if (Vector3::IsZero(Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition())))) {
+			m_pasNextAni = IDLE;
+		}
+		else {
+			RotateDirection(10.f, m_xmf3Target);
+			MoveForward(0.33f);
+			m_pasNextAni = WALK;
+		}
+		// 
+		m_pasNextAni = WALK;
+	}
+
 
 }
 
@@ -1260,7 +1287,7 @@ bool CRobotObject::RotateDirection(float fAngle, XMFLOAT3& xmf3Target)
 	if (Vector3::IsZero(xmfVel))xmf3Target = XMFLOAT3(0.f, 0.f, 0.f);
 
 	float fCurrentAngle = Vector3::Angle(Vector3::Normalize(xmfVel), GetLook());
-	if (fCurrentAngle > 1) {
+	if (fCurrentAngle > 5.f) {
 
 		XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&GetUp()), XMConvertToRadians(fAngle));
 		XMFLOAT3 xmf3Look = Vector3::TransformNormal(GetLook(), xmmtxRotate);
@@ -1416,6 +1443,11 @@ void CMissonOBJ::SetPosition(float x, float y, float z)
 
 }
 
+void CMissonOBJ::SetPosition(XMFLOAT3 xmf3Position)
+{
+	SetPosition(xmf3Position.x, xmf3Position.y, xmf3Position.z);
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -1450,6 +1482,9 @@ CBossRobotObject::CBossRobotObject(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 	// Default animation setting
 	m_pSkinnedAnimationController->SetAllTrackDisable();
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	m_pSkinnedAnimationController->SetTrackSpeed(WALK, 0.5f);
+	m_pSkinnedAnimationController->SetTrackSpeed(RUN, 0.5f);
+	m_pSkinnedAnimationController->SetTrackSpeed(HIT, 0.7f);
 }
 
 CBossRobotObject::~CBossRobotObject()
@@ -1461,7 +1496,9 @@ void CBossRobotObject::Update(float fTimeElapsed)
 	CGameObject::Update(fTimeElapsed);
 	if (m_pSkinnedAnimationController) {
 		AnimationBlending(m_pasCurrentAni, m_pasNextAni);
-		IsAttackP() ? 0 : MoveToTarget(), IsMove(m_pasNextAni);
+		if (!IsDiying()) {
+			IsAttackP(CREEP) ? 0 : MoveToTarget(), IsMove(m_pasNextAni);
+		}
 
 	}
 }
@@ -1469,19 +1506,29 @@ void CBossRobotObject::Update(float fTimeElapsed)
 void CBossRobotObject::MoveToTarget()
 {
 	XMFLOAT3 xmfVel = Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()));
-	float fLength = xmfVel.x * xmfVel.x + xmfVel.z * xmfVel.z;
+	float fLength = sqrt(xmfVel.x * xmfVel.x + xmfVel.z * xmfVel.z);
 
-	if (fLength < 1.0f)
-		m_xmf3Target = XMFLOAT3(0, 0, 0);
+	if (fLength < 1.f) {
+		m_xmf3Target = XMFLOAT3(0.f, 0.f, 0.f);
+	}
 
 
 
-	Vector3::IsZero(m_xmf3Target) ?
-		m_pasNextAni = IDLE : RotateDirection(20.f), m_pasNextAni = WALK;
-	if (!Vector3::IsZero(m_xmf3Target))
-		Vector3::IsZero(Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition()))) ?
-		m_pasNextAni = IDLE : MoveForward(0.34f), m_pasNextAni = WALK;
-	else { m_pasNextAni = IDLE; }
+	if (Vector3::IsZero(m_xmf3Target)) {
+		m_pasNextAni = IDLE;
+	}
+	else {
+		if (Vector3::IsZero(Vector3::XMVectorToFloat3(XMLoadFloat3(&m_xmf3Target) - XMLoadFloat3(&GetPosition())))) {
+			m_pasNextAni = IDLE;
+		}
+		else {
+			RotateDirection(10.f);
+			MoveForward(0.165f);
+			m_pasNextAni = WALK;
+		}
+		// 
+		m_pasNextAni = WALK;
+	}
 }
 
 void CBossRobotObject::RotateDirection(float fAngle)
@@ -1491,7 +1538,7 @@ void CBossRobotObject::RotateDirection(float fAngle)
 
 	float fCurrentAngle = Vector3::Angle(Vector3::Normalize(xmfVel), GetLook());
 
-	if (fCurrentAngle > 0) {
+	if (fCurrentAngle > 5.f) {
 
 		XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&GetUp()), XMConvertToRadians(fAngle));
 		XMFLOAT3 xmf3Look = Vector3::TransformNormal(GetLook(), xmmtxRotate);
@@ -1529,21 +1576,21 @@ void CBossRobotObject::IsMove(Player_Animation_ST CheckAni)
 	}
 }
 
-bool CBossRobotObject::IsAttackP()
+bool CBossRobotObject::IsAttackP(Player_Animation_ST status)
 {
+	Player_Animation_ST Status = Player_Animation_ST(int(status) + AttackType);
 	if (m_bAttackStatus == true) {
-		if (m_pasCurrentAni != RUN && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
-			m_pasNextAni = RUN;
+		if (m_pasCurrentAni != Status && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+			m_pasNextAni = Status;
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
-			m_pSkinnedAnimationController->SetTrackType(RUN, ANIMATION_TYPE_ONCE);
-			m_pSkinnedAnimationController->SetTrackSpeed(0, 0.3f);
+			m_pSkinnedAnimationController->SetTrackType(Status, ANIMATION_TYPE_ONCE);
 		}
-		CAnimationTrack AnimationTrack = m_pSkinnedAnimationController->m_pAnimationTracks[RUN];
+		CAnimationTrack AnimationTrack = m_pSkinnedAnimationController->m_pAnimationTracks[Status];
 		CAnimationSet* pAnimationSet = m_pSkinnedAnimationController->m_pAnimationSets->m_pAnimationSets[AnimationTrack.m_nAnimationSet];
 		float fTrackPosition = AnimationTrack.m_fPosition;
 		float fTrackLength = pAnimationSet->m_fLength;
 		if (fTrackPosition >= fTrackLength) {
-			m_pSkinnedAnimationController->m_pAnimationTracks[RUN].m_fPosition = 0;
+			m_pSkinnedAnimationController->m_pAnimationTracks[Status].m_fPosition = 0;
 			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
 			m_pasNextAni = IDLE;
 			m_bAttackStatus = false;
@@ -1552,4 +1599,64 @@ bool CBossRobotObject::IsAttackP()
 		return true;
 	}
 	return false;
+}
+
+bool CBossRobotObject::IsDiying()
+{
+	if (m_bDiyingStatus == true) {
+		if (m_pasCurrentAni != HIT && m_pSkinnedAnimationController->m_fBlendingTime >= 1.0f) {
+			m_pasNextAni = HIT;
+			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			m_pSkinnedAnimationController->SetTrackType(HIT, ANIMATION_TYPE_ONCE);
+		}
+		CAnimationTrack AnimationTrack = m_pSkinnedAnimationController->m_pAnimationTracks[HIT];
+		CAnimationSet* pAnimationSet = m_pSkinnedAnimationController->m_pAnimationSets->m_pAnimationSets[AnimationTrack.m_nAnimationSet];
+		float fTrackPosition = AnimationTrack.m_fPosition;
+		float fTrackLength = pAnimationSet->m_fLength;
+		if (fTrackPosition >= fTrackLength-0.4f) {
+			//m_pSkinnedAnimationController->m_pAnimationTracks[HIT].m_fPosition = fTrackLength-0.4f;
+			m_pSkinnedAnimationController->m_fBlendingTime = 0.0f;
+			m_pasNextAni = NONE;
+			return true;
+		}
+		return true;
+	}
+	return false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+CParticle::CParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Pos) : CGameObject(1)
+{
+	ParticleMesh* pParticleMesh = new ParticleMesh(pd3dDevice, pd3dCommandList, xmf3Pos);
+	SetMesh(pParticleMesh);
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CTexture* pParticleTexture = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
+	pParticleTexture->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"SkyBox/SkyBox_0.dds", RESOURCE_TEXTURE2D, 0);
+
+	ParticleShader* pParticleShader = new ParticleShader();
+	pParticleShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+	pParticleShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CScene::CreateShaderResourceViews(pd3dDevice, pParticleTexture, 0, 19);
+
+	CMaterial* pParticleMaterial = new CMaterial(1);
+	pParticleMaterial->SetTexture(pParticleTexture,0);
+	pParticleMaterial->SetShader(pParticleShader);
+
+	SetMaterial(0, pParticleMaterial);
+}
+
+CParticle::~CParticle()
+{
+}
+
+void CParticle::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+	XMFLOAT3 xmf3CameraPos = pCamera->GetPosition();
+	SetPosition(xmf3CameraPos.x, xmf3CameraPos.y, xmf3CameraPos.z);
+	reinterpret_cast<ParticleMesh*>(m_pMesh)->UpdatePosTime(GetPosition());
+	CGameObject::Render(pd3dCommandList, pCamera);
 }

@@ -148,6 +148,7 @@ public:
 	static CShader					*m_pStandardShader;
 	static CShader					*m_pSkinnedAnimationShader;
 	static CShader					*m_pBoundingBoxShader;
+	static CShader					*m_pParticleShader;
 
 
 	static void CMaterial::PrepareShaders(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
@@ -193,14 +194,14 @@ public:
 	CAnimationController*			m_pSkinnedAnimationController = NULL;
 
 
-	BoundingOrientedBox				m_xmBoundingBox = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-	CBoundingBoxMesh				*m_pBoundingBoxMesh = NULL;
+	BoundingOrientedBox				m_xmBoundingBox = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f)); CBoundingBoxMesh				*m_pBoundingBoxMesh = NULL;
 	bool							m_bCheckBB = false;
 	
 	void SetBoundingBoxMesh(CBoundingBoxMesh* pMesh);
 	void UpdateBoundingBox(XMFLOAT3 xmf3NextPos);
 	virtual void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList);
 	void MoveBBToParent(CGameObject* pTargetLv);
+
 
 	void SetCbvGPUDescriptorHandle(D3D12_GPU_DESCRIPTOR_HANDLE d3dCbvGPUDescriptorHandle) { m_d3dCbvGPUDescriptorHandle = d3dCbvGPUDescriptorHandle; }
 	void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr) { m_d3dCbvGPUDescriptorHandle.ptr = nCbvGPUDescriptorHandlePtr; }
@@ -330,6 +331,17 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+class CParticle : public CGameObject
+{
+public:
+	CParticle(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, XMFLOAT3 xmf3Pos);
+	virtual ~CParticle();
+
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 class CAngrybotAnimationController : public CAnimationController
 {
 public:
@@ -361,6 +373,7 @@ public:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+
 class CRobotObject : public CGameObject
 {
 private:
@@ -381,6 +394,7 @@ public:
 	void AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2);
 
 	void SetTarget(XMFLOAT3 xmf3Target) { m_xmf3Target = xmf3Target; }
+	XMFLOAT3 GetTarget() { return m_xmf3Target; }
 	virtual void IsMove(Player_Animation_ST CheckAni);
 	virtual void IsIdle();
 	bool IsAttackP();
@@ -397,6 +411,7 @@ private:
 
 	XMFLOAT3				m_xmf3Target{ 0.0f, 0.0f, 0.0f };
 	bool					m_bAttackStatus = false;
+	bool					m_bDiyingStatus = false;
 
 public:
 	CBossRobotObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,
@@ -405,18 +420,24 @@ public:
 
 	virtual void Update(float fTimeElapsed);
 
-	void SetAttackStatus(bool status) { m_bAttackStatus = status; }
+
+	void SetDiying(bool IsDie) { m_bDiyingStatus = IsDie; }
+	void SetAttackStatus(bool status, int _AttackType) { m_bAttackStatus = status;  AttackType = _AttackType;
+	}
 	void MoveToTarget();
 	void RotateDirection(float fAngle);
 
 	void AnimationBlending(Player_Animation_ST type1, Player_Animation_ST type2);
 
 	void SetTarget(XMFLOAT3 xmf3Target) { m_xmf3Target = xmf3Target; }
+	XMFLOAT3 GetTarget() { return m_xmf3Target; }
 	virtual void IsMove(Player_Animation_ST CheckAni);
-	bool IsAttackP();
+	bool IsAttackP(Player_Animation_ST Status);
+	bool IsDiying();
 
 	Player_Animation_ST m_pasCurrentAni;
 	Player_Animation_ST m_pasNextAni;
+	int AttackType{};
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -427,7 +448,6 @@ public:
 	CStandardOBJ() {};
 	CStandardOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel);
 	virtual ~CStandardOBJ();
-
 };
 
 class CMissonOBJ : public CGameObject
@@ -436,13 +456,15 @@ public:
 	CMissonOBJ(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, XMFLOAT3 f3MissionRange, int nCategory);
 	virtual ~CMissonOBJ();
 
-	BoundingOrientedBox				m_xmMissionRange = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
 	CBoundingBoxMesh*				m_pMissionRangeMesh = NULL;
-
+	BoundingOrientedBox				m_xmMissionRange = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	
 	// 미션 종류
 	// 0 - 점령미션, 1 - 보안키 미션
 	int		m_nCategory = 0;
 	bool	m_bMissionflag = false;
+
+	bool	m_bEnd = false;
 
 public:
 	void RenderBoundingBox(ID3D12GraphicsCommandList* pd3dCommandList);
@@ -452,6 +474,8 @@ public:
 	void RenderMissionRange(ID3D12GraphicsCommandList* pd3dCommandList);
 
 	void SetPosition(float x, float y, float z);
+	void SetPosition(XMFLOAT3 xmf3Position);
+
 
 	void SetMissionCategory(int n) { m_nCategory = n; }
 };
@@ -463,7 +487,8 @@ public:
 	CFloorObj(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel);
 	virtual ~CFloorObj();
 
-	BoundingOrientedBox				m_xmMissionRange = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	BoundingOrientedBox				m_xmBoundingBox = BoundingOrientedBox(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.1f, 0.1f, 0.1f), XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
+	
 	CBoundingBoxMesh* m_pMissionRangeMesh = NULL;
 
 };

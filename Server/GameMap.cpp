@@ -9,6 +9,7 @@ GameMap& GameMap::GetInstance()
 
 void GameMap::initializeMap()
 {
+	game_state = GAME_STATE::NOGAME;
 	using namespace DirectX;
 	// `cellWidth`와 `cellDepth` 크기로 2D 배열을 생성합니다.
 	cells.resize(cellWidth, std::vector<CELL>(cellDepth));
@@ -127,6 +128,27 @@ void GameMap::initializeMap()
 		}
 	}
 
+	for (int i = 0; i < MissionPos.size(); ++i)
+	{
+		std::string ObjName = "Mission " + std::to_string(i);
+
+		DirectX::BoundingOrientedBox box{};
+		box.Center = MissionPos[i];
+		box.Extents = DirectX::XMFLOAT3(4.9f, 10.f, 4.9f);
+
+		data[ObjName] = box;
+	}
+
+	for (int i = 0; i < KeyBox.size(); ++i)
+	{
+		std::string ObjName = "KeyBox " + std::to_string(i);
+
+		DirectX::BoundingOrientedBox box{};
+		box.Center = KeyBox[i];
+		box.Extents = DirectX::XMFLOAT3(4.9f, 5.f, 4.9f);
+
+		data[ObjName] = box;
+	}
 
 	for (int x = 0; x < cellWidth; ++x) {
 		for (int y = 0; y < cellDepth; ++y) {
@@ -157,13 +179,177 @@ void GameMap::initializeMap()
 
 }
 
+void GameMap::ChangeToMap2()
+{
+	using namespace DirectX;
+	std::cout << "Map 초기화 중.." << std::endl;
+	cells.clear();
+
+	mapWidth = 350.f;
+	mapDepth = 650.f;
+	cellWidth = 35;
+	cellDepth = 65;
+
+	BossNpc.n_state = NPC_INGAME;
+	BossNpc.SetId(200);
+	BossNpc.SetPos(XMFLOAT3(170.f, 0.f, 225.f));
+	CELL& cell = GetCurrentCell(BossNpc.GetPos());
+	BossNpc.boundingBox.Center = BossNpc.GetPos();
+	BossNpc.boundingBox.Extents = DirectX::XMFLOAT3(10.f, 100.f, 10.f);
+
+	
+	// `cellWidth`와 `cellDepth` 크기로 2D 배열을 생성합니다.
+	cells.resize(cellWidth, std::vector<CELL>(cellDepth));
+
+	std::unordered_map<std::string, DirectX::BoundingOrientedBox> data;
+	std::ifstream in{ "Resource/Map/Stage2InsideObj_info.txt" };
+
+	if (!in) {
+		std::cout << "File Error!" << std::endl;
+		exit(-1);
+	}
+	else {
+		std::string line;
+		std::string objName;
+
+		while (std::getline(in, line)) {
+			// 줄의 시작 공백을 제거
+			line.erase(0, line.find_first_not_of(" \t\n\r"));
+
+			// <Frame> 태그 처리
+			if (line.find("<Frame>:") == 0) {
+				objName = line.substr(9);
+			}
+
+			// <Bounds> 태그 처리
+			else if (line.find("<Bounds>:") == 0) {
+				// <Bounds>: 뒤의 값을 추출
+				std::istringstream iss(line.substr(9));
+				float values[6];
+
+				// 올바르게 6개의 실수 값 추출
+				for (int i = 0; i < 6; i++) {
+					if (!(iss >> values[i])) {
+						std::cerr << "실수 값 추출 오류 발생" << std::endl;
+						exit(-1);
+					}
+				}
+
+				// BoundingOrientedBox에 값 설정
+				DirectX::BoundingOrientedBox box{};
+				box.Center = DirectX::XMFLOAT3(values[0], values[1], values[2]);
+				box.Extents = DirectX::XMFLOAT3(values[3], values[4], values[5]);
+
+				// 데이터 저장
+				data[objName] = box;
+
+			}
+			else if (line.find("<Rotation>:") == 0) {
+				// <Rotation>: 뒤의 값을 추출
+				std::istringstream iss(line.substr(11));
+				char discard;
+				float rotX, rotY, rotZ{};
+
+				if (!(iss >> discard >> rotX >> discard >> rotY >> discard >> rotZ >> discard)) {
+					std::cerr << "회전 값 추출 오류 발생" << std::endl;
+					exit(-1);
+				}
+
+
+				float angleX = XMConvertToRadians(rotX);
+				float angleY = XMConvertToRadians(rotY);
+				float angleZ = XMConvertToRadians(rotZ);
+				XMVECTOR quaternionX = DirectX::XMQuaternionRotationRollPitchYaw(angleX, 0.0f, 0.0f);
+				XMVECTOR quaternionY = DirectX::XMQuaternionRotationRollPitchYaw(0.0f, angleY, 0.0f);
+				XMVECTOR quaternionZ = DirectX::XMQuaternionRotationRollPitchYaw(0.0f, 0.0f, angleZ);
+
+				XMVECTOR quaternion = DirectX::XMQuaternionMultiply(quaternionX, DirectX::XMQuaternionMultiply(quaternionY, quaternionZ));
+
+				XMFLOAT4 orientation{};
+				DirectX::XMStoreFloat4(&orientation, quaternion);
+
+				data[objName].Orientation = orientation;
+
+				XMVECTOR rotatedExtents = XMVectorSet(data[objName].Extents.x, data[objName].Extents.y, data[objName].Extents.z, 0.f);
+				XMVECTOR orientationQuat = XMVectorSet(orientation.x, orientation.y, orientation.z, orientation.w);
+
+				XMMATRIX rotationMatrix = XMMatrixRotationQuaternion(orientationQuat);
+				XMMATRIX inverseRotationMatrix = XMMatrixInverse(nullptr, rotationMatrix);
+				XMVECTOR originalExtents = XMVector3Transform(rotatedExtents, inverseRotationMatrix);
+
+				originalExtents = XMVectorAbs(originalExtents);
+
+				XMFLOAT3 originalExtentsFloat;
+				XMStoreFloat3(&originalExtentsFloat, originalExtents);
+
+				data[objName].Extents = originalExtentsFloat;
+			}
+
+		}
+
+
+		/*for (const auto& pair : data) {
+			std::cout << "Object Name: " << pair.first << std::endl;
+			const DirectX::BoundingOrientedBox& box = pair.second;
+			std::cout << "Center: (" << box.Center.x << ", " << box.Center.y << ", " << box.Center.z << ")" << std::endl;
+			std::cout << "Orientation: (" << box.Orientation.x << ", " << box.Orientation.y << ", " << box.Orientation.z << ") - " << box.Orientation.w << std::endl;
+		}*/
+
+
+	}
+
+
+	// 각 셀을 초기화하고 셀의 위치 및 크기를 설정합니다.
+	for (int x = 0; x < cellWidth; ++x) {
+		for (int y = 0; y < cellDepth; ++y) {
+			// 각 셀의 위치와 크기를 설정
+			cells[x][y] = CELL();
+			cells[x][y].cellType = GROUND;
+			cells[x][y].isObstacle = false;
+			cells[x][y].center.x = (x + 0.5f) * mapWidth / cellWidth;
+			cells[x][y].center.z = (y + 0.5f) * mapDepth / cellDepth;
+			cells[x][y].width = static_cast<int>(mapWidth / cellWidth);
+			cells[x][y].height = static_cast<int>(mapDepth / cellDepth);
+
+		}
+	}
+
+
+	for (int x = 0; x < cellWidth; ++x) {
+		for (int y = 0; y < cellDepth; ++y) {
+			for (auto& datas : data) {
+				if (cells[x][y].InCell(datas.second)) {
+					/*if (x >= 40 && x <= 55 && y >= 30 && y < 60) {
+						cells[x][y].cellType = CONT;
+						cells[x][y].isObstacle = true;
+						std::cout << "[" << x << "," << y << "] ";
+						std::cout << "Center: (" << datas.second.Center.x << ", " << datas.second.Center.y << ", " << datas.second.Center.z << ")" << std::endl;
+						std::cout << "Extexts: (" << datas.second.Extents.x << ", " << datas.second.Extents.y << ", " << datas.second.Extents.z << ")" << std::endl;
+
+						std::cout << "Orientation: (" << datas.second.Orientation.x << ", " << datas.second.Orientation.y << ", " << datas.second.Orientation.z << ") - " << datas.second.Orientation.w << std::endl << std::endl;
+						break;
+					}*/
+					cells[x][y].cellType = CONT;
+					cells[x][y].isObstacle = true;
+					break;
+				}
+			}
+
+		}
+	}
+	std::cout << "Map2 loading 완료\n";
+
+	
+
+}
+
 void GameMap::StartGame()
 {
 	Server& server = Server::GetInstance();
 	std::cout << "size" << cl_ids.size() << std::endl;
 	for (auto& cl : cl_ids) {
 		server.clients[cl].SetPos(PlayerInitPos[cl]);
-		std::cout << "player[" << cl << "]의 캐릭터 " << server.clients[cl].GetType() << std::endl;
+		std::cout << "player[" << cl << "]의 캐릭터 " << server.clients[cl].GetType()<< " ";
 		SC_GAME_START_PACKET p;
 		p.size = sizeof(p);
 		p.type = SC_GAME_START;
@@ -218,64 +404,58 @@ void GameMap::Update(int tick)
 	//	std::cout << "남은시간 : " << Remain_time.count() << " 초" << std::endl;
 	
 	
-	Server& server = Server::GetInstance();
-
-	// npc가 이동해야 하면 깨우기
-	auto& players = server.clients;
-
+	
 	if (tick == 0 || tick == 15 || tick == 30 || tick == 45) {
 
 	}
 	else return;
+	
+	switch (game_state)
+	{
+	case NOGAME:
+		return;
+	case STAGE1:
+		UpdateS1();
+		break;
+	case STAGE2:
+		UpdateS2();
+		break;
+	default:
+		return;
+	}	
+}
 
-	for (auto& npc : npcs) {		
+void GameMap::UpdateS1()
+{
+	if (cool_down == true) return;
+	Server& server = Server::GetInstance();
+	auto& players = server.clients;
+
+	for (auto& npc : npcs) {
+		npc.UpdateBB();
 		bool patrol = true;
-		float current_dis = npc.distance_near;
-		
+		float closed_dis = 100000.f;
+		if ((npc.IsAttack == true) && (AttackRange >= Distance_float(npc.GetPos(), players[npc.near_player].GetPos()))) continue;
+		else npc.IsAttack = false;
 		for (auto ids : cl_ids) {
 			if (players[ids].anim == CREEP) continue;
+			if (players[ids].anim == CRAWL) continue;
 			// 같은 섹터
 			if (npc.my_sector == getSector(players[ids].GetPos())) {
 				patrol = false;
-				
-				float distance = Distance_float(npc.GetPos(), players[ids].GetPos());
-				if ((npc.current_behavior == ATTACK) && (distance < 5.f) && (npc.near_player == ids))
-					break;
-				
-				
-				if (npc.near_player == ids) { // 동일 아이디면 dis만 업데이트
-					npc.distance_near = distance;
-					npc.current_behavior = CHASE;
-					if (npc.n_path.empty() == false) continue;
-				}
-				else {
-					if (current_dis > distance) { 
-						// 다른 플레이어로 교체
-						npc.distance_near = distance;
-						npc.current_behavior = CHASE;
-						npc.near_player = ids;
-						npc.PathClear();
-					}
-					else continue;
-				}
 
-				std::cout << "가까운 플레이어로 교체" << std::endl;
-				std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[npc.near_player].GetPos());
-				if ((path.size() == 0) && (npc.IsAttack == false)) {
-					npc.current_behavior = ATTACK;
-					break;
-				}
-				for (auto& p : path) {
-					npc.n_path.push(p);
+				float distance = Distance_float(npc.GetPos(), players[ids].GetPos());
+
+				if (closed_dis > distance) {
+					closed_dis = distance;
+					npc.near_player = ids;
 				}
 			}
 		}
 
-
 		if (patrol == true) {
-			std::queue<DirectX::XMFLOAT3> q{};
-			npc.n_path = q;
 			npc.current_behavior = PATROL;
+			npc.PathClear();
 
 			if (npc.n_path.empty())
 				npc.n_path.push(GetRandomPos(npc.GetPos()));
@@ -283,16 +463,81 @@ void GameMap::Update(int tick)
 			npc.near_player = -1;
 			npc.distance_near = 100000.f;
 		}
+		else
+		{
+			
+			if (closed_dis < AttackRange)
+			{
+				npc.current_behavior = ATTACK;
+			}
+			else
+			{
+				npc.current_behavior = CHASE;
+				if (npc.distance_near < closed_dis) {
+					npc.PathClear();
+					std::vector<DirectX::XMFLOAT3> path = BFS(npc.GetPos(), server.clients[npc.near_player].GetPos());
+					for (auto& p : path) {
+						npc.n_path.push(p);
+					}
+				}
+				
+			}
+			npc.distance_near = closed_dis;
+			
+		}
 
 
-		
+
 		npc.DoWork();
 	}
+}
+
+void GameMap::UpdateS2()
+{
+	return;
+	BossNpc.UpdateBB();
+	Server& server = Server::GetInstance();
+	auto& players = server.clients;
+
+	if (cool_down == true) return;
+	if (BossNpc.IsAttack) return;
+
+	float closed_dis = 100000.f;
 
 	
 
-	
-	
+
+	for (auto ids : cl_ids) {
+		if (players[ids].anim == CREEP) continue;
+		if (players[ids].anim == CRAWL) continue;
+		float distance = Distance_float(BossNpc.GetPos(), players[ids].GetPos());
+
+		if (closed_dis > distance) {
+			closed_dis = distance;
+			BossNpc.near_player = ids;
+		}
+
+	}
+
+	if (closed_dis < (AttackRange + 5.f))
+	{
+		BossNpc.current_behavior = ATTACK;
+	}
+	else
+	{
+		BossNpc.current_behavior = CHASE;
+		if (BossNpc.distance_near < closed_dis) {
+			BossNpc.PathClear();
+			std::vector<DirectX::XMFLOAT3> path = BFS(BossNpc.GetPos(), server.clients[BossNpc.near_player].GetPos());
+			for (auto& p : path) {
+				BossNpc.n_path.push(p);
+			}
+		}
+
+	}
+	BossNpc.distance_near = closed_dis;
+
+	BossNpc.DoWork();
 }
 
 
@@ -308,7 +553,7 @@ CELL& GameMap::GetCurrentCell(DirectX::XMFLOAT3 in_pos)
 std::pair<int, int> GameMap::CoordsToIndex(const DirectX::XMFLOAT3& coords) const
 {
 	int Cell_x = static_cast<int>((coords.x + 0.5f) / (mapWidth / cellWidth));
-	int Cell_z = static_cast<int>((coords.z + 0.5f) / (mapWidth / cellDepth));
+	int Cell_z = static_cast<int>((coords.z + 0.5f) / (mapDepth / cellDepth));
 
 	return std::make_pair(Cell_x, Cell_z);
 }
@@ -322,8 +567,9 @@ void GameMap::InitializeNPC()
 		npcs[i].SetPos(NPCInitPos[i]);
 		npcs[i].my_sector = getSector(npcs[i].GetPos());
 		CELL& cell = GetCurrentCell(npcs[i].GetPos());
+		npcs[i].boundingBox.Center = npcs[i].GetPos();
+		npcs[i].boundingBox.Extents = DirectX::XMFLOAT3(3.f, 20.f, 3.f);
 		// cell.cellType = CT_NPC;
-		// std::cout << "NPC[" << npcs[i].GetId() << "] goto " << std::endl;
 	}
 
 	/*auto path = BFS(npcs[0].GetPos(), PlayerInitPos[0]);

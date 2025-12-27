@@ -17,6 +17,7 @@
 #include <memory.h>
 #include <tchar.h>
 #include <math.h>
+#include <chrono>
 
 #include <string>
 #include <wrl.h>
@@ -35,7 +36,6 @@ using namespace std;
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>
 #include <DirectXCollision.h>
-
 #include <Mmsystem.h>
 
 //dxd2D
@@ -48,6 +48,15 @@ using namespace std;
 #include <d2d1effects.h>
 #include <wincodec.h>
 
+#include <mmsystem.h>
+#pragma comment(lib,"winmm.lib")
+
+//#include "inc/fmod.hpp"
+//#include "inc/fmod_errors.h"
+//
+//#pragma comment(lib, "library/fmodex_vc.lib")
+//#pragma comment(lib, "library/fmodexL_vc.lib")
+
 #pragma comment(lib, "d2d1.lib")
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dwrite.lib")
@@ -57,6 +66,13 @@ using namespace std;
 #ifdef _DEBUG
 #include <dxgidebug.h>
 #endif
+
+// 추가 라이브러리
+#pragma comment(lib, "d3dcompiler.lib")
+#pragma comment(lib, "d3d12.lib")
+#pragma comment(lib, "dxgi.lib")
+
+#pragma comment(lib, "dxguid.lib")
 
 // =================================================
 #include "../Protocol.h"
@@ -69,23 +85,31 @@ using namespace std;
 // =================================================
 
 using namespace DirectX;
+
+
 using namespace DirectX::PackedVector;
 
 using Microsoft::WRL::ComPtr;
 
 extern HINSTANCE						ghAppInstance;
 
-#define SMALL_WINDOW_SCREEN
+// #define SMALL_WINDOW_SCREEN
 
 #ifdef SMALL_WINDOW_SCREEN
 
-	#define FRAME_BUFFER_WIDTH				640
-	#define FRAME_BUFFER_HEIGHT				480
+	#define FRAME_BUFFER_WIDTH				1280
+	#define FRAME_BUFFER_HEIGHT				720 
+
+	#define FRAME_POS_X						CW_USEDEFAULT   //CW_USEDEFAULT == 화면위치 자동 배치
+	#define FRAME_POS_Y						CW_USEDEFAULT
 
 #else
 
 	#define FRAME_BUFFER_WIDTH				1920
 	#define FRAME_BUFFER_HEIGHT				1080
+
+	#define FRAME_POS_X						0
+	#define FRAME_POS_Y						0
 
 #endif // SMALL_WINDOW_SCREEN
 
@@ -93,11 +117,22 @@ extern HINSTANCE						ghAppInstance;
 #define DEFERRED_RENDERING
 
 
-#pragma comment(lib, "d3dcompiler.lib")
-#pragma comment(lib, "d3d12.lib")
-#pragma comment(lib, "dxgi.lib")
+// 조명 & 그림자
+#define MAX_LIGHTS						5
 
-#pragma comment(lib, "dxguid.lib")
+#define POINT_LIGHT						1
+#define SPOT_LIGHT						2
+#define DIRECTIONAL_LIGHT				3
+
+#define MAX_DEPTH_TEXTURES		MAX_LIGHTS
+#define _DEPTH_BUFFER_WIDTH		(FRAME_BUFFER_WIDTH*2)
+#define _DEPTH_BUFFER_HEIGHT	(FRAME_BUFFER_HEIGHT*2)
+#define _WITH_DEPTH_TO_TEXTURE
+
+#define _WITH_RENDER_SHADOW
+
+#define _WITH_RASTERIZER_DEPTH_BIAS
+
 
 // TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
 

@@ -2,8 +2,8 @@
 
 #ifdef SMALL_WINDOW_SCREEN
 
-#define FRAME_BUFFER_WIDTH				640
-#define FRAME_BUFFER_HEIGHT				480
+#define FRAME_BUFFER_WIDTH				1280
+#define FRAME_BUFFER_HEIGHT				720 
 
 #else
 
@@ -99,6 +99,7 @@ private:
 	ID3D12Fence*				m_pd3dFence = NULL;
 	UINT64						m_nFenceValues[m_nSwapChainBuffers];
 	HANDLE						m_hFenceEvent;
+	//CGameSound*					m_pSound;
 
 #if defined(_DEBUG)
 	ID3D12Debug*				m_pd3dDebugController;
